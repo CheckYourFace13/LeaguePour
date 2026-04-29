@@ -1,0 +1,558 @@
+// LeaguePour — participation events for venues
+// Prisma 7: datasource URL is configured in prisma.config.ts
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["leaguepour_lp"]
+}
+
+// ——— Auth (Auth.js / NextAuth compatible) ———
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+
+  venueStaff         VenueStaff[]
+  playerProfile      PlayerProfile?
+  competitionRegs    CompetitionRegistration[] @relation("RegistrationUser")
+  teamCaptainOf      Team[]                    @relation("TeamCaptain")
+  teamMemberships    TeamMember[]
+  venueFollows       VenueFollow[]
+  eventTypePrefs     EventTypePreference[]
+  communicationPrefs CommunicationPreference?
+  audienceTags       AudienceTag[]
+
+  @@schema("leaguepour_lp")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@schema("leaguepour_lp")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@schema("leaguepour_lp")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@schema("leaguepour_lp")
+}
+
+// ——— Venues & staff ———
+
+enum StaffRole {
+  OWNER
+  MANAGER
+  COORDINATOR
+
+  @@schema("leaguepour_lp")
+}
+
+enum BillingPlan {
+  STARTER
+  STANDARD
+  PRO
+  MAX
+
+  @@schema("leaguepour_lp")
+}
+
+model Venue {
+  id              String   @id @default(cuid())
+  parentVenueId   String?
+  name            String
+  slug            String   @unique
+  venueType       String
+  description     String   @db.Text
+  logoUrl         String?
+  coverImageUrl   String?
+  addressLine1    String?
+  city            String?
+  state           String?
+  postalCode      String?
+  country         String   @default("US")
+  formattedAddress String?
+  latitude        Float?
+  longitude       Float?
+  googlePlaceId   String?  @unique
+  phone           String?
+  websiteUrl      String?
+  instagramUrl    String?
+  facebookUrl     String?
+  xUrl            String?
+  tiktokUrl       String?
+  collectSms      Boolean  @default(false)
+  teamEventsDefault Boolean @default(true)
+  importAudienceLater Boolean @default(false)
+  billingPlan     BillingPlan @default(STARTER)
+  platformFeeBps  Int      @default(900)
+  stripeAccountId String?  @unique
+  stripeChargesEnabled Boolean @default(false)
+  stripePayoutsEnabled Boolean @default(false)
+  stripeDetailsSubmitted Boolean @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  parent   Venue?  @relation("VenueGroup", fields: [parentVenueId], references: [id])
+  children Venue[] @relation("VenueGroup")
+
+  staff         VenueStaff[]
+  competitions  Competition[]
+  campaigns     MessageCampaign[]
+  audienceTags  AudienceTag[]
+  venueFollows  VenueFollow[]
+
+  @@schema("leaguepour_lp")
+}
+
+model VenueStaff {
+  id        String    @id @default(cuid())
+  venueId   String
+  userId    String
+  role      StaffRole
+  createdAt DateTime  @default(now())
+
+  venue Venue @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([venueId, userId])
+  @@schema("leaguepour_lp")
+}
+
+// ——— Player profile ———
+
+model PlayerProfile {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  homeCity           String?
+  onboardingComplete Boolean  @default(false)
+  favoriteTypesNote  String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@schema("leaguepour_lp")
+}
+
+// ——— Competition domain ———
+
+enum CompetitionKind {
+  TRIVIA
+  DARTS
+  CORNHOLE
+  EUCHRE
+  POKER
+  POOL
+  SHUFFLEBOARD
+  CUSTOM
+
+  @@schema("leaguepour_lp")
+}
+
+enum ScheduleKind {
+  ONE_TIME
+  RECURRING
+
+  @@schema("leaguepour_lp")
+}
+
+enum BracketKind {
+  ROUND_ROBIN
+  SINGLE_ELIMINATION
+  DOUBLE_ELIMINATION
+  LADDER
+  SEASON
+  POINTS
+  CUSTOM
+
+  @@schema("leaguepour_lp")
+}
+
+enum RegistrationFormat {
+  SOLO
+  CAPTAIN_TEAM
+  TEAM_MEMBERS
+
+  @@schema("leaguepour_lp")
+}
+
+enum CompetitionStatus {
+  DRAFT
+  PUBLISHED
+  SIGNUP_OPEN
+  SIGNUP_CLOSED
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+
+  @@schema("leaguepour_lp")
+}
+
+enum RegistrationStatus {
+  PENDING_PAYMENT
+  CONFIRMED
+  WAITLIST
+  CANCELLED
+
+  @@schema("leaguepour_lp")
+}
+
+/// Reference / educational rows (seeded) describing bracket & schedule styles
+model CompetitionFormat {
+  id          String      @id @default(cuid())
+  key         String      @unique
+  name        String
+  bracketKind BracketKind
+  description String      @db.Text
+
+  @@schema("leaguepour_lp")
+}
+
+model Competition {
+  id                 String               @id @default(cuid())
+  venueId            String
+  title              String
+  slug               String
+  kind               CompetitionKind
+  description        String               @db.Text
+  signupOpenAt       DateTime
+  signupCloseAt      DateTime
+  startAt            DateTime
+  endAt              DateTime
+  entryFeeCents      Int                  @default(0)
+  entryFeeCurrency   String               @default("USD")
+  teamFormat         RegistrationFormat
+  teamSize           Int?
+  captainRequired    Boolean              @default(false)
+  participantCap     Int?
+  waitlistEnabled    Boolean              @default(true)
+  rules              String               @db.Text
+  waiverText         String?              @db.Text
+  scheduleKind       ScheduleKind
+  bracketKind        BracketKind
+  recurringRule      String?
+  bannerUrl          String?
+  status             CompetitionStatus    @default(DRAFT)
+  publishedAt        DateTime?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  venue            Venue                     @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  prizeStructure   PrizeStructure?
+  registrations    CompetitionRegistration[]
+  teams            Team[]
+  matches          Match[]
+  standings        Standing[]
+  campaigns        MessageCampaign[]
+
+  @@unique([venueId, slug])
+  @@schema("leaguepour_lp")
+}
+
+model PrizeStructure {
+  id            String      @id @default(cuid())
+  competitionId String      @unique
+  summary       String
+  tiers         Json?
+  payoutNotes String?     @db.Text
+
+  competition Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+
+  @@schema("leaguepour_lp")
+}
+
+model CompetitionRegistration {
+  id               String             @id @default(cuid())
+  competitionId    String
+  userId           String
+  status           RegistrationStatus @default(CONFIRMED)
+  roleLabel        String?
+  waiverAcceptedAt DateTime?
+  paymentId        String?            @unique
+  teamId           String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  competition Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  user        User        @relation("RegistrationUser", fields: [userId], references: [id], onDelete: Cascade)
+  team        Team?       @relation(fields: [teamId], references: [id])
+  payment     Payment?    @relation(fields: [paymentId], references: [id])
+
+  @@schema("leaguepour_lp")
+}
+
+model Team {
+  id            String   @id @default(cuid())
+  competitionId String
+  name          String
+  captainUserId String
+  inviteCode    String?  @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  competition   Competition               @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  captain       User                      @relation("TeamCaptain", fields: [captainUserId], references: [id])
+  members       TeamMember[]
+  registrations CompetitionRegistration[]
+  homeMatches   Match[]                   @relation("HomeTeam")
+  awayMatches   Match[]                   @relation("AwayTeam")
+  standings     Standing[]
+
+  @@schema("leaguepour_lp")
+}
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  teamId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+  @@schema("leaguepour_lp")
+}
+
+model Match {
+  id            String    @id @default(cuid())
+  competitionId String
+  round         Int       @default(1)
+  label         String?
+  homeTeamId    String?
+  awayTeamId    String?
+  scheduledAt   DateTime?
+  completedAt   DateTime?
+  homeScore     Int?
+  awayScore     Int?
+
+  competition Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  homeTeam    Team?       @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam    Team?       @relation("AwayTeam", fields: [awayTeamId], references: [id])
+
+  @@schema("leaguepour_lp")
+}
+
+model Standing {
+  id            String   @id @default(cuid())
+  competitionId String
+  teamId        String?
+  playerUserId  String?
+  rank          Int?
+  points        Float    @default(0)
+  wins          Int      @default(0)
+  losses        Int      @default(0)
+  ties          Int      @default(0)
+  updatedAt     DateTime @updatedAt
+
+  competition Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  team        Team?       @relation(fields: [teamId], references: [id])
+
+  @@schema("leaguepour_lp")
+}
+
+// ——— Marketing & CRM ———
+
+enum CampaignType {
+  SIGNUP_CLOSING
+  STARTS_TOMORROW
+  JOIN_NEXT
+  WINNER_RECAP
+  CUSTOM
+
+  @@schema("leaguepour_lp")
+}
+
+enum CampaignStatus {
+  DRAFT
+  SCHEDULED
+  SENT
+
+  @@schema("leaguepour_lp")
+}
+
+enum CampaignChannel {
+  EMAIL
+  SMS
+
+  @@schema("leaguepour_lp")
+}
+
+model MessageCampaign {
+  id            String          @id @default(cuid())
+  venueId       String
+  competitionId String?
+  type          CampaignType
+  name          String
+  subject       String?
+  body          String          @db.Text
+  channel       CampaignChannel @default(EMAIL)
+  audienceFilter Json?
+  status        CampaignStatus  @default(DRAFT)
+  scheduledFor  DateTime?
+  sentAt        DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  venue       Venue        @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  competition Competition? @relation(fields: [competitionId], references: [id])
+
+  @@schema("leaguepour_lp")
+}
+
+model AudienceTag {
+  id        String   @id @default(cuid())
+  venueId   String
+  userId    String
+  tag       String
+  createdAt DateTime @default(now())
+
+  venue Venue @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([venueId, userId, tag])
+  @@schema("leaguepour_lp")
+}
+
+model VenueFollow {
+  userId    String
+  venueId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  venue Venue @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  @@id([userId, venueId])
+  @@schema("leaguepour_lp")
+}
+
+model EventTypePreference {
+  userId String
+  kind     CompetitionKind
+  weight   Int            @default(1)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, kind])
+  @@schema("leaguepour_lp")
+}
+
+model CommunicationPreference {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  emailOffers     Boolean  @default(true)
+  smsOffers       Boolean  @default(false)
+  eventReminders  Boolean  @default(true)
+  frequency       String   @default("normal")
+  globalOptOut    Boolean  @default(false)
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@schema("leaguepour_lp")
+}
+
+// ——— Payments & notifications (placeholders) ———
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+
+  @@schema("leaguepour_lp")
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  amountCents   Int
+  currency      String        @default("USD")
+  status        PaymentStatus @default(PENDING)
+  provider      String        @default("placeholder")
+  externalRef   String?
+  /// Stripe Checkout Session id (cs_…)
+  providerCheckoutSessionId String? @unique
+  /// Stripe PaymentIntent id (pi_…)
+  providerPaymentIntentId   String? @unique
+  /// Stripe Customer id when Checkout creates or attaches one (cus_…)
+  providerCustomerId String?
+  paidAt        DateTime?
+  refundedAt    DateTime?
+  /// Last Stripe event id processed for idempotency (evt_…)
+  lastWebhookEventId String?
+  /// Stripe Connect `application_fee_amount` (cents) for this entry charge
+  stripeApplicationFeeCents Int?
+  /// Connected account id (`acct_…`) receiving the transfer remainder
+  stripeConnectDestinationId String?
+  /// Venue `platformFeeBps` at Checkout creation (audit)
+  platformFeeBpsSnapshot     Int?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  registration CompetitionRegistration?
+
+  @@schema("leaguepour_lp")
+}
+
+enum NotificationStatus {
+  QUEUED
+  SENT
+  FAILED
+
+  @@schema("leaguepour_lp")
+}
+
+model Notification {
+  id        String              @id @default(cuid())
+  userId    String
+  channel   String
+  template  String
+  payload   Json?
+  status    NotificationStatus  @default(QUEUED)
+  createdAt DateTime            @default(now())
+  sentAt    DateTime?
+
+  @@schema("leaguepour_lp")
+}
