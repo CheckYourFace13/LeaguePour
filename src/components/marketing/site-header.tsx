@@ -29,7 +29,7 @@ export function SiteHeader() {
     : [...baseNav];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-lp-border/80 bg-lp-bg/90 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-lp-border/80 bg-lp-surface/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3.5 md:px-6 md:py-4">
         <Link href="/" className="font-display text-xl font-bold tracking-tight md:text-[1.35rem]">
           League<span className="text-lp-accent">Pour</span>
@@ -40,7 +40,7 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-[10px] px-3 py-2.5 text-[15px] font-semibold text-lp-muted transition hover:bg-white/[0.04] hover:text-lp-text"
+              className="rounded-[10px] px-3 py-2.5 text-[15px] font-semibold text-lp-muted transition hover:bg-lp-surface-2 hover:text-lp-text"
             >
               {item.label}
             </Link>
@@ -53,18 +53,18 @@ export function SiteHeader() {
               <button
                 type="button"
                 onClick={() => setDashOpen((v) => !v)}
-                className="inline-flex min-h-12 items-center gap-1.5 rounded-[10px] px-4 text-[15px] font-semibold text-lp-text transition hover:bg-white/[0.05]"
+                className="inline-flex min-h-12 items-center gap-1.5 rounded-[10px] px-4 text-[15px] font-semibold text-lp-text transition hover:bg-lp-surface-2"
                 aria-expanded={dashOpen}
                 aria-haspopup="true"
               >
                 Account <ChevronDown className="size-4 opacity-70" />
               </button>
               {dashOpen ? (
-                <div className="absolute right-0 mt-2 min-w-[220px] rounded-[10px] border border-lp-border bg-lp-surface py-1 shadow-xl">
+                <div className="absolute right-0 mt-2 min-w-[220px] rounded-[10px] border border-lp-border bg-lp-surface py-1 shadow-xl shadow-blue-200/60">
                   {hasVenue ? (
                     <Link
                       href={venueAppRoutes.dashboard}
-                      className="block min-h-12 px-4 py-3 text-[15px] font-medium hover:bg-white/[0.05]"
+                      className="block min-h-12 px-4 py-3 text-[15px] font-medium hover:bg-lp-surface-2"
                       onClick={() => setDashOpen(false)}
                     >
                       {cta.venueDashboard}
@@ -73,7 +73,7 @@ export function SiteHeader() {
                   {hasPlayer ? (
                     <Link
                       href={playerAppRoutes.dashboard}
-                      className="block min-h-12 px-4 py-3 text-[15px] font-medium hover:bg-white/[0.05]"
+                      className="block min-h-12 px-4 py-3 text-[15px] font-medium hover:bg-lp-surface-2"
                       onClick={() => setDashOpen(false)}
                     >
                       {cta.playerDashboard}
@@ -82,7 +82,7 @@ export function SiteHeader() {
                   {!hasVenue && !hasPlayer ? (
                     <Link
                       href="/signup"
-                      className="block min-h-12 px-4 py-3 text-[15px] font-medium hover:bg-white/[0.05]"
+                      className="block min-h-12 px-4 py-3 text-[15px] font-medium hover:bg-lp-surface-2"
                       onClick={() => setDashOpen(false)}
                     >
                       Finish signup

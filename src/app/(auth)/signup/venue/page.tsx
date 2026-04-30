@@ -26,6 +26,7 @@ export default function SignupVenuePage() {
     phone: string | null;
   } | null>(null);
   const [loadingMatches, setLoadingMatches] = useState(false);
+  const [searchMsg, setSearchMsg] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -62,17 +63,32 @@ export default function SignupVenuePage() {
   }
 
   async function searchPlaces() {
-    if (search.trim().length < 3) return;
+    const term = search.trim();
+    if (term.length < 3) {
+      setSearchMsg("Type at least 3 characters.");
+      setMatches([]);
+      return;
+    }
     setLoadingMatches(true);
-    const res = await fetch(`/api/google/places/search?q=${encodeURIComponent(search.trim())}`);
+    setSearchMsg(null);
+    const res = await fetch(`/api/google/places/search?q=${encodeURIComponent(term)}`);
     const data = (await res.json().catch(() => ({ results: [] }))) as {
       results: Array<{ placeId: string; name: string; formattedAddress: string }>;
+      message?: string;
     };
     setMatches(data.results ?? []);
+    if (!res.ok) {
+      setSearchMsg(data.message ?? "Location search is unavailable right now.");
+    } else if ((data.results ?? []).length === 0) {
+      setSearchMsg("No matches yet. Try business name + city.");
+    } else {
+      setSearchMsg("Select your location.");
+    }
     setLoadingMatches(false);
   }
 
   async function pickPlace(placeId: string) {
+    setSearchMsg(null);
     const res = await fetch(`/api/google/places/details?placeId=${encodeURIComponent(placeId)}`);
     const data = (await res.json().catch(() => ({ place: null }))) as {
       place: {
@@ -84,11 +100,15 @@ export default function SignupVenuePage() {
         websiteUrl: string | null;
         phone: string | null;
       } | null;
+      message?: string;
     };
     if (data.place) {
       setPicked(data.place);
       setMatches([]);
       setSearch(data.place.name);
+      setSearchMsg("Location selected.");
+    } else {
+      setSearchMsg(data.message ?? "Could not load that location. Pick another result.");
     }
   }
 
@@ -101,19 +121,19 @@ export default function SignupVenuePage() {
       ) : null}
       <form className="mt-6 space-y-4" onSubmit={onSubmit}>
         <div className="space-y-2">
-          <Label htmlFor="gm-search">Match to Google Maps</Label>
-          <p className="text-xs text-lp-muted">Pins your room on the map and fills address fields.</p>
+          <Label htmlFor="gm-search">Find your venue</Label>
+          <p className="text-xs text-lp-muted">Search your business, then select your location.</p>
           <div className="flex gap-2">
             <Input
               id="gm-search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="min-h-12"
-              placeholder="Venue name, neighborhood, city"
+              placeholder="Search your business"
               aria-describedby="gm-search-hint"
             />
             <Button type="button" variant="secondary" onClick={searchPlaces} disabled={loadingMatches}>
-              {loadingMatches ? "…" : "Search"}
+              {loadingMatches ? "Finding..." : "Find"}
             </Button>
           </div>
           <p id="gm-search-hint" className="sr-only">
@@ -135,6 +155,7 @@ export default function SignupVenuePage() {
               ))}
             </ul>
           ) : null}
+          {searchMsg ? <p className="text-xs text-lp-muted">{searchMsg}</p> : null}
           {picked ? (
             <p className="text-xs text-lp-success">
               Locked: {picked.name} — {picked.formattedAddress}
@@ -142,6 +163,7 @@ export default function SignupVenuePage() {
           ) : (
             <p className="text-xs text-lp-muted">Skip only if you will add it later in Venue profile.</p>
           )}
+          <p className="text-[11px] text-lp-muted/80">Powered by Google</p>
         </div>
         <div>
           <Label htmlFor="venueName">Venue name</Label>

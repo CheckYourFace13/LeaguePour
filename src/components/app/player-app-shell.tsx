@@ -26,7 +26,7 @@ export function PlayerAppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-full bg-lp-bg">
       <div className="flex min-h-full">
-        <aside className="hidden w-60 shrink-0 flex-col border-r border-lp-border bg-lp-surface/60 md:flex">
+        <aside className="hidden w-60 shrink-0 flex-col border-r border-lp-border bg-lp-surface md:flex">
           <div className="border-b border-lp-border px-5 py-5">
             <Link href={playerAppRoutes.dashboard} className="font-display text-lg font-bold tracking-tight">
               League<span className="text-lp-accent">Pour</span>
@@ -44,7 +44,7 @@ export function PlayerAppShell({ children }: { children: React.ReactNode }) {
                     "flex min-h-11 items-center gap-3 rounded-[10px] px-3 py-2.5 text-[15px] font-semibold transition",
                     active
                       ? "bg-lp-accent/15 text-lp-text"
-                      : "text-lp-muted hover:bg-white/[0.05] hover:text-lp-text",
+                      : "text-lp-muted hover:bg-lp-surface-2 hover:text-lp-text",
                   )}
                 >
                   <item.icon className="size-[18px] shrink-0 opacity-90" strokeWidth={1.75} />
@@ -65,7 +65,7 @@ export function PlayerAppShell({ children }: { children: React.ReactNode }) {
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-40 flex items-center justify-between border-b border-lp-border bg-lp-bg/95 px-4 py-3.5 backdrop-blur md:hidden">
+          <header className="sticky top-0 z-40 flex items-center justify-between border-b border-lp-border bg-lp-surface px-4 py-3.5 backdrop-blur md:hidden">
             <span className="font-display text-lg font-bold">Player</span>
             <button
               type="button"
@@ -77,7 +77,7 @@ export function PlayerAppShell({ children }: { children: React.ReactNode }) {
             </button>
           </header>
           {open ? (
-            <div className="fixed inset-0 z-50 bg-lp-bg/98 p-5 md:hidden">
+            <div className="fixed inset-0 z-50 bg-lp-bg p-5 md:hidden">
               <div className="flex items-center justify-between">
                 <span className="font-display text-lg font-bold">Menu</span>
                 <button

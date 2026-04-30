@@ -8,7 +8,15 @@ export async function GET(request: Request) {
   try {
     const results = await googlePlacesTextSearch(q);
     return NextResponse.json({ results });
-  } catch {
-    return NextResponse.json({ results: [] });
+  } catch (error) {
+    console.error("[places search] request failed", { query: q, error });
+    return NextResponse.json(
+      {
+        results: [],
+        error: "search_unavailable",
+        message: "Location search is temporarily unavailable. Try again in a moment.",
+      },
+      { status: 502 },
+    );
   }
 }

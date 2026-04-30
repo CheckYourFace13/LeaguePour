@@ -4,11 +4,11 @@ import { cn } from "@/lib/utils";
 
 const variants = {
   primary:
-    "border border-transparent bg-lp-accent text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14)] hover:bg-lp-accent-hover hover:brightness-[1.02] active:translate-y-px active:brightness-95",
+    "border border-transparent bg-lp-accent-2 text-[#0d265e] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.45)] hover:brightness-[0.97] active:translate-y-px active:brightness-95",
   secondary:
-    "border border-lp-border bg-transparent text-lp-text-soft shadow-none hover:border-lp-border-strong hover:bg-white/[0.04] active:bg-white/[0.06]",
+    "border border-lp-border bg-lp-surface text-lp-text-soft shadow-none hover:border-lp-border-strong hover:bg-lp-surface-2 active:bg-lp-surface-2",
   ghost:
-    "border border-transparent text-lp-muted hover:bg-white/[0.05] hover:text-lp-text active:bg-white/[0.07]",
+    "border border-transparent text-lp-muted hover:bg-lp-surface-2 hover:text-lp-text active:bg-lp-surface-2",
   outline:
     "border border-lp-border-strong bg-transparent text-lp-text-soft hover:border-lp-accent/50 hover:text-lp-text",
 } as const;

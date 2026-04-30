@@ -24,7 +24,7 @@ const cols = [
 
 export function SiteFooter() {
   return (
-    <footer className="mt-auto border-t border-lp-border bg-lp-surface/55">
+    <footer className="mt-auto border-t border-lp-border bg-lp-surface">
       <div className="mx-auto grid max-w-6xl gap-12 px-4 py-14 md:grid-cols-4 md:px-6 md:py-16">
         <div className="md:col-span-2">
           <p className="font-display text-2xl font-bold tracking-tight">

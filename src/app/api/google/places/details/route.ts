@@ -8,7 +8,15 @@ export async function GET(request: Request) {
   try {
     const place = await googlePlaceDetails(placeId);
     return NextResponse.json({ place });
-  } catch {
-    return NextResponse.json({ place: null }, { status: 500 });
+  } catch (error) {
+    console.error("[places details] request failed", { placeId, error });
+    return NextResponse.json(
+      {
+        place: null,
+        error: "details_unavailable",
+        message: "Could not load location details right now. You can continue without matching location.",
+      },
+      { status: 502 },
+    );
   }
 }
