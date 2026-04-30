@@ -13,6 +13,9 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT {
     userId?: string;
+    email?: string;
+    name?: string;
+    picture?: string;
     venueAccess?: { venueId: string; slug: string; role: string }[];
     hasPlayerProfile?: boolean;
   }

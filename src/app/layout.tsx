@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, Inter } from "next/font/google";
 import { AppProviders } from "@/components/providers/app-providers";
+import { getPublicSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 const inter = Inter({
@@ -15,7 +16,7 @@ const barlowCondensed = Barlow_Condensed({
   weight: ["600", "700", "800"],
 });
 
-const siteOrigin = (process.env.NEXT_PUBLIC_APP_URL ?? "https://leaguepour.com").replace(/\/$/, "");
+const siteOrigin = getPublicSiteUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteOrigin),

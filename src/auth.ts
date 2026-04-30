@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/login",
   },
@@ -40,8 +41,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     async jwt({ token, user }) {
+      if (user?.id) {
+        token.userId = user.id;
+        if (user.email) token.email = user.email;
+        if (user.name) token.name = user.name;
+        if (user.image) token.picture = user.image;
+      }
       const uid = (user?.id as string | undefined) ?? (token.userId as string | undefined);
-      if (user?.id) token.userId = user.id;
       if (!uid) return token;
 
       const { prisma } = await import("@/lib/db");
@@ -61,8 +67,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      if (session.user && token.userId) {
-        session.user.id = token.userId as string;
+      if (session.user) {
+        if (token.userId) session.user.id = token.userId as string;
+        if (token.email) session.user.email = token.email as string;
+        if (token.name) session.user.name = token.name as string;
+        if (token.picture) session.user.image = token.picture as string;
       }
       session.venueAccess = (token.venueAccess as typeof session.venueAccess) ?? [];
       session.hasPlayerProfile = Boolean(token.hasPlayerProfile);

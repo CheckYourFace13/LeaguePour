@@ -1,16 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { getSession, signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 
+function safePostLoginPath(callbackUrl: string | null): string {
+  if (!callbackUrl) return "/";
+  const v = callbackUrl.trim();
+  if (!v) return "/";
+  if (v.startsWith("/") && !v.startsWith("//")) return v;
+  try {
+    const u = new URL(v);
+    if (u.origin === window.location.origin) return `${u.pathname}${u.search}${u.hash}`;
+  } catch {
+    // ignore
+  }
+  return "/";
+}
+
 export function LoginForm() {
-  const router = useRouter();
   const search = useSearchParams();
   const callbackUrl = search.get("callbackUrl");
   const [error, setError] = useState<string | null>(null);
@@ -24,21 +37,16 @@ export function LoginForm() {
     const email = String(fd.get("email") ?? "");
     const password = String(fd.get("password") ?? "");
     const res = await signIn("credentials", { email, password, redirect: false });
-    setLoading(false);
     if (res?.error) {
+      setLoading(false);
       setError("Email or password did not match.");
       return;
     }
     if (callbackUrl) {
-      router.push(callbackUrl);
-      router.refresh();
+      window.location.assign(safePostLoginPath(callbackUrl));
       return;
     }
-    const s = await getSession();
-    if (s?.venueAccess?.length) router.push("/venue/dashboard");
-    else if (s?.hasPlayerProfile) router.push("/player/dashboard");
-    else router.push("/");
-    router.refresh();
+    window.location.assign("/api/auth/post-login");
   }
 
   return (
@@ -48,6 +56,11 @@ export function LoginForm() {
       {search.get("registered") ? (
         <p className="mt-4 rounded-[10px] border border-lp-success/40 bg-lp-success/10 px-4 py-3 text-sm text-lp-text">
           Account created. Sign in with the password you chose.
+        </p>
+      ) : null}
+      {search.get("reset") ? (
+        <p className="mt-4 rounded-[10px] border border-lp-success/40 bg-lp-success/10 px-4 py-3 text-sm text-lp-text">
+          Password updated. Sign in with your new password.
         </p>
       ) : null}
       {error ? (
@@ -63,6 +76,11 @@ export function LoginForm() {
         <div>
           <Label htmlFor="password">Password</Label>
           <Input id="password" name="password" type="password" required className="mt-1.5" autoComplete="current-password" />
+        </div>
+        <div className="text-right">
+          <Link className="text-sm font-semibold text-lp-accent hover:underline" href="/forgot-password">
+            Forgot password?
+          </Link>
         </div>
         <Button type="submit" className="w-full" size="lg" disabled={loading}>
           {loading ? "Signing in…" : "Log in"}

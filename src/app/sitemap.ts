@@ -4,14 +4,21 @@ import { getPublicSiteUrl } from "@/lib/site-url";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getPublicSiteUrl();
-  const [venues, competitions] = await Promise.all([
-    prisma.venue.findMany({ select: { slug: true, updatedAt: true }, take: 2000 }),
-    prisma.competition.findMany({
-      where: { status: { in: ["SIGNUP_OPEN", "PUBLISHED", "IN_PROGRESS"] } },
-      select: { slug: true, updatedAt: true, venue: { select: { slug: true } } },
-      take: 5000,
-    }),
-  ]);
+  let venues: { slug: string; updatedAt: Date }[] = [];
+  let competitions: { slug: string; updatedAt: Date; venue: { slug: string } }[] = [];
+  try {
+    [venues, competitions] = await Promise.all([
+      prisma.venue.findMany({ select: { slug: true, updatedAt: true }, take: 2000 }),
+      prisma.competition.findMany({
+        where: { status: { in: ["SIGNUP_OPEN", "PUBLISHED", "IN_PROGRESS"] } },
+        select: { slug: true, updatedAt: true, venue: { select: { slug: true } } },
+        take: 5000,
+      }),
+    ]);
+  } catch {
+    venues = [];
+    competitions = [];
+  }
 
   const staticPages: MetadataRoute.Sitemap = [
     "",
