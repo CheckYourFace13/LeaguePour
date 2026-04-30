@@ -4,13 +4,13 @@ import { cn } from "@/lib/utils";
 
 const variants = {
   primary:
-    "border border-transparent bg-lp-accent-2 text-[#0d265e] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.45)] hover:brightness-[0.97] active:translate-y-px active:brightness-95",
+    "border border-transparent bg-lp-accent-2 text-[#0b214d] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.55),0_12px_24px_-16px_rgba(255,224,66,0.7)] hover:bg-[#ffd71c] hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.65),0_16px_28px_-16px_rgba(255,215,28,0.7)] active:translate-y-px active:brightness-95",
   secondary:
-    "border border-lp-border bg-lp-surface text-lp-text-soft shadow-none hover:border-lp-border-strong hover:bg-lp-surface-2 active:bg-lp-surface-2",
+    "border border-lp-border-strong bg-lp-surface text-lp-text-soft shadow-[0_8px_18px_-16px_rgba(0,87,217,0.4)] hover:border-lp-accent/45 hover:bg-lp-surface-2 hover:text-lp-text active:bg-lp-surface-2",
   ghost:
-    "border border-transparent text-lp-muted hover:bg-lp-surface-2 hover:text-lp-text active:bg-lp-surface-2",
+    "border border-transparent text-lp-text-soft hover:bg-lp-surface-2 hover:text-lp-text active:bg-lp-surface-2",
   outline:
-    "border border-lp-border-strong bg-transparent text-lp-text-soft hover:border-lp-accent/50 hover:text-lp-text",
+    "border border-lp-border-strong bg-transparent text-lp-text-soft hover:border-lp-accent/65 hover:text-lp-text",
 } as const;
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -30,13 +30,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref as never}
         type={asChild ? undefined : type}
         className={cn(
-          "inline-flex items-center justify-center gap-2 font-semibold tracking-tight transition-colors duration-150",
-          "rounded-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lp-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-lp-bg",
+          "inline-flex items-center justify-center gap-2 font-bold tracking-tight transition-all duration-150",
+          "rounded-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lp-accent/55 focus-visible:ring-offset-2 focus-visible:ring-offset-lp-bg",
           "disabled:pointer-events-none disabled:opacity-40",
           variants[variant],
-          size === "md" && "min-h-12 px-5 py-3 text-[15px] leading-none",
-          size === "lg" && "min-h-14 px-8 py-3.5 text-base leading-none md:min-h-[3.25rem] md:text-[1.0625rem]",
-          size === "icon" && "size-12 min-h-12 p-0",
+          size === "md" && "min-h-[3.25rem] px-6 py-3 text-base leading-none",
+          size === "lg" && "min-h-[3.5rem] px-9 py-4 text-[1.0625rem] leading-none md:min-h-[3.65rem] md:text-[1.125rem]",
+          size === "icon" && "size-[3.25rem] min-h-[3.25rem] p-0",
           className,
         )}
         {...props}

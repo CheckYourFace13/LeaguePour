@@ -6,23 +6,23 @@
 */
 
 :root {
-  --lp-bg: #f4f7ff;
-  --lp-bg-elevated: #ebf1ff;
+  --lp-bg: #ffffff;
+  --lp-bg-elevated: #f2f6ff;
   --lp-surface: #ffffff;
-  --lp-surface-2: #edf3ff;
-  --lp-border: #ccdaf7;
-  --lp-border-strong: #9eb8ec;
-  --lp-muted: #4a6092;
-  --lp-text: #10244d;
-  --lp-text-soft: #1b3770;
-  --lp-accent: #0d3ea6;
-  --lp-accent-hover: #0b3388;
-  --lp-accent-2: #ffd447;
+  --lp-surface-2: #e9f1ff;
+  --lp-border: #b8cdf8;
+  --lp-border-strong: #7ea4ef;
+  --lp-muted: #284982;
+  --lp-text: #0a1a3f;
+  --lp-text-soft: #13346f;
+  --lp-accent: #0057d9;
+  --lp-accent-hover: #0049b5;
+  --lp-accent-2: #ffe042;
   --lp-success: #1b8f4a;
-  --lp-warning: #b56900;
+  --lp-warning: #a95c00;
   --lp-radius: 12px;
   --lp-radius-sm: 8px;
-  --lp-focus: rgba(13, 62, 166, 0.35);
+  --lp-focus: rgba(0, 87, 217, 0.35);
 }
 
 @theme inline {
@@ -52,8 +52,8 @@ body {
   background: var(--lp-bg);
   color: var(--lp-text);
   font-family: var(--font-sans);
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: 17px;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -61,21 +61,21 @@ body {
 
 .lp-card {
   border-radius: var(--lp-radius);
-  border: 1px solid var(--lp-border);
+  border: 1px solid var(--lp-border-strong);
   background: var(--lp-surface);
-  box-shadow: 0 6px 20px -14px rgba(16, 36, 77, 0.22);
+  box-shadow: 0 12px 30px -20px rgba(8, 32, 86, 0.28);
 }
 
 .lp-card-elevated {
   border-radius: var(--lp-radius);
   border: 1px solid var(--lp-border-strong);
   background: var(--lp-surface-2);
-  box-shadow: 0 12px 36px -20px rgba(16, 36, 77, 0.26);
+  box-shadow: 0 18px 44px -24px rgba(8, 32, 86, 0.32);
 }
 
 .lp-feature-ring {
   border-color: color-mix(in oklab, var(--lp-accent) 45%, var(--lp-border));
-  box-shadow: 0 0 0 2px color-mix(in oklab, var(--lp-accent) 18%, transparent), 0 16px 40px -28px rgba(13, 62, 166, 0.4);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--lp-accent) 24%, transparent), 0 18px 44px -26px rgba(0, 87, 217, 0.4);
 }
 
 .lp-pricing-card {
@@ -85,7 +85,7 @@ body {
     color-mix(in oklab, var(--lp-surface-2) 94%, transparent) 0%,
     var(--lp-surface) 100%
   );
-  box-shadow: 0 14px 34px -22px rgba(16, 36, 77, 0.28);
+  box-shadow: 0 16px 38px -24px rgba(8, 32, 86, 0.3);
 }
 
 .lp-hero-wash {
@@ -98,11 +98,11 @@ body {
 
 /* Kicker / overline */
 .lp-kicker {
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
-  color: var(--lp-muted);
+  color: var(--lp-text-soft);
 }
 
 /* Marketing + app section rhythm */
@@ -119,21 +119,25 @@ body {
 
 .lp-page-title {
   font-family: var(--font-display);
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-weight: 900;
+  letter-spacing: -0.025em;
   line-height: 1.05;
 }
 
 .lp-page-sub {
   margin-top: 0.75rem;
-  font-size: 1.0625rem;
+  font-size: 1.125rem;
   line-height: 1.55;
-  color: var(--lp-muted);
+  color: var(--lp-text-soft);
   max-width: 42rem;
 }
 
 @media (min-width: 768px) {
   .lp-page-sub {
-    font-size: 1.125rem;
+    font-size: 1.2rem;
   }
+}
+
+h1, h2, h3, h4 {
+  color: var(--lp-text);
 }

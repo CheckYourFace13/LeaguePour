@@ -55,23 +55,23 @@ export function VenueAppShell({
   return (
     <div className="min-h-full bg-lp-bg">
       <div className="flex min-h-full">
-        <aside className="hidden w-64 shrink-0 flex-col border-r border-lp-border bg-lp-surface md:flex">
-          <div className="border-b border-lp-border px-5 py-5">
-            <Link href={venueAppRoutes.dashboard} className="font-display text-lg font-bold tracking-tight">
+        <aside className="hidden w-[17rem] shrink-0 flex-col border-r border-lp-border-strong bg-lp-surface md:flex">
+          <div className="border-b border-lp-border-strong px-5 py-5">
+            <Link href={venueAppRoutes.dashboard} className="font-display text-[1.45rem] font-extrabold tracking-tight">
               League<span className="text-lp-accent">Pour</span>
             </Link>
-            <p className="mt-2 truncate text-sm font-medium text-lp-muted">{venueName}</p>
-            <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-lp-accent/90">
+            <p className="mt-2 truncate text-base font-semibold text-lp-text-soft">{venueName}</p>
+            <p className="mt-1 text-[0.78rem] font-bold uppercase tracking-wide text-lp-accent/90">
               {venueRoleLabel(staffRole)}
             </p>
             <Link
               href={`/v/${venueSlug}`}
-              className="mt-3 inline-flex min-h-10 items-center text-sm font-semibold text-lp-accent hover:underline"
+              className="mt-3 inline-flex min-h-11 items-center text-base font-bold text-lp-accent hover:underline"
             >
               View public venue page
             </Link>
           </div>
-          <nav className="flex flex-1 flex-col gap-0.5 p-3">
+          <nav className="flex flex-1 flex-col gap-1 p-3">
             {nav.map((item) => {
               const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
@@ -79,22 +79,22 @@ export function VenueAppShell({
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex min-h-11 items-center gap-3 rounded-[10px] px-3 py-2.5 text-[15px] font-semibold transition",
+                    "flex min-h-12 items-center gap-3 rounded-[10px] px-3 py-2.5 text-base font-bold transition",
                     active
-                      ? "bg-lp-accent/15 text-lp-text"
+                      ? "bg-lp-accent/16 text-lp-text"
                       : "text-lp-muted hover:bg-lp-surface-2 hover:text-lp-text",
                   )}
                 >
-                  <item.icon className="size-[18px] shrink-0 opacity-90" strokeWidth={1.75} />
+                  <item.icon className="size-5 shrink-0 opacity-90" strokeWidth={2} />
                   {item.label}
                 </Link>
               );
             })}
           </nav>
-          <div className="border-t border-lp-border p-3">
+          <div className="border-t border-lp-border-strong p-3">
             <Button
               variant="ghost"
-              className="h-12 w-full justify-start text-[15px] text-lp-muted"
+              className="h-12 w-full justify-start text-base text-lp-text-soft"
               onClick={() => signOut({ callbackUrl: "/" })}
             >
               Log out
@@ -103,15 +103,15 @@ export function VenueAppShell({
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-lp-border bg-lp-surface px-4 py-3.5 backdrop-blur md:hidden">
+          <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-lp-border-strong bg-lp-surface px-4 py-3.5 backdrop-blur md:hidden">
             <div className="min-w-0">
               <p className="lp-kicker">Venue</p>
-              <p className="truncate text-base font-semibold text-lp-text">{venueName}</p>
-              <p className="text-xs font-semibold text-lp-accent/90">{venueRoleLabel(staffRole)}</p>
+              <p className="truncate text-[1.0625rem] font-bold text-lp-text">{venueName}</p>
+              <p className="text-[0.78rem] font-bold text-lp-accent/90">{venueRoleLabel(staffRole)}</p>
             </div>
             <button
               type="button"
-              className="inline-flex size-12 shrink-0 items-center justify-center rounded-[10px] border border-lp-border bg-lp-surface"
+              className="inline-flex size-[3.2rem] shrink-0 items-center justify-center rounded-[10px] border border-lp-border-strong bg-lp-surface"
               aria-label="Open menu"
               onClick={() => setOpen(true)}
             >
@@ -138,21 +138,21 @@ export function VenueAppShell({
                     key={item.href}
                     href={item.href}
                     onClick={() => setOpen(false)}
-                    className="rounded-[10px] px-3 py-3.5 text-base font-semibold text-lp-text"
+                    className="rounded-[10px] px-3 py-3.5 text-[1.0625rem] font-bold text-lp-text"
                   >
                     {item.label}
                   </Link>
                 ))}
                 <Link
                   href={`/v/${venueSlug}`}
-                  className="rounded-[10px] px-3 py-3.5 text-base font-semibold text-lp-accent"
+                  className="rounded-[10px] px-3 py-3.5 text-[1.0625rem] font-bold text-lp-accent"
                   onClick={() => setOpen(false)}
                 >
                   Public venue page
                 </Link>
                 <button
                   type="button"
-                  className="rounded-[10px] px-3 py-3.5 text-left text-base font-semibold text-lp-muted"
+                  className="rounded-[10px] px-3 py-3.5 text-left text-[1.0625rem] font-bold text-lp-text-soft"
                   onClick={() => signOut({ callbackUrl: "/" })}
                 >
                   Log out

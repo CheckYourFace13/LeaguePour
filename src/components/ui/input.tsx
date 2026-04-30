@@ -7,8 +7,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({ className, ...p
   <input
     ref={ref}
     className={cn(
-      "flex w-full min-h-12 rounded-[10px] border border-lp-border bg-lp-bg px-4 py-3 text-base text-lp-text placeholder:text-lp-muted/75 outline-none transition-colors duration-150",
-      "hover:border-lp-border-strong focus:border-lp-accent/70 focus:ring-2 focus:ring-lp-accent/25 focus:ring-offset-0",
+      "flex w-full min-h-[3.25rem] rounded-[10px] border border-lp-border-strong bg-lp-bg px-5 py-3 text-[1.02rem] text-lp-text placeholder:text-lp-muted/70 outline-none transition-colors duration-150",
+      "hover:border-lp-accent/40 focus:border-lp-accent/80 focus:ring-2 focus:ring-lp-accent/28 focus:ring-offset-0",
       "disabled:cursor-not-allowed disabled:opacity-45",
       className,
     )}

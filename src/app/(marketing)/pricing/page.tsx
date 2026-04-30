@@ -23,8 +23,8 @@ export const metadata: Metadata = {
 export default function PricingPage() {
   return (
     <div className="lp-section mx-auto max-w-6xl px-4 md:px-6">
-      <h1 className="lp-page-title text-4xl md:text-5xl">Pricing</h1>
-      <p className="lp-page-sub mt-5 max-w-xl text-lg text-lp-muted">
+      <h1 className="lp-page-title text-5xl md:text-6xl">Pricing</h1>
+      <p className="lp-page-sub mt-5 max-w-xl text-xl text-lp-text-soft">
         Simple tiers. Annual saves 10%.
       </p>
       <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-4 md:gap-6">
@@ -36,15 +36,15 @@ export default function PricingPage() {
             }`}
           >
             {t.featured ? <p className="lp-kicker text-lp-accent">Most popular</p> : <p className="lp-kicker">Plan</p>}
-            <p className="mt-2 font-display text-2xl font-bold tracking-tight text-lp-text">{t.name}</p>
+            <p className="mt-2 font-display text-[1.85rem] font-extrabold tracking-tight text-lp-text">{t.name}</p>
             <p className="mt-5 font-display text-4xl font-extrabold tracking-tight text-lp-text md:text-[2.75rem]">
               {formatUsdCents(t.monthlyCents)}
-              <span className="text-base font-semibold text-lp-muted"> /mo</span>
+              <span className="text-[1.02rem] font-bold text-lp-text-soft"> /mo</span>
             </p>
-            <p className="mt-1.5 text-sm text-lp-muted">
+            <p className="mt-1.5 text-base text-lp-text-soft">
               {formatUsdCents(t.annualCents)} /yr <span className="font-semibold text-lp-accent">−10%</span>
             </p>
-            <ul className="mt-8 space-y-2.5 text-sm leading-snug text-lp-text-soft">
+            <ul className="mt-8 space-y-2.5 text-[1.02rem] leading-snug text-lp-text-soft">
               <li className="flex gap-2">
                 <span className="text-lp-accent">·</span>
                 <span>{t.eventLimitLabel} / mo</span>
@@ -58,16 +58,16 @@ export default function PricingPage() {
                 <span>Campaigns & audience</span>
               </li>
             </ul>
-            <Button className="mt-10 w-full min-h-12 text-base" variant={t.featured ? "primary" : "secondary"} asChild>
+            <Button className="mt-10 w-full text-[1.05rem]" variant={t.featured ? "primary" : "secondary"} asChild>
               <Link href={`/signup/venue?plan=${t.plan.toLowerCase()}`}>Choose {t.name}</Link>
             </Button>
           </Card>
         ))}
       </div>
-      <p className="mt-10 text-center text-xs text-lp-muted">
+      <p className="mt-10 text-center text-sm text-lp-text-soft">
         Platform fee on paid registrations — set in Venue profile.
       </p>
-      <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm">
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-base">
         <Link href="/features" className="font-semibold text-lp-accent hover:underline">
           See competition management features
         </Link>

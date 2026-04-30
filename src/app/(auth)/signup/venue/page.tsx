@@ -114,15 +114,15 @@ export default function SignupVenuePage() {
 
   return (
     <Card className="w-full max-w-md p-6 md:p-8">
-      <h1 className="lp-page-title text-2xl md:text-3xl">Venue signup</h1>
-      <p className="mt-3 text-base text-lp-muted">Account + venue in one flow (~2 min).</p>
+      <h1 className="lp-page-title text-3xl md:text-4xl">Venue signup</h1>
+      <p className="mt-3 text-lg text-lp-text-soft">Account + venue in one flow (~2 min).</p>
       {msg ? (
-        <p className="mt-4 rounded-[10px] border border-lp-warning/40 bg-lp-warning/10 px-4 py-3 text-sm">{msg}</p>
+        <p className="mt-4 rounded-[10px] border border-lp-warning/40 bg-lp-warning/10 px-4 py-3 text-base">{msg}</p>
       ) : null}
       <form className="mt-6 space-y-4" onSubmit={onSubmit}>
         <div className="space-y-2">
           <Label htmlFor="gm-search">Find your venue</Label>
-          <p className="text-xs text-lp-muted">Search your business, then select your location.</p>
+          <p className="text-sm text-lp-text-soft">Search your business, then select your location.</p>
           <div className="flex gap-2">
             <Input
               id="gm-search"
@@ -132,7 +132,7 @@ export default function SignupVenuePage() {
               placeholder="Search your business"
               aria-describedby="gm-search-hint"
             />
-            <Button type="button" variant="secondary" onClick={searchPlaces} disabled={loadingMatches}>
+            <Button type="button" variant="secondary" onClick={searchPlaces} disabled={loadingMatches} className="px-5">
               {loadingMatches ? "Finding..." : "Find"}
             </Button>
           </div>
@@ -140,28 +140,28 @@ export default function SignupVenuePage() {
             Type at least three characters, then search. Pick one result to lock your venue location.
           </p>
           {matches.length > 0 ? (
-            <ul className="max-h-40 space-y-1 overflow-y-auto rounded-[10px] border border-lp-border bg-lp-bg/80 p-2">
+            <ul className="max-h-40 space-y-1 overflow-y-auto rounded-[10px] border border-lp-border-strong bg-lp-bg/80 p-2">
               {matches.map((m) => (
                 <li key={m.placeId}>
                   <button
                     type="button"
-                    className="w-full rounded px-2 py-2 text-left text-sm hover:bg-white/5"
+                    className="w-full rounded px-2 py-2.5 text-left text-base hover:bg-lp-surface-2"
                     onClick={() => pickPlace(m.placeId)}
                   >
                     <div className="font-semibold text-lp-text">{m.name}</div>
-                    <div className="text-lp-muted">{m.formattedAddress}</div>
+                    <div className="text-sm text-lp-text-soft">{m.formattedAddress}</div>
                   </button>
                 </li>
               ))}
             </ul>
           ) : null}
-          {searchMsg ? <p className="text-xs text-lp-muted">{searchMsg}</p> : null}
+          {searchMsg ? <p className="text-sm text-lp-text-soft">{searchMsg}</p> : null}
           {picked ? (
-            <p className="text-xs text-lp-success">
+            <p className="text-sm font-medium text-lp-success">
               Locked: {picked.name} — {picked.formattedAddress}
             </p>
           ) : (
-            <p className="text-xs text-lp-muted">Skip only if you will add it later in Venue profile.</p>
+            <p className="text-sm text-lp-text-soft">Skip only if you will add it later in Venue profile.</p>
           )}
           <p className="text-[11px] text-lp-muted/80">Powered by Google</p>
         </div>

@@ -29,9 +29,9 @@ export function SiteHeader() {
     : [...baseNav];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-lp-border/80 bg-lp-surface/95 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3.5 md:px-6 md:py-4">
-        <Link href="/" className="font-display text-xl font-bold tracking-tight md:text-[1.35rem]">
+    <header className="sticky top-0 z-50 border-b border-lp-border-strong/80 bg-lp-surface/95 backdrop-blur-md">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 md:px-6 md:py-5">
+        <Link href="/" className="font-display text-[1.45rem] font-extrabold tracking-tight md:text-[1.65rem]">
           League<span className="text-lp-accent">Pour</span>
         </Link>
 
@@ -40,7 +40,7 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-[10px] px-3 py-2.5 text-[15px] font-semibold text-lp-muted transition hover:bg-lp-surface-2 hover:text-lp-text"
+              className="rounded-[10px] px-3.5 py-2.5 text-base font-bold text-lp-text-soft transition hover:bg-lp-surface-2 hover:text-lp-text"
             >
               {item.label}
             </Link>
@@ -53,18 +53,18 @@ export function SiteHeader() {
               <button
                 type="button"
                 onClick={() => setDashOpen((v) => !v)}
-                className="inline-flex min-h-12 items-center gap-1.5 rounded-[10px] px-4 text-[15px] font-semibold text-lp-text transition hover:bg-lp-surface-2"
+                className="inline-flex min-h-[3.25rem] items-center gap-1.5 rounded-[10px] px-5 text-base font-bold text-lp-text transition hover:bg-lp-surface-2"
                 aria-expanded={dashOpen}
                 aria-haspopup="true"
               >
                 Account <ChevronDown className="size-4 opacity-70" />
               </button>
               {dashOpen ? (
-                <div className="absolute right-0 mt-2 min-w-[220px] rounded-[10px] border border-lp-border bg-lp-surface py-1 shadow-xl shadow-blue-200/60">
+                <div className="absolute right-0 mt-2 min-w-[240px] rounded-[10px] border border-lp-border-strong bg-lp-surface py-1 shadow-xl shadow-blue-300/60">
                   {hasVenue ? (
                     <Link
                       href={venueAppRoutes.dashboard}
-                      className="block min-h-12 px-4 py-3 text-[15px] font-medium hover:bg-lp-surface-2"
+                      className="block min-h-[3.25rem] px-4 py-3 text-base font-semibold hover:bg-lp-surface-2"
                       onClick={() => setDashOpen(false)}
                     >
                       {cta.venueDashboard}
@@ -73,7 +73,7 @@ export function SiteHeader() {
                   {hasPlayer ? (
                     <Link
                       href={playerAppRoutes.dashboard}
-                      className="block min-h-12 px-4 py-3 text-[15px] font-medium hover:bg-lp-surface-2"
+                      className="block min-h-[3.25rem] px-4 py-3 text-base font-semibold hover:bg-lp-surface-2"
                       onClick={() => setDashOpen(false)}
                     >
                       {cta.playerDashboard}
@@ -82,7 +82,7 @@ export function SiteHeader() {
                   {!hasVenue && !hasPlayer ? (
                     <Link
                       href="/signup"
-                      className="block min-h-12 px-4 py-3 text-[15px] font-medium hover:bg-lp-surface-2"
+                      className="block min-h-[3.25rem] px-4 py-3 text-base font-semibold hover:bg-lp-surface-2"
                       onClick={() => setDashOpen(false)}
                     >
                       Finish signup
@@ -94,7 +94,7 @@ export function SiteHeader() {
           ) : (
             <Link
               href="/login"
-              className="inline-flex min-h-12 items-center rounded-[10px] px-3 text-[15px] font-semibold text-lp-muted hover:text-lp-text"
+              className="inline-flex min-h-[3.25rem] items-center rounded-[10px] px-3.5 text-base font-bold text-lp-text-soft hover:text-lp-text"
             >
               {cta.login}
             </Link>
@@ -106,7 +106,7 @@ export function SiteHeader() {
 
         <button
           type="button"
-          className="inline-flex size-12 shrink-0 items-center justify-center rounded-[10px] border border-lp-border bg-lp-surface text-lp-text md:hidden"
+          className="inline-flex size-[3.25rem] shrink-0 items-center justify-center rounded-[10px] border border-lp-border-strong bg-lp-surface text-lp-text md:hidden"
           aria-label={open ? "Close menu" : "Open menu"}
           onClick={() => setOpen((v) => !v)}
         >
@@ -116,7 +116,7 @@ export function SiteHeader() {
 
       <div
         className={cn(
-          "border-t border-lp-border/80 bg-lp-bg px-4 py-5 md:hidden",
+          "border-t border-lp-border-strong/80 bg-lp-bg px-4 py-5 md:hidden",
           open ? "block" : "hidden",
         )}
       >
@@ -125,7 +125,7 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-[10px] px-3 py-3.5 text-base font-semibold text-lp-text"
+              className="rounded-[10px] px-3 py-3.5 text-[1.0625rem] font-bold text-lp-text"
               onClick={() => setOpen(false)}
             >
               {item.label}
@@ -136,7 +136,7 @@ export function SiteHeader() {
               {hasVenue ? (
                 <Link
                   href={venueAppRoutes.dashboard}
-                  className="rounded-[10px] px-3 py-3.5 text-base font-semibold text-lp-accent"
+                  className="rounded-[10px] px-3 py-3.5 text-[1.0625rem] font-bold text-lp-accent"
                   onClick={() => setOpen(false)}
                 >
                   {cta.venueDashboard}
@@ -145,7 +145,7 @@ export function SiteHeader() {
               {hasPlayer ? (
                 <Link
                   href={playerAppRoutes.dashboard}
-                  className="rounded-[10px] px-3 py-3.5 text-base font-semibold text-lp-accent"
+                  className="rounded-[10px] px-3 py-3.5 text-[1.0625rem] font-bold text-lp-accent"
                   onClick={() => setOpen(false)}
                 >
                   {cta.playerDashboard}
@@ -155,7 +155,7 @@ export function SiteHeader() {
           ) : (
             <Link
               href="/login"
-              className="rounded-[10px] px-3 py-3.5 text-base font-semibold text-lp-muted"
+              className="rounded-[10px] px-3 py-3.5 text-[1.0625rem] font-bold text-lp-text-soft"
               onClick={() => setOpen(false)}
             >
               {cta.login}

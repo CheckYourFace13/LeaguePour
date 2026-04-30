@@ -24,13 +24,13 @@ const cols = [
 
 export function SiteFooter() {
   return (
-    <footer className="mt-auto border-t border-lp-border bg-lp-surface">
+    <footer className="mt-auto border-t border-lp-border-strong bg-lp-surface">
       <div className="mx-auto grid max-w-6xl gap-12 px-4 py-14 md:grid-cols-4 md:px-6 md:py-16">
         <div className="md:col-span-2">
-          <p className="font-display text-2xl font-bold tracking-tight">
+          <p className="font-display text-[2rem] font-extrabold tracking-tight">
             League<span className="text-lp-accent">Pour</span>
           </p>
-          <p className="mt-4 max-w-md text-base leading-relaxed text-lp-muted">
+          <p className="mt-4 max-w-md text-[1.0625rem] leading-relaxed text-lp-text-soft">
             Competitions, signups, and entry fees for bars and venues — built for repeat nights.
           </p>
         </div>
@@ -42,7 +42,7 @@ export function SiteFooter() {
                 <li key={l.href}>
                   <Link
                     href={l.href}
-                    className="inline-flex min-h-11 items-center text-[15px] font-semibold text-lp-text-soft hover:text-lp-accent"
+                  className="inline-flex min-h-12 items-center text-base font-bold text-lp-text-soft hover:text-lp-accent"
                   >
                     {l.label}
                   </Link>
@@ -52,7 +52,7 @@ export function SiteFooter() {
           </div>
         ))}
       </div>
-      <div className="border-t border-lp-border/60 py-7 text-center text-sm text-lp-muted">
+      <div className="border-t border-lp-border/70 py-7 text-center text-[0.9375rem] font-medium text-lp-text-soft">
         © {new Date().getFullYear()} LeaguePour. All rights reserved.
       </div>
     </footer>
