@@ -188,7 +188,7 @@ async function googlePlaceDetailsLegacy(placeId: string, key: string) {
     err.body = data;
     throw err;
   }
-  const p = data.result;
+  const p = data?.result;
   if (!p?.place_id || !p.name) return null;
   return {
     placeId: p.place_id,
