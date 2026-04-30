@@ -131,6 +131,7 @@ model Venue {
   stripeChargesEnabled Boolean @default(false)
   stripePayoutsEnabled Boolean @default(false)
   stripeDetailsSubmitted Boolean @default(false)
+  isDisabled      Boolean  @default(false)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -142,6 +143,7 @@ model Venue {
   campaigns     MessageCampaign[]
   audienceTags  AudienceTag[]
   venueFollows  VenueFollow[]
+  promoCodes    PromoCode[]
 
   @@schema("leaguepour_lp")
 }
@@ -501,6 +503,31 @@ enum PaymentStatus {
   SUCCEEDED
   FAILED
   REFUNDED
+
+  @@schema("leaguepour_lp")
+}
+
+enum DiscountType {
+  PERCENT
+  FLAT
+
+  @@schema("leaguepour_lp")
+}
+
+model PromoCode {
+  id            String       @id @default(cuid())
+  venueId       String?
+  code          String       @unique
+  discountType  DiscountType
+  amount        Int
+  usageLimit    Int?
+  usedCount     Int          @default(0)
+  expiresAt     DateTime?
+  isActive      Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  venue Venue? @relation(fields: [venueId], references: [id], onDelete: SetNull)
 
   @@schema("leaguepour_lp")
 }
