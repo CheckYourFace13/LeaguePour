@@ -52,6 +52,22 @@ export function LoginForm({ callbackUrl, registered, reset }: LoginFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  async function waitForSession(maxAttempts = 6): Promise<boolean> {
+    for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+      try {
+        const res = await fetch("/api/auth/session", { method: "GET", cache: "no-store", credentials: "same-origin" });
+        if (res.ok) {
+          const payload = (await res.json()) as { user?: { id?: string } } | null;
+          if (payload?.user?.id) return true;
+        }
+      } catch {
+        // Ignore transient network errors and retry.
+      }
+      await new Promise((resolve) => setTimeout(resolve, 150));
+    }
+    return false;
+  }
+
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
@@ -59,21 +75,39 @@ export function LoginForm({ callbackUrl, registered, reset }: LoginFormProps) {
     const fd = new FormData(e.currentTarget);
     const email = String(fd.get("email") ?? "");
     const password = String(fd.get("password") ?? "");
-    const res = await signIn("credentials", { email, password, redirect: false });
-    if (res?.error) {
+    let res:
+      | {
+          error?: string;
+          ok?: boolean;
+        }
+      | undefined;
+    try {
+      res = await signIn("credentials", { email, password, redirect: false });
+    } catch {
+      setLoading(false);
+      setError("Sign in failed. Please try again.");
+      return;
+    }
+    if (!res || res.error || res.ok === false) {
       setLoading(false);
       setError("Email or password did not match.");
+      return;
+    }
+    const hasSession = await waitForSession();
+    if (!hasSession) {
+      setLoading(false);
+      setError("Sign in succeeded, but session could not be established. Please try again.");
       return;
     }
     const cookieCallback = readCallbackCookie();
     const target = safePostLoginPath(callbackUrl ?? cookieCallback);
     if (target !== "/") {
       clearCallbackCookie();
-      window.location.assign(target);
+      window.location.replace(target);
       return;
     }
     clearCallbackCookie();
-    window.location.assign("/api/auth/post-login");
+    window.location.replace("/api/auth/post-login");
   }
 
   return (
