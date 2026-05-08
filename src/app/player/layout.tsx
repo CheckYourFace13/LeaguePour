@@ -9,7 +9,7 @@ export const metadata = {
 
 export default async function PlayerLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
-  if (!session?.user) redirect("/login?callbackUrl=/player/dashboard");
+  if (!session?.user) redirect("/login");
   if (!session.hasPlayerProfile) redirect("/signup/player?reason=player");
   return <PlayerAppShell>{children}</PlayerAppShell>;
 }

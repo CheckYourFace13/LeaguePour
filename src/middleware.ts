@@ -18,8 +18,14 @@ export async function middleware(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     const callbackPath = `${pathname}${request.nextUrl.search}`;
-    url.searchParams.set("callbackUrl", callbackPath);
-    return NextResponse.redirect(url);
+    const response = NextResponse.redirect(url);
+    response.cookies.set("lp_callback", callbackPath, {
+      path: "/",
+      maxAge: 10 * 60,
+      sameSite: "lax",
+      secure: request.nextUrl.protocol === "https:",
+    });
+    return response;
   }
 
   return NextResponse.next();

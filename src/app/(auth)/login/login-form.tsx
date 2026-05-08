@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -23,9 +22,33 @@ function safePostLoginPath(callbackUrl: string | null): string {
   return "/";
 }
 
-export function LoginForm() {
-  const search = useSearchParams();
-  const callbackUrl = search.get("callbackUrl");
+function readCallbackCookie(): string | null {
+  const cookies = document.cookie ? document.cookie.split(";") : [];
+  for (const cookie of cookies) {
+    const [rawName, ...rawValue] = cookie.split("=");
+    if (rawName?.trim() !== "lp_callback") continue;
+    const value = rawValue.join("=").trim();
+    if (!value) return null;
+    try {
+      return decodeURIComponent(value);
+    } catch {
+      return value;
+    }
+  }
+  return null;
+}
+
+function clearCallbackCookie() {
+  document.cookie = "lp_callback=; Max-Age=0; Path=/; SameSite=Lax";
+}
+
+type LoginFormProps = {
+  callbackUrl: string | null;
+  registered: boolean;
+  reset: boolean;
+};
+
+export function LoginForm({ callbackUrl, registered, reset }: LoginFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -42,10 +65,14 @@ export function LoginForm() {
       setError("Email or password did not match.");
       return;
     }
-    if (callbackUrl) {
-      window.location.assign(safePostLoginPath(callbackUrl));
+    const cookieCallback = readCallbackCookie();
+    const target = safePostLoginPath(callbackUrl ?? cookieCallback);
+    if (target !== "/") {
+      clearCallbackCookie();
+      window.location.assign(target);
       return;
     }
+    clearCallbackCookie();
     window.location.assign("/api/auth/post-login");
   }
 
@@ -53,12 +80,12 @@ export function LoginForm() {
     <Card className="w-full max-w-md p-6 md:p-8">
       <h1 className="lp-page-title text-2xl md:text-3xl">Log in</h1>
       <p className="mt-3 text-base text-lp-muted leading-relaxed">Venue staff and players use the same login.</p>
-      {search.get("registered") ? (
+      {registered ? (
         <p className="mt-4 rounded-[10px] border border-lp-success/40 bg-lp-success/10 px-4 py-3 text-sm text-lp-text">
           Account created. Sign in with the password you chose.
         </p>
       ) : null}
-      {search.get("reset") ? (
+      {reset ? (
         <p className="mt-4 rounded-[10px] border border-lp-success/40 bg-lp-success/10 px-4 py-3 text-sm text-lp-text">
           Password updated. Sign in with your new password.
         </p>

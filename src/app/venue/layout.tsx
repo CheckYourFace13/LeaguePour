@@ -12,7 +12,7 @@ export const metadata = {
 
 export default async function VenueLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
-  if (!session?.user) redirect("/login?callbackUrl=/venue/dashboard");
+  if (!session?.user) redirect("/login");
   const pv = primaryVenueAccess(session);
   if (!pv) redirect("/signup/venue?reason=venue");
   const access = await resolvePrimaryVenueAccess(session);
