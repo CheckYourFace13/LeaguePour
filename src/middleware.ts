@@ -10,10 +10,21 @@ export async function middleware(request: NextRequest) {
   const needsAuth = protectedPrefixes.some((p) => pathname.startsWith(p));
   if (!needsAuth) return NextResponse.next();
 
-  const token = await getToken({
+  const secret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
+  // Hostinger and similar reverse proxies can present HTTP internally while
+  // the browser is on HTTPS, so probe both secure and non-secure cookie names.
+  let token = await getToken({
     req: request,
-    secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
+    secret,
+    secureCookie: true,
   });
+  if (!token) {
+    token = await getToken({
+      req: request,
+      secret,
+      secureCookie: false,
+    });
+  }
 
   if (!token) {
     const callbackPath = `${pathname}${request.nextUrl.search}`;
