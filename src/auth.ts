@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+import { getPublicSiteUrl } from "@/lib/site-url";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
@@ -40,6 +41,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      const siteOrigin = getPublicSiteUrl();
+      if (url.startsWith("/")) return `${siteOrigin}${url}`;
+      try {
+        const parsed = new URL(url);
+        if (parsed.origin === siteOrigin) return url;
+        if (parsed.origin === baseUrl) return `${siteOrigin}${parsed.pathname}${parsed.search}${parsed.hash}`;
+      } catch {
+        // ignore parse failures
+      }
+      return siteOrigin;
+    },
     async jwt({ token, user }) {
       if (user?.id) {
         token.userId = user.id;

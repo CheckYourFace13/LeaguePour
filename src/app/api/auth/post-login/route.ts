@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { getPublicSiteUrl } from "@/lib/site-url";
 
-export async function GET(request: Request) {
+export async function GET() {
   const session = await auth();
-  const origin = new URL(request.url).origin;
+  const siteOrigin = getPublicSiteUrl();
   if (!session?.user) {
-    return NextResponse.redirect(new URL("/login", origin));
+    return NextResponse.redirect(new URL("/login", siteOrigin));
   }
   const next =
     session.venueAccess?.length > 0
@@ -13,5 +14,5 @@ export async function GET(request: Request) {
       : session.hasPlayerProfile
         ? "/player/dashboard"
         : "/";
-  return NextResponse.redirect(new URL(next, origin));
+  return NextResponse.redirect(new URL(next, siteOrigin));
 }

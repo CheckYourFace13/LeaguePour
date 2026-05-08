@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { getPublicSiteUrl } from "@/lib/site-url";
 
 const protectedPrefixes = ["/venue", "/player"];
 
@@ -15,10 +16,9 @@ export async function middleware(request: NextRequest) {
   });
 
   if (!token) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
     const callbackPath = `${pathname}${request.nextUrl.search}`;
-    const response = NextResponse.redirect(url);
+    const loginUrl = new URL("/login", getPublicSiteUrl());
+    const response = NextResponse.redirect(loginUrl);
     response.cookies.set("lp_callback", callbackPath, {
       path: "/",
       maxAge: 10 * 60,
