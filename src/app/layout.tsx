@@ -51,9 +51,9 @@ export const metadata: Metadata = {
     locale: "en_US",
   },
   icons: {
-    icon: "/icon",
-    apple: "/apple-icon",
-    shortcut: "/icon",
+    icon: "/icon.png",
+    apple: "/apple-icon.png",
+    shortcut: "/icon.png",
   },
 };
 
