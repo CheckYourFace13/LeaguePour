@@ -176,9 +176,14 @@ export default async function PublicCompetitionPage({
           {cityLabel} {compTypeLabel.toLowerCase()} signup and team registration.
         </p>
       ) : null}
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-4 flex flex-wrap items-center gap-2">
         <Badge variant="accent">{compTypeLabel}</Badge>
         <Badge variant="muted">{comp.status.replaceAll("_", " ")}</Badge>
+        {(comp.status === "IN_PROGRESS" || comp.status === "COMPLETED") && (
+          <Button asChild size="md" variant="secondary">
+            <Link href={`/c/${venueSlug}/${competitionSlug}/scoreboard`}>Live scoreboard</Link>
+          </Button>
+        )}
       </div>
 
       <Card className="mt-8 space-y-4 p-5 md:p-6">

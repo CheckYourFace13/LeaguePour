@@ -1,9 +1,36 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/db";
 import { getPublicSiteUrl } from "@/lib/site-url";
+import { OUTREACH_CITIES } from "@/lib/outreach-cities";
+
+function buildCitySlugs(): string[] {
+  const slugCount = new Map<string, number>();
+  for (const c of OUTREACH_CITIES) {
+    const base = c.city.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    slugCount.set(base, (slugCount.get(base) ?? 0) + 1);
+  }
+
+  const slugs: string[] = [];
+  const seen = new Set<string>();
+
+  for (const c of OUTREACH_CITIES) {
+    const key = `${c.city}|${c.state}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    const base = c.city.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const needsDisambig = (slugCount.get(base) ?? 0) > 1;
+    let slug = needsDisambig ? `${base}-${c.state.toLowerCase()}` : base;
+    if (c.city === 'Portland' && c.state === 'OR') slug = 'portland';
+
+    slugs.push(slug);
+  }
+  return slugs;
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getPublicSiteUrl();
+  const citySlugs = buildCitySlugs();
   let venues: { slug: string; updatedAt: Date }[] = [];
   let competitions: { slug: string; updatedAt: Date; venue: { slug: string } }[] = [];
   try {
@@ -57,31 +84,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/history/trivia",
     "/history/shuffleboard",
     "/rules",
-    "/bar-leagues/chicago",
-    "/bar-leagues/nashville",
-    "/bar-leagues/austin",
-    "/bar-leagues/denver",
-    "/bar-leagues/dallas",
-    "/bar-leagues/houston",
-    "/bar-leagues/phoenix",
-    "/bar-leagues/philadelphia",
-    "/bar-leagues/portland",
-    "/bar-leagues/seattle",
-    "/bar-leagues/atlanta",
-    "/bar-leagues/miami",
-    "/bar-leagues/boston",
-    "/bar-leagues/las-vegas",
-    "/bar-leagues/new-orleans",
-    "/bar-leagues/pittsburgh",
-    "/bar-leagues/kansas-city",
-    "/bar-leagues/minneapolis",
-    "/bar-leagues/columbus",
-    "/bar-leagues/indianapolis",
-    "/bar-leagues/st-louis",
-    "/bar-leagues/milwaukee",
-    "/bar-leagues/charlotte",
-    "/bar-leagues/san-antonio",
-    "/bar-leagues/detroit",
+    ...citySlugs.map((s) => `/bar-leagues/${s}`),
     "/legal/terms",
     "/legal/privacy",
   ].map((path) => ({

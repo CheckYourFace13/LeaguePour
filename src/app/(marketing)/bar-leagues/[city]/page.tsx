@@ -3,50 +3,59 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/db";
+import { OUTREACH_CITIES } from "@/lib/outreach-cities";
 
-const CITIES: Record<string, { name: string; state: string; bars: string }> = {
-  chicago: { name: "Chicago", state: "IL", bars: "Chicago's bar scene" },
-  nashville: { name: "Nashville", state: "TN", bars: "Nashville's honky-tonks and bars" },
-  austin: { name: "Austin", state: "TX", bars: "Austin's bars and venues" },
-  denver: { name: "Denver", state: "CO", bars: "Denver's craft bar scene" },
-  dallas: { name: "Dallas", state: "TX", bars: "Dallas bars and taprooms" },
-  houston: { name: "Houston", state: "TX", bars: "Houston's bar scene" },
-  phoenix: { name: "Phoenix", state: "AZ", bars: "Phoenix bars and venues" },
-  philadelphia: { name: "Philadelphia", state: "PA", bars: "Philly's neighborhood bars" },
-  portland: { name: "Portland", state: "OR", bars: "Portland's craft bar scene" },
-  seattle: { name: "Seattle", state: "WA", bars: "Seattle's bar scene" },
-  atlanta: { name: "Atlanta", state: "GA", bars: "Atlanta bars and venues" },
-  miami: { name: "Miami", state: "FL", bars: "Miami bars and venues" },
-  boston: { name: "Boston", state: "MA", bars: "Boston's bar scene" },
-  "las-vegas": { name: "Las Vegas", state: "NV", bars: "Las Vegas bars and venues" },
-  "new-orleans": { name: "New Orleans", state: "LA", bars: "New Orleans' iconic bars" },
-  pittsburgh: { name: "Pittsburgh", state: "PA", bars: "Pittsburgh's neighborhood bars" },
-  "kansas-city": { name: "Kansas City", state: "MO", bars: "Kansas City's bar scene" },
-  minneapolis: { name: "Minneapolis", state: "MN", bars: "Minneapolis bars and venues" },
-  columbus: { name: "Columbus", state: "OH", bars: "Columbus bars and venues" },
-  indianapolis: { name: "Indianapolis", state: "IN", bars: "Indianapolis bars and venues" },
-  "st-louis": { name: "St. Louis", state: "MO", bars: "St. Louis bars and venues" },
-  milwaukee: { name: "Milwaukee", state: "WI", bars: "Milwaukee's bar scene" },
-  charlotte: { name: "Charlotte", state: "NC", bars: "Charlotte bars and venues" },
-  "san-antonio": { name: "San Antonio", state: "TX", bars: "San Antonio bars and venues" },
-  detroit: { name: "Detroit", state: "MI", bars: "Detroit bars and venues" },
-};
+type CityData = { name: string; state: string; country: "US" | "CA" };
+
+function buildCities(): Record<string, CityData> {
+  const slugCount = new Map<string, number>();
+  for (const c of OUTREACH_CITIES) {
+    const base = c.city.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    slugCount.set(base, (slugCount.get(base) ?? 0) + 1);
+  }
+
+  const map: Record<string, CityData> = {};
+  const seen = new Set<string>();
+
+  for (const c of OUTREACH_CITIES) {
+    const key = `${c.city}|${c.state}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    const base = c.city.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const needsDisambig = (slugCount.get(base) ?? 0) > 1;
+    let slug = needsDisambig ? `${base}-${c.state.toLowerCase()}` : base;
+    if (c.city === 'Portland' && c.state === 'OR') slug = 'portland';
+
+    map[slug] = { name: c.city, state: c.state, country: c.country };
+  }
+  return map;
+}
+
+const CITIES = buildCities();
 
 export async function generateStaticParams() {
   return Object.keys(CITIES).map((city) => ({ city }));
+}
+
+function getBarsDescription(data: CityData): string {
+  return data.country === "CA"
+    ? `${data.name}, ${data.state} bars and pubs`
+    : `${data.name}'s bars and venues`;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ city: string }> }): Promise<Metadata> {
   const { city } = await params;
   const data = CITIES[city];
   if (!data) return {};
+  const bars = getBarsDescription(data);
   return {
     title: `Bar Leagues & Tournaments in ${data.name} | LeaguePour`,
-    description: `Find dart leagues, cornhole tournaments, trivia nights, and pool leagues at ${data.bars}. Join or run competitions on LeaguePour.`,
+    description: `Find dart leagues, cornhole tournaments, trivia nights, and pool leagues at ${bars}. Join or run competitions on LeaguePour.`,
     alternates: { canonical: `/bar-leagues/${city}` },
     openGraph: {
       title: `Bar Leagues & Tournaments in ${data.name} | LeaguePour`,
-      description: `Dart leagues, cornhole, trivia, and pool leagues at ${data.bars}.`,
+      description: `Dart leagues, cornhole, trivia, and pool leagues at ${bars}.`,
       url: `/bar-leagues/${city}`,
     },
   };
@@ -56,6 +65,7 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
   const { city } = await params;
   const data = CITIES[city];
   if (!data) notFound();
+  const bars = getBarsDescription(data);
 
   let venues: { id: string; name: string; slug: string; _count: { competitions: number } }[] = [];
   try {
@@ -108,7 +118,7 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
           <span className="text-lp-accent">in {data.name}</span>
         </h1>
         <p className="mt-5 max-w-2xl text-lg text-lp-muted">
-          Dart leagues, cornhole tournaments, trivia nights, and pool leagues at {data.bars}.
+          Dart leagues, cornhole tournaments, trivia nights, and pool leagues at {bars}.
           Find a competition to join — or run your own on LeaguePour.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -169,7 +179,7 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
         <div className="mt-20 rounded-2xl bg-lp-surface/40 border border-lp-border p-8">
           <h2 className="font-display text-2xl font-bold">Own a bar in {data.name}?</h2>
           <p className="mt-3 text-lp-muted leading-relaxed">
-            LeaguePour helps {data.bars} run dart leagues, cornhole tournaments, trivia nights, and more
+            LeaguePour helps {bars} run dart leagues, cornhole tournaments, trivia nights, and more
             — with online signup, entry fees via Stripe, standings, and player marketing built in.
             Set up your first competition in under 10 minutes.
           </p>

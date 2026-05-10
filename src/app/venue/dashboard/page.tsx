@@ -14,6 +14,7 @@ import {
 } from "@/lib/venue-permissions";
 import { venueAppRoutes } from "@/lib/routes";
 import { redirect } from "next/navigation";
+import { EmbedCopyButton } from "./embed-copy-button";
 
 export default async function VenueDashboardPage({
   searchParams,
@@ -29,7 +30,7 @@ export default async function VenueDashboardPage({
 
   const venueRow = await prisma.venue.findUnique({
     where: { id: access.venueId },
-    select: { slug: true, stripeAccountId: true, stripeChargesEnabled: true, stripePayoutsEnabled: true },
+    select: { name: true, slug: true, stripeAccountId: true, stripeChargesEnabled: true, stripePayoutsEnabled: true },
   });
   const venueSlug = venueRow?.slug ?? "";
   const stripeConnectReady =
@@ -88,6 +89,19 @@ export default async function VenueDashboardPage({
           your venue allows.
         </div>
       ) : null}
+      <div className="rounded-[10px] border border-lp-accent/30 bg-lp-accent/5 px-5 py-4">
+        <p className="font-semibold text-lp-text">New: Live Scoreboard &amp; Website Embed</p>
+        <p className="mt-1 text-sm text-lp-muted">
+          Share a live scoreboard for any in-progress competition — works fullscreen on a bar TV.
+          Embed your upcoming events on your website with one line of code.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Button asChild size="md" variant="secondary">
+            <Link href={venueAppRoutes.competitions}>View competitions</Link>
+          </Button>
+        </div>
+      </div>
+
       <div>
         <h1 className="lp-page-title text-3xl md:text-4xl">Dashboard</h1>
         <p className="mt-3 max-w-xl text-base text-lp-muted md:text-lg">Signups, unpaid checkouts, closing windows.</p>
@@ -201,6 +215,21 @@ export default async function VenueDashboardPage({
             </Card>
           ))
         )}
+      </div>
+
+      <div className="rounded-2xl border border-lp-border bg-lp-surface/40 p-5 md:p-6">
+        <h2 className="font-semibold text-lp-text">Embed your events on your website</h2>
+        <p className="mt-1 text-sm text-lp-muted">
+          Copy this snippet into any webpage to show your upcoming LeaguePour events. Updates automatically — no maintenance needed.
+        </p>
+        <pre className="mt-4 overflow-x-auto rounded-lg bg-lp-bg border border-lp-border px-4 py-3 text-xs text-lp-muted font-mono leading-relaxed">
+          {`<iframe\n  src="https://leaguepour.com/embed/${venueSlug}"\n  width="100%" height="420"\n  frameborder="0"\n  style="border-radius:12px;border:1px solid #e2e8f0;"\n  title="${venueRow?.name ?? "Upcoming Events"} — Upcoming Events"\n></iframe>`}
+        </pre>
+        <div className="mt-3">
+          <EmbedCopyButton
+            code={`<iframe\n  src="https://leaguepour.com/embed/${venueSlug}"\n  width="100%" height="420"\n  frameborder="0"\n  style="border-radius:12px;border:1px solid #e2e8f0;"\n  title="${venueRow?.name ?? "Upcoming Events"} — Upcoming Events"\n></iframe>`}
+          />
+        </div>
       </div>
     </div>
   );
