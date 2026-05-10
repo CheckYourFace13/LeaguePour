@@ -10,7 +10,7 @@ import { campaignAudienceSummary } from "@/lib/campaign-audience-meta";
 import { venueAppRoutes } from "@/lib/routes";
 import { resolvePrimaryVenueAccess, venueStaffCanCreateAndPublish } from "@/lib/venue-permissions";
 import { redirect } from "next/navigation";
-import { sendDraftCampaignFormAction } from "./actions";
+import { CampaignSendNowButton } from "@/app/venue/campaigns/campaign-send-now-button";
 
 function noticeBanner(notice?: string, count?: string) {
   if (notice === "sent") {
@@ -135,12 +135,7 @@ export default async function MessagesPage({
                         <Button variant="secondary" size="lg" className="w-full sm:w-auto" asChild>
                           <Link href={`/venue/campaigns/${c.id}/edit`}>Edit draft</Link>
                         </Button>
-                        <form action={sendDraftCampaignFormAction} className="w-full sm:w-auto">
-                          <input type="hidden" name="campaignId" value={c.id} />
-                          <Button type="submit" size="lg" className="w-full">
-                            Send now (in-app)
-                          </Button>
-                        </form>
+                        <CampaignSendNowButton />
                       </>
                     ) : (
                       <p className="max-w-[220px] text-right text-xs text-lp-muted">

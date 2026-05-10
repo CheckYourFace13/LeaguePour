@@ -8,9 +8,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let competitions: { slug: string; updatedAt: Date; venue: { slug: string } }[] = [];
   try {
     [venues, competitions] = await Promise.all([
-      prisma.venue.findMany({ select: { slug: true, updatedAt: true }, take: 2000 }),
+      prisma.venue.findMany({
+        where: { isDisabled: false },
+        select: { slug: true, updatedAt: true },
+        take: 2000,
+      }),
       prisma.competition.findMany({
-        where: { status: { in: ["SIGNUP_OPEN", "PUBLISHED", "IN_PROGRESS"] } },
+        where: {
+          status: { in: ["SIGNUP_OPEN", "PUBLISHED", "IN_PROGRESS"] },
+          venue: { isDisabled: false },
+        },
         select: { slug: true, updatedAt: true, venue: { select: { slug: true } } },
         take: 5000,
       }),

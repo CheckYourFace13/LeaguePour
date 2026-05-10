@@ -52,3 +52,11 @@ export function formatUsdCents(cents: number): string {
     minimumFractionDigits: 2,
   }).format(cents / 100);
 }
+
+/** Max active competitions per billing tier (excludes archived / cancelled-style statuses). */
+export const ACTIVE_COMPETITION_LIMITS_BY_PLAN: Record<BillingPlan, number> = {
+  [BillingPlan.STARTER]: 2,
+  [BillingPlan.STANDARD]: 9,
+  [BillingPlan.PRO]: 19,
+  [BillingPlan.MAX]: Number.POSITIVE_INFINITY,
+};

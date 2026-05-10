@@ -22,6 +22,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const venue = await prisma.venue.findUnique({ where: { slug } });
   if (!venue) return { title: "Venue" };
+  if (venue.isDisabled) notFound();
   const city = venue.city?.trim();
   const cityTitle = city ? ` — ${city}` : "";
   const cityIntent = city ? `${city} bar competitions, trivia tournaments, and dart league signups.` : "Venue competitions and signup.";
@@ -59,6 +60,7 @@ export default async function PublicVenuePage({ params }: { params: Promise<{ sl
     },
   });
   if (!venue) notFound();
+  if (venue.isDisabled) notFound();
 
   const isAuthedPlayer = Boolean(session?.user && session.hasPlayerProfile);
   const followRow =

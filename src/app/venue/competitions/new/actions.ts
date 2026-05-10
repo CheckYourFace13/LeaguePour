@@ -9,6 +9,7 @@ import {
   ScheduleKind,
 } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/db";
+import { ACTIVE_COMPETITION_LIMITS_BY_PLAN } from "@/lib/pricing";
 import { resolvePrimaryVenueAccess, venueStaffCanCreateAndPublish } from "@/lib/venue-permissions";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -78,6 +79,24 @@ export async function createCompetitionAction(formData: FormData) {
 
   const publish = formData.get("publishNow") === "on";
   const status = publish ? CompetitionStatus.SIGNUP_OPEN : CompetitionStatus.DRAFT;
+
+  const venueForPlan = await prisma.venue.findUnique({
+    where: { id: access.venueId },
+    select: { billingPlan: true },
+  });
+  if (!venueForPlan) redirect("/signup/venue");
+
+  const activeCompetitionCount = await prisma.competition.count({
+    where: {
+      venueId: access.venueId,
+      status: { not: CompetitionStatus.ARCHIVED },
+    },
+  });
+
+  const planLimit = ACTIVE_COMPETITION_LIMITS_BY_PLAN[venueForPlan.billingPlan];
+  if (Number.isFinite(planLimit) && activeCompetitionCount >= planLimit) {
+    redirect("/venue/competitions/new?error=upgrade-plan");
+  }
 
   const comp = await prisma.competition.create({
     data: {

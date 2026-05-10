@@ -30,6 +30,7 @@ function toDatetimeLocalValue(d: Date) {
 const builderErrorMessages: Record<string, string> = {
   title: "Add a title so players know which night this is.",
   dates: "Use valid dates for signup open/close and start/end.",
+  "upgrade-plan": "Upgrade your plan to create more events.",
 };
 
 const builderSteps = ["Basics", "Schedule & fees", "Teams", "Format", "Rules & prizes", "Publish"];

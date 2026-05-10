@@ -40,6 +40,7 @@ export const metadata: Metadata = {
   applicationName: "LeaguePour",
   twitter: {
     card: "summary_large_image",
+    images: ["/og-image.png"],
     title: "LeaguePour",
     description: "Run competitions. Collect entry fees. Bring players back.",
   },
@@ -49,11 +50,10 @@ export const metadata: Metadata = {
     siteName: "LeaguePour",
     type: "website",
     locale: "en_US",
+    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
   },
   icons: {
-    icon: "/icon.png",
-    apple: "/apple-icon.png",
-    shortcut: "/icon.png",
+    icon: "/favicon.ico",
   },
 };
 
