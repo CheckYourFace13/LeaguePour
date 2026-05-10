@@ -94,6 +94,38 @@ model VerificationToken {
   @@schema("leaguepour_lp")
 }
 
+// ——— Outreach ———
+
+enum OutreachStatus {
+  NOT_CONTACTED
+  EMAIL_SENT
+  RESPONDED
+  SIGNED_UP
+  NOT_INTERESTED
+
+  @@schema("leaguepour_lp")
+}
+
+model OutreachContact {
+  id          String         @id @default(cuid())
+  placeId     String         @unique
+  name        String
+  address     String
+  city        String
+  state       String
+  country     String         @default("US")
+  phone       String?
+  website     String?
+  rating      Float?
+  status      OutreachStatus @default(NOT_CONTACTED)
+  emailSentAt DateTime?
+  notes       String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@schema("leaguepour_lp")
+}
+
 // ——— Venues & staff ———
 
 enum StaffRole {
