@@ -36,6 +36,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/faq",
     "/how-it-works",
     "/contact",
+    "/dart-league-software",
+    "/cornhole-tournament-software",
+    "/bar-trivia-software",
+    "/pool-league-management",
     "/legal/terms",
     "/legal/privacy",
   ].map((path) => ({
