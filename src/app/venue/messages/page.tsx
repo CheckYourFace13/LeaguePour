@@ -135,7 +135,7 @@ export default async function MessagesPage({
                         <Button variant="secondary" size="lg" className="w-full sm:w-auto" asChild>
                           <Link href={`/venue/campaigns/${c.id}/edit`}>Edit draft</Link>
                         </Button>
-                        <CampaignSendNowButton />
+                        <CampaignSendNowButton campaignId={c.id} />
                       </>
                     ) : (
                       <p className="max-w-[220px] text-right text-xs text-lp-muted">

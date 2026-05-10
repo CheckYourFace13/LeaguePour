@@ -130,7 +130,7 @@ export function BillingCard({ currentPlan, subscriptionStatus, subscriptionPerio
                     <p className="text-xs text-lp-muted">{p.eventLimitLabel}</p>
                   </div>
                   <Button
-                    size="sm"
+                    size="md"
                     variant={isCurrent ? "secondary" : p.featured ? "primary" : "secondary"}
                     className="w-full"
                     onClick={() => subscribe(p.plan)}
