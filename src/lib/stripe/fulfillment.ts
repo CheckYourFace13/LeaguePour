@@ -2,6 +2,8 @@ import type Stripe from "stripe";
 import { prisma } from "@/lib/db";
 import { PaymentStatus, RegistrationStatus } from "@/generated/prisma/enums";
 import { getStripe } from "@/lib/stripe/server";
+import { sendPaymentConfirmationEmail } from "@/lib/email";
+import { getPublicSiteUrl } from "@/lib/site-url";
 
 function paymentIntentIdFromSession(session: Stripe.Checkout.Session): string | null {
   const pi = session.payment_intent;
@@ -131,6 +133,37 @@ export async function fulfillStripeCheckoutSessionId(
     console.info("[stripe fulfill]", sessionId, "reason" in out ? out.reason : "", eventId ?? "");
   } else {
     console.warn("[stripe fulfill] skipped", sessionId, "reason" in out ? out.reason : "", eventId ?? "");
+  }
+
+  // Send payment confirmation email on fresh fulfillment only
+  if (out.ok && "reason" in out && out.reason === "fulfilled") {
+    prisma.competitionRegistration.findFirst({
+      where: { id: session.metadata?.registrationId ?? "" },
+      include: {
+        user: { select: { email: true, name: true } },
+        competition: {
+          select: {
+            title: true,
+            entryFeeCents: true,
+            entryFeeCurrency: true,
+            venue: { select: { name: true, slug: true } },
+          },
+        },
+      },
+    }).then((reg) => {
+      if (!reg?.user?.email) return;
+      const venueSlug = reg.competition.venue.slug;
+      const compSlug = reg.competition.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 48);
+      sendPaymentConfirmationEmail({
+        to: reg.user.email,
+        playerName: reg.user.name ?? "there",
+        competitionTitle: reg.competition.title,
+        venueName: reg.competition.venue.name,
+        competitionUrl: `${getPublicSiteUrl()}/c/${venueSlug}/${compSlug}`,
+        amountCents: session.amount_total ?? reg.competition.entryFeeCents,
+        currency: reg.competition.entryFeeCurrency,
+      }).catch((err) => console.error("[fulfill email]", err));
+    }).catch((err) => console.error("[fulfill email lookup]", err));
   }
 
   return { ok: out.ok, reason: "reason" in out ? (out as { reason?: string }).reason : undefined };

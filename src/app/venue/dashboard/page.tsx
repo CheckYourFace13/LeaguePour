@@ -27,11 +27,15 @@ export default async function VenueDashboardPage({
   const canCreate = venueStaffCanCreateAndPublish(access.role);
   const canManageStaff = venueStaffCanManageStaff(access.role);
 
-  const venueSlugRow = await prisma.venue.findUnique({
+  const venueRow = await prisma.venue.findUnique({
     where: { id: access.venueId },
-    select: { slug: true },
+    select: { slug: true, stripeAccountId: true, stripeChargesEnabled: true, stripePayoutsEnabled: true },
   });
-  const venueSlug = venueSlugRow?.slug ?? "";
+  const venueSlug = venueRow?.slug ?? "";
+  const stripeConnectReady =
+    Boolean(venueRow?.stripeAccountId) &&
+    venueRow?.stripeChargesEnabled === true &&
+    venueRow?.stripePayoutsEnabled === true;
 
   const [openCount, regCount, campaignDrafts, pendingPayments, upcoming] = await Promise.all([
     prisma.competition.count({
@@ -59,6 +63,19 @@ export default async function VenueDashboardPage({
 
   return (
     <div className="space-y-10 md:space-y-12">
+      {!stripeConnectReady ? (
+        <div className="flex flex-col gap-3 rounded-[10px] border border-amber-500/40 bg-amber-500/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-semibold text-lp-text">Stripe account not set up</p>
+            <p className="mt-0.5 text-sm text-lp-muted">
+              Players can't pay entry fees until you connect your Stripe account. It only takes a few minutes.
+            </p>
+          </div>
+          <Button asChild size="lg" className="shrink-0 w-full sm:w-auto">
+            <Link href={venueAppRoutes.profile}>Set up payments</Link>
+          </Button>
+        </div>
+      ) : null}
       {notice === "staff-forbidden" ? (
         <div className="rounded-[10px] border border-lp-border bg-lp-surface/60 px-4 py-3 text-sm text-lp-text">
           Staff management is limited to owners and managers.

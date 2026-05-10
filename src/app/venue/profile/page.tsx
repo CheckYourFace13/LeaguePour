@@ -89,7 +89,6 @@ export default async function VenueProfilePage({
 
       <Card className="space-y-4 p-5">
         <VenueEntryFeeFlowCard
-          platformFeeBps={venue.platformFeeBps}
           stripeChargesEnabled={venue.stripeChargesEnabled}
           stripePayoutsEnabled={venue.stripePayoutsEnabled}
           stripeAccountId={venue.stripeAccountId}
@@ -117,7 +116,6 @@ export default async function VenueProfilePage({
             latitude: venue.latitude ? String(venue.latitude) : "",
             longitude: venue.longitude ? String(venue.longitude) : "",
             billingPlan: venue.billingPlan,
-            platformFeePercent: venue.platformFeeBps / 100,
           }}
         />
       </Card>

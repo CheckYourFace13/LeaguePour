@@ -106,9 +106,9 @@ enum StaffRole {
 
 enum BillingPlan {
   STARTER
-  STANDARD
+  GROWTH
   PRO
-  MAX
+  ELITE
 
   @@schema("leaguepour_lp")
 }
@@ -141,11 +141,19 @@ model Venue {
   teamEventsDefault Boolean @default(true)
   importAudienceLater Boolean @default(false)
   billingPlan     BillingPlan @default(STARTER)
-  platformFeeBps  Int      @default(900)
+  platformFeeBps  Int      @default(500)
   stripeAccountId String?  @unique
   stripeChargesEnabled Boolean @default(false)
   stripePayoutsEnabled Boolean @default(false)
   stripeDetailsSubmitted Boolean @default(false)
+  /// Stripe Customer id used for platform SaaS billing (distinct from stripeAccountId / Connect)
+  stripeBillingCustomerId String?  @unique
+  /// Active Stripe Subscription id
+  subscriptionId          String?  @unique
+  /// Stripe subscription status: active | trialing | past_due | canceled | unpaid | incomplete
+  subscriptionStatus      String?
+  /// When the current billing period ends (Unix→DateTime from Stripe)
+  subscriptionPeriodEnd   DateTime?
   isDisabled      Boolean  @default(false)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

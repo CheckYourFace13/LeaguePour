@@ -1,63 +1,83 @@
 import { formatUsdCents } from "@/lib/pricing";
-import { connectApplicationFeeCents } from "@/lib/stripe/connect-fees";
+import {
+  connectApplicationFeeCents,
+  PLATFORM_FEE_BPS,
+  PLAYER_SERVICE_FEE_CENTS,
+  playerTotalCents,
+} from "@/lib/stripe/connect-fees";
 
 type Props = {
-  platformFeeBps: number;
   stripeChargesEnabled: boolean;
   stripePayoutsEnabled: boolean;
   stripeAccountId: string | null;
 };
 
-const EXAMPLE_GROSS_CENTS = 10_000;
+const EXAMPLE_ENTRY_CENTS = 1000; // $10 example
 
-export function VenueEntryFeeFlowCard({
-  platformFeeBps,
-  stripeChargesEnabled,
-  stripePayoutsEnabled,
-  stripeAccountId,
-}: Props) {
-  const pctLabel = (platformFeeBps / 100).toLocaleString("en-US", { maximumFractionDigits: 2 });
-  const platformKeeps = connectApplicationFeeCents(EXAMPLE_GROSS_CENTS, platformFeeBps);
-  const venueTransfer = EXAMPLE_GROSS_CENTS - platformKeeps;
-  const connectLive =
-    Boolean(stripeAccountId) && stripeChargesEnabled && stripePayoutsEnabled;
+export function VenueEntryFeeFlowCard({ stripeChargesEnabled, stripePayoutsEnabled, stripeAccountId }: Props) {
+  const entry = EXAMPLE_ENTRY_CENTS;
+  const serviceFee = PLAYER_SERVICE_FEE_CENTS;
+  const platformPct = PLATFORM_FEE_BPS / 100;
+  const playerTotal = playerTotalCents(entry);
+  const appFee = connectApplicationFeeCents(entry, true);
+  const venueFeeOnly = appFee - serviceFee; // the 5% portion from venue's share
+  const venueReceives = playerTotal - appFee;
+  const connectLive = Boolean(stripeAccountId) && stripeChargesEnabled && stripePayoutsEnabled;
 
   return (
-    <div className="space-y-4 rounded-[10px] border border-lp-border bg-lp-surface/30 p-5">
+    <div className="space-y-5">
       <div>
-        <p className="lp-kicker">Entry fees (Stripe Connect)</p>
+        <p className="lp-kicker text-lp-accent">How entry fee payments work</p>
         <p className="mt-2 text-sm leading-relaxed text-lp-muted">
-          Paid registrations use a <strong className="text-lp-text">destination charge</strong> on your connected
-          account. LeaguePour takes your platform fee as Stripe’s <code className="text-xs">application_fee_amount</code>
-          ; the remainder is transferred to the venue.
+          LeaguePour uses <strong className="text-lp-text">Stripe Connect</strong> — entry fees go straight to your bank
+          account, we never hold your money. Two small fees apply: a{" "}
+          <strong className="text-lp-text">{platformPct}% venue fee</strong> deducted from your payout, plus a{" "}
+          <strong className="text-lp-text">{formatUsdCents(serviceFee)} service fee</strong> added on top for the
+          player. Stripe's processing costs come out of the service fee — you don't pay them.
         </p>
       </div>
-      <div className="rounded-[10px] border border-lp-border bg-lp-bg/60 p-4 text-sm">
-        <p className="text-xs font-bold uppercase tracking-wider text-lp-muted">Example (card total)</p>
-        <p className="mt-2 font-mono text-lp-text">{formatUsdCents(EXAMPLE_GROSS_CENTS)} charged to player</p>
-        <ul className="mt-3 space-y-2 text-lp-muted">
-          <li>
-            <span className="text-lp-text">LeaguePour</span> · platform fee ({pctLabel}%) ·{" "}
-            <span className="font-mono tabular-nums text-lp-text">{formatUsdCents(platformKeeps)}</span>
-          </li>
-          <li>
-            <span className="text-lp-text">Venue (Connect)</span> · transfer (gross − platform fee) ·{" "}
-            <span className="font-mono tabular-nums text-lp-text">{formatUsdCents(venueTransfer)}</span>
-          </li>
-        </ul>
+
+      <div className="rounded-[10px] border border-lp-border bg-lp-bg/60 p-4 text-sm space-y-3">
+        <p className="text-xs font-bold uppercase tracking-wider text-lp-muted">
+          Example — {formatUsdCents(entry)} entry fee
+        </p>
+
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-lp-text">
+            <span>Player pays at checkout</span>
+            <span className="font-mono">{formatUsdCents(playerTotal)}</span>
+          </div>
+          <div className="flex justify-between text-lp-muted pl-3">
+            <span>Entry fee</span>
+            <span className="font-mono">{formatUsdCents(entry)}</span>
+          </div>
+          <div className="flex justify-between text-lp-muted pl-3">
+            <span>LeaguePour service fee</span>
+            <span className="font-mono">+{formatUsdCents(serviceFee)}</span>
+          </div>
+        </div>
+
+        <div className="border-t border-lp-border pt-3 space-y-1.5">
+          <div className="flex justify-between font-semibold text-lp-text">
+            <span>You receive (deposited by Stripe)</span>
+            <span className="font-mono text-lp-accent">{formatUsdCents(venueReceives)}</span>
+          </div>
+          <div className="flex justify-between text-lp-muted pl-3">
+            <span>LeaguePour venue fee ({platformPct}%)</span>
+            <span className="font-mono">−{formatUsdCents(venueFeeOnly)}</span>
+          </div>
+        </div>
       </div>
-      <p className="text-xs leading-relaxed text-lp-muted">
-        <strong className="text-lp-text">Stripe processing fees</strong> are recorded on the underlying charge. With
-        destination charges, Stripe typically debits those fees from the platform’s balance; exact cents per payment
-        appear under <strong className="text-lp-text">Stripe Dashboard → Payments → Balance transactions</strong> (they
-        vary by card and pricing).
-      </p>
-      <p className="text-xs text-lp-muted">
-        Connect payouts:{" "}
-        <span className={connectLive ? "font-semibold text-lp-accent" : "font-semibold text-lp-text"}>
-          {connectLive ? "Ready to collect entry fees" : "Finish Connect (charges + payouts) before players can pay"}
+
+      <p className="text-sm">
+        Connect status:{" "}
+        <span className={connectLive ? "font-semibold text-lp-accent" : "font-semibold text-amber-500"}>
+          {connectLive
+            ? "Ready — players can pay entry fees"
+            : stripeAccountId
+              ? "Stripe account exists but setup is incomplete — click Continue Stripe setup"
+              : "Not connected — complete Stripe setup so players can pay"}
         </span>
-        .
       </p>
     </div>
   );

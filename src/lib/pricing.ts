@@ -9,38 +9,34 @@ export type PlanDefinition = {
   featured?: boolean;
 };
 
-function annualWithDiscount(monthlyCents: number): number {
-  return Math.round(monthlyCents * 12 * 0.9);
-}
-
 export const PLAN_DEFINITIONS: PlanDefinition[] = [
   {
     plan: BillingPlan.STARTER,
     name: "Starter",
-    monthlyCents: 999,
-    annualCents: annualWithDiscount(999),
+    monthlyCents: 2900,
+    annualCents: 29000,
     eventLimitLabel: "1–2 events",
   },
   {
-    plan: BillingPlan.STANDARD,
-    name: "Standard",
-    monthlyCents: 1999,
-    annualCents: annualWithDiscount(1999),
+    plan: BillingPlan.GROWTH,
+    name: "Growth",
+    monthlyCents: 7900,
+    annualCents: 79000,
     eventLimitLabel: "3–9 events",
     featured: true,
   },
   {
     plan: BillingPlan.PRO,
     name: "Pro",
-    monthlyCents: 2999,
-    annualCents: annualWithDiscount(2999),
+    monthlyCents: 14900,
+    annualCents: 149000,
     eventLimitLabel: "10–19 events",
   },
   {
-    plan: BillingPlan.MAX,
-    name: "Max",
-    monthlyCents: 3999,
-    annualCents: annualWithDiscount(3999),
+    plan: BillingPlan.ELITE,
+    name: "Elite",
+    monthlyCents: 29900,
+    annualCents: 299000,
     eventLimitLabel: "Unlimited events",
   },
 ];
@@ -53,10 +49,22 @@ export function formatUsdCents(cents: number): string {
   }).format(cents / 100);
 }
 
-/** Max active competitions per billing tier (excludes archived / cancelled-style statuses). */
+/**
+ * Stripe price lookup keys (created in Stripe dashboard):
+ *   leaguepour_starter_monthly   $29/mo
+ *   leaguepour_growth_monthly    $79/mo
+ *   leaguepour_pro_monthly       $149/mo
+ *   leaguepour_elite_monthly     $299/mo
+ *   leaguepour_starter_annual    $290/yr  (~17% off)
+ *   leaguepour_growth_annual     $790/yr  (~17% off)
+ *   leaguepour_pro_annual        $1,490/yr (~17% off)
+ *   leaguepour_elite_annual      $2,990/yr (~17% off)
+ */
+
+/** Max active competitions per billing tier. */
 export const ACTIVE_COMPETITION_LIMITS_BY_PLAN: Record<BillingPlan, number> = {
   [BillingPlan.STARTER]: 2,
-  [BillingPlan.STANDARD]: 9,
+  [BillingPlan.GROWTH]: 9,
   [BillingPlan.PRO]: 19,
-  [BillingPlan.MAX]: Number.POSITIVE_INFINITY,
+  [BillingPlan.ELITE]: Number.POSITIVE_INFINITY,
 };

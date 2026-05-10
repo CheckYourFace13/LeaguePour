@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 import { PaymentStatus, RegistrationStatus } from "@/generated/prisma/enums";
 import { getAppBaseUrl, isStripePaymentsConfigured } from "@/lib/stripe/env";
 import { revalidateRegistrationPaymentPaths } from "@/lib/stripe/revalidate-payment-paths";
-import { connectApplicationFeeCents } from "@/lib/stripe/connect-fees";
+import { connectApplicationFeeCents, PLATFORM_FEE_BPS, playerTotalCents } from "@/lib/stripe/connect-fees";
 import { getStripe } from "@/lib/stripe/server";
 import { redirect } from "next/navigation";
 
@@ -36,7 +36,6 @@ export async function startStripeCheckoutForRegistrationFormAction(formData: For
               stripeAccountId: true,
               stripeChargesEnabled: true,
               stripePayoutsEnabled: true,
-              platformFeeBps: true,
             },
           },
         },
@@ -53,7 +52,9 @@ export async function startStripeCheckoutForRegistrationFormAction(formData: For
     redirect("/player/competitions");
   }
 
-  if (reg.payment.amountCents <= 0) {
+  // Always read entry fee from the competition record — it's the venue's listed price and the ground truth.
+  const entryFeeCents = reg.competition.entryFeeCents;
+  if (entryFeeCents <= 0) {
     redirect("/player/competitions");
   }
 
@@ -61,7 +62,7 @@ export async function startStripeCheckoutForRegistrationFormAction(formData: For
     Boolean(reg.competition.venue.stripeAccountId) &&
     reg.competition.venue.stripeChargesEnabled &&
     reg.competition.venue.stripePayoutsEnabled;
-  if (reg.payment.amountCents > 0 && !connectReady) {
+  if (!connectReady) {
     redirect(`/player/pay/${registrationId}?notice=venue_connect_required`);
   }
 
@@ -83,10 +84,10 @@ export async function startStripeCheckoutForRegistrationFormAction(formData: For
   const cancelUrl = `${base}/player/pay/${registrationId}?stripe_cancel=1`;
 
   const destinationId = reg.competition.venue.stripeAccountId!;
-  const applicationFeeAmount = connectApplicationFeeCents(
-    reg.payment.amountCents,
-    reg.competition.venue.platformFeeBps,
-  );
+  // application_fee = 5% of entry (venue side) + $1.50 service fee (player side)
+  const applicationFeeAmount = connectApplicationFeeCents(entryFeeCents, true);
+  // Total charged to the player: entry fee + $1.50 service fee
+  const totalCents = playerTotalCents(entryFeeCents);
 
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "payment",
@@ -94,10 +95,21 @@ export async function startStripeCheckoutForRegistrationFormAction(formData: For
       {
         price_data: {
           currency: reg.payment.currency.toLowerCase(),
-          unit_amount: reg.payment.amountCents,
+          unit_amount: entryFeeCents,
           product_data: {
             name: `${reg.competition.venue.name}: ${reg.competition.title}`,
-            description: "Competition entry fee (processed by Stripe)",
+            description: "Competition entry fee",
+          },
+        },
+        quantity: 1,
+      },
+      {
+        price_data: {
+          currency: reg.payment.currency.toLowerCase(),
+          unit_amount: 150,
+          product_data: {
+            name: "LeaguePour service fee",
+            description: "Platform booking fee",
           },
         },
         quantity: 1,
@@ -118,7 +130,7 @@ export async function startStripeCheckoutForRegistrationFormAction(formData: For
       },
       transfer_data: { destination: destinationId },
       on_behalf_of: destinationId,
-      ...(applicationFeeAmount > 0 ? { application_fee_amount: applicationFeeAmount } : {}),
+      application_fee_amount: applicationFeeAmount,
     },
     success_url: successUrl,
     cancel_url: cancelUrl,
@@ -132,12 +144,14 @@ export async function startStripeCheckoutForRegistrationFormAction(formData: For
   await prisma.payment.update({
     where: { id: reg.payment.id },
     data: {
+      // Store total charged to player so fulfillment amount check matches Stripe's amount_total.
+      amountCents: totalCents,
       provider: "stripe",
       providerCheckoutSessionId: checkoutSession.id,
       externalRef: checkoutSession.id,
       stripeApplicationFeeCents: applicationFeeAmount,
       stripeConnectDestinationId: destinationId,
-      platformFeeBpsSnapshot: reg.competition.venue.platformFeeBps,
+      platformFeeBpsSnapshot: PLATFORM_FEE_BPS,
     },
   });
 

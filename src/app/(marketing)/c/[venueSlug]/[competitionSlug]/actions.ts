@@ -9,6 +9,8 @@ import {
   RegistrationStatus,
 } from "@/generated/prisma/enums";
 import { CAP_COUNT_STATUSES } from "@/lib/registration-cap";
+import { sendRegistrationConfirmationEmail } from "@/lib/email";
+import { getPublicSiteUrl } from "@/lib/site-url";
 import { revalidatePath } from "next/cache";
 
 export type RegistrationResult =
@@ -33,6 +35,7 @@ export async function submitCompetitionRegistration(
   const comp = await prisma.competition.findUnique({
     where: { id: competitionId },
     include: {
+      venue: { select: { name: true, slug: true } },
       _count: {
         select: {
           registrations: { where: { status: { in: CAP_COUNT_STATUSES } } },
@@ -90,6 +93,18 @@ export async function submitCompetitionRegistration(
     revalidatePath("/venue/dashboard");
     revalidatePath("/venue/registrations");
     if (needsPay) return { ok: true, flow: "pay", registrationId: reg.id };
+    // Free registration — send confirmation email
+    if (session.user.email) {
+      await sendRegistrationConfirmationEmail({
+        to: session.user.email,
+        playerName: session.user.name ?? "there",
+        competitionTitle: comp.title,
+        venueName: comp.venue.name,
+        competitionUrl: `${getPublicSiteUrl()}/c/${venueSlug}/${competitionSlug}`,
+        entryFeeCents: 0,
+        currency: comp.entryFeeCurrency,
+      });
+    }
     return { ok: true, flow: "confirmed" };
   }
 
@@ -146,5 +161,17 @@ export async function submitCompetitionRegistration(
   revalidatePath("/venue/dashboard");
   revalidatePath("/venue/registrations");
   if (needsPay) return { ok: true, flow: "pay", registrationId: reg.id };
+  // Free team registration — send confirmation email
+  if (session.user.email) {
+    await sendRegistrationConfirmationEmail({
+      to: session.user.email,
+      playerName: session.user.name ?? "there",
+      competitionTitle: comp.title,
+      venueName: comp.venue.name,
+      competitionUrl: `${getPublicSiteUrl()}/c/${venueSlug}/${competitionSlug}`,
+      entryFeeCents: 0,
+      currency: comp.entryFeeCurrency,
+    });
+  }
   return { ok: true, flow: "confirmed" };
 }

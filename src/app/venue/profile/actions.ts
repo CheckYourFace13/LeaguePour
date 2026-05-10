@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { BillingPlan } from "@/generated/prisma/enums";
 import { getAppBaseUrl } from "@/lib/stripe/env";
 import { getStripe } from "@/lib/stripe/server";
+import { PLATFORM_FEE_BPS } from "@/lib/stripe/connect-fees";
 import {
   resolvePrimaryVenueAccess,
   venueStaffCanCreateAndPublish,
@@ -32,11 +33,8 @@ export async function saveVenueProfileAction(formData: FormData) {
   const billingPlan = Object.values(BillingPlan).includes(plan as BillingPlan)
     ? (plan as BillingPlan)
     : BillingPlan.STARTER;
-  const rawPct = String(formData.get("platformFeePercent") ?? "").trim();
-  let pct = Number.parseFloat(rawPct);
-  if (!Number.isFinite(pct)) pct = 9;
-  pct = Math.min(30, Math.max(1, pct));
-  const platformFeeBps = Math.round(pct * 100);
+  // Platform fee is set by LeaguePour, not editable by venues.
+  const platformFeeBps = PLATFORM_FEE_BPS;
 
   const existing = await prisma.venue.findUnique({ where: { id: access.venueId } });
   if (!existing) redirect("/signup/venue");

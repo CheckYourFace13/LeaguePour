@@ -27,8 +27,6 @@ type VenueProfileInput = {
   latitude: string;
   longitude: string;
   billingPlan: BillingPlan;
-  /** Whole or fractional percent (e.g. 9 = 9%, 9.25 = 9.25%) — stored as bps server-side */
-  platformFeePercent: number;
 };
 
 export function VenueProfileForm({ initial }: { initial: VenueProfileInput }) {
@@ -94,7 +92,12 @@ export function VenueProfileForm({ initial }: { initial: VenueProfileInput }) {
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <Label htmlFor="v-address">Street address</Label>
-          <Input id="v-address" name="formattedAddress" defaultValue={initial.formattedAddress} className="mt-1.5 min-h-12" />
+          <Input
+            id="v-address"
+            name="formattedAddress"
+            defaultValue={initial.formattedAddress}
+            className="mt-1.5 min-h-12"
+          />
           {initial.googlePlaceId ? (
             <p className="mt-1 text-xs text-lp-success">Location linked to Google Maps.</p>
           ) : (
@@ -121,7 +124,9 @@ export function VenueProfileForm({ initial }: { initial: VenueProfileInput }) {
 
       <div className="space-y-4 rounded-[10px] border border-lp-border bg-lp-surface/30 p-4">
         <p className="text-xs font-semibold uppercase tracking-wider text-lp-muted">From your website</p>
-        <p className="text-xs text-lp-muted">Paste your site URL — we suggest socials and logo to review before save.</p>
+        <p className="text-xs text-lp-muted">
+          Paste your site URL — we suggest socials and logo to review before save.
+        </p>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <div className="flex-1">
             <Label htmlFor="v-website">Website URL</Label>
@@ -142,11 +147,21 @@ export function VenueProfileForm({ initial }: { initial: VenueProfileInput }) {
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <Label>Instagram</Label>
-            <Input name="instagramUrl" className="mt-1.5 min-h-12" value={instagramUrl} onChange={(e) => setInstagramUrl(e.target.value)} />
+            <Input
+              name="instagramUrl"
+              className="mt-1.5 min-h-12"
+              value={instagramUrl}
+              onChange={(e) => setInstagramUrl(e.target.value)}
+            />
           </div>
           <div>
             <Label>Facebook</Label>
-            <Input name="facebookUrl" className="mt-1.5 min-h-12" value={facebookUrl} onChange={(e) => setFacebookUrl(e.target.value)} />
+            <Input
+              name="facebookUrl"
+              className="mt-1.5 min-h-12"
+              value={facebookUrl}
+              onChange={(e) => setFacebookUrl(e.target.value)}
+            />
           </div>
           <div>
             <Label>X</Label>
@@ -154,43 +169,37 @@ export function VenueProfileForm({ initial }: { initial: VenueProfileInput }) {
           </div>
           <div>
             <Label>TikTok</Label>
-            <Input name="tiktokUrl" className="mt-1.5 min-h-12" value={tiktokUrl} onChange={(e) => setTiktokUrl(e.target.value)} />
+            <Input
+              name="tiktokUrl"
+              className="mt-1.5 min-h-12"
+              value={tiktokUrl}
+              onChange={(e) => setTiktokUrl(e.target.value)}
+            />
           </div>
           <div className="sm:col-span-2">
             <Label>Logo URL</Label>
-            <Input name="logoUrl" className="mt-1.5 min-h-12" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} />
+            <Input
+              name="logoUrl"
+              className="mt-1.5 min-h-12"
+              value={logoUrl}
+              onChange={(e) => setLogoUrl(e.target.value)}
+            />
           </div>
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <Label>Plan</Label>
-          <select
-            name="billingPlan"
-            defaultValue={initial.billingPlan}
-            className="mt-1.5 flex min-h-12 w-full rounded-[10px] border border-lp-border bg-lp-bg/80 px-4"
-          >
-            <option value={BillingPlan.STARTER}>Starter</option>
-            <option value={BillingPlan.STANDARD}>Standard</option>
-            <option value={BillingPlan.PRO}>Pro</option>
-            <option value={BillingPlan.MAX}>Max</option>
-          </select>
-        </div>
-        <div>
-          <Label htmlFor="v-platform-fee-pct">Platform fee on entry fees (%)</Label>
-          <Input
-            id="v-platform-fee-pct"
-            name="platformFeePercent"
-            defaultValue={initial.platformFeePercent}
-            className="mt-1.5 min-h-12"
-            type="number"
-            min={1}
-            max={30}
-            step={0.01}
-          />
-          <p className="mt-1 text-xs text-lp-muted">LeaguePour keeps this share of each paid registration; the rest transfers to your Stripe Connect account.</p>
-        </div>
+      <div>
+        <Label>Plan</Label>
+        <select
+          name="billingPlan"
+          defaultValue={initial.billingPlan}
+          className="mt-1.5 flex min-h-12 w-full rounded-[10px] border border-lp-border bg-lp-bg/80 px-4"
+        >
+          <option value={BillingPlan.STARTER}>Starter</option>
+          <option value={BillingPlan.GROWTH}>Growth</option>
+          <option value={BillingPlan.PRO}>Pro</option>
+          <option value={BillingPlan.ELITE}>Elite</option>
+        </select>
       </div>
 
       <input type="hidden" name="googlePlaceId" value={initial.googlePlaceId} />

@@ -2,29 +2,61 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { FieldHelp } from "@/components/forms/field-help";
 import { Button } from "@/components/ui/button";
+import { BillingCard } from "@/components/venue/billing-card";
 import { auth } from "@/auth";
 import { marketingRoutes, venueAppRoutes } from "@/lib/routes";
 import { resolvePrimaryVenueAccess, venueStaffCanManageStaff } from "@/lib/venue-permissions";
+import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 
-export default async function VenueSettingsPage() {
+const notices: Record<string, string> = {
+  subscribed: "Subscription activated — welcome aboard!",
+  "subscribe-cancel": "Subscription checkout was cancelled.",
+};
+
+export default async function VenueSettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ notice?: string }>;
+}) {
   const session = await auth();
   const access = await resolvePrimaryVenueAccess(session);
   if (!access) redirect("/signup/venue");
+  const { notice } = await searchParams;
   const showStaff = venueStaffCanManageStaff(access.role);
+
+  const venue = await prisma.venue.findUnique({
+    where: { id: access.venueId },
+    select: {
+      billingPlan: true,
+      subscriptionStatus: true,
+      subscriptionPeriodEnd: true,
+      stripeBillingCustomerId: true,
+    },
+  });
+  if (!venue) redirect("/signup/venue");
+
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
         <h1 className="lp-page-title text-3xl md:text-4xl">Settings</h1>
-        <p className="mt-2 text-lp-muted">Core controls for profile, staff, and competition defaults.</p>
+        <p className="mt-2 text-lp-muted">Core controls for profile, staff, billing, and competition defaults.</p>
       </div>
+
+      {notice && notices[notice] ? (
+        <div className="rounded-[10px] border border-lp-accent/35 bg-lp-accent/10 px-4 py-3 text-sm font-medium text-lp-text">
+          {notices[notice]}
+        </div>
+      ) : null}
+
       <FieldHelp title="Quick setup">
-        <p>Connect Stripe, lock your venue profile, then launch events from competitions.</p>
+        <p>Connect Stripe, subscribe to a plan, then launch events from competitions.</p>
       </FieldHelp>
+
       <div className="grid gap-4 sm:grid-cols-2">
         <Card className="space-y-3 p-5">
           <p className="lp-kicker">Public presence</p>
-          <p className="text-sm text-lp-muted">Name, slug, and copy players see before they sign up.</p>
+          <p className="text-sm text-lp-muted">Name, slug, Stripe Connect, and copy players see before they sign up.</p>
           <Button asChild size="lg" className="w-full">
             <Link href={venueAppRoutes.profile}>Venue profile</Link>
           </Button>
@@ -46,6 +78,16 @@ export default async function VenueSettingsPage() {
           </Card>
         ) : null}
       </div>
+
+      <Card className="space-y-4 p-5">
+        <BillingCard
+          currentPlan={venue.billingPlan}
+          subscriptionStatus={venue.subscriptionStatus}
+          subscriptionPeriodEnd={venue.subscriptionPeriodEnd}
+          hasBillingCustomer={Boolean(venue.stripeBillingCustomerId)}
+        />
+      </Card>
+
       <Card className="space-y-3 p-5">
         <p className="lp-kicker">Help</p>
         <p className="text-sm text-lp-muted">Need migration help or billing support?</p>
