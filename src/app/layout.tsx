@@ -75,6 +75,7 @@ export default function RootLayout({
       className={`${inter.variable} ${barlowCondensed.variable} h-full scroll-smooth antialiased`}
     >
       <head>
+        <meta name="google-adsense-account" content="ca-pub-9572509189594279" />
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9572509189594279"
