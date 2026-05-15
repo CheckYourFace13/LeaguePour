@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, Inter } from "next/font/google";
+import Script from "next/script";
 import { AppProviders } from "@/components/providers/app-providers";
-import { adsenseScriptSrc, getAdsenseClient } from "@/lib/adsense";
+import { ADSENSE_SCRIPT_SRC } from "@/lib/adsense";
 import { getPublicSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
@@ -70,23 +71,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const adsenseClient = getAdsenseClient();
-
   return (
     <html
       lang="en"
       className={`${inter.variable} ${barlowCondensed.variable} h-full scroll-smooth antialiased`}
     >
-      <head>
-        {adsenseClient ? (
-          <script
-            async
-            src={adsenseScriptSrc(adsenseClient)}
-            crossOrigin="anonymous"
-          />
-        ) : null}
-      </head>
       <body className="min-h-full flex flex-col font-sans">
+        <Script
+          id="google-adsense"
+          strategy="beforeInteractive"
+          async
+          src={ADSENSE_SCRIPT_SRC}
+          crossOrigin="anonymous"
+        />
         <AppProviders>{children}</AppProviders>
       </body>
     </html>
