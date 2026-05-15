@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, Inter } from "next/font/google";
-import Script from "next/script";
 import { AppProviders } from "@/components/providers/app-providers";
-import { ADSENSE_SCRIPT_SRC } from "@/lib/adsense";
 import { getPublicSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
@@ -76,14 +74,14 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${barlowCondensed.variable} h-full scroll-smooth antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">
-        <Script
-          id="google-adsense"
-          strategy="beforeInteractive"
+      <head>
+        <script
           async
-          src={ADSENSE_SCRIPT_SRC}
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9572509189594279"
           crossOrigin="anonymous"
         />
+      </head>
+      <body className="min-h-full flex flex-col font-sans">
         <AppProviders>{children}</AppProviders>
       </body>
     </html>
