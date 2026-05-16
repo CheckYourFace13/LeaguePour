@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Barlow_Condensed, Inter } from "next/font/google";
 import { AppProviders } from "@/components/providers/app-providers";
 import { getPublicSiteUrl } from "@/lib/site-url";
@@ -84,6 +85,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col font-sans">
         <AppProviders>{children}</AppProviders>
+        {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ? (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
+        ) : null}
       </body>
     </html>
   );
