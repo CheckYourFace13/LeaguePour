@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import Script from "next/script";
 import { Barlow_Condensed, Inter } from "next/font/google";
 import { AppProviders } from "@/components/providers/app-providers";
 import { getPublicSiteUrl } from "@/lib/site-url";
@@ -82,12 +82,22 @@ export default function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9572509189594279"
           crossOrigin="anonymous"
         />
+        <Script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-RPNMBRYF04"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-RPNMBRYF04');
+          `}
+        </Script>
       </head>
       <body className="min-h-full flex flex-col font-sans">
         <AppProviders>{children}</AppProviders>
-        {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ? (
-          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
-        ) : null}
       </body>
     </html>
   );
