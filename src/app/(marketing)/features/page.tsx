@@ -66,6 +66,18 @@ export default function FeaturesPage() {
           </div>
         ))}
       </div>
+      <div className="mt-10 rounded-2xl border border-lp-border bg-lp-surface/40 p-6">
+        <h2 className="font-display text-lg font-bold">Tournaments & leagues</h2>
+        <p className="mt-2 text-sm text-lp-muted leading-relaxed">
+          Brackets, signups, Stripe payments, and venue-first operations for bars and breweries.
+        </p>
+        <Link
+          href="/features/tournaments"
+          className="mt-3 inline-block text-sm font-semibold text-lp-accent hover:underline"
+        >
+          Tournament & league management →
+        </Link>
+      </div>
       <div className="mt-10 flex flex-wrap gap-4 text-sm">
         <Link href="/for-venues" className="font-semibold text-lp-accent hover:underline">
           For venues
