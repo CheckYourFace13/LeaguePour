@@ -78,6 +78,20 @@ export default function FeaturesPage() {
           Tournament & league management →
         </Link>
       </div>
+      <div className="mt-6 flex flex-wrap gap-3 text-sm">
+        <Link href="/find/dart-leagues" className="font-semibold text-lp-accent hover:underline">
+          Find dart leagues
+        </Link>
+        <Link href="/software/bar-tournament-software" className="font-semibold text-lp-accent hover:underline">
+          Bar tournament software
+        </Link>
+        <Link href="/compare/challonge" className="font-semibold text-lp-accent hover:underline">
+          vs Challonge
+        </Link>
+        <Link href="/bar-leagues/chicago" className="font-semibold text-lp-accent hover:underline">
+          Chicago bar leagues
+        </Link>
+      </div>
       <div className="mt-10 flex flex-wrap gap-4 text-sm">
         <Link href="/for-venues" className="font-semibold text-lp-accent hover:underline">
           For venues

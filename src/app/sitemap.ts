@@ -1,40 +1,22 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/db";
+import { getAllCompareSlugs } from "@/lib/seo/compare-pages";
+import { getSitemapCityGamePaths } from "@/lib/seo/discovery-data";
+import { getAllFindSlugs } from "@/lib/seo/render-find-page";
+import { getAllSoftwareSlugs } from "@/lib/seo/render-software-page";
+import { getAllOutreachCitySlugs } from "@/lib/seo/outreach-city-slugs";
 import { getPublicSiteUrl } from "@/lib/site-url";
-import { OUTREACH_CITIES } from "@/lib/outreach-cities";
-
-function buildCitySlugs(): string[] {
-  const slugCount = new Map<string, number>();
-  for (const c of OUTREACH_CITIES) {
-    const base = c.city.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    slugCount.set(base, (slugCount.get(base) ?? 0) + 1);
-  }
-
-  const slugs: string[] = [];
-  const seen = new Set<string>();
-
-  for (const c of OUTREACH_CITIES) {
-    const key = `${c.city}|${c.state}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-
-    const base = c.city.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    const needsDisambig = (slugCount.get(base) ?? 0) > 1;
-    let slug = needsDisambig ? `${base}-${c.state.toLowerCase()}` : base;
-    if (c.city === 'Portland' && c.state === 'OR') slug = 'portland';
-
-    slugs.push(slug);
-  }
-  return slugs;
-}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getPublicSiteUrl();
-  const citySlugs = buildCitySlugs();
+  const citySlugs = getAllOutreachCitySlugs();
+
   let venues: { slug: string; updatedAt: Date }[] = [];
   let competitions: { slug: string; updatedAt: Date; venue: { slug: string } }[] = [];
+  let cityGamePaths: string[] = [];
+
   try {
-    [venues, competitions] = await Promise.all([
+    [venues, competitions, cityGamePaths] = await Promise.all([
       prisma.venue.findMany({
         where: { isDisabled: false },
         select: { slug: true, updatedAt: true },
@@ -48,11 +30,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         select: { slug: true, updatedAt: true, venue: { select: { slug: true } } },
         take: 5000,
       }),
+      getSitemapCityGamePaths(["bar-leagues", "events", "bars"]),
     ]);
   } catch {
     venues = [];
     competitions = [];
+    cityGamePaths = [];
   }
+
+  const discoveryPrefixes = ["bar-leagues", "events", "bars"] as const;
+  const cityDiscoveryPaths = discoveryPrefixes.flatMap((prefix) =>
+    citySlugs.map((s) => `/${prefix}/${s}`),
+  );
 
   const staticPages: MetadataRoute.Sitemap = [
     "",
@@ -72,6 +61,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/poker-tournament-software",
     "/music-bingo-software",
     "/euchre-tournament-software",
+    ...getAllSoftwareSlugs().map((s) => `/software/${s}`),
+    ...getAllCompareSlugs().map((s) => `/compare/${s}`),
+    ...getAllFindSlugs().map((s) => `/find/${s}`),
     "/guides",
     "/guides/how-to-run-a-dart-league-at-your-bar",
     "/guides/cornhole-tournament-ideas-for-bars",
@@ -85,14 +77,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/history/trivia",
     "/history/shuffleboard",
     "/rules",
-    ...citySlugs.map((s) => `/bar-leagues/${s}`),
+    ...cityDiscoveryPaths,
+    ...cityGamePaths,
     "/legal/terms",
     "/legal/privacy",
   ].map((path) => ({
     url: `${base}${path}`,
     lastModified: new Date(),
-    changeFrequency: "weekly",
-    priority: path === "" ? 1 : 0.8,
+    changeFrequency: "weekly" as const,
+    priority: path === "" ? 1 : path.includes("/compare/") || path.includes("/software/") ? 0.85 : 0.8,
   }));
 
   const venuePages = venues.map((v) => ({

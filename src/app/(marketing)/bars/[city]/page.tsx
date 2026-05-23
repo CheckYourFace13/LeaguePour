@@ -14,14 +14,14 @@ export async function generateMetadata({
   params: Promise<{ city: string }>;
 }) {
   const { city } = await params;
-  return buildCityDiscoveryMetadata("bar-leagues", city);
+  return buildCityDiscoveryMetadata("bars", city);
 }
 
-export default async function BarLeaguesCityPage({
+export default async function BarsCityPage({
   params,
 }: {
   params: Promise<{ city: string }>;
 }) {
   const { city } = await params;
-  return <CityDiscoveryPage prefix="bar-leagues" citySlug={city} />;
+  return <CityDiscoveryPage prefix="bars" citySlug={city} />;
 }
