@@ -3,6 +3,13 @@ import Link from "next/link";
 import { Check, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getPublicSiteUrl } from "@/lib/site-url";
+import {
+  BRACKET_ENGINE_ROADMAP,
+  FORMAT_WIZARD_EXAMPLES,
+  formatsWithPickerLabels,
+  TOURNAMENT_FORMATS,
+  type FormatStatus,
+} from "@/lib/tournament-formats";
 
 export const metadata: Metadata = {
   title:
@@ -142,12 +149,21 @@ const growth = [
 ];
 
 const featureCards: { title: string; body: string }[] = [
-  { title: "Single elimination tournaments", body: "Run fast one-night brackets when you need a clear winner by closing time." },
-  { title: "Double elimination tournaments", body: "Give teams a losers bracket — a familiar format for cornhole, darts, and pool nights." },
-  { title: "Round robin leagues", body: "Everyone plays multiple rounds; standings tables track points across the season." },
+  {
+    title: "Single elimination tournaments",
+    body: "Designed for today: pick the format, assign matches, enter scores — bracket cards on Standings. Auto-bracket generation is on the roadmap.",
+  },
+  {
+    title: "Double elimination tournaments",
+    body: "Designed for today: track winners and losers bracket matches with labels and scores. Full auto double-elim trees are on the roadmap.",
+  },
+  {
+    title: "Round robin leagues",
+    body: "Designed for today: standings with wins, losses, ties, and points. Auto round-robin scheduling is on the roadmap.",
+  },
   {
     title: "Pool play into playoffs",
-    body: "Use season-style standings for group play, then seed playoff brackets from regular-season results.",
+    body: "Planned: pool groups with advancement into elimination playoffs. Use season standings + manual playoffs until pool play ships.",
   },
   { title: "Weekly recurring leagues", body: "Set recurring rules and signup windows so the same night runs week after week." },
   { title: "Team-based signups", body: "Register full teams with caps sized to your boards, tables, or lanes." },
@@ -220,7 +236,8 @@ const comparisonRows: {
   generic: string | boolean;
   leaguepour: string | boolean;
 }[] = [
-  { feature: "Brackets", generic: true, leaguepour: true },
+  { feature: "Auto-generated brackets", generic: true, leaguepour: "Roadmap" },
+  { feature: "Manual match + score tracking", generic: "Sometimes", leaguepour: true },
   { feature: "League standings", generic: "Sometimes", leaguepour: true },
   { feature: "Paid team signup", generic: "Sometimes", leaguepour: true },
   { feature: "QR code signup", generic: "Limited", leaguepour: true },
@@ -248,19 +265,16 @@ const comparisonRows: {
   { feature: "Built for bars and breweries", generic: false, leaguepour: true },
 ];
 
-const roadmapItems = [
-  "Bulk imports and seeding tools",
-  "Board/table/station assignment",
-  "Public station queue display",
-  "Player-submitted scores with dispute review",
-  "Embeddable brackets and event widgets",
-  "Sponsor and merch add-ons",
-];
+const roadmapItems = [...BRACKET_ENGINE_ROADMAP];
 
 const faqs = [
   {
     q: "What bracket formats does LeaguePour support today?",
-    a: "Single elimination, double elimination, round robin, ladder, season, and points-style competitions. Pick the bracket kind when you create the event — match rows drive bracket cards on Standings.",
+    a: "The competition builder includes single elimination, double elimination, round robin, ladder, season standings, and points leaderboard types. Venues enter matches and scores today; automatic bracket generation, Swiss, pool play, best-of series, and consolation brackets are on the roadmap. See the format guide on this page for Live vs Planned labels.",
+  },
+  {
+    q: "Will LeaguePour match Challonge-style bracket depth?",
+    a: "That is the goal. LeaguePour already leads on venue signups, payments, discovery, and repeat-player marketing. The bracket engine roadmap covers auto-generated trees, seeding, pool play, Swiss, and best-of series — without sacrificing the bar-first workflow.",
   },
   {
     q: "Do entry fees go to LeaguePour or my venue?",
@@ -287,6 +301,23 @@ const faqs = [
     a: "Create a venue, connect Stripe if you charge entry fees, publish your first competition, and share the signup link. Most venues are live in under ten minutes.",
   },
 ];
+
+const STATUS_STYLES: Record<FormatStatus, string> = {
+  Live: "border-lp-success/40 bg-lp-success/10 text-lp-success",
+  "Designed for": "border-lp-accent/40 bg-lp-accent/10 text-lp-accent",
+  Planned: "border-lp-warning/40 bg-lp-warning/10 text-lp-warning",
+  Roadmap: "border-lp-border bg-lp-surface/60 text-lp-muted",
+};
+
+function FormatStatusBadge({ status }: { status: FormatStatus }) {
+  return (
+    <span
+      className={`inline-flex shrink-0 rounded-full border px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide ${STATUS_STYLES[status]}`}
+    >
+      {status}
+    </span>
+  );
+}
 
 function CellValue({ value }: { value: string | boolean }) {
   if (value === true) {
@@ -370,6 +401,94 @@ export default function TournamentsFeaturePage() {
             <Link href="/pricing">See Pricing</Link>
           </Button>
         </div>
+
+        {/* Bracket formats + wizard */}
+        <section className="mt-20" aria-labelledby="format-wizard">
+          <h2 id="format-wizard" className="font-display text-2xl font-bold md:text-3xl">
+            Choose the right bracket without knowing tournament theory
+          </h2>
+          <p className="mt-3 max-w-3xl text-lp-muted leading-relaxed">
+            LeaguePour is built for real venue operators. Pick your game, number of teams, available time, and whether
+            everyone should play more than once — LeaguePour helps you choose the format that fits the night. The smart
+            setup wizard is <span className="font-semibold text-lp-accent">Planned</span> in the competition builder;
+            recommendations below use established formats only.
+          </p>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {formatsWithPickerLabels().map((f) => (
+              <div key={f.id} className="rounded-xl border border-lp-border bg-lp-surface/40 p-5">
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="font-semibold text-lp-text leading-snug">{f.pickerLabel}</h3>
+                  <FormatStatusBadge status={f.status} />
+                </div>
+                <p className="mt-2 text-sm text-lp-muted leading-relaxed">{f.bestFor}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-16 rounded-2xl border border-lp-border bg-lp-surface/40 p-8" aria-labelledby="wizard-examples">
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 id="wizard-examples" className="font-display text-xl font-bold md:text-2xl">
+              Smart setup wizard
+            </h2>
+            <FormatStatusBadge status="Planned" />
+          </div>
+          <p className="mt-3 text-sm text-lp-muted leading-relaxed">
+            Coming to the competition builder — answer a few questions and LeaguePour recommends an established format
+            (no custom or experimental styles).
+          </p>
+          <ul className="mt-6 space-y-4">
+            {FORMAT_WIZARD_EXAMPLES.map((ex) => (
+              <li
+                key={ex.scenario}
+                className="flex flex-col gap-2 rounded-xl border border-lp-border bg-lp-bg/40 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div>
+                  <p className="text-sm font-semibold text-lp-text">{ex.inputs}</p>
+                  <p className="text-xs text-lp-muted">→ Recommends: {ex.recommends}</p>
+                </div>
+                <FormatStatusBadge status={ex.status} />
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="mt-16" aria-labelledby="all-formats">
+          <h2 id="all-formats" className="font-display text-2xl font-bold md:text-3xl">
+            Established tournament formats
+          </h2>
+          <p className="mt-3 text-sm text-lp-muted leading-relaxed">
+            Labels reflect the product today: <strong className="text-lp-success">Live</strong> = works end-to-end;{" "}
+            <strong className="text-lp-accent">Designed for</strong> = format type + manual matches/standings;{" "}
+            <strong className="text-lp-warning">Planned</strong> / <strong className="text-lp-muted">Roadmap</strong> =
+            engine work in progress.
+          </p>
+          <div className="mt-8 space-y-6">
+            {TOURNAMENT_FORMATS.map((f) => (
+              <article key={f.id} className="rounded-xl border border-lp-border bg-lp-surface/30 p-6">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <h3 className="font-display text-lg font-bold text-lp-text">{f.name}</h3>
+                  <FormatStatusBadge status={f.status} />
+                </div>
+                <p className="mt-2 text-sm text-lp-muted leading-relaxed">{f.summary}</p>
+                <p className="mt-3 text-sm leading-relaxed">
+                  <span className="font-semibold text-lp-text">Best for: </span>
+                  <span className="text-lp-muted">{f.bestFor}</span>
+                </p>
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  <div className="rounded-lg border border-lp-border/80 bg-lp-bg/50 p-4">
+                    <p className="text-xs font-bold uppercase tracking-wider text-lp-success">Today</p>
+                    <p className="mt-2 text-sm text-lp-muted leading-relaxed">{f.liveToday}</p>
+                  </div>
+                  <div className="rounded-lg border border-lp-border/80 bg-lp-bg/50 p-4">
+                    <p className="text-xs font-bold uppercase tracking-wider text-lp-accent">Bracket engine next</p>
+                    <p className="mt-2 text-sm text-lp-muted leading-relaxed">{f.engineNext}</p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
 
         {/* 1. Run every kind of bar competition */}
         <section className="mt-20" aria-labelledby="competition-types">
@@ -540,11 +659,12 @@ export default function TournamentsFeaturePage() {
           aria-labelledby="roadmap"
         >
           <h2 id="roadmap" className="font-display text-2xl font-bold md:text-3xl">
-            Roadmap: advanced tournament controls
+            Bracket engine roadmap
           </h2>
           <p className="mt-3 text-sm text-lp-muted leading-relaxed">
-            We are building deeper bracket tooling without losing the venue-first signup, payments, and marketing stack
-            that generic tournament apps skip.
+            Goal: bracket and tournament setup as good as or better than generic tournament tools — while keeping
+            venue-first signups, payments, and discovery. Generic tools organize matchups; LeaguePour helps venues fill
+            the room.
           </p>
           <ul className="mt-6 grid gap-3 sm:grid-cols-2">
             {roadmapItems.map((item) => (
