@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title:
     "Tournament & League Management for Bars & Breweries | LeaguePour",
   description:
-    "Bar tournament software and league management for dart leagues, cornhole tournaments, trivia nights, pool brackets, and brewery events. Signups, Stripe payments, brackets, and venue-first operations.",
+    "Bar tournament software, league management, paid signups, QR codes, venue event hubs, and local event discovery — plus brackets and venue-first operations for dart, cornhole, trivia, and brewery events.",
   alternates: { canonical: "/features/tournaments" },
   keywords: [
     "bar tournament software",
@@ -70,10 +70,10 @@ const jsonLd = {
         },
         {
           "@type": "Question",
-          name: "How is LeaguePour different from generic bracket generators?",
+          name: "How is LeaguePour different from generic tournament software?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Generic bracket tools focus on drawing matchups. LeaguePour is built for venue operations: paid signups to your Stripe account, public venue hubs, waitlists, staff score entry, email campaigns to past players, and SEO-friendly event pages.",
+            text: "Generic tournament apps focus on brackets and seeding. LeaguePour is built for bars and breweries: paid signups to your Stripe account, venue hubs, waitlists, staff score entry, email campaigns to past players, and SEO-friendly event pages. Advanced bracket controls like bulk import and station queues are on the roadmap.",
           },
         },
       ],
@@ -224,14 +224,37 @@ const comparisonRows: {
   { feature: "League standings", generic: "Sometimes", leaguepour: true },
   { feature: "Paid team signup", generic: "Sometimes", leaguepour: true },
   { feature: "QR code signup", generic: "Limited", leaguepour: true },
-  { feature: "Venue event hub", generic: false, leaguepour: true },
-  { feature: "Bar-game templates", generic: false, leaguepour: true },
-  { feature: "Food/drink promo areas", generic: false, leaguepour: true },
+  { feature: "Ratings / leaderboards", generic: true, leaguepour: true },
+  { feature: "Bulk participant import", generic: true, leaguepour: "Roadmap" },
+  { feature: "Drag-and-drop seeding", generic: true, leaguepour: "Roadmap" },
+  { feature: "Verified email requirement", generic: "Often", leaguepour: "Account email required" },
+  { feature: "Blocklist / banned participant controls", generic: "Sometimes", leaguepour: "Roadmap" },
+  { feature: "Custom registration fields", generic: true, leaguepour: "Planned" },
+  { feature: "Participant check-in", generic: "Limited", leaguepour: true },
+  { feature: "Match station assignment", generic: "Sometimes", leaguepour: "Roadmap" },
+  { feature: "Station queue display", generic: true, leaguepour: "Roadmap" },
+  { feature: "Match times", generic: true, leaguepour: "Roadmap" },
+  { feature: "Match attachments", generic: true, leaguepour: "Roadmap" },
+  { feature: "Embeddable brackets", generic: true, leaguepour: "Roadmap" },
+  { feature: "Printed brackets", generic: true, leaguepour: "Designed for" },
+  { feature: "API access", generic: true, leaguepour: "Roadmap" },
+  { feature: "Event tickets / merchandise", generic: "Sometimes", leaguepour: "Roadmap" },
   { feature: "Sponsor promotion", generic: "Limited", leaguepour: true },
-  { feature: "Local SEO event pages", generic: false, leaguepour: true },
-  { feature: "City/category discovery", generic: false, leaguepour: true },
-  { feature: "Repeat-player marketing", generic: false, leaguepour: true },
+  { feature: "Food and drink specials", generic: false, leaguepour: true },
+  { feature: "Venue event hub", generic: false, leaguepour: true },
+  { feature: "Local SEO discovery pages", generic: false, leaguepour: true },
+  { feature: "Repeat-player campaigns", generic: false, leaguepour: true },
+  { feature: "Bar-game templates", generic: false, leaguepour: true },
   { feature: "Built for bars and breweries", generic: false, leaguepour: true },
+];
+
+const roadmapItems = [
+  "Bulk imports and seeding tools",
+  "Board/table/station assignment",
+  "Public station queue display",
+  "Player-submitted scores with dispute review",
+  "Embeddable brackets and event widgets",
+  "Sponsor and merch add-ons",
 ];
 
 const faqs = [
@@ -256,6 +279,10 @@ const faqs = [
     a: "No. LeaguePour handles competition signup, payments for entry fees, brackets, and player communication — not table reservations or kitchen tickets.",
   },
   {
+    q: "Does LeaguePour have every feature Challonge offers today?",
+    a: "Not yet. LeaguePour leads on venue operations — paid signups, QR codes, venue hubs, local discovery, and repeat-player campaigns. Bulk import, drag-and-drop seeding, station queues, and API access are on the roadmap. Check the comparison table for what is live vs planned.",
+  },
+  {
     q: "What do I need to get started?",
     a: "Create a venue, connect Stripe if you charge entry fees, publish your first competition, and share the signup link. Most venues are live in under ten minutes.",
   },
@@ -268,7 +295,56 @@ function CellValue({ value }: { value: string | boolean }) {
   if (value === false) {
     return <Minus className="mx-auto size-5 text-lp-text-soft" aria-label="No" />;
   }
-  return <span className="text-sm text-lp-muted">{value}</span>;
+  const isRoadmap =
+    value === "Roadmap" || value === "Planned" || value === "Designed for" || value.startsWith("Account ");
+  return (
+    <span
+      className={`text-xs font-medium leading-snug ${isRoadmap ? "text-lp-accent" : "text-lp-muted"}`}
+    >
+      {value}
+    </span>
+  );
+}
+
+function NativePromoCard({
+  title,
+  copy,
+  bullets,
+  ctaHref,
+  ctaLabel,
+  className = "",
+}: {
+  title: string;
+  copy?: string;
+  bullets?: string[];
+  ctaHref: string;
+  ctaLabel: string;
+  className?: string;
+}) {
+  return (
+    <aside
+      className={`rounded-2xl border border-lp-accent/25 bg-gradient-to-br from-lp-accent/10 via-lp-surface/50 to-lp-surface/30 p-6 md:p-8 ${className}`}
+    >
+      <p className="lp-kicker text-lp-accent">For venues</p>
+      <h3 className="mt-1 font-display text-xl font-bold text-lp-text md:text-2xl">{title}</h3>
+      {copy ? <p className="mt-3 text-sm text-lp-muted leading-relaxed md:text-base">{copy}</p> : null}
+      {bullets ? (
+        <ul className="mt-4 space-y-2">
+          {bullets.map((b) => (
+            <li key={b} className="flex gap-2 text-sm text-lp-muted leading-relaxed">
+              <Check className="mt-0.5 size-4 shrink-0 text-lp-accent" />
+              <span>{b}</span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      <div className="mt-5">
+        <Button asChild variant="secondary">
+          <Link href={ctaHref}>{ctaLabel}</Link>
+        </Button>
+      </div>
+    </aside>
+  );
 }
 
 export default function TournamentsFeaturePage() {
@@ -317,6 +393,13 @@ export default function TournamentsFeaturePage() {
               </Link>
             ))}
           </div>
+          <NativePromoCard
+            className="mt-10"
+            title="Turn sponsors into event revenue"
+            copy="Feature prize sponsors, food specials, drink specials, and partner promos directly around your league or tournament page."
+            ctaHref="/for-venues"
+            ctaLabel="See venue tools"
+          />
         </section>
 
         {/* 2. Built for real venue operations */}
@@ -372,6 +455,18 @@ export default function TournamentsFeaturePage() {
               Pricing & fees →
             </Link>
           </p>
+          <NativePromoCard
+            className="mt-10"
+            title="More than brackets — built to make the night profitable"
+            bullets={[
+              "Collect entry fees before players arrive",
+              "Promote food and drink specials",
+              "Bring past players back with campaigns",
+              "Give sponsors visible placement around the event",
+            ]}
+            ctaHref="/pricing"
+            ctaLabel="See pricing"
+          />
         </section>
 
         {/* 4. Grow the crowd */}
@@ -401,18 +496,24 @@ export default function TournamentsFeaturePage() {
         {/* 5. Comparison table */}
         <section className="mt-20" aria-labelledby="comparison">
           <h2 id="comparison" className="font-display text-2xl font-bold md:text-3xl">
-            LeaguePour vs generic bracket tools
+            LeaguePour vs generic tournament software
           </h2>
           <p className="mt-3 max-w-2xl text-lp-muted leading-relaxed">
-            Free bracket sites draw matchups. LeaguePour runs the venue side: money, signups, discovery, and bringing
-            players back.
+            Challonge-style tools excel at drawing brackets for hobby tournaments. LeaguePour is venue-first: paid
+            signups to your Stripe account, public event pages, staff score entry, and marketing that fills the next
+            league night — not just tonight&apos;s final.
+          </p>
+          <p className="mt-2 text-sm text-lp-muted">
+            <span className="font-semibold text-lp-accent">Roadmap</span> and{" "}
+            <span className="font-semibold text-lp-accent">Planned</span> labels mean the feature is in development, not
+            live today.
           </p>
           <div className="mt-8 overflow-x-auto rounded-xl border border-lp-border">
-            <table className="w-full min-w-[520px] border-collapse text-left text-sm">
+            <table className="w-full min-w-[640px] border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-lp-border bg-lp-surface/60">
                   <th className="px-4 py-3 font-semibold text-lp-text">Feature</th>
-                  <th className="px-4 py-3 text-center font-semibold text-lp-muted">Generic Bracket Tools</th>
+                  <th className="px-4 py-3 text-center font-semibold text-lp-muted">Generic Tournament Software</th>
                   <th className="px-4 py-3 text-center font-semibold text-lp-accent">LeaguePour</th>
                 </tr>
               </thead>
@@ -431,6 +532,28 @@ export default function TournamentsFeaturePage() {
               </tbody>
             </table>
           </div>
+        </section>
+
+        {/* Roadmap */}
+        <section
+          className="mt-20 rounded-2xl border border-lp-border bg-lp-surface/30 p-8"
+          aria-labelledby="roadmap"
+        >
+          <h2 id="roadmap" className="font-display text-2xl font-bold md:text-3xl">
+            Roadmap: advanced tournament controls
+          </h2>
+          <p className="mt-3 text-sm text-lp-muted leading-relaxed">
+            We are building deeper bracket tooling without losing the venue-first signup, payments, and marketing stack
+            that generic tournament apps skip.
+          </p>
+          <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+            {roadmapItems.map((item) => (
+              <li key={item} className="flex gap-2 text-sm text-lp-muted leading-relaxed">
+                <span className="font-bold text-lp-accent">→</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
         </section>
 
         {/* Feature cards */}
@@ -468,8 +591,16 @@ export default function TournamentsFeaturePage() {
           </div>
         </section>
 
+        <NativePromoCard
+          className="mt-16 border-lp-border/80 bg-lp-surface/50"
+          title="Want more visibility for every league night?"
+          copy="Paid venue plans are built to help events get found, promoted, and repeated — not just bracketed."
+          ctaHref="/pricing"
+          ctaLabel="Compare plans"
+        />
+
         {/* Bottom CTA */}
-        <div className="mt-16 rounded-2xl border border-lp-accent/20 bg-lp-accent/10 p-8 text-center">
+        <div className="mt-10 rounded-2xl border border-lp-accent/20 bg-lp-accent/10 p-8 text-center">
           <h2 className="font-display text-2xl font-bold">Ready to run your next league night?</h2>
           <p className="mt-2 text-lp-muted">Create your venue, publish a competition, and share the signup link tonight.</p>
           <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
