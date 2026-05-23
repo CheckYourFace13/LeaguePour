@@ -13,7 +13,8 @@ export type ComparePageConfig = {
 };
 
 const VENUE_ROWS: DiscoveryComparisonRow[] = [
-  { feature: "Bracket & matchup tools", generic: true, leaguepour: true },
+  { feature: "Auto-generated brackets", generic: true, leaguepour: "Roadmap" },
+  { feature: "Manual match & standings", generic: "Sometimes", leaguepour: true },
   { feature: "Paid signup to venue Stripe", generic: "Sometimes", leaguepour: true },
   { feature: "Public venue event hub", generic: false, leaguepour: true },
   { feature: "QR code signup", generic: "Limited", leaguepour: true },
@@ -36,7 +37,7 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
     theirStrength:
       "Challonge is a mature bracket platform with deep tournament formats, seeding tools, and a large community of organizers.",
     leaguePourFocus:
-      "LeaguePour focuses on paid signups, QR codes, venue hubs, local event discovery, repeat-player campaigns, sponsor/prize promotion, food/drink specials, and venue revenue.",
+      "LeaguePour focuses on paid signups, QR codes, venue hubs, local event discovery, repeat-player campaigns, sponsor/prize promotion, food/drink specials, and venue revenue — while improving bracket automation for venue-first operations.",
     rows: [
       ...VENUE_ROWS,
       { feature: "Bulk import & drag-drop seeding", generic: true, leaguepour: "Roadmap" },
@@ -49,7 +50,7 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
       },
       {
         q: "Does LeaguePour replace Challonge's bracket depth?",
-        a: "LeaguePour supports single/double elimination, round robin, season, and points formats today. Advanced seeding imports and station queues are on the roadmap — while signups, payments, and discovery are live now.",
+        a: "Challonge leads on auto-generated brackets and deep seeding today. LeaguePour supports established formats with manual match rows and standings now, and is building auto-bracket generation, pool play, and Swiss on the roadmap — while signups, payments, venue hubs, and player discovery are live.",
       },
     ],
   },

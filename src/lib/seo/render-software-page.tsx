@@ -12,7 +12,16 @@ import {
   buildSoftwareApplicationJsonLd,
 } from "@/lib/seo/json-ld-builders";
 import { getDiscoveryGameBySlug } from "@/lib/seo/discovery-games";
-import { CORE_COMPARISON_ROWS, REVENUE_PROMO, SPONSOR_PROMO, UPGRADE_PROMO } from "@/lib/seo/discovery-shared";
+import {
+  BRACKET_ROADMAP_SECTION,
+  BRING_PLAYERS_BACK_PROMO,
+  CORE_COMPARISON_ROWS,
+  DEFAULT_FORMAT_SECTION,
+  ENTRY_FEE_REVENUE_PROMO,
+  FEATURE_SPONSOR_PROMO,
+  PROMOTE_LEAGUE_PROMO,
+  UPGRADE_PROMO,
+} from "@/lib/seo/discovery-shared";
 
 export type SoftwarePageSlug =
   | "bar-tournament-software"
@@ -113,6 +122,10 @@ export async function SoftwareDiscoveryPage({ slug }: { slug: SoftwarePageSlug }
       q: "Where do entry fees go?",
       a: "To your connected Stripe account. LeaguePour charges a platform fee on paid entry (see Pricing).",
     },
+    {
+      q: "Does LeaguePour auto-generate brackets?",
+      a: "You can select established formats (single/double elimination, round robin, ladder, season, points) and enter matches and scores today. Auto-generated bracket trees and advanced seeding are on the roadmap.",
+    },
   ];
 
   const jsonLd = [
@@ -147,9 +160,10 @@ export async function SoftwareDiscoveryPage({ slug }: { slug: SoftwarePageSlug }
           "Campaigns to bring past players back",
         ],
       }}
+      formatSection={DEFAULT_FORMAT_SECTION}
       comparison={{
         title: "LeaguePour vs generic tournament software",
-        intro: "Generic bracket tools organize matchups. LeaguePour helps venues fill the room.",
+        intro: "Generic bracket tools organize matchups. LeaguePour helps venues fill the room — with bracket automation improving over time.",
         rows: CORE_COMPARISON_ROWS,
       }}
       faqs={faqs}
@@ -159,9 +173,12 @@ export async function SoftwareDiscoveryPage({ slug }: { slug: SoftwarePageSlug }
         ...(game ? [{ href: game.findPath, label: game.patronHeadline }] : []),
         { href: "/compare/challonge", label: "vs Challonge" },
       ]}
-      sponsorPromo={SPONSOR_PROMO}
-      revenuePromo={REVENUE_PROMO}
+      sponsorPromo={FEATURE_SPONSOR_PROMO}
+      revenuePromo={ENTRY_FEE_REVENUE_PROMO}
+      leagueNightPromo={PROMOTE_LEAGUE_PROMO}
+      reactivationPromo={BRING_PLAYERS_BACK_PROMO}
       upgradePromo={UPGRADE_PROMO}
+      roadmap={BRACKET_ROADMAP_SECTION}
       jsonLdGraphs={jsonLd}
     />
   );

@@ -18,15 +18,26 @@ export type DiscoveryPromoSlot = {
   ctaLabel: string;
 };
 
+export type DiscoveryFormatSection = {
+  title: string;
+  intro?: string;
+  formats: { label: string; status: string }[];
+  ctaHref: string;
+  ctaLabel: string;
+};
+
 export type LeaguePourDiscoveryLandingProps = {
   kicker: string;
   heroTitle: string;
   heroIntro: string;
+  /** e.g. "Chicago, IL · Dart leagues" */
+  locationLine?: string;
   primaryCta: { href: string; label: string };
   secondaryCta: { href: string; label: string };
   venues: DiscoveryVenueRow[];
   competitions: DiscoveryCompetitionRow[];
   whyLeaguePour: { title: string; items: string[] };
+  formatSection?: DiscoveryFormatSection;
   comparison?: { title: string; intro?: string; rows: DiscoveryComparisonRow[] };
   faqs: { q: string; a: string }[];
   relatedLinks: { href: string; label: string }[];
@@ -34,6 +45,8 @@ export type LeaguePourDiscoveryLandingProps = {
   emptyState?: { title: string; body: string; ctaHref: string; ctaLabel: string };
   sponsorPromo?: DiscoveryPromoSlot;
   revenuePromo?: DiscoveryPromoSlot;
+  leagueNightPromo?: DiscoveryPromoSlot;
+  reactivationPromo?: DiscoveryPromoSlot;
   upgradePromo?: DiscoveryPromoSlot;
   roadmap?: { title: string; items: string[] };
   jsonLdGraphs: Record<string, unknown>[];
@@ -70,15 +83,24 @@ function NativePromoCard({ slot }: { slot: DiscoveryPromoSlot }) {
   );
 }
 
+const STATUS_CLASS: Record<string, string> = {
+  Live: "text-lp-success",
+  "Designed for": "text-lp-accent",
+  Planned: "text-lp-warning",
+  Roadmap: "text-lp-muted",
+};
+
 export function LeaguePourDiscoveryLanding({
   kicker,
   heroTitle,
   heroIntro,
+  locationLine,
   primaryCta,
   secondaryCta,
   venues,
   competitions,
   whyLeaguePour,
+  formatSection,
   comparison,
   faqs,
   relatedLinks,
@@ -86,6 +108,8 @@ export function LeaguePourDiscoveryLanding({
   emptyState,
   sponsorPromo,
   revenuePromo,
+  leagueNightPromo,
+  reactivationPromo,
   upgradePromo,
   roadmap,
   jsonLdGraphs,
@@ -103,6 +127,9 @@ export function LeaguePourDiscoveryLanding({
         <p className="lp-kicker text-lp-accent">{kicker}</p>
         <h1 className="mt-2 font-display text-4xl font-bold leading-tight md:text-5xl">{heroTitle}</h1>
         <p className="mt-5 max-w-3xl text-lg text-lp-muted leading-relaxed">{heroIntro}</p>
+        {locationLine ? (
+          <p className="mt-2 text-sm font-semibold text-lp-accent">{locationLine}</p>
+        ) : null}
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Button asChild size="lg">
             <Link href={primaryCta.href}>{primaryCta.label}</Link>
@@ -215,6 +242,36 @@ export function LeaguePourDiscoveryLanding({
           </ul>
         </section>
 
+        {formatSection ? (
+          <section className="mt-16" aria-labelledby="formats">
+            <h2 id="formats" className="font-display text-2xl font-bold md:text-3xl">
+              {formatSection.title}
+            </h2>
+            {formatSection.intro ? (
+              <p className="mt-3 max-w-2xl text-sm text-lp-muted leading-relaxed">{formatSection.intro}</p>
+            ) : null}
+            <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+              {formatSection.formats.map((f) => (
+                <li
+                  key={f.label}
+                  className="flex items-start justify-between gap-2 rounded-xl border border-lp-border bg-lp-surface/30 px-4 py-3 text-sm"
+                >
+                  <span className="text-lp-text leading-snug">{f.label}</span>
+                  <span className={`shrink-0 text-xs font-bold uppercase ${STATUS_CLASS[f.status] ?? "text-lp-muted"}`}>
+                    {f.status}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <Link
+              href={formatSection.ctaHref}
+              className="mt-4 inline-block text-sm font-semibold text-lp-accent hover:underline"
+            >
+              {formatSection.ctaLabel} →
+            </Link>
+          </section>
+        ) : null}
+
         {revenuePromo ? <div className="mt-16">{<NativePromoCard slot={revenuePromo} />}</div> : null}
 
         {comparison ? (
@@ -284,11 +341,17 @@ export function LeaguePourDiscoveryLanding({
           </div>
         </section>
 
+        {reactivationPromo ? <div className="mt-16">{<NativePromoCard slot={reactivationPromo} />}</div> : null}
+
         {upgradePromo ? <div className="mt-16">{<NativePromoCard slot={upgradePromo} />}</div> : null}
+
+        {leagueNightPromo ? <div className="mt-16">{<NativePromoCard slot={leagueNightPromo} />}</div> : null}
 
         <div className="mt-10 rounded-2xl border border-lp-accent/20 bg-lp-accent/10 p-8 text-center">
           <h2 className="font-display text-2xl font-bold">Run your next league night on LeaguePour</h2>
-          <p className="mt-2 text-lp-muted">Signups, payments, brackets, and repeat players — built for venues.</p>
+          <p className="mt-2 text-lp-muted">
+            Signups, payments, standings, and repeat players — with bracket automation improving on the roadmap.
+          </p>
           <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Button asChild size="lg">
               <Link href={primaryCta.href}>{primaryCta.label}</Link>

@@ -7,7 +7,15 @@ import {
   buildFaqPageJsonLd,
   buildWebPageJsonLd,
 } from "@/lib/seo/json-ld-builders";
-import { REVENUE_PROMO, SPONSOR_PROMO, UPGRADE_PROMO } from "@/lib/seo/discovery-shared";
+import {
+  BRACKET_ROADMAP_SECTION,
+  BRING_PLAYERS_BACK_PROMO,
+  DEFAULT_FORMAT_SECTION,
+  ENTRY_FEE_REVENUE_PROMO,
+  FEATURE_SPONSOR_PROMO,
+  PROMOTE_LEAGUE_PROMO,
+  UPGRADE_PROMO,
+} from "@/lib/seo/discovery-shared";
 
 export async function buildCompareMetadata(slug: string): Promise<Metadata> {
   const page = getComparePage(slug);
@@ -63,10 +71,11 @@ export function CompareDiscoveryPage({ slug }: { slug: string }) {
         items: [
           page.leaguePourFocus,
           "Generic bracket tools organize matchups. LeaguePour helps venues fill the room.",
-          "Live today: paid signups, QR codes, venue hubs, waitlists, staff scoring, and campaigns.",
-          "Roadmap: bulk import, station queues, embeddable brackets, and merch add-ons.",
+          "Live today: paid signups, QR codes, venue hubs, waitlists, staff score entry, and campaigns.",
+          "Bracket engine: auto-generated trees, pool play, and Swiss are on the roadmap — see format guide.",
         ],
       }}
+      formatSection={DEFAULT_FORMAT_SECTION}
       comparison={{
         title: "Feature comparison",
         intro: page.theirStrength,
@@ -80,9 +89,12 @@ export function CompareDiscoveryPage({ slug }: { slug: string }) {
         { href: "/compare/challonge", label: "vs Challonge" },
         { href: "/compare/generic-bracket-generators", label: "vs bracket generators" },
       ]}
-      sponsorPromo={SPONSOR_PROMO}
-      revenuePromo={REVENUE_PROMO}
+      sponsorPromo={FEATURE_SPONSOR_PROMO}
+      revenuePromo={ENTRY_FEE_REVENUE_PROMO}
+      leagueNightPromo={PROMOTE_LEAGUE_PROMO}
+      reactivationPromo={BRING_PLAYERS_BACK_PROMO}
       upgradePromo={UPGRADE_PROMO}
+      roadmap={BRACKET_ROADMAP_SECTION}
       jsonLdGraphs={jsonLd}
     />
   );

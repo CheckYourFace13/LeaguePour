@@ -22,11 +22,14 @@ import {
   getOutreachCityBySlug,
 } from "@/lib/seo/outreach-city-slugs";
 import {
+  BRACKET_ROADMAP_SECTION,
+  BRING_PLAYERS_BACK_PROMO,
   CORE_COMPARISON_ROWS,
+  DEFAULT_FORMAT_SECTION,
   discoveryPath,
-  REVENUE_PROMO,
-  ROADMAP_ITEMS,
-  SPONSOR_PROMO,
+  ENTRY_FEE_REVENUE_PROMO,
+  FEATURE_SPONSOR_PROMO,
+  PROMOTE_LEAGUE_PROMO,
   UPGRADE_PROMO,
   VENUE_WHY_ITEMS,
   type DiscoveryRoutePrefix,
@@ -157,7 +160,7 @@ export async function CityDiscoveryPage({
     },
     {
       q: "How is LeaguePour different from generic bracket sites?",
-      a: "Generic bracket tools organize matchups. LeaguePour helps venues fill the room with paid signups, venue hubs, local SEO, and repeat-player campaigns.",
+      a: "Generic bracket tools organize matchups. LeaguePour helps venues fill the room with paid signups, venue hubs, local SEO, and repeat-player campaigns. Bracket automation is improving; manual matches and standings work today.",
     },
   ];
 
@@ -202,6 +205,9 @@ export async function CityDiscoveryPage({
     heroIntro: game
       ? `Find ${game.pluralLabel.toLowerCase()} at ${bars}. Join open signups or run your own ${game.label.toLowerCase()} on LeaguePour.`
       : `Dart leagues, cornhole tournaments, trivia nights, and pool leagues at ${bars}. LeaguePour is the venue platform and public discovery engine for local bar competitions.`,
+    locationLine: game
+      ? `${city.name}, ${city.state} · ${game.pluralLabel}`
+      : `${city.name}, ${city.state}`,
     primaryCta: { href: "/signup/player", label: copy.playerCta },
     secondaryCta: { href: "/signup/venue", label: "Run events at your bar" },
     venues,
@@ -210,6 +216,7 @@ export async function CityDiscoveryPage({
       title: "Why venues choose LeaguePour",
       items: VENUE_WHY_ITEMS,
     },
+    formatSection: DEFAULT_FORMAT_SECTION,
     comparison: {
       title: "LeaguePour vs generic tournament software",
       intro:
@@ -234,10 +241,12 @@ export async function CityDiscoveryPage({
       ctaHref: "/signup/venue",
       ctaLabel: `Add your ${city.name} venue`,
     },
-    sponsorPromo: SPONSOR_PROMO,
-    revenuePromo: REVENUE_PROMO,
+    sponsorPromo: FEATURE_SPONSOR_PROMO,
+    revenuePromo: ENTRY_FEE_REVENUE_PROMO,
+    leagueNightPromo: PROMOTE_LEAGUE_PROMO,
+    reactivationPromo: BRING_PLAYERS_BACK_PROMO,
     upgradePromo: UPGRADE_PROMO,
-    roadmap: { title: "Roadmap: advanced tournament controls", items: ROADMAP_ITEMS },
+    roadmap: BRACKET_ROADMAP_SECTION,
     jsonLdGraphs: [breadcrumbs, itemList, buildFaqPageJsonLd(faqs), ...eventGraphs],
   };
 

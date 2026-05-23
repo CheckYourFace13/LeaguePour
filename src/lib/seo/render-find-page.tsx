@@ -13,9 +13,13 @@ import {
 } from "@/lib/seo/json-ld-builders";
 import { getAllOutreachCitySlugs } from "@/lib/seo/outreach-city-slugs";
 import {
+  BRACKET_ROADMAP_SECTION,
+  BRING_PLAYERS_BACK_PROMO,
   CORE_COMPARISON_ROWS,
-  REVENUE_PROMO,
-  SPONSOR_PROMO,
+  DEFAULT_FORMAT_SECTION,
+  ENTRY_FEE_REVENUE_PROMO,
+  FEATURE_SPONSOR_PROMO,
+  PROMOTE_LEAGUE_PROMO,
   UPGRADE_PROMO,
   VENUE_WHY_ITEMS,
 } from "@/lib/seo/discovery-shared";
@@ -126,6 +130,7 @@ export async function FindDiscoveryPage({ findSlug }: { findSlug: string }) {
       venues={venues}
       competitions={competitions}
       whyLeaguePour={{ title: "Why players use LeaguePour", items: VENUE_WHY_ITEMS }}
+      formatSection={DEFAULT_FORMAT_SECTION}
       comparison={{
         title: "LeaguePour vs generic tournament software",
         intro: "Generic bracket tools organize matchups. LeaguePour helps you find real bar events with open signups.",
@@ -147,9 +152,12 @@ export async function FindDiscoveryPage({ findSlug }: { findSlug: string }) {
         ctaHref: "/signup/venue",
         ctaLabel: "Create your venue",
       }}
-      sponsorPromo={SPONSOR_PROMO}
-      revenuePromo={REVENUE_PROMO}
+      sponsorPromo={FEATURE_SPONSOR_PROMO}
+      revenuePromo={ENTRY_FEE_REVENUE_PROMO}
+      leagueNightPromo={PROMOTE_LEAGUE_PROMO}
+      reactivationPromo={BRING_PLAYERS_BACK_PROMO}
       upgradePromo={UPGRADE_PROMO}
+      roadmap={BRACKET_ROADMAP_SECTION}
       jsonLdGraphs={jsonLd}
     />
   );
