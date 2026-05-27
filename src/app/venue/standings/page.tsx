@@ -36,7 +36,7 @@ export default async function StandingsPage() {
     <div className="space-y-8">
       <div>
         <h1 className="lp-page-title text-3xl md:text-4xl">Standings / brackets</h1>
-        <p className="mt-2 text-lp-muted">Leaderboards and bracket cards — edit scores from each competition next.</p>
+        <p className="mt-2 text-lp-muted">Leaderboards and bracket cards - edit scores from each competition next.</p>
       </div>
       <FieldHelp title="Manual score entry">
         <p>
@@ -88,7 +88,7 @@ export default async function StandingsPage() {
                   <div>
                     <h2 className="font-display text-xl font-semibold">{c.title}</h2>
                     <p className="text-xs text-lp-muted">
-                      {c.bracketKind.replaceAll("_", " ")} · {c.status.replaceAll("_", " ")}
+                      {c.bracketKind.replaceAll("_", " ")} | {c.status.replaceAll("_", " ")}
                     </p>
                   </div>
                   <Link
@@ -115,9 +115,9 @@ export default async function StandingsPage() {
                             <p className="truncate font-medium">{s.team?.name ?? "Solo / TBD"}</p>
                           </div>
                           <div className="shrink-0 text-right text-sm tabular-nums">
-                            <p className="font-semibold">#{s.rank ?? "—"}</p>
+                            <p className="font-semibold">#{s.rank ?? "-"}</p>
                             <p className="text-lp-muted">
-                              {s.wins}W · {s.losses}L · {s.points} pts
+                              {s.wins}W | {s.losses}L | {s.points} pts
                             </p>
                           </div>
                         </li>

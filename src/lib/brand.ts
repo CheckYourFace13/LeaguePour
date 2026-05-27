@@ -1,4 +1,4 @@
-/** LeaguePour — brand voice & reusable marketing copy (Phase 1 + 4). */
+/** LeaguePour - brand voice & reusable marketing copy (Phase 1 + 4). */
 
 export const brand = {
   name: "LeaguePour",
@@ -16,7 +16,7 @@ export const brand = {
 } as const;
 
 export const cta = {
-  /** Primary venue acquisition — same label everywhere for clarity */
+  /** Primary venue acquisition - same label everywhere for clarity */
   startVenue: "Start hosting events",
   viewPricing: "See pricing",
   browseEvents: "Find events",

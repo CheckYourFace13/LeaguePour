@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "How to Run a Dart League at Your Bar | LeaguePour Guide",
     description:
-      "Everything you need to start and sustain a dart league — formats, fees, scheduling, and keeping players coming back.",
+      "Everything you need to start and sustain a dart league - formats, fees, scheduling, and keeping players coming back.",
     url: "/guides/how-to-run-a-dart-league-at-your-bar",
   },
 };
@@ -81,7 +81,7 @@ const jsonLd = {
           name: "How do I keep dart league players coming back season after season?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "End-of-season awards (MVP, most improved, best finisher) create a reason to attend. A short break between seasons with a signup reminder email keeps momentum. Some bars offer a small discount on the next season's fee for players who return — a $5 loyalty discount is enough to feel meaningful.",
+            text: "End-of-season awards (MVP, most improved, best finisher) create a reason to attend. A short break between seasons with a signup reminder email keeps momentum. Some bars offer a small discount on the next season's fee for players who return - a $5 loyalty discount is enough to feel meaningful.",
           },
         },
       ],
@@ -118,7 +118,7 @@ export default function DartLeagueGuide() {
             <p className="mt-4">
               <strong>501 double-out</strong> is the standard competitive format. Both players (or teams)
               start at 501 points and take turns subtracting their score. You must finish on exactly zero
-              by hitting a double. Rounds are usually short — 10 to 20 minutes — which keeps the bar
+              by hitting a double. Rounds are usually short - 10 to 20 minutes - which keeps the bar
               moving and gives spectators something to watch. This is the format to use if you want
               your league to feel serious.
             </p>
@@ -128,7 +128,7 @@ export default function DartLeagueGuide() {
               crowd leans casual, Cricket tends to generate more conversation and laughter than 501.
             </p>
             <p className="mt-4">
-              <strong>Round-robin scheduling</strong> is a format structure, not a game type — it means
+              <strong>Round-robin scheduling</strong> is a format structure, not a game type - it means
               every team plays every other team over the course of the season. This is the most social
               format because no one gets eliminated early. Even a team that loses its first three matches
               stays in the bar for the rest of the season, which is exactly what you want.
@@ -155,13 +155,13 @@ export default function DartLeagueGuide() {
             <p className="mt-4">
               Start times matter. 7:00 PM is late enough that players can get there after work, but early
               enough that matches finish before the bar gets loud with the late crowd. Post the schedule
-              somewhere permanent — your website, a printed bracket on the wall, and a digital copy
+              somewhere permanent - your website, a printed bracket on the wall, and a digital copy
               players can check from their phones.
             </p>
             <p className="mt-4">
               Build a forfeit policy into your schedule from day one. A team that doesn't show gets a
               loss. A team that gives 24 hours notice gets a reschedule if there's time. No-call no-shows
-              should result in removal from the league after two occurrences — you need to protect the
+              should result in removal from the league after two occurrences - you need to protect the
               experience for teams that do show up.
             </p>
           </section>
@@ -174,7 +174,7 @@ export default function DartLeagueGuide() {
             </p>
             <p className="mt-4">
               For a season-long league (8–10 weeks), a fee of $15–$25 per player is standard. Collect
-              everything upfront before the first night. Cash creates accounting headaches — someone
+              everything upfront before the first night. Cash creates accounting headaches - someone
               forgets, you forget, a player pays for a teammate who never comes back. Collecting fees
               online through a tool like LeaguePour means the money is there before anyone touches a dart.
             </p>
@@ -195,7 +195,7 @@ export default function DartLeagueGuide() {
             </p>
             <p className="mt-4">
               Post about it on your bar's social media pages with a shot of the boards and a clear call
-              to action. Facebook and Nextdoor both work well for neighborhood bar events — people share
+              to action. Facebook and Nextdoor both work well for neighborhood bar events - people share
               them with friends who live nearby. A short Instagram video of a dart finish can get surprising
               organic reach.
             </p>
@@ -209,20 +209,20 @@ export default function DartLeagueGuide() {
           <section>
             <h2 className="font-display text-2xl font-bold">5. Handle disputes before they happen</h2>
             <p className="mt-4">
-              Write a simple rulebook — one page is enough. Cover the game format, scoring rules, what
+              Write a simple rulebook - one page is enough. Cover the game format, scoring rules, what
               happens if a dart falls out of the board, how to handle a thrown dart that misses the board
               entirely, and who the final authority is in a dispute.
             </p>
             <p className="mt-4">
               Designate a league coordinator. This can be a bartender, a regular who volunteers for the
-              role, or yourself. The coordinator's job is to make the call and end the argument — not to
+              role, or yourself. The coordinator's job is to make the call and end the argument - not to
               deliberate for 20 minutes while everyone else waits. "House decision is final" needs to be
               in the rules so there's never a question about whether the call can be appealed.
             </p>
             <p className="mt-4">
               Post the rulebook on your venue's page, print a copy near the boards, and send it to every
               team captain before the first night. A dispute is nearly always the result of one player
-              not knowing the rules — prevention is much easier than resolution.
+              not knowing the rules - prevention is much easier than resolution.
             </p>
           </section>
 
@@ -256,12 +256,12 @@ export default function DartLeagueGuide() {
         <div className="mt-14 rounded-2xl bg-lp-accent/10 border border-lp-accent/20 p-8">
           <h2 className="font-display text-2xl font-bold">Run your dart league with LeaguePour</h2>
           <p className="mt-2 text-lp-muted">
-            Online signup, Stripe entry fees, standings, and email notifications — everything in one
+            Online signup, Stripe entry fees, standings, and email notifications - everything in one
             place so you can focus on running a great league instead of managing a spreadsheet.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg">
-              <Link href="/signup/venue">Start hosting events — free</Link>
+              <Link href="/signup/venue">Start hosting events - free</Link>
             </Button>
             <Button asChild size="lg" variant="secondary">
               <Link href="/pricing">See pricing</Link>

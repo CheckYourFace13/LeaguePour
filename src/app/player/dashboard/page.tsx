@@ -31,7 +31,7 @@ export default async function PlayerDashboardPage() {
       <div>
         <h1 className="lp-page-title text-3xl md:text-4xl">Player dashboard</h1>
         <p className="mt-3 max-w-2xl text-base leading-relaxed text-lp-muted md:text-lg">
-          Where you are on the sheet — registrations, follows, and the next public page to open.
+          Where you are on the sheet - registrations, follows, and the next public page to open.
         </p>
       </div>
 
@@ -60,7 +60,7 @@ export default async function PlayerDashboardPage() {
             {regCount}
           </p>
           <p className="mt-2 text-sm text-lp-muted">
-            Every row is a night you joined — paid entries use Stripe; legacy test-ledger rows are labeled in the app.
+            Every row is a night you joined - paid entries use Stripe; legacy test-ledger rows are labeled in the app.
           </p>
         </Card>
         <Card>
@@ -82,7 +82,7 @@ export default async function PlayerDashboardPage() {
             <CardHeader>
               <CardTitle>No sheets yet</CardTitle>
               <CardDescription>
-                Pick a room you trust, follow them, and grab the next blind draw or league night — everything shows up
+                Pick a room you trust, follow them, and grab the next blind draw or league night - everything shows up
                 here once you register.
               </CardDescription>
             </CardHeader>
@@ -103,7 +103,7 @@ export default async function PlayerDashboardPage() {
                 <p className="lp-kicker">{r.competition.venue.name}</p>
                 <p className="mt-2 font-display text-xl font-bold tracking-tight text-lp-text">{r.competition.title}</p>
                 <p className="mt-3 text-base text-lp-muted">
-                  Starts {formatDate(r.competition.startAt)} · {r.status.replaceAll("_", " ")}
+                  Starts {formatDate(r.competition.startAt)} | {r.status.replaceAll("_", " ")}
                 </p>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <RegistrationPaymentBadge presentation={payPres} />

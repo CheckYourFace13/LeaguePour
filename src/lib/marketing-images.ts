@@ -15,13 +15,13 @@ export const marketingImages = {
   },
   bracketTools: {
     src: "/marketing/leaguepour-bracket-tools.png",
-    alt: "LeaguePour bracket tools — championship bracket preview, live standings, and team signup for venue tournaments",
+    alt: "LeaguePour bracket tools - championship bracket preview, live standings, and team signup for venue tournaments",
     width: 1200,
     height: 800,
   },
   playerDiscovery: {
     src: "/marketing/leaguepour-player-discovery.png",
-    alt: "LeaguePour player discovery — find local leagues and tournaments near you with venue listings and scan to sign up",
+    alt: "LeaguePour player discovery - find local leagues and tournaments near you with venue listings and scan to sign up",
     width: 1200,
     height: 800,
   },

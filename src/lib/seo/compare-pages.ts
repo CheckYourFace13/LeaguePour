@@ -33,11 +33,11 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
       "Challonge excels at brackets. LeaguePour is venue-first bar tournament software with paid signups, QR codes, venue hubs, and local discovery.",
     heroTitle: "LeaguePour vs Challonge for bars & breweries",
     heroIntro:
-      "Challonge is strong for general tournaments and brackets. LeaguePour is purpose-built for bars, breweries, restaurants, taprooms, and local venues that need signups, payments, and repeat customers — not just a bracket draw.",
+      "Challonge is strong for general tournaments and brackets. LeaguePour is purpose-built for bars, breweries, restaurants, taprooms, and local venues that need signups, payments, and repeat customers, not just a bracket draw.",
     theirStrength:
       "Challonge is a mature bracket platform with deep tournament formats, seeding tools, and a large community of organizers.",
     leaguePourFocus:
-      "LeaguePour focuses on paid signups, QR codes, venue hubs, local event discovery, repeat-player campaigns, sponsor/prize promotion, food/drink specials, and venue revenue — while improving bracket automation for venue-first operations.",
+      "LeaguePour focuses on paid signups, QR codes, venue hubs, local event discovery, repeat-player campaigns, sponsor/prize promotion, food/drink specials, and venue revenue - while improving bracket automation for venue-first operations.",
     rows: [
       ...VENUE_ROWS,
       { feature: "Bulk import & drag-drop seeding", generic: true, leaguepour: "Roadmap" },
@@ -50,7 +50,7 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
       },
       {
         q: "Does LeaguePour replace Challonge's bracket depth?",
-        a: "Challonge leads on auto-generated brackets and deep seeding today. LeaguePour supports established formats with manual match rows and standings now, and is building auto-bracket generation, pool play, and Swiss on the roadmap — while signups, payments, venue hubs, and player discovery are live.",
+        a: "Challonge leads on auto-generated brackets and deep seeding today. LeaguePour supports established formats with manual match rows and standings now, and is building auto-bracket generation, pool play, and Swiss on the roadmap - while signups, payments, venue hubs, and player discovery are live.",
       },
     ],
   },
@@ -69,7 +69,7 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
     faqs: [
       {
         q: "Can I still run a bracket on LeaguePour?",
-        a: "Yes — match rows drive bracket cards on Standings. Staff enter scores from the venue dashboard.",
+        a: "Yes - match rows drive bracket cards on Standings. Staff enter scores from the venue dashboard.",
       },
     ],
   },
@@ -80,7 +80,7 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
       "Stop running bar leagues on spreadsheets. LeaguePour handles signups, payments, standings, and player communication.",
     heroTitle: "LeaguePour vs spreadsheets",
     heroIntro:
-      "Spreadsheets work until they don't — lost tabs, manual payments, and no public signup page. LeaguePour gives players a link and gives you a check-in list.",
+      "Spreadsheets work until they don't - lost tabs, manual payments, and no public signup page. LeaguePour gives players a link and gives you a check-in list.",
     theirStrength: "Familiar, flexible, zero software cost.",
     leaguePourFocus: "Online signup, Stripe entry fees, public standings, and email to past players.",
     rows: [
@@ -93,7 +93,7 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
     faqs: [
       {
         q: "Can I export data?",
-        a: "Registration and payment records live in your venue dashboard. Exports are expanding — you are never locked into a spreadsheet as the only source of truth for signups.",
+        a: "Registration and payment records live in your venue dashboard. Exports are expanding - you are never locked into a spreadsheet as the only source of truth for signups.",
       },
     ],
   },
@@ -117,7 +117,7 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
     faqs: [
       {
         q: "Should I stop using Facebook?",
-        a: "No — post on Facebook and link to your LeaguePour signup page so RSVPs turn into confirmed, paid registrations.",
+        a: "No - post on Facebook and link to your LeaguePour signup page so RSVPs turn into confirmed, paid registrations.",
       },
     ],
   },
@@ -160,7 +160,7 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
     faqs: [
       {
         q: "What makes LeaguePour venue-first?",
-        a: "Every public page ties back to a venue hub, real competition signups, and tools to re-engage players who already visited your bar — not just a standalone bracket URL.",
+        a: "Every public page ties back to a venue hub, real competition signups, and tools to re-engage players who already visited your bar, not just a standalone bracket URL.",
       },
     ],
   },

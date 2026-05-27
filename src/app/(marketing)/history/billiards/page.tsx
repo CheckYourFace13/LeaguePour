@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "History of Billiards & Pool | From Kings to Corner Bars | LeaguePour",
   description:
-    "How billiards went from a 15th-century French lawn game to a royal pastime to every dive bar in America — including the story of why we call it 'pool' and when 8-ball became standard.",
+    "How billiards went from a 15th-century French lawn game to a royal pastime to every dive bar in America - including the story of why we call it 'pool' and when 8-ball became standard.",
   alternates: { canonical: "/history/billiards" },
   keywords: [
     "history of billiards",
@@ -71,7 +71,7 @@ export default function BilliardsHistoryPage() {
             <h2 className="font-display text-2xl font-bold">A lawn game moves indoors</h2>
             <p className="mt-4">
               The earliest billiards was played outdoors, resembling a ground-level croquet-style game
-              where a mace — a stick with a wide, flat head — was used to push balls through wickets or
+              where a mace - a stick with a wide, flat head - was used to push balls through wickets or
               toward targets on the grass. By the mid-15th century, the game had migrated indoors onto
               wooden tables, with raised edges (the earliest form of rails) to keep the balls from rolling
               off.
@@ -89,7 +89,7 @@ export default function BilliardsHistoryPage() {
           <section>
             <h2 className="font-display text-2xl font-bold">The mace becomes the cue</h2>
             <p className="mt-4">
-              The mace — that wide-headed stick — had a practical problem: it was awkward to use near
+              The mace - that wide-headed stick - had a practical problem: it was awkward to use near
               the rails. When a ball was resting against the cushion, players would often flip the mace
               around and use its narrow handle end to make the shot. That narrow end eventually got its
               own name: the cue, from the French word "queue," meaning tail.
@@ -99,7 +99,7 @@ export default function BilliardsHistoryPage() {
               implement. Leather tips appeared around 1807, credited to a French army officer named
               Mingaud who reportedly had both the time and the inclination to experiment with billiards
               technique while in prison. The leather tip allowed players to apply side spin to the cue
-              ball — "English" in American parlance — which transformed the strategic possibilities of
+              ball - "English" in American parlance - which transformed the strategic possibilities of
               the game entirely.
             </p>
           </section>
@@ -108,7 +108,7 @@ export default function BilliardsHistoryPage() {
             <h2 className="font-display text-2xl font-bold">Why it's called "pool"</h2>
             <p className="mt-4">
               Here's the part most people don't know: "pool" has nothing to do with the game itself. The
-              word comes from the French "poule," meaning a collective bet or ante — a pool of wagers.
+              word comes from the French "poule," meaning a collective bet or ante - a pool of wagers.
               In 19th-century America, horse-racing betting rooms were called "pool rooms" because
               that's where bettors pooled their money on races.
             </p>
@@ -128,15 +128,15 @@ export default function BilliardsHistoryPage() {
           <section>
             <h2 className="font-display text-2xl font-bold">8-ball: the game that took over</h2>
             <p className="mt-4">
-              The game of 8-ball — in which one player shoots solids (1–7) and the other shoots
-              stripes (9–15), with the 8-ball as the final object — was developed in the early 20th
+              The game of 8-ball - in which one player shoots solids (1–7) and the other shoots
+              stripes (9–15), with the 8-ball as the final object - was developed in the early 20th
               century in America. It became the standard game in pool halls by around the 1920s and
               is now by far the most commonly played billiards variant in bars worldwide.
             </p>
             <p className="mt-4">
               9-ball, played with only the 1 through 9 balls and requiring shots to hit the lowest
               numbered ball first, became the dominant tournament format for professional competition
-              — partly because it's faster and more telegenic. But 8-ball is what most people learn
+              - partly because it's faster and more telegenic. But 8-ball is what most people learn
               first, and what most bar leagues run.
             </p>
           </section>
@@ -170,9 +170,9 @@ export default function BilliardsHistoryPage() {
             <p className="mt-4">
               The American Poolplayers Association (APA), founded in 1981, became one of the largest
               amateur sports organizations in the United States by running handicapped league play
-              specifically designed to be accessible to recreational players. Their format — where
+              specifically designed to be accessible to recreational players. Their format - where
               skill levels are assigned so that weaker and stronger players can compete on equal
-              footing — is a model that many bar leagues follow today.
+              footing - is a model that many bar leagues follow today.
             </p>
           </section>
 
@@ -224,7 +224,7 @@ export default function BilliardsHistoryPage() {
                 rel="noopener noreferrer"
                 className="text-lp-accent hover:underline"
               >
-                Wikipedia — Billiards
+                Wikipedia - Billiards
               </a>
             </li>
             <li>
@@ -234,7 +234,7 @@ export default function BilliardsHistoryPage() {
                 rel="noopener noreferrer"
                 className="text-lp-accent hover:underline"
               >
-                Wikipedia — Pool (cue sports)
+                Wikipedia - Pool (cue sports)
               </a>
             </li>
           </ul>

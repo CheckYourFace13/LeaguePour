@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "Official Rules for Bar Games | LeaguePour Resource Guide",
   description:
-    "Direct links to official rules from the governing bodies and associations that maintain them — darts, cornhole, pool, shuffleboard, poker, trivia, and more. No paraphrasing, just the real sources.",
+    "Direct links to official rules from the governing bodies and associations that maintain them - darts, cornhole, pool, shuffleboard, poker, trivia, and more. No paraphrasing, just the real sources.",
   alternates: { canonical: "/rules" },
   keywords: [
     "official bar game rules",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Official Rules for Bar Games | LeaguePour Resource Guide",
     description:
-      "Links to official rules from the governing bodies — WDF, ACA, WPA, BCA, NSA, TDA, and more. We link to the source; we don't rewrite it.",
+      "Links to official rules from the governing bodies - WDF, ACA, WPA, BCA, NSA, TDA, and more. We link to the source; we don't rewrite it.",
     url: "/rules",
   },
 };
@@ -142,7 +142,7 @@ const games: GameSection[] = [
       {
         body: "American Euchre Online",
         description:
-          "Euchre doesn't have a single international governing body — rules vary significantly by region, particularly between Midwest US variants and Canadian variants. The American Euchre Online rules represent one widely used standard for bar league play.",
+          "Euchre doesn't have a single international governing body - rules vary significantly by region, particularly between Midwest US variants and Canadian variants. The American Euchre Online rules represent one widely used standard for bar league play.",
         url: "https://www.euchre.com/rules",
       },
     ],
@@ -210,7 +210,7 @@ export default function RulesPage() {
           Official rules for bar games
         </h1>
         <p className="mt-5 max-w-2xl text-lg text-lp-muted">
-          We link to official rules only — from the governing bodies and associations that maintain them.
+          We link to official rules only - from the governing bodies and associations that maintain them.
           We don't rewrite or paraphrase rules; go straight to the source.
         </p>
         <p className="mt-3 max-w-2xl text-sm text-lp-muted">
@@ -254,7 +254,7 @@ export default function RulesPage() {
         <div className="mt-16 rounded-2xl bg-lp-accent/10 border border-lp-accent/20 p-8">
           <h2 className="font-display text-xl font-bold">Run any of these at your bar?</h2>
           <p className="mt-2 text-lp-muted">
-            LeaguePour handles the signup, entry fees, and standings — for any game format.
+            LeaguePour handles the signup, entry fees, and standings - for any game format.
             Set up your venue in minutes, free to start.
           </p>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">

@@ -22,8 +22,8 @@ const siteOrigin = getPublicSiteUrl();
 export const metadata: Metadata = {
   metadataBase: new URL(siteOrigin),
   title: {
-    default: "LeaguePour — venue competitions & entry fees",
-    template: "%s · LeaguePour",
+    default: "LeaguePour | Venue Competitions & Entry Fees",
+    template: "%s | LeaguePour",
   },
   description:
     "LeaguePour helps bars and venues run trivia, darts, leagues, and buy-in nights: signups, Stripe Connect entry fees, and repeat players.",
@@ -76,6 +76,7 @@ export default function RootLayout({
       className={`${inter.variable} ${barlowCondensed.variable} h-full scroll-smooth antialiased`}
     >
       <head>
+        <meta charSet="utf-8" />
         <meta name="google-adsense-account" content="ca-pub-9572509189594279" />
         <script
           async

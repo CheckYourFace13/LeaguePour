@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "Euchre Tournament Software for Bars | LeaguePour",
   description:
-    "Run euchre tournaments and euchre leagues at your bar with LeaguePour. Online signup, entry fees via Stripe, standings, and bracket management — no spreadsheets.",
+    "Run euchre tournaments and euchre leagues at your bar with LeaguePour. Online signup, entry fees via Stripe, standings, and bracket management - no spreadsheets.",
   alternates: { canonical: "/euchre-tournament-software" },
   keywords: [
     "euchre tournament software",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Euchre Tournament Software for Bars | LeaguePour",
     description:
-      "Run euchre tournaments and leagues at your bar — online signup, entry fees, standings, and brackets. No spreadsheets.",
+      "Run euchre tournaments and leagues at your bar - online signup, entry fees, standings, and brackets. No spreadsheets.",
     url: "/euchre-tournament-software",
   },
 };
@@ -28,7 +28,7 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      name: "LeaguePour — Euchre Tournament Software",
+      name: "LeaguePour - Euchre Tournament Software",
       applicationCategory: "BusinessApplication",
       operatingSystem: "Web",
       url: "https://leaguepour.com/euchre-tournament-software",
@@ -86,11 +86,11 @@ const jsonLd = {
 const features = [
   {
     title: "Online player signup",
-    body: "Individual or partner registration — players sign up before tournament night. Know your exact table count and plan setup accordingly.",
+    body: "Individual or partner registration - players sign up before tournament night. Know your exact table count and plan setup accordingly.",
   },
   {
     title: "Entry fees via Stripe",
-    body: "Collect tournament buy-ins automatically. Funds go directly to your venue's bank account — no cash envelopes, no end-of-night reconciliation headaches.",
+    body: "Collect tournament buy-ins automatically. Funds go directly to your venue's bank account - no cash envelopes, no end-of-night reconciliation headaches.",
   },
   {
     title: "Season standings",
@@ -102,7 +102,7 @@ const features = [
   },
   {
     title: "Player notifications",
-    body: "Email confirmed players with event reminders, updated standings, and upcoming dates — from your LeaguePour dashboard with one click.",
+    body: "Email confirmed players with event reminders, updated standings, and upcoming dates - from your LeaguePour dashboard with one click.",
   },
   {
     title: "Waitlists",
@@ -122,7 +122,7 @@ export default function EuchreTournamentSoftwarePage() {
         </h1>
         <p className="mt-5 max-w-2xl text-lg text-lp-muted">
           LeaguePour handles euchre tournament signup, entry fees, standings, and player
-          communications — all in one platform built for bars that want to turn card night into a
+          communications - all in one platform built for bars that want to turn card night into a
           weekly institution.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -158,7 +158,7 @@ export default function EuchreTournamentSoftwarePage() {
               {
                 n: 2,
                 title: "Share the signup link",
-                body: "Post it on social, display a QR code at the bar, or email your existing euchre regulars directly. Players register and pay before the night — you arrive with a confirmed field.",
+                body: "Post it on social, display a QR code at the bar, or email your existing euchre regulars directly. Players register and pay before the night - you arrive with a confirmed field.",
               },
               {
                 n: 3,
@@ -168,7 +168,7 @@ export default function EuchreTournamentSoftwarePage() {
               {
                 n: 4,
                 title: "Build your league",
-                body: "Email all players the updated leaderboard after each night. Players who are in contention for the season title show up every week — the standings create the incentive.",
+                body: "Email all players the updated leaderboard after each night. Players who are in contention for the season title show up every week - the standings create the incentive.",
               },
             ].map((s) => (
               <li key={s.n} className="flex gap-4">
@@ -189,7 +189,7 @@ export default function EuchreTournamentSoftwarePage() {
           <div className="mt-5 space-y-4 text-lp-text leading-relaxed">
             <p>
               Euchre has one of the most dedicated fanbases of any card game, particularly in the
-              Midwest. Players who love euchre really love euchre — and they're always looking for
+              Midwest. Players who love euchre really love euchre - and they're always looking for
               organized places to play. A bar that hosts a regular euchre night becomes a destination
               for a demographic that is often underserved by typical bar events.
             </p>
@@ -221,7 +221,7 @@ export default function EuchreTournamentSoftwarePage() {
             {[
               {
                 q: "What euchre format works best for a bar tournament?",
-                a: "Progressive euchre is the most popular bar format — partners rotate after each hand, so players interact with everyone over the night. Fixed-partner tournaments are better for competitive events where established teams want to stay together.",
+                a: "Progressive euchre is the most popular bar format - partners rotate after each hand, so players interact with everyone over the night. Fixed-partner tournaments are better for competitive events where established teams want to stay together.",
               },
               {
                 q: "How many players do I need to run a euchre tournament?",

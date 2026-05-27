@@ -27,7 +27,7 @@ import {
 } from "./actions";
 
 const notices: Record<string, string> = {
-  duplicated: "Duplicate created as a draft with fresh signup dates — review and publish when ready.",
+  duplicated: "Duplicate created as a draft with fresh signup dates - review and publish when ready.",
   "match-saved": "Match scores saved. Bracket view on Standings updates from these rows.",
   "standing-saved": "Standings row updated.",
   "invalid-scores": "Scores must be whole numbers between 0 and 999.",
@@ -108,7 +108,7 @@ export default async function CompetitionDetailPage({
           </Button>
           <h1 className="lp-page-title text-3xl md:text-4xl">{comp.title}</h1>
           <p className="mt-2 text-base text-lp-muted">
-            {comp.venue.name} · {comp.kind.replaceAll("_", " ")}
+            {comp.venue.name} | {comp.kind.replaceAll("_", " ")}
           </p>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -179,7 +179,7 @@ export default async function CompetitionDetailPage({
       <FieldHelp title="Results entry (venue)">
         <p>
           Match rows drive bracket cards on Standings. Standings table edits are for round robin / season boards. This
-          is venue-only — players never see this copy.
+          is venue-only - players never see this copy.
         </p>
       </FieldHelp>
 
@@ -253,7 +253,7 @@ export default async function CompetitionDetailPage({
                   </form>
                 ) : (
                   <p className="mt-4 font-display text-lg font-bold tabular-nums text-lp-text md:mt-0">
-                    {m.homeScore ?? "—"} – {m.awayScore ?? "—"}
+                    {m.homeScore ?? "-"} – {m.awayScore ?? "-"}
                   </p>
                 )}
               </li>
@@ -340,7 +340,7 @@ export default async function CompetitionDetailPage({
                   </form>
                 ) : (
                   <p className="mt-2 text-sm tabular-nums text-lp-muted">
-                    W {s.wins} · L {s.losses} · T {s.ties} · Pts {s.points}
+                    W {s.wins} | L {s.losses} | T {s.ties} | Pts {s.points}
                   </p>
                 )}
               </li>
@@ -372,13 +372,13 @@ export default async function CompetitionDetailPage({
         <CardHeader>
           <CardTitle>Registrations</CardTitle>
           <CardDescription>
-            {comp._count.registrations} toward cap · {comp._count.teams} teams · includes confirmed signups and anyone
+            {comp._count.registrations} toward cap | {comp._count.teams} teams | includes confirmed signups and anyone
             still finishing Stripe checkout.
           </CardDescription>
         </CardHeader>
         <ul className="divide-y divide-lp-border border-t border-lp-border">
           {comp.registrations.length === 0 ? (
-            <li className="px-6 py-8 text-center text-sm text-lp-muted">No signups yet — open the public page.</li>
+            <li className="px-6 py-8 text-center text-sm text-lp-muted">No signups yet - open the public page.</li>
           ) : (
             comp.registrations.map((r) => {
               const payPres = presentRegistrationPaymentFromRow(r, comp.entryFeeCents);
@@ -415,7 +415,7 @@ export default async function CompetitionDetailPage({
             <Link href={venueAppRoutes.registrations}>Open full registrations ledger</Link>
           </Button>
           <p className="mt-2 text-xs text-lp-muted">
-            Cross-event check-in view — filters by venue, not this competition only.
+            Cross-event check-in view - filters by venue, not this competition only.
           </p>
         </div>
       </Card>

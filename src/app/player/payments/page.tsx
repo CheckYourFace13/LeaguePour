@@ -48,7 +48,7 @@ export default async function PlayerPaymentsPage() {
       {rows.length === 0 ? (
         <EmptyState
           title="No payment rows yet"
-          description="Join an event with a listed entry fee — after you complete Stripe Checkout, the payment appears here with live status."
+          description="Join an event with a listed entry fee - after you complete Stripe Checkout, the payment appears here with live status."
           action={
             <Button asChild size="lg">
               <Link href={playerAppRoutes.discover}>Discover competitions</Link>

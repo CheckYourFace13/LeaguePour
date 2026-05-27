@@ -71,7 +71,7 @@ export default async function VenueProfilePage({
       <Card className="space-y-5 p-5">
         <p className="lp-kicker">Stripe Connect</p>
         <p className="text-sm text-lp-muted">
-          Charges {venue.stripeChargesEnabled ? "on" : "off"} · Payouts {venue.stripePayoutsEnabled ? "on" : "off"}
+          Charges {venue.stripeChargesEnabled ? "on" : "off"} | Payouts {venue.stripePayoutsEnabled ? "on" : "off"}
         </p>
         <div className="flex flex-col gap-2 sm:flex-row">
           <form action={createStripeConnectOnboardingAction}>

@@ -18,13 +18,13 @@ export const dynamic = "force-dynamic";
 const notices: Record<string, string> = {
   stripe_sync_failed:
     "We could not verify that Stripe checkout session. Wait a few seconds and refresh, or open My competitions.",
-  stripe_cancel: "Checkout was cancelled — you have not been charged.",
+  stripe_cancel: "Checkout was cancelled - you have not been charged.",
   stripe_not_configured: "Stripe is not configured on this server yet (missing STRIPE_SECRET_KEY).",
   stripe_session_failed: "Stripe did not return a checkout URL. Try again in a moment.",
   paid: "This registration is already paid and confirmed.",
   session_mismatch: "That Stripe session does not match this registration.",
   venue_connect_required:
-    "This venue has not finished Stripe Connect (charges + payouts). Entry fees cannot be collected until they do — ask the venue to open Venue profile and complete Connect.",
+    "This venue has not finished Stripe Connect (charges + payouts). Entry fees cannot be collected until they do - ask the venue to open Venue profile and complete Connect.",
 };
 
 export default async function PayRegistrationPage({
@@ -47,7 +47,7 @@ export default async function PayRegistrationPage({
 
   const sp = await searchParams;
 
-  /** Stripe success_url — verify session belongs to this user; fulfillment is webhook-only (no DB writes here). */
+  /** Stripe success_url - verify session belongs to this user; fulfillment is webhook-only (no DB writes here). */
   if (sp.session_id) {
     try {
       if (!isStripePaymentsConfigured()) {
@@ -114,7 +114,7 @@ export default async function PayRegistrationPage({
         <Card className="mt-8 space-y-4 p-6">
           <p className="font-display text-xl font-bold text-lp-text">{reg.competition.title}</p>
           <p className="text-sm text-lp-muted">
-            Payment is complete — nothing else to do here. Head back to your competitions or the public event page.
+            Payment is complete - nothing else to do here. Head back to your competitions or the public event page.
           </p>
           <div className="flex flex-col gap-2 pt-2 sm:flex-row">
             <Button size="lg" className="w-full sm:w-auto" asChild>
@@ -167,7 +167,7 @@ export default async function PayRegistrationPage({
           <p className="font-semibold text-lp-text">Finishing up with Stripe</p>
           <p className="leading-relaxed text-lp-muted">
             You returned from Stripe. We finalize your registration as soon as the payment is confirmed (usually within
-            a few seconds). This page refreshes automatically — you can also refresh manually.
+            a few seconds). This page refreshes automatically - you can also refresh manually.
           </p>
           <CheckoutReturnPoller />
         </div>

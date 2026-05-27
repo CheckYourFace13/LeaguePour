@@ -6,7 +6,7 @@ import { getPublicSiteUrl } from "@/lib/site-url";
 export const metadata: Metadata = {
   title: "Pool League Management Software for Bars | LeaguePour",
   description:
-    "Manage 8-ball and 9-ball pool leagues at your bar with LeaguePour. Online signup, entry fees via Stripe, standings, and player communication — no paper brackets.",
+    "Manage 8-ball and 9-ball pool leagues at your bar with LeaguePour. Online signup, entry fees via Stripe, standings, and player communication - no paper brackets.",
   alternates: { canonical: "/pool-league-management" },
   keywords: [
     "pool league management",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Pool League Management Software for Bars | LeaguePour",
     description:
-      "Manage bar pool leagues — online signup, entry fees, standings, and player messaging. Built for bars.",
+      "Manage bar pool leagues - online signup, entry fees, standings, and player messaging. Built for bars.",
     url: "/pool-league-management",
   },
 };
@@ -30,7 +30,7 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      name: "LeaguePour — Pool League Management",
+      name: "LeaguePour - Pool League Management",
       applicationCategory: "BusinessApplication",
       operatingSystem: "Web",
       url: `${getPublicSiteUrl()}/pool-league-management`,
@@ -49,12 +49,12 @@ const jsonLd = {
 };
 
 const features = [
-  { title: "Solo & team formats", body: "Run individual 8-ball brackets or team-based pool leagues — set your format when you create the event." },
+  { title: "Solo & team formats", body: "Run individual 8-ball brackets or team-based pool leagues - set your format when you create the event." },
   { title: "Entry fee collection", body: "Collect league dues online before pool night. Stripe deposits directly to your bar's account." },
   { title: "Season scheduling", body: "Set match schedules for weekly or bi-weekly league nights. Players see their schedule on your public page." },
   { title: "Standings & stats", body: "Track wins, losses, and standings throughout the season. Updated automatically after you enter results." },
   { title: "Player messaging", body: "Email your league players about schedule changes, standings updates, and playoff announcements." },
-  { title: "Playoff brackets", body: "End-of-season bracket playoffs — auto-seeded from regular season standings." },
+  { title: "Playoff brackets", body: "End-of-season bracket playoffs - auto-seeded from regular season standings." },
 ];
 
 export default function PoolLeagueManagementPage() {
@@ -69,7 +69,7 @@ export default function PoolLeagueManagementPage() {
         </h1>
         <p className="mt-5 max-w-2xl text-lg text-lp-muted">
           LeaguePour handles pool and billiards league registration, entry fees, standings, and player
-          communication — all online, all automatic.
+          communication - all online, all automatic.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Button asChild size="lg">

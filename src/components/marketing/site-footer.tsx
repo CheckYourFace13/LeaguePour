@@ -49,7 +49,7 @@ export function SiteFooter() {
             League<span className="text-lp-accent">Pour</span>
           </p>
           <p className="mt-4 max-w-md text-[1.0625rem] leading-relaxed text-lp-text-soft">
-            Competitions, signups, and entry fees for bars and venues — built for repeat nights.
+            Competitions, signups, and entry fees for bars and venues, built for repeat nights.
           </p>
         </div>
         {cols.map((c) => (
@@ -71,7 +71,7 @@ export function SiteFooter() {
         ))}
       </div>
       <div className="border-t border-lp-border/70 py-7 text-center text-[0.9375rem] font-medium text-lp-text-soft">
-        © {new Date().getFullYear()} LeaguePour. All rights reserved.
+        {"\u00A9"} {new Date().getFullYear()} LeaguePour. All rights reserved.
       </div>
     </footer>
   );

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "Shuffleboard League Software for Bars | LeaguePour",
   description:
-    "Run shuffleboard leagues and tournaments at your bar with LeaguePour. Online signup, entry fees via Stripe, standings, and bracket management — no spreadsheets needed.",
+    "Run shuffleboard leagues and tournaments at your bar with LeaguePour. Online signup, entry fees via Stripe, standings, and bracket management - no spreadsheets needed.",
   alternates: { canonical: "/shuffleboard-league-software" },
   keywords: [
     "shuffleboard league software",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Shuffleboard League Software for Bars | LeaguePour",
     description:
-      "Run shuffleboard leagues and tournaments at your bar — online signup, entry fees, standings, and brackets. No spreadsheets.",
+      "Run shuffleboard leagues and tournaments at your bar - online signup, entry fees, standings, and brackets. No spreadsheets.",
     url: "/shuffleboard-league-software",
   },
 };
@@ -28,7 +28,7 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      name: "LeaguePour — Shuffleboard League Software",
+      name: "LeaguePour - Shuffleboard League Software",
       applicationCategory: "BusinessApplication",
       operatingSystem: "Web",
       url: "https://leaguepour.com/shuffleboard-league-software",
@@ -86,7 +86,7 @@ const jsonLd = {
 const features = [
   {
     title: "Online team signup",
-    body: "Singles or doubles — players register from their phone before they walk in the door. No paper forms, no cash envelopes.",
+    body: "Singles or doubles - players register from their phone before they walk in the door. No paper forms, no cash envelopes.",
   },
   {
     title: "Entry fees via Stripe",
@@ -98,11 +98,11 @@ const features = [
   },
   {
     title: "Bracket management",
-    body: "Round-robin, single elimination, or double elimination — set it once when you create the league.",
+    body: "Round-robin, single elimination, or double elimination - set it once when you create the league.",
   },
   {
     title: "Player notifications",
-    body: "Email registered players about schedule changes, match results, and upcoming league nights — from your dashboard.",
+    body: "Email registered players about schedule changes, match results, and upcoming league nights - from your dashboard.",
   },
   {
     title: "Waitlists",
@@ -122,7 +122,7 @@ export default function ShuffleboardLeagueSoftwarePage() {
         </h1>
         <p className="mt-5 max-w-2xl text-lg text-lp-muted">
           LeaguePour handles shuffleboard league signup, team registration, entry fees, standings, and
-          player communications — all in one platform built for bars with tables that deserve more
+          player communications - all in one platform built for bars with tables that deserve more
           than a sign-up sheet on the bar.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -158,7 +158,7 @@ export default function ShuffleboardLeagueSoftwarePage() {
               {
                 n: 2,
                 title: "Share the signup link",
-                body: "Post it on social media, display it on your bar TV, or print a QR code. Players register and pay online before league night — no cash collection on the night.",
+                body: "Post it on social media, display it on your bar TV, or print a QR code. Players register and pay online before league night - no cash collection on the night.",
               },
               {
                 n: 3,
@@ -168,7 +168,7 @@ export default function ShuffleboardLeagueSoftwarePage() {
               {
                 n: 4,
                 title: "Fill the next season",
-                body: "Email or text all registered players about the upcoming season — one click to re-open signup and lock in your returning teams.",
+                body: "Email or text all registered players about the upcoming season - one click to re-open signup and lock in your returning teams.",
               },
             ].map((s) => (
               <li key={s.n} className="flex gap-4">
@@ -189,7 +189,7 @@ export default function ShuffleboardLeagueSoftwarePage() {
           <div className="mt-5 space-y-4 text-lp-text leading-relaxed">
             <p>
               Shuffleboard is one of the most underused recurring event formats in hospitality. Bars
-              that have tables often use them for casual play but rarely formalize the competition —
+              that have tables often use them for casual play but rarely formalize the competition -
               which is a missed opportunity. A weekly shuffleboard league turns occasional players into
               committed weekly regulars who bring teammates and spectators.
             </p>
@@ -206,7 +206,7 @@ export default function ShuffleboardLeagueSoftwarePage() {
               even if you're uncertain about initial turnout.
             </p>
             <p>
-              Start with a small season — 6 teams, 6 weeks — to test the format before investing in
+              Start with a small season - 6 teams, 6 weeks - to test the format before investing in
               promotion. If those 6 teams come every week, you have proof of concept. Most bars that
               try this discover demand they didn't know existed.
             </p>

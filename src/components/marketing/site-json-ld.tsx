@@ -27,7 +27,7 @@ export function SiteJsonLd() {
         applicationCategory: "BusinessApplication",
         operatingSystem: "Web",
         url: base,
-        description: "Venue competition software for bars. Run dart leagues, cornhole tournaments, trivia nights, pool leagues, and more — with online signup, entry fees, and player management.",
+        description: "Venue competition software for bars. Run dart leagues, cornhole tournaments, trivia nights, pool leagues, and more - with online signup, entry fees, and player management.",
         keywords: "dart league software, cornhole tournament software, bar trivia software, pool league management, venue competition platform",
         offers: {
           "@type": "AggregateOffer",

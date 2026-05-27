@@ -49,7 +49,7 @@ const SOFTWARE: Record<
       "Bar tournament software, league management, paid signups, QR codes, venue event hubs, and local event discovery for bars and breweries.",
     heroTitle: "Bar tournament software built for venues",
     heroIntro:
-      "LeaguePour is venue-first tournament and league software — signups, Stripe entry fees, brackets, venue hubs, and public discovery for players.",
+      "LeaguePour is venue-first tournament and league software - signups, Stripe entry fees, brackets, venue hubs, and public discovery for players.",
     legacyPath: "/features/tournaments",
   },
   "dart-league-software": {
@@ -65,7 +65,7 @@ const SOFTWARE: Record<
   "cornhole-tournament-software": {
     title: "Cornhole Tournament Software for Bars | LeaguePour",
     description:
-      "Cornhole tournament software for bars — team signup, entry fees, brackets, and local event discovery.",
+      "Cornhole tournament software for bars - team signup, entry fees, brackets, and local event discovery.",
     heroTitle: "Cornhole tournament software for bars",
     heroIntro: "Run cornhole tournaments and leagues with paid signups and public event pages.",
     legacyPath: "/cornhole-tournament-software",
@@ -75,7 +75,7 @@ const SOFTWARE: Record<
   "trivia-night-signup-software": {
     title: "Trivia Night Signup Software for Bars | LeaguePour",
     description:
-      "Trivia night signup software — team caps, paid entry, QR signup, and venue hubs for bar trivia.",
+      "Trivia night signup software - team caps, paid entry, QR signup, and venue hubs for bar trivia.",
     heroTitle: "Trivia night signup software",
     heroIntro: "Confirm teams before trivia night with signup windows, waitlists, and Stripe entry fees.",
     legacyPath: "/bar-trivia-software",
@@ -118,7 +118,7 @@ export async function SoftwareDiscoveryPage({ slug }: { slug: SoftwarePageSlug }
   const faqs = [
     {
       q: "Is LeaguePour only for tournaments?",
-      a: "No — run one-night tournaments and recurring weekly leagues from the same venue dashboard.",
+      a: "No - run one-night tournaments and recurring weekly leagues from the same venue dashboard.",
     },
     {
       q: "Where do entry fees go?",
@@ -156,7 +156,7 @@ export async function SoftwareDiscoveryPage({ slug }: { slug: SoftwarePageSlug }
       whyLeaguePour={{
         title: "Why LeaguePour",
         items: [
-          "Venue-first — not a hobby bracket toy",
+          "Venue-first - not a hobby bracket toy",
           "Paid signups, QR codes, and public venue hubs",
           "Local SEO and city/game discovery pages",
           "Campaigns to bring past players back",
@@ -165,7 +165,7 @@ export async function SoftwareDiscoveryPage({ slug }: { slug: SoftwarePageSlug }
       formatSection={DEFAULT_FORMAT_SECTION}
       comparison={{
         title: "LeaguePour vs generic tournament software",
-        intro: "Generic bracket tools organize matchups. LeaguePour helps venues fill the room — with bracket automation improving over time.",
+        intro: "Generic bracket tools organize matchups. LeaguePour helps venues fill the room - with bracket automation improving over time.",
         rows: CORE_COMPARISON_ROWS,
       }}
       faqs={faqs}

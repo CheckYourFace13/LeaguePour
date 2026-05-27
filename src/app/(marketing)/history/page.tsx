@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Bar Game History | How Your Favorite Bar Games Came to Be | LeaguePour",
   description:
-    "The real history behind the games your bar runs every week — darts, cornhole, billiards, trivia, and shuffleboard. Where they started, how they spread, and why they stuck.",
+    "The real history behind the games your bar runs every week - darts, cornhole, billiards, trivia, and shuffleboard. Where they started, how they spread, and why they stuck.",
   alternates: { canonical: "/history" },
   keywords: [
     "bar game history",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Bar Game History | How Your Favorite Bar Games Came to Be | LeaguePour",
     description:
-      "The real history behind darts, cornhole, billiards, trivia, and shuffleboard — where they came from and why they're still packing bars.",
+      "The real history behind darts, cornhole, billiards, trivia, and shuffleboard - where they came from and why they're still packing bars.",
     url: "/history",
   },
 };
@@ -42,7 +42,7 @@ const articles = [
     kicker: "Darts",
     title: "From English pubs to world sport",
     summary:
-      "How a medieval pastime became a televised world championship — and why the number layout on your dartboard is the work of one carpenter in 1896.",
+      "How a medieval pastime became a televised world championship - and why the number layout on your dartboard is the work of one carpenter in 1896.",
   },
   {
     href: "/history/cornhole",
@@ -56,7 +56,7 @@ const articles = [
     kicker: "Billiards & Pool",
     title: "From kings to corner bars",
     summary:
-      "A French lawn game that moved indoors in the 15th century, picked up by royalty, and eventually landed in every dive bar in America — with a detour through horse-racing betting pools along the way.",
+      "A French lawn game that moved indoors in the 15th century, picked up by royalty, and eventually landed in every dive bar in America - with a detour through horse-racing betting pools along the way.",
   },
   {
     href: "/history/trivia",
@@ -112,7 +112,7 @@ export default function HistoryHubPage() {
           <p className="lp-kicker text-lp-accent">Also useful</p>
           <h2 className="mt-2 font-display text-xl font-bold">Looking for official rules?</h2>
           <p className="mt-2 text-lp-muted">
-            We maintain a resource page that links directly to official rules from the governing bodies —
+            We maintain a resource page that links directly to official rules from the governing bodies -
             no paraphrasing, just the real sources.
           </p>
           <Link

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "History of Darts | From English Pubs to World Sport | LeaguePour",
   description:
-    "The real history of darts — medieval English origins, how elm tree cross-sections became boards, Brian Gamlin's number arrangement in 1896, the rise of the WDF, and the Phil Taylor era.",
+    "The real history of darts - medieval English origins, how elm tree cross-sections became boards, Brian Gamlin's number arrangement in 1896, the rise of the WDF, and the Phil Taylor era.",
   alternates: { canonical: "/history/darts" },
   keywords: [
     "history of darts",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "History of Darts | From English Pubs to World Sport | LeaguePour",
     description:
-      "From medieval English pubs to packed arenas — the real story of how darts became a world sport.",
+      "From medieval English pubs to packed arenas - the real story of how darts became a world sport.",
     url: "/history/darts",
   },
 };
@@ -60,8 +60,8 @@ export default function DartsHistoryPage() {
           From English pubs to world sport
         </h1>
         <p className="mt-5 text-lg text-lp-muted">
-          Darts has been a pub game for centuries. The version you play today — with that specific
-          number arrangement on the board — was largely settled by 1896.
+          Darts has been a pub game for centuries. The version you play today - with that specific
+          number arrangement on the board - was largely settled by 1896.
         </p>
 
         <div className="mt-12 space-y-8 text-lp-text leading-relaxed">
@@ -75,7 +75,7 @@ export default function DartsHistoryPage() {
               darts was already well established in English drinking establishments.
             </p>
             <p className="mt-4">
-              Cross-sections of elm trees — which display concentric rings as they dry and crack — are the
+              Cross-sections of elm trees - which display concentric rings as they dry and crack - are the
               most commonly cited precursor to the modern dartboard. The wood would split along natural
               lines, forming segments not entirely unlike what you see on a board today. Elm was the
               preferred material for boards well into the 20th century.
@@ -85,15 +85,15 @@ export default function DartsHistoryPage() {
           <section>
             <h2 className="font-display text-2xl font-bold">Brian Gamlin's number arrangement (1896)</h2>
             <p className="mt-4">
-              The numbering sequence on a standard dartboard — 20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3,
-              19, 7, 16, 8, 11, 14, 9, 12, 5 — is widely attributed to a carpenter from Bury,
+              The numbering sequence on a standard dartboard - 20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3,
+              19, 7, 16, 8, 11, 14, 9, 12, 5 - is widely attributed to a carpenter from Bury,
               Lancashire named Brian Gamlin, who is said to have devised it in 1896. The arrangement
               is deliberately punishing: high numbers are flanked by low ones, which means a slight miss
               to either side costs you dearly. A 20 sits next to a 1 and a 5. A 19 sits next to a 7 and
               a 3.
             </p>
             <p className="mt-4">
-              That design philosophy — rewarding accuracy and punishing imprecision — is what separates
+              That design philosophy - rewarding accuracy and punishing imprecision - is what separates
               darts from a pure luck game and explains why it has sustained serious competition for well
               over a century. Gamlin died in 1903 before he could patent the arrangement, and the
               attribution itself has been questioned by some historians, but his name remains attached to
@@ -106,14 +106,14 @@ export default function DartsHistoryPage() {
             <p className="mt-4">
               By the late 19th and early 20th centuries, darts was a fixture of English pub life. In 1908,
               a landlord in Leeds named Anakin successfully defended a darts game against a local
-              magistrate's claim that it was a game of chance rather than skill — by having a dart player
+              magistrate's claim that it was a game of chance rather than skill - by having a dart player
               hit the numbers the magistrate called out. The court agreed: darts was a skill game. That
               ruling mattered, because games of chance were subject to gambling restrictions; games of
               skill were not. Pubs could keep their boards.
             </p>
             <p className="mt-4">
               The National Darts Association was founded in Britain in 1924, and the News of the World
-              Individual Darts Championship — one of the sport's earliest major competitions — began in
+              Individual Darts Championship - one of the sport's earliest major competitions - began in
               1927 and ran until 1990. For much of the 20th century, darts was broadcast on British
               television in a format somewhere between sport and light entertainment.
             </p>
@@ -133,7 +133,7 @@ export default function DartsHistoryPage() {
               </a>
               . The first World Darts Championship followed in 1978, held at the Heart of the Midlands
               Club in Nottingham. Leighton Rees of Wales won. The championship quickly became the sport's
-              premier event, with the venue later moving to Alexandra Palace in London — which remains
+              premier event, with the venue later moving to Alexandra Palace in London - which remains
               its home for the BDO/WDF championship to this day.
             </p>
           </section>
@@ -155,7 +155,7 @@ export default function DartsHistoryPage() {
               , which held its first World Championship in 1994.
             </p>
             <p className="mt-4">
-              Phil Taylor — "The Power" — dominated the sport from the early 1990s through the 2010s,
+              Phil Taylor - "The Power" - dominated the sport from the early 1990s through the 2010s,
               winning 16 PDC World Championship titles. His rivalry with players like John Part, Adrian
               Lewis, and eventually Gary Anderson and Michael van Gerwen raised the sport's profile
               enormously. Taylor is widely considered the greatest darts player of all time, though van
@@ -163,15 +163,15 @@ export default function DartsHistoryPage() {
             </p>
             <p className="mt-4">
               The PDC today runs the most commercially successful darts competitions in the world,
-              with the Premier League Darts — a traveling league format played in arenas across the UK
-              and Europe — drawing crowds that would have seemed impossible for a pub game thirty years ago.
+              with the Premier League Darts - a traveling league format played in arenas across the UK
+              and Europe - drawing crowds that would have seemed impossible for a pub game thirty years ago.
             </p>
           </section>
 
           <section>
             <h2 className="font-display text-2xl font-bold">Darts in bars today</h2>
             <p className="mt-4">
-              Electronic dartboards changed the accessibility of the game significantly — automatic
+              Electronic dartboards changed the accessibility of the game significantly - automatic
               scoring, multiple game modes, and coin-op operation made darts viable in any bar, not
               just those with staff who could run manual leagues. But steel-tip darts and traditional
               bristle boards (now made from sisal fiber rather than elm) have maintained their
@@ -179,7 +179,7 @@ export default function DartsHistoryPage() {
             </p>
             <p className="mt-4">
               Bar dart leagues remain one of the most reliably recurring events on a venue's weekly
-              calendar. Teams are small, setup is minimal, and players tend to be loyal — the same
+              calendar. Teams are small, setup is minimal, and players tend to be loyal - the same
               people show up week after week. That's been true for well over a century, and the game's
               fundamentals haven't changed much since Brian Gamlin arranged those numbers in 1896.
             </p>
@@ -196,7 +196,7 @@ export default function DartsHistoryPage() {
                 rel="noopener noreferrer"
                 className="text-lp-accent hover:underline"
               >
-                Wikipedia — Darts
+                Wikipedia - Darts
               </a>
             </li>
             <li>

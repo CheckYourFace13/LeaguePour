@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "25 Bar Competition Ideas That Fill Seats | LeaguePour",
   description:
-    "25 bar competition ideas across darts, cornhole, trivia, pool, poker, shuffleboard, and more — with notes on what makes each one work and how to get started.",
+    "25 bar competition ideas across darts, cornhole, trivia, pool, poker, shuffleboard, and more - with notes on what makes each one work and how to get started.",
   alternates: { canonical: "/guides/bar-competition-ideas" },
   keywords: [
     "bar competition ideas",
@@ -49,7 +49,7 @@ const jsonLd = {
           name: "What bar competition ideas work best for slow weeknights?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Dart leagues, trivia nights, and pool leagues are the most reliable weeknight traffic drivers because they create recurring commitment — teams show up on the same night every week. Cornhole and shuffleboard work better as weekend or seasonal events. Trivia nights in particular consistently fill Tuesday, Wednesday, and Thursday evenings for bars that run them well.",
+            text: "Dart leagues, trivia nights, and pool leagues are the most reliable weeknight traffic drivers because they create recurring commitment - teams show up on the same night every week. Cornhole and shuffleboard work better as weekend or seasonal events. Trivia nights in particular consistently fill Tuesday, Wednesday, and Thursday evenings for bars that run them well.",
           },
         },
         {
@@ -57,7 +57,7 @@ const jsonLd = {
           name: "How do I choose the right competition for my bar?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Match the competition to the space and your existing crowd. Dart leagues need boards (obvious) but also enough floor space to not feel cramped during a league night. Cornhole needs a patio or large indoor space. Trivia works almost anywhere with enough seating and a sound system. Start with whatever your regulars already play on their own — you're formalizing something they want to do, not introducing something foreign.",
+            text: "Match the competition to the space and your existing crowd. Dart leagues need boards (obvious) but also enough floor space to not feel cramped during a league night. Cornhole needs a patio or large indoor space. Trivia works almost anywhere with enough seating and a sound system. Start with whatever your regulars already play on their own - you're formalizing something they want to do, not introducing something foreign.",
           },
         },
         {
@@ -90,7 +90,7 @@ const competitions = [
     n: 3,
     title: "Cornhole Doubles League",
     category: "Cornhole",
-    body: "Team cornhole, 2v2, running weekly or bi-weekly over a 6–10 week season. Extremely social — the waiting-your-turn time is just as valuable for the bar as the playing time. Best run on a patio in spring and summer.",
+    body: "Team cornhole, 2v2, running weekly or bi-weekly over a 6–10 week season. Extremely social - the waiting-your-turn time is just as valuable for the bar as the playing time. Best run on a patio in spring and summer.",
   },
   {
     n: 4,
@@ -114,7 +114,7 @@ const competitions = [
     n: 7,
     title: "Bar Pool League (8-ball or 9-ball)",
     category: "Pool",
-    body: "Weekly team or singles pool league for bars with at least two tables. 8-ball is more accessible; 9-ball attracts more competitive players. A classic — pool leagues run in bars that have offered nothing else for decades.",
+    body: "Weekly team or singles pool league for bars with at least two tables. 8-ball is more accessible; 9-ball attracts more competitive players. A classic - pool leagues run in bars that have offered nothing else for decades.",
   },
   {
     n: 8,
@@ -126,7 +126,7 @@ const competitions = [
     n: 9,
     title: "Shuffleboard League",
     category: "Shuffleboard",
-    body: "For bars with a shuffleboard table, a weekly doubles league creates a dedicated recurring crowd. Shuffleboard is underused as a league format — the players who love it really love it, and they tell their friends.",
+    body: "For bars with a shuffleboard table, a weekly doubles league creates a dedicated recurring crowd. Shuffleboard is underused as a league format - the players who love it really love it, and they tell their friends.",
   },
   {
     n: 10,
@@ -222,7 +222,7 @@ const competitions = [
     n: 25,
     title: "Fantasy Sports Draft Night",
     category: "Sports",
-    body: "Host the draft party for a local fantasy sports league at your bar — provide the space, screens, and draft-night specials. Regulars bring their entire fantasy league, some of whom are new to your bar. Works for football, basketball, baseball, and golf.",
+    body: "Host the draft party for a local fantasy sports league at your bar - provide the space, screens, and draft-night specials. Regulars bring their entire fantasy league, some of whom are new to your bar. Works for football, basketball, baseball, and golf.",
   },
 ];
 
@@ -257,7 +257,7 @@ export default function BarCompetitionIdeas() {
         </h1>
         <p className="mt-5 max-w-2xl text-lg text-lp-muted">
           The right competition format can turn a slow Tuesday into your busiest night of the week.
-          Here are 25 proven bar competition ideas across every format — with notes on what makes
+          Here are 25 proven bar competition ideas across every format - with notes on what makes
           each one work, who it draws, and when to run it.
         </p>
 
@@ -286,11 +286,11 @@ export default function BarCompetitionIdeas() {
           <h2 className="font-display text-2xl font-bold">Ready to run your first competition?</h2>
           <p className="mt-2 text-lp-muted">
             LeaguePour handles online signup, entry fees, standings, and player communications for
-            any of these formats — so you can focus on the event itself.
+            any of these formats - so you can focus on the event itself.
           </p>
           <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Button asChild size="lg">
-              <Link href="/signup/venue">Start hosting events — free</Link>
+              <Link href="/signup/venue">Start hosting events - free</Link>
             </Button>
             <Button asChild size="lg" variant="secondary">
               <Link href="/pricing">See pricing</Link>
@@ -308,7 +308,7 @@ export default function BarCompetitionIdeas() {
               },
               {
                 q: "How do I choose the right competition for my bar?",
-                a: "Match the competition to your space and existing crowd. Start with whatever your regulars already play on their own — you're formalizing something they want to do, not introducing something foreign. Trivia works almost anywhere with enough seating; cornhole needs outdoor space; darts needs boards.",
+                a: "Match the competition to your space and existing crowd. Start with whatever your regulars already play on their own - you're formalizing something they want to do, not introducing something foreign. Trivia works almost anywhere with enough seating; cornhole needs outdoor space; darts needs boards.",
               },
               {
                 q: "Do bar competitions need to charge entry fees?",

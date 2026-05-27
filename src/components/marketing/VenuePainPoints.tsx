@@ -34,7 +34,7 @@ export function VenuePainPoints() {
           Built around the problems venues already have
         </h2>
         <p className="mt-3 max-w-2xl text-lp-muted leading-relaxed">
-          Not customer testimonials — these are the operational headaches LeaguePour is built to solve for bars,
+          Not customer testimonials - these are the operational headaches LeaguePour is built to solve for bars,
           breweries, and taprooms.
         </p>
         <div className="mt-10 grid gap-4 sm:grid-cols-2">

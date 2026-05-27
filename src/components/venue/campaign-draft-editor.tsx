@@ -83,7 +83,7 @@ export function CampaignDraftEditor({
       {mode === "edit" && campaignId ? <input type="hidden" name="campaignId" value={campaignId} /> : null}
 
       <div className="rounded-[10px] border border-lp-border bg-lp-surface/40 px-4 py-3 text-sm text-lp-muted">
-        Sends from Messages are logged <span className="font-semibold text-lp-text">in-app</span> for now — connect an
+        Sends from Messages are logged <span className="font-semibold text-lp-text">in-app</span> for now - connect an
         ESP or SMS provider when you are ready for external delivery.
       </div>
 
@@ -96,7 +96,7 @@ export function CampaignDraftEditor({
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="min-h-12 text-base"
-          placeholder="Thursday darts · signup nudge"
+          placeholder="Thursday darts | signup nudge"
         />
       </div>
 
@@ -171,7 +171,7 @@ export function CampaignDraftEditor({
             <span className="font-medium text-lp-text">Saved segment (audience tag)</span>
             <span className="block text-lp-muted">
               {segmentTags.length === 0
-                ? "No tags on file — tag players from Audience / CRM first."
+                ? "No tags on file - tag players from Audience / CRM first."
                 : "Players tagged at this venue."}
             </span>
           </span>

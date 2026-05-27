@@ -116,7 +116,7 @@ export function RegistrationPanel({
         <p className="mt-2 text-base text-lp-muted">
           Complete checkout on Stripe to confirm your spot
           {needsPay ? ` (${formatMoney(entryFeeCents, entryFeeCurrency)} listed)` : ""}. You will leave this page
-          briefly — cards are processed by Stripe, not stored on LeaguePour.
+          briefly - cards are processed by Stripe, not stored on LeaguePour.
         </p>
         {registrationPaymentPresentation ? (
           <div className="mt-4">
@@ -141,7 +141,7 @@ export function RegistrationPanel({
         ? "This event is not taking new signups"
         : "Signup is not open right now";
     const detail = deadlinePassed
-      ? `Closed ${formatDateTime(signupCloseAt)}. Ask the venue about late adds or a rerun — LeaguePour does not override house rules.`
+      ? `Closed ${formatDateTime(signupCloseAt)}. Ask the venue about late adds or a rerun - LeaguePour does not override house rules.`
       : statusBlocks
         ? "The venue paused or moved this event. Follow them for the next blind draw or league night."
         : "Check back when the venue opens registration.";
@@ -183,8 +183,8 @@ export function RegistrationPanel({
         <p className="text-lg font-semibold text-lp-text">You are in</p>
         <p className="mt-2 text-base text-lp-muted">
           {needsPay
-            ? "If you still owe an entry fee, open My competitions and finish Stripe checkout — refresh if you already paid."
-            : "No entry fee — you are confirmed without a payment step."}
+            ? "If you still owe an entry fee, open My competitions and finish Stripe checkout - refresh if you already paid."
+            : "No entry fee - you are confirmed without a payment step."}
         </p>
         <Button className="mt-5" size="lg" variant="secondary" asChild>
           <Link href="/player/competitions">View my competitions</Link>
@@ -200,7 +200,7 @@ export function RegistrationPanel({
         <p className="mt-2 font-display text-xl font-bold text-lp-text md:text-2xl">{cta.register}</p>
         <p className="mt-2 text-base text-lp-muted">
           Step {Math.min(step + 1, totalSteps)} of {totalSteps}
-          {needsPay ? ` · ${formatMoney(entryFeeCents, entryFeeCurrency)} listed — Stripe checkout after signup` : ""}
+          {needsPay ? ` | ${formatMoney(entryFeeCents, entryFeeCurrency)} listed - Stripe checkout after signup` : ""}
         </p>
       </div>
 
@@ -238,7 +238,7 @@ export function RegistrationPanel({
               {waiverText}
             </div>
           ) : (
-            <p className="text-base text-lp-muted">No waiver text on file — you agree to posted house rules.</p>
+            <p className="text-base text-lp-muted">No waiver text on file - you agree to posted house rules.</p>
           )}
           <label className="flex min-h-12 cursor-pointer items-start gap-3 text-base">
             <input

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "Music Bingo Software for Bars | LeaguePour",
   description:
-    "Run music bingo nights at your bar with LeaguePour. Online team registration, entry fees via Stripe, and player notifications — all in one platform built for bars.",
+    "Run music bingo nights at your bar with LeaguePour. Online team registration, entry fees via Stripe, and player notifications - all in one platform built for bars.",
   alternates: { canonical: "/music-bingo-software" },
   keywords: [
     "music bingo software",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Music Bingo Software for Bars | LeaguePour",
     description:
-      "Run music bingo nights at your bar — online registration, entry fees, and player notifications. No spreadsheets.",
+      "Run music bingo nights at your bar - online registration, entry fees, and player notifications. No spreadsheets.",
     url: "/music-bingo-software",
   },
 };
@@ -28,7 +28,7 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      name: "LeaguePour — Music Bingo Software",
+      name: "LeaguePour - Music Bingo Software",
       applicationCategory: "BusinessApplication",
       operatingSystem: "Web",
       url: "https://leaguepour.com/music-bingo-software",
@@ -90,7 +90,7 @@ const features = [
   },
   {
     title: "Entry fees via Stripe",
-    body: "Collect registration fees automatically. Funds deposit directly to your venue's bank account within 2 business days — no cash handling, no manual reconciliation.",
+    body: "Collect registration fees automatically. Funds deposit directly to your venue's bank account within 2 business days - no cash handling, no manual reconciliation.",
   },
   {
     title: "Recurring event management",
@@ -98,7 +98,7 @@ const features = [
   },
   {
     title: "Player email notifications",
-    body: "Send reminders before each music bingo night, theme announcements, and results — directly from your LeaguePour dashboard to everyone who's registered.",
+    body: "Send reminders before each music bingo night, theme announcements, and results - directly from your LeaguePour dashboard to everyone who's registered.",
   },
   {
     title: "Waitlists",
@@ -122,7 +122,7 @@ export default function MusicBingoSoftwarePage() {
         </h1>
         <p className="mt-5 max-w-2xl text-lg text-lp-muted">
           LeaguePour handles music bingo registration, optional entry fees, player notifications,
-          and recurring event management — all in one platform built for bars that want to fill seats
+          and recurring event management - all in one platform built for bars that want to fill seats
           on a consistent night without the logistics headache.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -158,7 +158,7 @@ export default function MusicBingoSoftwarePage() {
               {
                 n: 2,
                 title: "Share the registration link",
-                body: "Post it on social, your bar's website, or display a QR code at the bar. Players register and confirm their spot before the night — no walk-in surprises.",
+                body: "Post it on social, your bar's website, or display a QR code at the bar. Players register and confirm their spot before the night - no walk-in surprises.",
               },
               {
                 n: 3,
@@ -168,7 +168,7 @@ export default function MusicBingoSoftwarePage() {
               {
                 n: 4,
                 title: "Build the next night",
-                body: "Email all registered players about the next event. Return registration is dramatically higher from players who've already attended — use that momentum.",
+                body: "Email all registered players about the next event. Return registration is dramatically higher from players who've already attended - use that momentum.",
               },
             ].map((s) => (
               <li key={s.n} className="flex gap-4">
@@ -189,15 +189,15 @@ export default function MusicBingoSoftwarePage() {
           <div className="mt-5 space-y-4 text-lp-text leading-relaxed">
             <p>
               Music bingo draws the widest demographic range of any bar competition format. Unlike darts
-              or pool, it requires no physical skill — just a knowledge of music, which means customers
+              or pool, it requires no physical skill - just a knowledge of music, which means customers
               who would never sign up for a dart league are genuinely excited to participate. This is one
               of the few formats that routinely brings in birthday groups, bachelorette parties, and
               corporate teams alongside your regular bar crowd.
             </p>
             <p>
-              The format is inherently social. Bingo rounds create natural high-energy moments — near
+              The format is inherently social. Bingo rounds create natural high-energy moments - near
               misses, last-second wins, arguments about whether that actually was a Taylor Swift song
-              — that spill across tables and create a room-wide energy. Spectators become participants,
+              - that spill across tables and create a room-wide energy. Spectators become participants,
               and participants become regulars.
             </p>
             <p>

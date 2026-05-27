@@ -108,7 +108,7 @@ export default function CornholeTournamentIdeas() {
             </p>
             <p className="mt-4">
               <strong>Double elimination</strong> is the gold standard for bar tournaments. Every team
-              gets at least two games before they're out — which means a 7:00 PM arrival doesn't turn
+              gets at least two games before they're out - which means a 7:00 PM arrival doesn't turn
               into a 7:45 PM departure after a first-round loss. Teams that lose early drop to the loser's
               bracket, and the whole event creates more matches, more play time, and more bar spend per
               team. If you only run one format, make it double-elimination.
@@ -179,8 +179,8 @@ export default function CornholeTournamentIdeas() {
               actually read. The cost is minimal; the engagement is ongoing.
             </p>
             <p className="mt-4">
-              <strong>Local sponsor prizes</strong> — gift cards to nearby restaurants, free rounds at
-              a neighboring bar, sporting goods store credits — add perceived value at no cost to you.
+              <strong>Local sponsor prizes</strong> - gift cards to nearby restaurants, free rounds at
+              a neighboring bar, sporting goods store credits - add perceived value at no cost to you.
               Local sponsors often participate in exchange for a mention at the event and a tag on your
               social media post.
             </p>
@@ -194,22 +194,22 @@ export default function CornholeTournamentIdeas() {
               participation, and make the event feel like a destination.
             </p>
             <p className="mt-4">
-              <strong>Summer kickoff tournament</strong> — held in late May or early June when patio
+              <strong>Summer kickoff tournament</strong> - held in late May or early June when patio
               season starts. Double-down by offering a summer league series immediately after, while
               players are energized and already signed up.
             </p>
             <p className="mt-4">
-              <strong>Charity fundraiser format</strong> — a portion of entry fees goes to a local
+              <strong>Charity fundraiser format</strong> - a portion of entry fees goes to a local
               charity. This motivates signups from people who want to support the cause and gives you
               press-worthy content for local media and community boards.
             </p>
             <p className="mt-4">
-              <strong>College rivalry weekend</strong> — if your area has competing college fan bases,
+              <strong>College rivalry weekend</strong> - if your area has competing college fan bases,
               a rivalry weekend event with teams representing different schools can generate serious
               buzz. Custom boards in school colors are a nice touch.
             </p>
             <p className="mt-4">
-              <strong>Holiday throwdown</strong> — a December holiday tournament with ugly sweater
+              <strong>Holiday throwdown</strong> - a December holiday tournament with ugly sweater
               rules, festive drinks specials, and a themed prize (a cornhole set, a stocking full of
               bar swag) draws people who wouldn't normally sign up for a league.
             </p>
@@ -219,7 +219,7 @@ export default function CornholeTournamentIdeas() {
             <h2 className="font-display text-2xl font-bold">5. Sponsorship and partnerships</h2>
             <p className="mt-4">
               Local sponsors can fund your prize pool, cover the cost of custom boards, and even pay
-              for branded event promotion — in exchange for visibility at your event.
+              for branded event promotion - in exchange for visibility at your event.
             </p>
             <p className="mt-4">
               Approach local businesses that share your demographic: sporting goods stores, beer
@@ -230,7 +230,7 @@ export default function CornholeTournamentIdeas() {
             <p className="mt-4">
               Beer brand sponsorships are particularly natural for bar cornhole events. A regional
               craft brewery may provide kegs at cost, branded cups, or signage in exchange for being
-              the "official beer" of your league. Reach out to your distributor rep first — they often
+              the "official beer" of your league. Reach out to your distributor rep first - they often
               have cooperative marketing budgets for exactly this purpose.
             </p>
           </section>
@@ -240,7 +240,7 @@ export default function CornholeTournamentIdeas() {
             <p className="mt-4">
               Start promoting at least three weeks before the event. Post your event details across
               all social channels with clear registration information and a deadline. Use a signup link
-              (not just "DM us") — friction in the registration process costs you teams.
+              (not just "DM us") - friction in the registration process costs you teams.
             </p>
             <p className="mt-4">
               Physical signage still converts. A banner near your patio entrance, a table card at the
@@ -253,7 +253,7 @@ export default function CornholeTournamentIdeas() {
             </p>
             <p className="mt-4">
               Highlight a moment from your last event when promoting the next one. A photo of the
-              winning team with the trophy, a video of a game-winning bag slide into the hole — these
+              winning team with the trophy, a video of a game-winning bag slide into the hole - these
               perform dramatically better on social media than text-only announcements.
             </p>
           </section>
@@ -264,11 +264,11 @@ export default function CornholeTournamentIdeas() {
           <h2 className="font-display text-2xl font-bold">Manage your cornhole tournament with LeaguePour</h2>
           <p className="mt-2 text-lp-muted">
             Online team signup, entry fees collected automatically, bracket management, and player
-            notifications — all in one place so you focus on the event, not the spreadsheet.
+            notifications - all in one place so you focus on the event, not the spreadsheet.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg">
-              <Link href="/signup/venue">Start hosting events — free</Link>
+              <Link href="/signup/venue">Start hosting events - free</Link>
             </Button>
             <Button asChild size="lg" variant="secondary">
               <Link href="/pricing">See pricing</Link>
@@ -290,7 +290,7 @@ export default function CornholeTournamentIdeas() {
               },
               {
                 q: "What prizes work best for a bar cornhole tournament?",
-                a: "Bar tab credits are the most effective because the money stays in your venue. Custom cornhole bags, season trophies, and local sponsor prizes all add value at low cost. Avoid cash prizes if you can — they don't benefit your bar.",
+                a: "Bar tab credits are the most effective because the money stays in your venue. Custom cornhole bags, season trophies, and local sponsor prizes all add value at low cost. Avoid cash prizes if you can - they don't benefit your bar.",
               },
               {
                 q: "How long does a 16-team cornhole tournament take?",

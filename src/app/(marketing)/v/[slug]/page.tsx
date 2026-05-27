@@ -24,7 +24,7 @@ export async function generateMetadata({
   if (!venue) return { title: "Venue" };
   if (venue.isDisabled) notFound();
   const city = venue.city?.trim();
-  const cityTitle = city ? ` — ${city}` : "";
+  const cityTitle = city ? ` - ${city}` : "";
   const cityIntent = city ? `${city} bar competitions, trivia tournaments, and dart league signups.` : "Venue competitions and signup.";
   const base = getPublicSiteUrl();
   const pageUrl = `${base}/v/${venue.slug}`;
@@ -98,7 +98,7 @@ export default async function PublicVenuePage({ params }: { params: Promise<{ sl
       <h1 className="lp-page-title mt-3 text-4xl md:text-5xl">{venue.name}</h1>
       <p className="mt-4 text-lg leading-relaxed text-lp-muted md:text-xl">{venue.description}</p>
       <p className="mt-3 text-base text-lp-muted">
-        {[venue.formattedAddress ?? venue.addressLine1, venue.city, venue.state].filter(Boolean).join(" · ")}
+        {[venue.formattedAddress ?? venue.addressLine1, venue.city, venue.state].filter(Boolean).join(" | ")}
       </p>
       {venue.city ? (
         <p className="mt-2 text-sm text-lp-muted">
@@ -191,7 +191,7 @@ export default async function PublicVenuePage({ params }: { params: Promise<{ sl
                   <div className="min-w-0">
                     <p className="font-display text-xl font-bold tracking-tight text-lp-text">{c.title}</p>
                     <p className="mt-2 text-base text-lp-muted">
-                      Starts {formatDate(c.startAt)} · Signup closes {formatDate(c.signupCloseAt)}
+                      Starts {formatDate(c.startAt)} | Signup closes {formatDate(c.signupCloseAt)}
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2">

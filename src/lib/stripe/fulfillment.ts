@@ -35,7 +35,7 @@ function connectSnapshotFromPaymentIntent(pi: Stripe.PaymentIntent | null): {
 
 /**
  * Fulfill a paid Checkout Session (writes Payment + Registration).
- * Stripe best practice: call **only** from verified webhooks — idempotent per session / event.
+ * Stripe best practice: call **only** from verified webhooks - idempotent per session / event.
  */
 export async function fulfillStripeCheckoutSessionId(
   sessionId: string,

@@ -49,7 +49,7 @@ const jsonLd = {
           name: "How many questions should a bar trivia night have?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Most successful bar trivia nights run 5–6 rounds of 8–10 questions each, for a total of 40–60 questions. This takes about 2 hours including scoring breaks, which is the ideal length — long enough to feel complete, short enough that teams don't lose energy toward the end.",
+            text: "Most successful bar trivia nights run 5–6 rounds of 8–10 questions each, for a total of 40–60 questions. This takes about 2 hours including scoring breaks, which is the ideal length - long enough to feel complete, short enough that teams don't lose energy toward the end.",
           },
         },
         {
@@ -65,7 +65,7 @@ const jsonLd = {
           name: "Do I need a trivia host or can I run it myself?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "A dedicated host makes a dramatic difference in the energy of the room. If you can't afford a professional trivia company, a charismatic regular or a staff member with a strong personality can host effectively with practice. The host's job is as much entertainment as question-reading — energy, humor, and quick banter with the crowd matter as much as the questions themselves.",
+            text: "A dedicated host makes a dramatic difference in the energy of the room. If you can't afford a professional trivia company, a charismatic regular or a staff member with a strong personality can host effectively with practice. The host's job is as much entertainment as question-reading - energy, humor, and quick banter with the crowd matter as much as the questions themselves.",
           },
         },
         {
@@ -73,7 +73,7 @@ const jsonLd = {
           name: "What prizes should I offer at trivia night?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Bar tab credits for first and second place are the most effective — the money stays in your venue and winners bring friends to help spend it. A 'last place' prize (often a small consolation like a round of shots) creates a running gag that regulars love and keeps the mood light for teams that aren't winning.",
+            text: "Bar tab credits for first and second place are the most effective - the money stays in your venue and winners bring friends to help spend it. A 'last place' prize (often a small consolation like a round of shots) creates a running gag that regulars love and keeps the mood light for teams that aren't winning.",
           },
         },
         {
@@ -81,7 +81,7 @@ const jsonLd = {
           name: "How do I stop teams from cheating at trivia night?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Announce a no-phones policy at the start of each round and have your host call it out humorously if they see someone looking at their phone. Written answer sheets that are collected at the end of each round — before answers are revealed — eliminate the most common cheating method. Most trivia regulars are honest; the cheaters are usually first-timers who don't come back anyway.",
+            text: "Announce a no-phones policy at the start of each round and have your host call it out humorously if they see someone looking at their phone. Written answer sheets that are collected at the end of each round - before answers are revealed - eliminate the most common cheating method. Most trivia regulars are honest; the cheaters are usually first-timers who don't come back anyway.",
           },
         },
       ],
@@ -126,7 +126,7 @@ export default function BarTriviaNightGuide() {
               <strong>Subscription question services</strong> provide weekly question sets (usually
               in a structured PDF or digital format) that you or a staff member delivers yourself.
               These cost $30–$80 per month and give you editorial control over the difficulty and
-              categories. You need a strong, confident host personality to make this work — the questions
+              categories. You need a strong, confident host personality to make this work - the questions
               are secondary to the energy in the room.
             </p>
             <p className="mt-4">
@@ -145,7 +145,7 @@ export default function BarTriviaNightGuide() {
               stay energized all the way to the final score reveal.
             </p>
             <p className="mt-4">
-              Vary difficulty within each round — start easy to get teams engaged, build to a hard
+              Vary difficulty within each round - start easy to get teams engaged, build to a hard
               question or two in the middle, and end each round on a memorable question. Teams that
               answer the last question correctly feel like they ended the round strong, which keeps
               morale high even if they're not leading overall.
@@ -178,14 +178,14 @@ export default function BarTriviaNightGuide() {
             </p>
             <p className="mt-4">
               Enforce a no-phone policy during answer writing. Announce it humorously at the start of
-              each round — "phones away, brains on" — and have the host call it out lightly if someone
+              each round - "phones away, brains on" - and have the host call it out lightly if someone
               is obviously searching. Collect answer sheets before revealing answers to eliminate the
               most common cheating method.
             </p>
             <p className="mt-4">
               Charge a small entry fee ($3–$5 per person is standard) to fund the prize pool and create
               commitment. Teams that have paid are more likely to show up and less likely to leave at
-              halftime. Collect online before the event if possible — it simplifies cash handling and
+              halftime. Collect online before the event if possible - it simplifies cash handling and
               gives you a headcount for seating.
             </p>
           </section>
@@ -197,13 +197,13 @@ export default function BarTriviaNightGuide() {
               and bring in new players who wouldn't come for a regular night.
             </p>
             <p className="mt-4">
-              <strong>Decade nights</strong> — "90s Only," "All 80s Trivia" — are perennial favorites.
+              <strong>Decade nights</strong> - "90s Only," "All 80s Trivia" - are perennial favorites.
               The category restriction makes questions feel more curated and lets players who lived through
               that decade feel like experts for one night.
             </p>
             <p className="mt-4">
-              <strong>Movie or TV-specific nights</strong> — "The Office Trivia," "Marvel Universe
-              Trivia," "Seinfeld Night" — draw superfan groups who plan their attendance around it.
+              <strong>Movie or TV-specific nights</strong> - "The Office Trivia," "Marvel Universe
+              Trivia," "Seinfeld Night" - draw superfan groups who plan their attendance around it.
               These are your highest-share posts on social media.
             </p>
             <p className="mt-4">
@@ -221,7 +221,7 @@ export default function BarTriviaNightGuide() {
           <section>
             <h2 className="font-display text-2xl font-bold">5. Scoring systems that keep everyone engaged</h2>
             <p className="mt-4">
-              Standard scoring — one point per correct answer — is simple and works fine. But a few
+              Standard scoring - one point per correct answer - is simple and works fine. But a few
               variations dramatically improve engagement.
             </p>
             <p className="mt-4">
@@ -246,17 +246,17 @@ export default function BarTriviaNightGuide() {
             <h2 className="font-display text-2xl font-bold">6. Prizes and keeping regulars coming back</h2>
             <p className="mt-4">
               Bar tab credits for first and second place keep prize money in your venue and give winners
-              a reason to stay and celebrate. A "last place" consolation prize — a free shot round, a
-              small gift card — creates a running joke that regulars love and makes losing feel less bad.
+              a reason to stay and celebrate. A "last place" consolation prize - a free shot round, a
+              small gift card - creates a running joke that regulars love and makes losing feel less bad.
             </p>
             <p className="mt-4">
-              Seasonal leaderboards — tracking cumulative points across a month or quarter — give
+              Seasonal leaderboards - tracking cumulative points across a month or quarter - give
               regulars a long-term reason to keep coming back each week. A quarterly champion gets
               their name on a plaque or a photo on the wall.
             </p>
             <p className="mt-4">
               Send a post-event email with the scores and a teaser for next week's theme. This is the
-              single most effective thing you can do to build weekly attendance — teams want to know
+              single most effective thing you can do to build weekly attendance - teams want to know
               how they finished relative to everyone else, and the teaser gives them a reason to
               already be looking forward to next week. Collect emails at registration or through
               an online signup tool so you actually have the addresses to send to.
@@ -268,12 +268,12 @@ export default function BarTriviaNightGuide() {
         <div className="mt-14 rounded-2xl bg-lp-accent/10 border border-lp-accent/20 p-8">
           <h2 className="font-display text-2xl font-bold">Run your trivia night with LeaguePour</h2>
           <p className="mt-2 text-lp-muted">
-            Online team registration, entry fee collection, and post-event email blasts — all in one
+            Online team registration, entry fee collection, and post-event email blasts - all in one
             platform built for bar competitions. Set up your first trivia night in minutes.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg">
-              <Link href="/signup/venue">Start hosting events — free</Link>
+              <Link href="/signup/venue">Start hosting events - free</Link>
             </Button>
             <Button asChild size="lg" variant="secondary">
               <Link href="/pricing">See pricing</Link>
@@ -287,11 +287,11 @@ export default function BarTriviaNightGuide() {
             {[
               {
                 q: "How many questions should a bar trivia night have?",
-                a: "Most successful bar trivia nights run 5–6 rounds of 8–10 questions each, for about 40–60 questions total. This takes about 2 hours including scoring breaks — the ideal length for sustained energy and bar spend.",
+                a: "Most successful bar trivia nights run 5–6 rounds of 8–10 questions each, for about 40–60 questions total. This takes about 2 hours including scoring breaks - the ideal length for sustained energy and bar spend.",
               },
               {
                 q: "What is the best team size for bar trivia?",
-                a: "Teams of 2–6 players hit the sweet spot. Setting a maximum of 6 keeps competition fair and prevents one super-team from dominating every week. Allow incomplete teams to recruit at the bar — it builds community.",
+                a: "Teams of 2–6 players hit the sweet spot. Setting a maximum of 6 keeps competition fair and prevents one super-team from dominating every week. Allow incomplete teams to recruit at the bar - it builds community.",
               },
               {
                 q: "Do I need a trivia host or can I run it myself?",
@@ -299,11 +299,11 @@ export default function BarTriviaNightGuide() {
               },
               {
                 q: "What prizes should I offer at trivia night?",
-                a: "Bar tab credits for first and second place are most effective — the prize money stays in your venue. A 'last place' consolation prize creates a running gag regulars love. Quarterly leaderboards give regulars a long-term reason to keep coming back.",
+                a: "Bar tab credits for first and second place are most effective - the prize money stays in your venue. A 'last place' consolation prize creates a running gag regulars love. Quarterly leaderboards give regulars a long-term reason to keep coming back.",
               },
               {
                 q: "How do I stop teams from cheating at trivia night?",
-                a: "Announce a no-phones policy at the start of each round and collect answer sheets before revealing answers. Most trivia regulars are honest — the cheaters are usually first-timers who don't come back.",
+                a: "Announce a no-phones policy at the start of each round and collect answer sheets before revealing answers. Most trivia regulars are honest - the cheaters are usually first-timers who don't come back.",
               },
             ].map((f) => (
               <details key={f.q} className="rounded-xl border border-lp-border bg-lp-surface/40 px-5 py-4">

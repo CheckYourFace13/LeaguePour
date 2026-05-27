@@ -85,7 +85,7 @@ export async function buildCityDiscoveryMetadata(
     ? `${game.pluralLabel} in ${city.name}, ${city.state} | LeaguePour`
     : `${PREFIX_COPY[prefix].venueNoun} in ${city.name} | LeaguePour`;
   const description = game
-    ? `Find ${game.pluralLabel.toLowerCase()} at ${bars}. Real venue listings and upcoming signups on LeaguePour — bar tournament software with paid signups, QR codes, and local discovery.`
+    ? `Find ${game.pluralLabel.toLowerCase()} at ${bars}. Real venue listings and upcoming signups on LeaguePour - bar tournament software with paid signups, QR codes, and local discovery.`
     : `Find dart leagues, cornhole tournaments, trivia nights, and pool leagues at ${bars}. Bar tournament software, league management, paid signups, QR codes, venue hubs, and local event discovery.`;
 
   const [venues, competitions] = await Promise.all([
@@ -151,7 +151,7 @@ export async function CityDiscoveryPage({
         ? `Where can I find ${game.pluralLabel.toLowerCase()} in ${city.name}?`
         : `What bar competitions run in ${city.name}?`,
       a: game
-        ? `Browse partner venues and upcoming ${game.pluralLabel.toLowerCase()} listed on this page — all data comes from real LeaguePour venues, not fabricated listings.`
+        ? `Browse partner venues and upcoming ${game.pluralLabel.toLowerCase()} listed on this page - all data comes from real LeaguePour venues, not fabricated listings.`
         : `LeaguePour lists real partner venues and open signups in ${city.name}. Filter by game type or browse upcoming competitions.`,
     },
     {
@@ -198,7 +198,7 @@ export async function CityDiscoveryPage({
   );
 
   const props: LeaguePourDiscoveryLandingProps = {
-    kicker: game ? `${game.pluralLabel} · ${city.name}` : copy.kicker,
+    kicker: game ? `${game.pluralLabel} | ${city.name}` : copy.kicker,
     heroTitle: game
       ? `${game.pluralLabel} in ${city.name}, ${city.state}`
       : `Bar leagues & tournaments in ${city.name}`,
@@ -206,7 +206,7 @@ export async function CityDiscoveryPage({
       ? `Find ${game.pluralLabel.toLowerCase()} at ${bars}. Join open signups or run your own ${game.label.toLowerCase()} on LeaguePour.`
       : `Dart leagues, cornhole tournaments, trivia nights, and pool leagues at ${bars}. LeaguePour is the venue platform and public discovery engine for local bar competitions.`,
     locationLine: game
-      ? `${city.name}, ${city.state} · ${game.pluralLabel}`
+      ? `${city.name}, ${city.state} | ${game.pluralLabel}`
       : `${city.name}, ${city.state}`,
     primaryCta: { href: "/signup/player", label: copy.playerCta },
     secondaryCta: { href: "/signup/venue", label: "Run events at your bar" },

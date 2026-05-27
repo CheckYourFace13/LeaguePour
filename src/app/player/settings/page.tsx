@@ -9,7 +9,7 @@ export default function PlayerSettingsPage() {
     <div className="mx-auto max-w-lg space-y-8">
       <div>
         <h1 className="lp-page-title text-3xl md:text-4xl">Account settings</h1>
-        <p className="mt-2 text-lp-muted">Identity comes from your login — edits here ship next.</p>
+        <p className="mt-2 text-lp-muted">Identity comes from your login - edits here ship next.</p>
       </div>
       <FieldHelp title="Venue + player">
         <p>One login can include venue staff access and a player profile. Use Account in the header to open dashboards.</p>

@@ -7,7 +7,7 @@ export default function SignupHubPage() {
     <div className="w-full max-w-lg space-y-8">
       <div className="text-center">
         <h1 className="lp-page-title text-4xl md:text-5xl">Sign up</h1>
-        <p className="mt-3 text-lg text-lp-text-soft">Venue or player — pick one.</p>
+        <p className="mt-3 text-lg text-lp-text-soft">Venue or player - pick one.</p>
       </div>
       <div className="grid gap-5 md:grid-cols-2">
         <Card className="flex flex-col p-6 md:p-7">

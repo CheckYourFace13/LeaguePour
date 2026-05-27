@@ -56,7 +56,7 @@ const guides = [
     href: "/guides/bar-competition-ideas",
     title: "25 Bar Competition Ideas That Fill Seats",
     description:
-      "A full list of competition formats — darts, cornhole, trivia, pool, poker, shuffleboard, cards, and more — with a brief description of what makes each one work.",
+      "A full list of competition formats - darts, cornhole, trivia, pool, poker, shuffleboard, cards, and more - with a brief description of what makes each one work.",
     tag: "Ideas",
   },
 ];
@@ -73,7 +73,7 @@ export default function GuidesIndexPage() {
         <p className="mt-5 max-w-2xl text-lg text-lp-muted">
           Running leagues and tournaments is one of the best ways to drive consistent foot traffic
           and build a loyal customer base. These guides cover the formats, logistics, and operational
-          details that actually matter — written by people who have helped bars do this at scale.
+          details that actually matter - written by people who have helped bars do this at scale.
         </p>
 
         <div className="mt-12 space-y-4">
@@ -99,12 +99,12 @@ export default function GuidesIndexPage() {
         <div className="mt-16 rounded-2xl bg-lp-accent/10 border border-lp-accent/20 p-8 text-center">
           <h2 className="font-display text-2xl font-bold">Ready to run your first competition?</h2>
           <p className="mt-2 text-lp-muted">
-            LeaguePour handles signup, entry fees, standings, and player communications — so you
+            LeaguePour handles signup, entry fees, standings, and player communications - so you
             can focus on running great events.
           </p>
           <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Button asChild size="lg">
-              <Link href="/signup/venue">Start hosting events — free</Link>
+              <Link href="/signup/venue">Start hosting events - free</Link>
             </Button>
             <Button asChild size="lg" variant="secondary">
               <Link href="/pricing">See pricing</Link>

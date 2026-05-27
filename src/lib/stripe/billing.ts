@@ -2,14 +2,14 @@
  * LeaguePour SaaS billing helpers.
  *
  * Stripe price lookup keys (already created in Stripe dashboard):
- *   leaguepour_starter_monthly   — $29/mo
- *   leaguepour_growth_monthly    — $79/mo
- *   leaguepour_pro_monthly       — $149/mo
- *   leaguepour_elite_monthly     — $299/mo
- *   leaguepour_starter_annual    — $290/yr
- *   leaguepour_growth_annual     — $790/yr
- *   leaguepour_pro_annual        — $1,490/yr
- *   leaguepour_elite_annual      — $2,990/yr
+ *   leaguepour_starter_monthly   - $29/mo
+ *   leaguepour_growth_monthly    - $79/mo
+ *   leaguepour_pro_monthly       - $149/mo
+ *   leaguepour_elite_monthly     - $299/mo
+ *   leaguepour_starter_annual    - $290/yr
+ *   leaguepour_growth_annual     - $790/yr
+ *   leaguepour_pro_annual        - $1,490/yr
+ *   leaguepour_elite_annual      - $2,990/yr
  *
  * Webhook events to register in Stripe dashboard:
  *   checkout.session.completed
@@ -100,13 +100,13 @@ export function subscriptionStatusLabel(status: string | null | undefined): stri
     case "trialing":
       return "Trial";
     case "past_due":
-      return "Past due — update payment method";
+      return "Past due - update payment method";
     case "canceled":
       return "Canceled";
     case "unpaid":
-      return "Unpaid — update payment method";
+      return "Unpaid - update payment method";
     case "incomplete":
-      return "Incomplete — finish checkout";
+      return "Incomplete - finish checkout";
     case "incomplete_expired":
       return "Expired";
     default:

@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Cornhole Tournament Software for Bars | LeaguePour",
     description:
-      "Run cornhole and bag toss tournaments at your bar — team signup, entry fees, brackets, and standings.",
+      "Run cornhole and bag toss tournaments at your bar - team signup, entry fees, brackets, and standings.",
     url: "/cornhole-tournament-software",
   },
 };
@@ -30,7 +30,7 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      name: "LeaguePour — Cornhole Tournament Software",
+      name: "LeaguePour - Cornhole Tournament Software",
       applicationCategory: "BusinessApplication",
       operatingSystem: "Web",
       url: `${getPublicSiteUrl()}/cornhole-tournament-software`,
@@ -61,7 +61,7 @@ const jsonLd = {
           name: "Does LeaguePour support doubles cornhole teams?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes — pairs/doubles is the most common cornhole format. One player registers as captain and invites their partner, or both register independently and are paired at check-in.",
+            text: "Yes - pairs/doubles is the most common cornhole format. One player registers as captain and invites their partner, or both register independently and are paired at check-in.",
           },
         },
       ],
@@ -70,11 +70,11 @@ const jsonLd = {
 };
 
 const features = [
-  { title: "Doubles & team signup", body: "Cornhole is a pairs game — captain-led team registration so partners sign up together." },
+  { title: "Doubles & team signup", body: "Cornhole is a pairs game - captain-led team registration so partners sign up together." },
   { title: "Entry fee collection", body: "Collect buy-ins online before event night. Stripe deposits directly to your bar's bank." },
-  { title: "Bracket generation", body: "Single elimination or round-robin brackets — auto-seeded from registrations." },
+  { title: "Bracket generation", body: "Single elimination or round-robin brackets - auto-seeded from registrations." },
   { title: "Waitlists & caps", body: "Limit entries to your board count. Overflow goes to a waitlist automatically." },
-  { title: "Public standings", body: "Live leaderboard on your venue's public page — players check the board from their seats." },
+  { title: "Public standings", body: "Live leaderboard on your venue's public page - players check the board from their seats." },
   { title: "Player messaging", body: "Announce schedule changes, results, and next tournament to opted-in players." },
 ];
 
@@ -90,7 +90,7 @@ export default function CornholeTournamentSoftwarePage() {
         </h1>
         <p className="mt-5 max-w-2xl text-lg text-lp-muted">
           LeaguePour handles cornhole and bag toss tournament registration, entry fees, brackets, standings,
-          and player communication — built for bars running weekly or seasonal events.
+          and player communication - built for bars running weekly or seasonal events.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Button asChild size="lg">
@@ -118,7 +118,7 @@ export default function CornholeTournamentSoftwarePage() {
           <ol className="mt-6 space-y-5">
             {[
               { n: 1, title: "Create your cornhole event", body: "Set the date, team format (doubles or larger), entry fee, board count cap, and signup deadline." },
-              { n: 2, title: "Players register online", body: "Share a link or QR code. Teams register and pay before showing up — no cash handling on event night." },
+              { n: 2, title: "Players register online", body: "Share a link or QR code. Teams register and pay before showing up - no cash handling on event night." },
               { n: 3, title: "Run brackets on the night", body: "Check in teams, auto-generate the bracket, enter scores each round, and display standings on your TV." },
               { n: 4, title: "Build your player base", body: "Every registered player is in your audience. Reach them instantly for the next tournament." },
             ].map((s) => (
@@ -138,9 +138,9 @@ export default function CornholeTournamentSoftwarePage() {
           <div className="mt-6 space-y-4">
             {[
               { q: "Can I run both one-night tournaments and weekly leagues?", a: "Yes. Set a single event date for one-off tournaments, or configure weekly signup windows for ongoing cornhole leagues." },
-              { q: "Does LeaguePour support doubles format?", a: "Yes — one player registers as captain and invites their partner. Both get confirmation emails and appear on the bracket." },
+              { q: "Does LeaguePour support doubles format?", a: "Yes - one player registers as captain and invites their partner. Both get confirmation emails and appear on the bracket." },
               { q: "How are entry fees handled?", a: "Players pay online via Stripe when they register. Funds go directly to your venue. No collecting cash on the night." },
-              { q: "Can I cap the number of teams?", a: "Yes. Set a max team count — additional registrations go to an automatic waitlist and get notified if spots open." },
+              { q: "Can I cap the number of teams?", a: "Yes. Set a max team count - additional registrations go to an automatic waitlist and get notified if spots open." },
             ].map((f) => (
               <details key={f.q} className="rounded-xl border border-lp-border bg-lp-surface/40 px-5 py-4">
                 <summary className="cursor-pointer list-none font-semibold text-lp-text [&::-webkit-details-marker]:hidden">{f.q}</summary>

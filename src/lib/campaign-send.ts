@@ -16,7 +16,7 @@ type SendResult = {
 
 /**
  * Deliver a DRAFT campaign to all eligible recipients and mark it SENT.
- * Safe to call from a server action — does not throw, returns a result object.
+ * Safe to call from a server action - does not throw, returns a result object.
  */
 export async function sendCampaign(campaignId: string, venueId: string): Promise<SendResult> {
   const campaign = await prisma.messageCampaign.findFirst({
@@ -63,7 +63,7 @@ export async function sendCampaign(campaignId: string, venueId: string): Promise
   const siteUrl = getPublicSiteUrl();
   const venueUrl = `${siteUrl}/v/${campaign.venue.slug}`;
 
-  // Build email list — personalise greeting but keep subject/body from campaign
+  // Build email list - personalise greeting but keep subject/body from campaign
   const emails = users.map((u) => ({
     to: u.email,
     subject: campaign.subject!,
@@ -92,7 +92,7 @@ export async function sendCampaign(campaignId: string, venueId: string): Promise
   });
 
   console.info(
-    `[campaign] Sent campaign ${campaignId} — ${totalSent} delivered, ${totalFailed} failed of ${users.length} recipients`,
+    `[campaign] Sent campaign ${campaignId} - ${totalSent} delivered, ${totalFailed} failed of ${users.length} recipients`,
   );
 
   return {

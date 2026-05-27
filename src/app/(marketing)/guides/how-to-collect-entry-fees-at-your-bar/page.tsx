@@ -30,7 +30,7 @@ const jsonLd = {
       "@type": "Article",
       headline: "How to Collect Entry Fees at Your Bar (The Right Way)",
       description:
-        "A practical guide to collecting entry fees for bar leagues and tournaments — covering cash problems, legal considerations, online payments via Stripe, player communication, and refund policies.",
+        "A practical guide to collecting entry fees for bar leagues and tournaments - covering cash problems, legal considerations, online payments via Stripe, player communication, and refund policies.",
       author: { "@type": "Organization", name: "LeaguePour" },
       publisher: {
         "@type": "Organization",
@@ -49,7 +49,7 @@ const jsonLd = {
           name: "Is it legal to charge entry fees for bar competitions?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "In most US states, charging entry fees for skill-based competitions (darts, cornhole, trivia, pool) is legal because the outcome is determined primarily by skill rather than chance. Games of pure chance (lotteries, certain card games) have different rules. If you're awarding significant cash prizes, consult a local attorney familiar with gaming and entertainment law. Many bars run entry-fee competitions for years without issue — but knowing your state's rules protects you.",
+            text: "In most US states, charging entry fees for skill-based competitions (darts, cornhole, trivia, pool) is legal because the outcome is determined primarily by skill rather than chance. Games of pure chance (lotteries, certain card games) have different rules. If you're awarding significant cash prizes, consult a local attorney familiar with gaming and entertainment law. Many bars run entry-fee competitions for years without issue - but knowing your state's rules protects you.",
           },
         },
         {
@@ -65,7 +65,7 @@ const jsonLd = {
           name: "What should my refund policy be for bar league entry fees?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "A common and fair policy: full refund if canceled 7 or more days before the event, 50% refund within 3–7 days, no refund within 3 days unless you cancel the event entirely. Always publish the refund policy on the signup page before players pay — surprises create bad reviews. If you cancel the event, refund everyone immediately.",
+            text: "A common and fair policy: full refund if canceled 7 or more days before the event, 50% refund within 3–7 days, no refund within 3 days unless you cancel the event entirely. Always publish the refund policy on the signup page before players pay - surprises create bad reviews. If you cancel the event, refund everyone immediately.",
           },
         },
       ],
@@ -95,7 +95,7 @@ export default function CollectEntryFeesGuide() {
           <section>
             <h2 className="font-display text-2xl font-bold">1. Why cash entry fees are a problem</h2>
             <p className="mt-4">
-              Most bar competitions start with cash collection — someone shows up on league night,
+              Most bar competitions start with cash collection - someone shows up on league night,
               passes an envelope around, and hopes everyone remembered to bring exact change. It seems
               simple. In practice, it creates a cascade of small problems that compound over a season.
             </p>
@@ -112,11 +112,11 @@ export default function CollectEntryFeesGuide() {
             </p>
             <p className="mt-4">
               Cash creates disputes. Someone claims they paid; you don't have a record. Someone says
-              they're good for it next week — and next week never comes. At the end of the season,
+              they're good for it next week - and next week never comes. At the end of the season,
               your prize pool is $40 short and you're not sure who owes it.
             </p>
             <p className="mt-4">
-              None of this means you can never use cash — for a small one-night event with 6 teams you
+              None of this means you can never use cash - for a small one-night event with 6 teams you
               already know, cash is fine. But for any recurring league or larger tournament, an online
               payment system is worth the setup time from day one.
             </p>
@@ -127,13 +127,13 @@ export default function CollectEntryFeesGuide() {
             <p className="mt-4">
               In most US states, charging entry fees for skill-based competitions is legal. Darts,
               cornhole, pool, trivia, and shuffleboard are all skill-based games where the winner is
-              determined by ability rather than chance. This distinction matters legally — games of
+              determined by ability rather than chance. This distinction matters legally - games of
               pure chance fall under gambling regulations; skill games generally don't.
             </p>
             <p className="mt-4">
               That said, state laws vary, and some states have stricter definitions of what counts as
-              a game of skill. If you're planning large events with significant cash prizes — more than
-              a few hundred dollars — it's worth a brief consultation with a local attorney who
+              a game of skill. If you're planning large events with significant cash prizes - more than
+              a few hundred dollars - it's worth a brief consultation with a local attorney who
               understands entertainment or gaming law. Most bars running weekly dart leagues or trivia
               nights with modest prize pools operate without issue, but knowing your state's position
               protects you if someone complains.
@@ -147,7 +147,7 @@ export default function CollectEntryFeesGuide() {
             </p>
             <p className="mt-4">
               Keep records of all entry fees collected and how they were distributed. This isn't just
-              good accounting — it's documentation that you ran the event as advertised if anyone
+              good accounting - it's documentation that you ran the event as advertised if anyone
               ever questions it.
             </p>
           </section>
@@ -156,7 +156,7 @@ export default function CollectEntryFeesGuide() {
             <h2 className="font-display text-2xl font-bold">3. How online payments work for bar events</h2>
             <p className="mt-4">
               Stripe is the payment processor behind most online entry fee collection tools, including
-              LeaguePour. It connects to your bank account and deposits collected entry fees directly —
+              LeaguePour. It connects to your bank account and deposits collected entry fees directly -
               typically within 2 business days of the transaction. You don't hold player money; it
               flows directly to you.
             </p>
@@ -168,11 +168,11 @@ export default function CollectEntryFeesGuide() {
             <p className="mt-4">
               Stripe charges 2.9% + $0.30 per transaction for standard card payments. On a $20 entry
               fee, that's about $0.88. For a 16-team event at $20 per team, Stripe's fee is roughly
-              $14 on $320 in entry fees — less than 5%. Platform fees from tools like LeaguePour sit
+              $14 on $320 in entry fees - less than 5%. Platform fees from tools like LeaguePour sit
               on top of this.
             </p>
             <p className="mt-4">
-              You can pass processing fees to players (common in the tournament world — players see
+              You can pass processing fees to players (common in the tournament world - players see
               a line item for "processing fee" at checkout) or absorb them yourself and treat them as
               a cost of running the event. Absorbing the fee is cleaner from the player's perspective
               and is the better choice for regular league players who might get annoyed by nickel-and-diming.
@@ -184,7 +184,7 @@ export default function CollectEntryFeesGuide() {
             <h2 className="font-display text-2xl font-bold">4. Communicating fees to players</h2>
             <p className="mt-4">
               Transparency upfront eliminates complaints later. State the entry fee clearly on every
-              piece of promotion — the social media post, the signup page, the flyer. Never bury it
+              piece of promotion - the social media post, the signup page, the flyer. Never bury it
               in the fine print or reveal it only at checkout.
             </p>
             <p className="mt-4">
@@ -195,7 +195,7 @@ export default function CollectEntryFeesGuide() {
             </p>
             <p className="mt-4">
               If you're collecting fees in-person on the first night, tell players in advance. A
-              reminder message ("Don't forget — $20 cash or card at the door before we start") prevents
+              reminder message ("Don't forget - $20 cash or card at the door before we start") prevents
               the awkward scramble of people who didn't know and need to find an ATM. Better yet,
               require online payment before the first night so you arrive knowing who's in and who's not.
             </p>
@@ -221,11 +221,11 @@ export default function CollectEntryFeesGuide() {
             <p className="mt-4">
               Publish this policy on the signup page before players enter their payment information.
               A surprise refund policy revealed after the fact always feels like a trap, even if it's
-              completely reasonable. Transparency builds trust — and trust is what converts a first-timer
+              completely reasonable. Transparency builds trust - and trust is what converts a first-timer
               into a weekly regular.
             </p>
             <p className="mt-4">
-              For unexpected situations — a player is hospitalized, a family emergency — use your
+              For unexpected situations - a player is hospitalized, a family emergency - use your
               discretion. Making an exception for a genuine hardship and issuing a full refund costs
               you one entry fee and earns you a loyal customer for years. Rigidly enforcing the policy
               when everyone can see it's an extraordinary situation creates the opposite outcome.
@@ -242,7 +242,7 @@ export default function CollectEntryFeesGuide() {
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg">
-              <Link href="/signup/venue">Start hosting events — free</Link>
+              <Link href="/signup/venue">Start hosting events - free</Link>
             </Button>
             <Button asChild size="lg" variant="secondary">
               <Link href="/pricing">See pricing</Link>

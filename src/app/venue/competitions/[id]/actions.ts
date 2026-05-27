@@ -155,7 +155,7 @@ export async function duplicateCompetitionFormAction(formData: FormData) {
   const copy = await prisma.competition.create({
     data: {
       venueId: access.venueId,
-      title: `Copy · ${source.title}`,
+      title: `Copy | ${source.title}`,
       slug,
       kind: source.kind,
       description: source.description,

@@ -169,7 +169,7 @@ export function ScoreboardClient({
               ].join(" ")}
             >
               {comp.venue.name}
-              {cityLabel ? ` · ${cityLabel}` : ""}
+              {cityLabel ? ` | ${cityLabel}` : ""}
             </p>
             <h1
               className={[
@@ -250,8 +250,8 @@ export function ScoreboardClient({
                     const displayName = s.team
                       ? s.team.name
                       : s.playerUserId
-                      ? (soloMap.get(s.playerUserId) ?? "—")
-                      : "—";
+                      ? (soloMap.get(s.playerUserId) ?? "-")
+                      : "-";
                     return (
                       <tr
                         key={s.id}
@@ -263,7 +263,7 @@ export function ScoreboardClient({
                             tvBody,
                           ].join(" ")}
                         >
-                          {s.rank ?? "—"}
+                          {s.rank ?? "-"}
                         </td>
                         <td
                           className={[
@@ -377,7 +377,7 @@ export function ScoreboardClient({
                     tvBody,
                   ].join(" ")}
                 >
-                  {reg.user.name ?? "—"}
+                  {reg.user.name ?? "-"}
                 </li>
               ))}
             </ul>
@@ -406,7 +406,7 @@ export function ScoreboardClient({
                 Scan to register at leaguepour.com
               </p>
               <p className={["mt-1 text-lp-muted", tvSmall].join(" ")}>
-                {comp.venue.name} · LeaguePour competition platform
+                {comp.venue.name} | LeaguePour competition platform
               </p>
               <p
                 className={[

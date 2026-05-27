@@ -61,7 +61,7 @@ export function VenueProfileForm({ initial }: { initial: VenueProfileInput }) {
     if (data.xUrl && !xUrl) setXUrl(data.xUrl);
     if (data.tiktokUrl && !tiktokUrl) setTiktokUrl(data.tiktokUrl);
     if (data.logoUrl && !logoUrl) setLogoUrl(data.logoUrl);
-    setImportMsg("Suggestions applied — review, then Save profile.");
+    setImportMsg("Suggestions applied - review, then Save profile.");
     setBusy(false);
   }
 
@@ -125,7 +125,7 @@ export function VenueProfileForm({ initial }: { initial: VenueProfileInput }) {
       <div className="space-y-4 rounded-[10px] border border-lp-border bg-lp-surface/30 p-4">
         <p className="text-xs font-semibold uppercase tracking-wider text-lp-muted">From your website</p>
         <p className="text-xs text-lp-muted">
-          Paste your site URL — we suggest socials and logo to review before save.
+          Paste your site URL - we suggest socials and logo to review before save.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <div className="flex-1">

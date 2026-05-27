@@ -79,11 +79,11 @@ export async function POST(request: Request) {
 
   try {
     switch (event.type) {
-      // ——— Entry fee payments ———
+      // --- Entry fee payments ---
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
         if (session.mode === "subscription") {
-          // Subscription checkout — pull the subscription and upsert billing state
+          // Subscription checkout - pull the subscription and upsert billing state
           const stripe = getStripe();
           const subId = typeof session.subscription === "string"
             ? session.subscription
@@ -140,7 +140,7 @@ export async function POST(request: Request) {
         break;
       }
 
-      // ——— Connect account status ———
+      // --- Connect account status ---
       case "account.updated": {
         const account = event.data.object as Stripe.Account;
         await prisma.venue.updateMany({
@@ -154,7 +154,7 @@ export async function POST(request: Request) {
         break;
       }
 
-      // ——— SaaS subscription lifecycle ———
+      // --- SaaS subscription lifecycle ---
       case "customer.subscription.updated": {
         await handleSubscriptionUpsert(event.data.object as Stripe.Subscription);
         break;

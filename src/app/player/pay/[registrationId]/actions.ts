@@ -52,7 +52,7 @@ export async function startStripeCheckoutForRegistrationFormAction(formData: For
     redirect("/player/competitions");
   }
 
-  // Always read entry fee from the competition record — it's the venue's listed price and the ground truth.
+  // Always read entry fee from the competition record - it's the venue's listed price and the ground truth.
   const entryFeeCents = reg.competition.entryFeeCents;
   if (entryFeeCents <= 0) {
     redirect("/player/competitions");

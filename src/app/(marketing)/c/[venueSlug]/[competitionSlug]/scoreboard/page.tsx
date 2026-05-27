@@ -20,7 +20,7 @@ export async function generateMetadata({
   });
   if (!comp) return { title: "Scoreboard" };
   return {
-    title: `${comp.title} — Scoreboard | ${comp.venue.name}`,
+    title: `${comp.title} - Scoreboard | ${comp.venue.name}`,
     robots: "noindex",
   };
 }

@@ -1,4 +1,4 @@
-/** North American cities ordered by distance from Chicago — the outreach sweep list. */
+/** North American cities ordered by distance from Chicago - the outreach sweep list. */
 export type OutreachCity = {
   city: string;
   state: string;
@@ -7,7 +7,7 @@ export type OutreachCity = {
 };
 
 export const OUTREACH_CITIES: OutreachCity[] = [
-  // Ring 1 — Chicago metro & <100 miles
+  // Ring 1 - Chicago metro & <100 miles
   { city: "Chicago", state: "IL", country: "US", query: "bars in Chicago IL" },
   { city: "Milwaukee", state: "WI", country: "US", query: "bars in Milwaukee WI" },
   { city: "Waukegan", state: "IL", country: "US", query: "bars in Waukegan IL" },
@@ -18,7 +18,7 @@ export const OUTREACH_CITIES: OutreachCity[] = [
   { city: "Joliet", state: "IL", country: "US", query: "bars in Joliet IL" },
   { city: "Gary", state: "IN", country: "US", query: "bars in Gary Hammond IN" },
   { city: "South Bend", state: "IN", country: "US", query: "bars in South Bend IN" },
-  // Ring 2 — 100-250 miles
+  // Ring 2 - 100-250 miles
   { city: "Indianapolis", state: "IN", country: "US", query: "bars in Indianapolis IN" },
   { city: "Madison", state: "WI", country: "US", query: "bars in Madison WI" },
   { city: "Fort Wayne", state: "IN", country: "US", query: "bars in Fort Wayne IN" },
@@ -31,7 +31,7 @@ export const OUTREACH_CITIES: OutreachCity[] = [
   { city: "Toledo", state: "OH", country: "US", query: "bars in Toledo OH" },
   { city: "Detroit", state: "MI", country: "US", query: "bars in Detroit MI" },
   { city: "Ann Arbor", state: "MI", country: "US", query: "bars in Ann Arbor MI" },
-  // Ring 3 — 250-500 miles
+  // Ring 3 - 250-500 miles
   { city: "Columbus", state: "OH", country: "US", query: "bars in Columbus OH" },
   { city: "Cleveland", state: "OH", country: "US", query: "bars in Cleveland OH" },
   { city: "Cincinnati", state: "OH", country: "US", query: "bars in Cincinnati OH" },
@@ -47,7 +47,7 @@ export const OUTREACH_CITIES: OutreachCity[] = [
   { city: "Pittsburgh", state: "PA", country: "US", query: "bars in Pittsburgh PA" },
   { city: "Nashville", state: "TN", country: "US", query: "bars in Nashville TN" },
   { city: "Memphis", state: "TN", country: "US", query: "bars in Memphis TN" },
-  // Ring 4 — 500-800 miles
+  // Ring 4 - 500-800 miles
   { city: "Atlanta", state: "GA", country: "US", query: "bars in Atlanta GA" },
   { city: "Charlotte", state: "NC", country: "US", query: "bars in Charlotte NC" },
   { city: "Raleigh", state: "NC", country: "US", query: "bars in Raleigh Durham NC" },
@@ -65,7 +65,7 @@ export const OUTREACH_CITIES: OutreachCity[] = [
   { city: "Knoxville", state: "TN", country: "US", query: "bars in Knoxville TN" },
   { city: "Lexington", state: "KY", country: "US", query: "bars in Lexington KY" },
   { city: "Louisville", state: "KY", country: "US", query: "taverns bars in Louisville KY" },
-  // Ring 5 — 800-1200 miles
+  // Ring 5 - 800-1200 miles
   { city: "New York", state: "NY", country: "US", query: "bars in New York City NY" },
   { city: "Boston", state: "MA", country: "US", query: "bars in Boston MA" },
   { city: "Washington", state: "DC", country: "US", query: "bars in Washington DC" },
@@ -83,7 +83,7 @@ export const OUTREACH_CITIES: OutreachCity[] = [
   { city: "Tucson", state: "AZ", country: "US", query: "bars in Tucson AZ" },
   { city: "Las Vegas", state: "NV", country: "US", query: "bars in Las Vegas NV" },
   { city: "Salt Lake City", state: "UT", country: "US", query: "bars in Salt Lake City UT" },
-  // Ring 6 — West Coast & Far regions
+  // Ring 6 - West Coast & Far regions
   { city: "Portland", state: "OR", country: "US", query: "bars in Portland OR" },
   { city: "Seattle", state: "WA", country: "US", query: "bars in Seattle WA" },
   { city: "Spokane", state: "WA", country: "US", query: "bars in Spokane WA" },

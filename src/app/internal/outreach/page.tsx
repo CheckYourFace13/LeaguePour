@@ -39,15 +39,15 @@ type Stats = {
 };
 
 const EMAIL_TEMPLATE = (barName: string) =>
-  `Subject: Run dart leagues & tournaments at ${barName} — free to try
+  `Subject: Run dart leagues & tournaments at ${barName} - free to try
 
 Hi ${barName} team,
 
-I wanted to reach out about LeaguePour — a platform built specifically for bars like yours to run dart leagues, cornhole tournaments, trivia nights, pool leagues, and more.
+I wanted to reach out about LeaguePour, a platform built specifically for bars like yours to run dart leagues, cornhole tournaments, trivia nights, pool leagues, and more.
 
 Here's what it does:
 • Online player signup (no more paper sheets or phone calls)
-• Entry fee collection via Stripe — funds go directly to your account
+• Entry fee collection via Stripe - funds go directly to your account
 • Standings, brackets, and player messaging built in
 • Players get confirmation emails automatically
 
@@ -55,7 +55,7 @@ Setup takes about 10 minutes and the first competition is free.
 
 If you're already running any kind of weekly event or league night, LeaguePour will save you hours and help you fill seats faster through word-of-mouth and repeat player marketing.
 
-Happy to answer any questions — or you can just try it at leaguepour.com/signup/venue.
+Happy to answer any questions - or you can just try it at leaguepour.com/signup/venue.
 
 Best,
 Chris
@@ -132,7 +132,7 @@ export default function OutreachPage() {
       if (result.error) {
         setSweepResult(`Error: ${result.error}`);
       } else if (result.allDone) {
-        setSweepResult("All cities complete — restarting from Chicago.");
+        setSweepResult("All cities complete - restarting from Chicago.");
       } else {
         setSweepResult(
           `Swept ${result.city?.city}, ${result.city?.state}: ${result.added} new contacts added, ${result.skipped} already known.`,
@@ -179,7 +179,7 @@ export default function OutreachPage() {
         <div>
           <h1 className="font-display text-3xl font-bold text-lp-text">Bar Outreach</h1>
           <p className="mt-1 text-lp-muted text-sm">
-            Automated sweep — {stats?.sweptCities ?? 0} of {stats?.totalCities ?? 0} cities covered
+            Automated sweep - {stats?.sweptCities ?? 0} of {stats?.totalCities ?? 0} cities covered
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -276,7 +276,7 @@ export default function OutreachPage() {
           <div className="rounded-xl border border-lp-border bg-lp-surface/20 p-10 text-center">
             <p className="text-lp-muted text-sm">
               {stats?.sweptCities === 0
-                ? 'No contacts yet — hit "Sweep next city" to start.'
+                ? 'No contacts yet - hit "Sweep next city" to start.'
                 : "No contacts match the current filter."}
             </p>
           </div>

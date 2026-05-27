@@ -71,7 +71,7 @@ export default async function NewCampaignDraftPage({
           ← Messages
         </Link>
         <h1 className="lp-page-title mt-4 text-3xl md:text-4xl">New campaign draft</h1>
-        <p className="mt-2 text-lp-muted">Compose in private — nothing is sent until you queue it from Messages.</p>
+        <p className="mt-2 text-lp-muted">Compose in private - nothing is sent until you queue it from Messages.</p>
       </div>
 
       {notice && notices[notice] ? (

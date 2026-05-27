@@ -98,7 +98,7 @@ export default async function NewCompetitionPage({
           <p className="text-xs font-bold uppercase tracking-wider text-lp-muted">Competition builder</p>
           <h1 className="lp-page-title text-3xl md:text-4xl">Create competition</h1>
           <p className="mt-2 text-sm text-lp-muted">
-            Detailed helper copy lives here — your public signup page stays clean.
+            Detailed helper copy lives here - your public signup page stays clean.
           </p>
         </div>
         <Button variant="secondary" asChild>
@@ -126,7 +126,7 @@ export default async function NewCompetitionPage({
           ))}
         </ol>
         <p className="mt-3 text-xs text-lp-muted">
-          One page, guided sections — {cta.buildCompetition.toLowerCase()} without losing context.
+          One page, guided sections - {cta.buildCompetition.toLowerCase()} without losing context.
         </p>
       </div>
 
@@ -276,7 +276,7 @@ export default async function NewCompetitionPage({
           <h2 className="lp-page-title text-xl">Format & schedule</h2>
           <FieldHelp title="Round robin vs elimination">
             <p>
-              Round robin spreads losses across weeks — great for loyalty. Single elimination is
+              Round robin spreads losses across weeks, great for loyalty. Single elimination is
               fast drama on one stage. Double elimination keeps top teams alive longer.
             </p>
           </FieldHelp>
@@ -304,7 +304,7 @@ export default async function NewCompetitionPage({
           </div>
           <div>
             <Label htmlFor="recurringRule">Recurring rule (optional)</Label>
-            <Input id="recurringRule" name="recurringRule" placeholder="Every Thursday · 8 weeks + finals" />
+            <Input id="recurringRule" name="recurringRule" placeholder="Every Thursday | 8 weeks + finals" />
           </div>
         </Card>
 
@@ -334,7 +334,7 @@ export default async function NewCompetitionPage({
             <input type="checkbox" name="publishNow" className="size-4 rounded border-lp-border" />
             Publish and open signup now
           </label>
-          <FieldHint>If unchecked, competition saves as draft — only staff can see it.</FieldHint>
+          <FieldHint>If unchecked, competition saves as draft - only staff can see it.</FieldHint>
           <Button type="submit" size="lg" className="w-full sm:w-auto">
             Save competition
           </Button>

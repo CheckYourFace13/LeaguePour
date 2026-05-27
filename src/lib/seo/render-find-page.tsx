@@ -89,14 +89,14 @@ export async function FindDiscoveryPage({ findSlug }: { findSlug: string }) {
   const faqs = [
     {
       q: `How do I find ${game.pluralLabel.toLowerCase()} near me?`,
-      a: `Browse partner venues and upcoming competitions on this page, or visit city pages for ${game.pluralLabel.toLowerCase()} in your area. All listings are real LeaguePour venues — nothing fabricated.`,
+      a: `Browse partner venues and upcoming competitions on this page, or visit city pages for ${game.pluralLabel.toLowerCase()} in your area. All listings are real LeaguePour venues, nothing fabricated.`,
     },
     {
       q: "Do I need an app?",
       a: "No. Register from your phone browser on the competition signup page.",
     },
     {
-      q: "I run a bar — how do I get listed?",
+      q: "I run a bar - how do I get listed?",
       a: "Sign up on LeaguePour, publish a competition, and your hub appears in discovery.",
     },
   ];
@@ -126,7 +126,7 @@ export async function FindDiscoveryPage({ findSlug }: { findSlug: string }) {
     <LeaguePourDiscoveryLanding
       kicker="Player discovery"
       heroTitle={game.patronHeadline}
-      heroIntro={`Browse partner bars and upcoming ${game.pluralLabel.toLowerCase()} on LeaguePour — the public discovery engine for local bar competitions. Every venue and event listed here is real.`}
+      heroIntro={`Browse partner bars and upcoming ${game.pluralLabel.toLowerCase()} on LeaguePour - the public discovery engine for local bar competitions. Every venue and event listed here is real.`}
       primaryCta={{ href: "/signup/player", label: "Join as a player" }}
       secondaryCta={{ href: "/signup/venue", label: "Venue signup" }}
       venues={venues}

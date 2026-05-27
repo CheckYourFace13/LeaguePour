@@ -27,7 +27,7 @@ type SendEmailOpts = {
 export async function sendEmail(opts: SendEmailOpts): Promise<{ ok: boolean; id?: string }> {
   const key = getResendKey();
   if (!key) {
-    console.warn("[email] RESEND_API_KEY not set — skipping email to", opts.to, "Subject:", opts.subject);
+    console.warn("[email] RESEND_API_KEY not set - skipping email to", opts.to, "Subject:", opts.subject);
     return { ok: false };
   }
 
@@ -62,7 +62,7 @@ export async function sendEmailBatch(
 ): Promise<{ ok: boolean; sent: number; failed: number }> {
   const key = getResendKey();
   if (!key) {
-    console.warn("[email] RESEND_API_KEY not set — skipping batch of", emails.length, "emails");
+    console.warn("[email] RESEND_API_KEY not set - skipping batch of", emails.length, "emails");
     return { ok: false, sent: 0, failed: emails.length };
   }
   if (emails.length === 0) return { ok: true, sent: 0, failed: 0 };
@@ -93,9 +93,9 @@ export async function sendEmailBatch(
   return { ok: true, sent, failed: emails.length - sent };
 }
 
-// ——————————————————————————————
+// ------------------------------
 // Transactional email templates
-// ——————————————————————————————
+// ------------------------------
 
 function baseHtml(content: string): string {
   return `<!DOCTYPE html>
@@ -123,7 +123,7 @@ function baseHtml(content: string): string {
   <div class="header"><h1>League<span>Pour</span></h1></div>
   <div class="body">${content}</div>
   <div class="footer">
-    <p>LeaguePour · Venue competition platform<br>
+    <p>LeaguePour | Venue competition platform<br>
     You're receiving this because you have an account on LeaguePour.
     Manage your email preferences in your account settings.</p>
   </div>
@@ -149,14 +149,14 @@ export function sendRegistrationConfirmationEmail(opts: {
     <div class="detail-box">
       <p><strong>Event:</strong> ${opts.competitionTitle}</p>
       <p><strong>Venue:</strong> ${opts.venueName}</p>
-      <p><strong>Entry:</strong> ${freeEntry ? "Free" : `$${(opts.entryFeeCents / 100).toFixed(2)} ${opts.currency.toUpperCase()} — paid`}</p>
+      <p><strong>Entry:</strong> ${freeEntry ? "Free" : `$${(opts.entryFeeCents / 100).toFixed(2)} ${opts.currency.toUpperCase()} - paid`}</p>
     </div>
     <a class="cta" href="${opts.competitionUrl}">View competition</a>
     <p>See you there!</p>
   `;
   return sendEmail({
     to: opts.to,
-    subject: `You're in — ${opts.competitionTitle} at ${opts.venueName}`,
+    subject: `You're in - ${opts.competitionTitle} at ${opts.venueName}`,
     html: baseHtml(content),
   });
 }
@@ -173,7 +173,7 @@ export function sendPaymentConfirmationEmail(opts: {
   const content = `
     <h2>Payment confirmed</h2>
     <p>Hi ${opts.playerName},</p>
-    <p>Your entry fee payment is confirmed — you're locked in for <strong>${opts.competitionTitle}</strong> at <strong>${opts.venueName}</strong>.</p>
+    <p>Your entry fee payment is confirmed - you're locked in for <strong>${opts.competitionTitle}</strong> at <strong>${opts.venueName}</strong>.</p>
     <div class="detail-box">
       <p><strong>Event:</strong> ${opts.competitionTitle}</p>
       <p><strong>Venue:</strong> ${opts.venueName}</p>
@@ -184,7 +184,7 @@ export function sendPaymentConfirmationEmail(opts: {
   `;
   return sendEmail({
     to: opts.to,
-    subject: `Payment confirmed — ${opts.competitionTitle}`,
+    subject: `Payment confirmed - ${opts.competitionTitle}`,
     html: baseHtml(content),
   });
 }

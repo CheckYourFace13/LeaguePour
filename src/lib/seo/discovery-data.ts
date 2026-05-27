@@ -146,7 +146,7 @@ export async function fetchDiscoveryCompetitionsForCity(
   }
 }
 
-/** Nationwide patron discovery — real published rows only. */
+/** Nationwide patron discovery - real published rows only. */
 export async function fetchDiscoveryCompetitionsForKind(
   kind: CompetitionKind,
   take = 32,

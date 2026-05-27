@@ -121,7 +121,7 @@ export function LeaguePourProductMockup({ className, compact = false }: LeaguePo
           className={cn(compact ? "col-span-2" : "md:col-span-5 md:row-span-3 md:col-start-1 md:row-start-1")}
         >
           <BracketPreview />
-          <p className="mt-2 text-[11px] font-semibold text-lp-muted">Single elimination · 8 teams</p>
+          <p className="mt-2 text-[11px] font-semibold text-lp-muted">Single elimination | 8 teams</p>
         </MockCard>
 
         <MockCard
@@ -191,7 +191,7 @@ export function LeaguePourProductMockup({ className, compact = false }: LeaguePo
           className={cn(compact ? "col-span-2 md:col-span-1" : "md:col-span-4 md:row-span-2 md:col-start-4 md:row-start-4")}
         >
           <p className="text-xs font-bold text-lp-text">Wednesday Darts League</p>
-          <p className="mt-1 text-[10px] text-lp-muted">7:00 PM · The Blue Line Taproom</p>
+          <p className="mt-1 text-[10px] text-lp-muted">7:00 PM | The Blue Line Taproom</p>
           <p className="mt-2 inline-flex rounded-full bg-lp-success/15 px-2 py-0.5 text-[9px] font-bold uppercase text-lp-success">
             Open signup
           </p>

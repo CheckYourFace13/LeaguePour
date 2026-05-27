@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "Bar Poker Tournament Software | LeaguePour",
   description:
-    "Run poker tournaments and poker nights at your bar with LeaguePour. Online registration, optional entry fees via Stripe, standings, and player notifications — no spreadsheets.",
+    "Run poker tournaments and poker nights at your bar with LeaguePour. Online registration, optional entry fees via Stripe, standings, and player notifications - no spreadsheets.",
   alternates: { canonical: "/poker-tournament-software" },
   keywords: [
     "bar poker tournament software",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Bar Poker Tournament Software | LeaguePour",
     description:
-      "Run poker nights and tournaments at your bar — online registration, standings, and player notifications. No spreadsheets.",
+      "Run poker nights and tournaments at your bar - online registration, standings, and player notifications. No spreadsheets.",
     url: "/poker-tournament-software",
   },
 };
@@ -28,7 +28,7 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      name: "LeaguePour — Poker Tournament Software",
+      name: "LeaguePour - Poker Tournament Software",
       applicationCategory: "BusinessApplication",
       operatingSystem: "Web",
       url: "https://leaguepour.com/poker-tournament-software",
@@ -75,7 +75,7 @@ const jsonLd = {
           name: "What poker formats work best for a bar?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Texas Hold'em tournament format is by far the most popular for bars — nearly everyone knows the basics, and the elimination structure keeps the event to a predictable time window. Sit-and-go formats (6–10 players per table) work well for smaller venues. Multi-table tournaments work for larger events with 30+ players.",
+            text: "Texas Hold'em tournament format is by far the most popular for bars - nearly everyone knows the basics, and the elimination structure keeps the event to a predictable time window. Sit-and-go formats (6–10 players per table) work well for smaller venues. Multi-table tournaments work for larger events with 30+ players.",
           },
         },
       ],
@@ -86,7 +86,7 @@ const jsonLd = {
 const features = [
   {
     title: "Online player registration",
-    body: "Players sign up from their phone before tournament night. Know your exact headcount — no walk-in chaos, no turning people away at the door.",
+    body: "Players sign up from their phone before tournament night. Know your exact headcount - no walk-in chaos, no turning people away at the door.",
   },
   {
     title: "Optional entry fees via Stripe",
@@ -98,7 +98,7 @@ const features = [
   },
   {
     title: "Player notifications",
-    body: "Email registered players about upcoming tournaments, results, and season leaderboard updates — directly from your dashboard.",
+    body: "Email registered players about upcoming tournaments, results, and season leaderboard updates - directly from your dashboard.",
   },
   {
     title: "Waitlists",
@@ -122,7 +122,7 @@ export default function PokerTournamentSoftwarePage() {
         </h1>
         <p className="mt-5 max-w-2xl text-lg text-lp-muted">
           LeaguePour handles poker tournament registration, season standings, player notifications,
-          and optional online payment collection — all in one platform built for bars running regular
+          and optional online payment collection - all in one platform built for bars running regular
           poker nights.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -168,7 +168,7 @@ export default function PokerTournamentSoftwarePage() {
               {
                 n: 4,
                 title: "Build your season",
-                body: "Email all registered players the updated leaderboard after each week. Create urgency for the next event — players in contention for the championship keep coming back.",
+                body: "Email all registered players the updated leaderboard after each week. Create urgency for the next event - players in contention for the championship keep coming back.",
               },
             ].map((s) => (
               <li key={s.n} className="flex gap-4">
@@ -190,18 +190,18 @@ export default function PokerTournamentSoftwarePage() {
             <p>
               Poker draws one of the highest-spend demographics of any bar competition. Tournament
               players typically stay for 3–5 hours for a structured event. They're in a focused,
-              social mindset that's ideal for bar spend — steady drinks, good conversation between
+              social mindset that's ideal for bar spend - steady drinks, good conversation between
               hands, and a reason to be there.
             </p>
             <p>
               A weekly poker league format, where players accumulate points across multiple evenings
               toward a quarterly championship, is one of the best ways to build a loyal core of
               regulars. Once a player is in contention for the season standings, they show up every
-              week. Missing a week costs them points — and the competitive drive is strong enough
+              week. Missing a week costs them points - and the competitive drive is strong enough
               that most committed players won't risk it.
             </p>
             <p>
-              Many bars run poker tournaments with no real-money entry fee — instead charging a
+              Many bars run poker tournaments with no real-money entry fee - instead charging a
               small food-and-beverage minimum or running it as a free event with a bar-credit prize.
               This sidesteps gaming regulations in most states while still creating the competitive
               structure that makes poker nights compelling. LeaguePour supports both fee and
@@ -238,7 +238,7 @@ export default function PokerTournamentSoftwarePage() {
               },
               {
                 q: "What poker format works best for a bar?",
-                a: "Texas Hold'em tournament format is the most popular — nearly everyone knows the basics, and the elimination structure keeps the event to a predictable time window. Sit-and-go formats work well for smaller venues; multi-table tournaments work for 30+ player events.",
+                a: "Texas Hold'em tournament format is the most popular - nearly everyone knows the basics, and the elimination structure keeps the event to a predictable time window. Sit-and-go formats work well for smaller venues; multi-table tournaments work for 30+ player events.",
               },
             ].map((f) => (
               <details key={f.q} className="rounded-xl border border-lp-border bg-lp-surface/40 px-5 py-4">

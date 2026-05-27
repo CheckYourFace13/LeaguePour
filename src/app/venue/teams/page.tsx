@@ -30,13 +30,13 @@ export default async function TeamsPage() {
       <FieldHelp title="Roster codes">
         <p>
           When a captain registers, LeaguePour generates a team invite code in the database. Member-claim flows are not
-          wired yet — use the roster list here for check-in until invites ship.
+          wired yet - use the roster list here for check-in until invites ship.
         </p>
       </FieldHelp>
       <div className="grid gap-4 md:grid-cols-2">
         {teams.length === 0 ? (
           <Card>
-            <p className="text-sm text-lp-muted">No teams yet — publish a captain-led competition.</p>
+            <p className="text-sm text-lp-muted">No teams yet - publish a captain-led competition.</p>
           </Card>
         ) : (
           teams.map((t) => (
@@ -44,7 +44,7 @@ export default async function TeamsPage() {
               <p className="text-xs font-bold uppercase tracking-wider text-lp-muted">{t.competition.title}</p>
               <p className="mt-2 font-display text-lg font-semibold">{t.name}</p>
               <p className="mt-1 text-sm text-lp-muted">
-                Captain {t.captain.name ?? t.captain.email} · {t._count.members} members
+                Captain {t.captain.name ?? t.captain.email} | {t._count.members} members
               </p>
               {t.inviteCode ? (
                 <p className="mt-3 rounded-lg border border-lp-border bg-lp-bg/60 px-3 py-2 text-xs font-mono text-lp-accent">

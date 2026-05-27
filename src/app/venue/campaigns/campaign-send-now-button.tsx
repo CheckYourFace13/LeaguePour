@@ -17,7 +17,7 @@ export function CampaignSendNowButton({ campaignId }: { campaignId: string }) {
       setError(result.error);
       setSending(false);
     }
-    // On success the action redirects — component unmounts naturally
+    // On success the action redirects - component unmounts naturally
   }
 
   return (

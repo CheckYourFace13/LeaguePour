@@ -122,9 +122,9 @@ export default async function PlayerPreferencesPage({
                 defaultValue={prefs.frequency}
                 className="mt-3 flex w-full min-h-12 rounded-[10px] border border-lp-border bg-lp-bg px-4 text-base font-medium text-lp-text outline-none focus:border-lp-accent/60 focus:ring-2 focus:ring-lp-accent/25"
               >
-                <option value="quiet">Quiet — only essentials</option>
+                <option value="quiet">Quiet - only essentials</option>
                 <option value="normal">Normal</option>
-                <option value="loud">Loud — tell me everything</option>
+                <option value="loud">Loud - tell me everything</option>
               </select>
             </div>
 

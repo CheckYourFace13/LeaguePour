@@ -191,10 +191,10 @@ export default async function InternalAdminPage({ searchParams }: AdminPageProps
               <div className="text-sm">
                 <p className="font-bold text-lp-text">{promo.code}</p>
                 <p className="text-lp-text-soft">
-                  {promo.discountType === "PERCENT" ? `${promo.amount}%` : `${(promo.amount / 100).toFixed(2)} USD`} ·{" "}
+                  {promo.discountType === "PERCENT" ? `${promo.amount}%` : `${(promo.amount / 100).toFixed(2)} USD`} |{" "}
                   used {promo.usedCount}
-                  {promo.usageLimit ? ` / ${promo.usageLimit}` : ""} ·{" "}
-                  {promo.expiresAt ? `expires ${promo.expiresAt.toLocaleString()}` : "no expiration"} ·{" "}
+                  {promo.usageLimit ? ` / ${promo.usageLimit}` : ""} |{" "}
+                  {promo.expiresAt ? `expires ${promo.expiresAt.toLocaleString()}` : "no expiration"} |{" "}
                   {promo.venue ? `venue: ${promo.venue.name}` : "global"}
                 </p>
               </div>
@@ -221,7 +221,7 @@ export default async function InternalAdminPage({ searchParams }: AdminPageProps
                   {venue.name} {venue.isDisabled ? <span className="text-red-700">(disabled)</span> : null}
                 </p>
                 <p className="text-lp-text-soft">
-                  {venue.slug} · {venue.city ?? "no city"} · {venue.id}
+                  {venue.slug} | {venue.city ?? "no city"} | {venue.id}
                 </p>
               </div>
               <div className="flex gap-2">
@@ -254,7 +254,7 @@ export default async function InternalAdminPage({ searchParams }: AdminPageProps
             <div key={user.id} className="rounded-md border border-lp-border p-3 text-sm">
               <p className="font-bold text-lp-text">{user.name ?? "Unnamed user"}</p>
               <p className="text-lp-text-soft">
-                {user.email} · {user.id}
+                {user.email} | {user.id}
               </p>
             </div>
           ))}
@@ -270,7 +270,7 @@ export default async function InternalAdminPage({ searchParams }: AdminPageProps
               <div className="text-sm">
                 <p className="font-bold text-lp-text">{competition.title}</p>
                 <p className="text-lp-text-soft">
-                  {competition.status} · {competition.venue.name} · {competition.id}
+                  {competition.status} | {competition.venue.name} | {competition.id}
                 </p>
               </div>
               <div className="flex gap-2">
@@ -303,7 +303,7 @@ export default async function InternalAdminPage({ searchParams }: AdminPageProps
               <div className="text-sm">
                 <p className="font-bold text-lp-text">{reg.competition.title}</p>
                 <p className="text-lp-text-soft">
-                  {reg.user.email} · reg: {reg.status} · payment: {reg.payment?.status ?? "none"} · {reg.id}
+                  {reg.user.email} | reg: {reg.status} | payment: {reg.payment?.status ?? "none"} | {reg.id}
                 </p>
               </div>
               <form action={markRegistrationCompAction}>
@@ -328,8 +328,8 @@ export default async function InternalAdminPage({ searchParams }: AdminPageProps
                   ${(payment.amountCents / 100).toFixed(2)} {payment.currency}
                 </p>
                 <p className="text-lp-text-soft">
-                  status: {payment.status} · reg: {payment.registration?.status ?? "none"} ·{" "}
-                  {payment.registration?.user.email ?? "unknown user"} · {payment.id}
+                  status: {payment.status} | reg: {payment.registration?.status ?? "none"} |{" "}
+                  {payment.registration?.user.email ?? "unknown user"} | {payment.id}
                 </p>
               </div>
               <form action={refundPaymentPlaceholderAction}>

@@ -60,7 +60,7 @@ export default async function RegistrationsPage({
       ) : null}
       {notice === "stripe_refund_failed" ? (
         <div className="rounded-[10px] border border-lp-border bg-lp-surface/60 px-4 py-3 text-sm text-lp-text">
-          Stripe rejected the refund request — check the Stripe dashboard logs or try again.
+          Stripe rejected the refund request - check the Stripe dashboard logs or try again.
         </div>
       ) : null}
       {notice === "unsupported_refund" ? (
@@ -76,7 +76,7 @@ export default async function RegistrationsPage({
       <FieldHelp title="Check-in tip">
         <p>
           Sort by competition at the door. Waivers and fees should match what players saw at signup
-          — if something changed, message them before they arrive.
+          - if something changed, message them before they arrive.
         </p>
       </FieldHelp>
       <Card className="overflow-hidden p-0">
@@ -91,7 +91,7 @@ export default async function RegistrationsPage({
             <li className="px-4 py-6 md:px-6">
               <EmptyState
                 title="No signups to check in yet"
-                description="Share the public competition link from each event — players land in this ledger as soon as they register."
+                description="Share the public competition link from each event - players land in this ledger as soon as they register."
                 action={
                   <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
                     <Button asChild size="lg">

@@ -34,7 +34,7 @@ export default async function DiscoverPage({
     <div className="space-y-8">
       <div>
         <h1 className="lp-page-title text-3xl md:text-4xl">Discover</h1>
-        <p className="mt-2 text-lp-muted">Browse open signups — filter by event type.</p>
+        <p className="mt-2 text-lp-muted">Browse open signups - filter by event type.</p>
       </div>
       <div className="flex flex-wrap gap-2">
         {kinds.map((k) => (
@@ -79,11 +79,11 @@ export default async function DiscoverPage({
               <Card>
                 <p className="text-sm text-lp-muted">
                   {c.venue.name}
-                  {c.venue.city ? ` · ${c.venue.city}` : ""}
+                  {c.venue.city ? ` | ${c.venue.city}` : ""}
                 </p>
                 <p className="mt-2 font-display text-xl font-bold tracking-tight text-lp-text">{c.title}</p>
                 <p className="mt-3 text-base text-lp-muted">
-                  Signup closes {formatDate(c.signupCloseAt)} · Starts {formatDate(c.startAt)}
+                  Signup closes {formatDate(c.signupCloseAt)} | Starts {formatDate(c.startAt)}
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <Badge variant="accent">{c.kind.replaceAll("_", " ")}</Badge>

@@ -1,6 +1,6 @@
 /**
  * Lightweight read-only bracket visualization for venue standings (Phase 2).
- * Not a full bracket editor — shows structure + scores when present.
+ * Not a full bracket editor - shows structure + scores when present.
  */
 type BracketMatch = {
   id: string;
@@ -32,7 +32,7 @@ export function BracketPreview({ title, matches }: { title: string; matches: Bra
               {m.completed && m.homeScore != null && m.awayScore != null ? (
                 <span>
                   <span className="font-semibold text-lp-text">{m.homeScore}</span>
-                  <span className="mx-1">—</span>
+                  <span className="mx-1">-</span>
                   <span className="font-semibold text-lp-text">{m.awayScore}</span>
                 </span>
               ) : (

@@ -10,7 +10,7 @@ import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 
 const notices: Record<string, string> = {
-  subscribed: "Subscription activated — welcome aboard!",
+  subscribed: "Subscription activated - welcome aboard!",
   "subscribe-cancel": "Subscription checkout was cancelled.",
 };
 

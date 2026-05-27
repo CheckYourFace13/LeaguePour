@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "History of Pub Trivia | How Quiz Night Conquered the Bar | LeaguePour",
   description:
-    "How pub trivia went from a British pub format in the 1970s to one of the most profitable recurring bar events in the world — the real history of quiz night.",
+    "How pub trivia went from a British pub format in the 1970s to one of the most profitable recurring bar events in the world - the real history of quiz night.",
   alternates: { canonical: "/history/trivia" },
   keywords: [
     "history of pub trivia",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "History of Pub Trivia | How Quiz Night Conquered the Bar | LeaguePour",
     description:
-      "The real history of pub trivia — from 1970s Britain through Trivial Pursuit to packed bar nights every Tuesday across America.",
+      "The real history of pub trivia - from 1970s Britain through Trivial Pursuit to packed bar nights every Tuesday across America.",
     url: "/history/trivia",
   },
 };
@@ -61,7 +61,7 @@ export default function TriviaHistoryPage() {
         </h1>
         <p className="mt-5 text-lg text-lp-muted">
           Pub trivia is one of the few bar events that requires no equipment, no physical skill, and
-          no special setup — and it still manages to fill rooms every week. That's not an accident.
+          no special setup - and it still manages to fill rooms every week. That's not an accident.
           It took decades to develop the format that makes it work.
         </p>
 
@@ -72,8 +72,8 @@ export default function TriviaHistoryPage() {
               Organized quiz nights in British pubs trace back to the 1970s, when a combination of
               licensing law restrictions and the natural social culture of British pubs created fertile
               ground for structured entertainment. Pubs needed to give customers a reason to stay, and
-              a quiz — cheap to run, endlessly renewable, and social in a way that solo entertainment
-              wasn't — fit perfectly.
+              a quiz - cheap to run, endlessly renewable, and social in a way that solo entertainment
+              wasn't - fit perfectly.
             </p>
             <p className="mt-4">
               The format that emerged was simple: a quizmaster reads questions in rounds, teams write
@@ -94,8 +94,8 @@ export default function TriviaHistoryPage() {
               someone internally capable of writing and running them.
             </p>
             <p className="mt-4">
-              The model they helped establish — a professional quizmaster as a service, provided to
-              pubs on a recurring basis — is essentially the same model that bar trivia hosting
+              The model they helped establish - a professional quizmaster as a service, provided to
+              pubs on a recurring basis - is essentially the same model that bar trivia hosting
               companies use today. The pub provides the space and the drinks; the trivia company
               provides the questions, the host, and the structure.
             </p>
@@ -104,7 +104,7 @@ export default function TriviaHistoryPage() {
           <section>
             <h2 className="font-display text-2xl font-bold">Trivial Pursuit and the trivia moment (1981)</h2>
             <p className="mt-4">
-              In 1981, two Canadian journalists — Scott Abbott and Chris Haney — released Trivial
+              In 1981, two Canadian journalists - Scott Abbott and Chris Haney - released Trivial
               Pursuit. The board game became one of the best-selling games in history, particularly
               during its 1984 peak when it sold 20 million copies in North America alone. It did
               something important: it established that adults would enthusiastically engage with
@@ -114,8 +114,8 @@ export default function TriviaHistoryPage() {
               Trivial Pursuit didn't create pub trivia, but it created a cultural moment that made
               trivia legible as a mainstream activity. People who played the game at home were
               primed to enjoy the pub quiz format. The game also generated a specific vocabulary
-              around trivia — categories, pie pieces, the competitive dynamic of knowing things
-              your friends don't — that translated directly to the bar environment.
+              around trivia - categories, pie pieces, the competitive dynamic of knowing things
+              your friends don't - that translated directly to the bar environment.
             </p>
           </section>
 
@@ -124,8 +124,8 @@ export default function TriviaHistoryPage() {
             <p className="mt-4">
               Pub trivia arrived in the United States gradually through the 1980s and 1990s, often
               carried by British expatriates who opened pubs or worked in the bar industry and simply
-              brought the format with them. British-style pubs in American cities — particularly in
-              college towns and urban centers — were often the first venues to run regular quiz nights.
+              brought the format with them. British-style pubs in American cities - particularly in
+              college towns and urban centers - were often the first venues to run regular quiz nights.
             </p>
             <p className="mt-4">
               The format adapted as it spread. American trivia tended to be louder, more hosted,
@@ -148,12 +148,12 @@ export default function TriviaHistoryPage() {
               The economics of a trivia night are hard to argue with from a bar owner's perspective.
               Teams of four to eight people show up with reservation-like reliability, stay for two
               to three hours, and order multiple rounds. The competitive element of the quiz creates
-              a social experience that keeps people engaged — they can't really drift off to their
+              a social experience that keeps people engaged - they can't really drift off to their
               phones when they're supposed to be answering questions.
             </p>
             <p className="mt-4">
               Trivia also ages into a venue's programming in a way few other events do. A bar that
-              runs trivia every Tuesday develops a Tuesday trivia crowd — regulars who come not just
+              runs trivia every Tuesday develops a Tuesday trivia crowd - regulars who come not just
               for the quiz but because their friends are there. That recurring social obligation
               is what bar owners are actually selling, and trivia formats are unusually good at
               generating it.
@@ -165,7 +165,7 @@ export default function TriviaHistoryPage() {
             <p className="mt-4">
               Digital tablets, apps, and online answer submission have entered the trivia market,
               though many venues still run pen-and-paper formats because they work and customers
-              like them. Themed trivia nights — 1980s music, Game of Thrones, horror films — have
+              like them. Themed trivia nights - 1980s music, Game of Thrones, horror films - have
               become common as venues look for a competitive edge in crowded markets.
             </p>
             <p className="mt-4">
@@ -187,7 +187,7 @@ export default function TriviaHistoryPage() {
                 rel="noopener noreferrer"
                 className="text-lp-accent hover:underline"
               >
-                Wikipedia — Pub quiz
+                Wikipedia - Pub quiz
               </a>
             </li>
             <li>
@@ -197,7 +197,7 @@ export default function TriviaHistoryPage() {
                 rel="noopener noreferrer"
                 className="text-lp-accent hover:underline"
               >
-                Wikipedia — Trivial Pursuit
+                Wikipedia - Trivial Pursuit
               </a>
             </li>
           </ul>

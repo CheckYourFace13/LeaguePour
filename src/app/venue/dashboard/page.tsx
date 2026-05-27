@@ -92,7 +92,7 @@ export default async function VenueDashboardPage({
       <div className="rounded-[10px] border border-lp-accent/30 bg-lp-accent/5 px-5 py-4">
         <p className="font-semibold text-lp-text">New: Live Scoreboard &amp; Website Embed</p>
         <p className="mt-1 text-sm text-lp-muted">
-          Share a live scoreboard for any in-progress competition — works fullscreen on a bar TV.
+          Share a live scoreboard for any in-progress competition - works fullscreen on a bar TV.
           Embed your upcoming events on your website with one line of code.
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -191,8 +191,8 @@ export default async function VenueDashboardPage({
                 <CardHeader className="p-0">
                   <CardTitle>{c.title}</CardTitle>
                   <CardDescription>
-                    Signup closes {formatDate(c.signupCloseAt)} · {c._count.registrations} registered
-                    {c.participantCap ? ` · cap ${c.participantCap}` : ""}
+                    Signup closes {formatDate(c.signupCloseAt)} | {c._count.registrations} registered
+                    {c.participantCap ? ` | cap ${c.participantCap}` : ""}
                   </CardDescription>
                 </CardHeader>
                 <Badge variant={c.status === "SIGNUP_OPEN" ? "success" : "muted"} className="shrink-0">
@@ -201,8 +201,8 @@ export default async function VenueDashboardPage({
               </div>
               <p className="mt-4 text-base text-lp-muted">
                 Listed entry {formatMoney(c.entryFeeCents, c.entryFeeCurrency)}
-                {c.entryFeeCents > 0 ? " — shown on the public signup page." : ""}
-                {c.prizeStructure ? ` · ${c.prizeStructure.summary}` : ""}
+                {c.entryFeeCents > 0 ? ", shown on the public signup page." : ""}
+                {c.prizeStructure ? ` | ${c.prizeStructure.summary}` : ""}
               </p>
               <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                 <Button variant="secondary" asChild>
@@ -220,14 +220,14 @@ export default async function VenueDashboardPage({
       <div className="rounded-2xl border border-lp-border bg-lp-surface/40 p-5 md:p-6">
         <h2 className="font-semibold text-lp-text">Embed your events on your website</h2>
         <p className="mt-1 text-sm text-lp-muted">
-          Copy this snippet into any webpage to show your upcoming LeaguePour events. Updates automatically — no maintenance needed.
+          Copy this snippet into any webpage to show your upcoming LeaguePour events. Updates automatically - no maintenance needed.
         </p>
         <pre className="mt-4 overflow-x-auto rounded-lg bg-lp-bg border border-lp-border px-4 py-3 text-xs text-lp-muted font-mono leading-relaxed">
-          {`<iframe\n  src="https://leaguepour.com/embed/${venueSlug}"\n  width="100%" height="420"\n  frameborder="0"\n  style="border-radius:12px;border:1px solid #e2e8f0;"\n  title="${venueRow?.name ?? "Upcoming Events"} — Upcoming Events"\n></iframe>`}
+          {`<iframe\n  src="https://leaguepour.com/embed/${venueSlug}"\n  width="100%" height="420"\n  frameborder="0"\n  style="border-radius:12px;border:1px solid #e2e8f0;"\n  title="${venueRow?.name ?? "Upcoming Events"} - Upcoming Events"\n></iframe>`}
         </pre>
         <div className="mt-3">
           <EmbedCopyButton
-            code={`<iframe\n  src="https://leaguepour.com/embed/${venueSlug}"\n  width="100%" height="420"\n  frameborder="0"\n  style="border-radius:12px;border:1px solid #e2e8f0;"\n  title="${venueRow?.name ?? "Upcoming Events"} — Upcoming Events"\n></iframe>`}
+            code={`<iframe\n  src="https://leaguepour.com/embed/${venueSlug}"\n  width="100%" height="420"\n  frameborder="0"\n  style="border-radius:12px;border:1px solid #e2e8f0;"\n  title="${venueRow?.name ?? "Upcoming Events"} - Upcoming Events"\n></iframe>`}
           />
         </div>
       </div>

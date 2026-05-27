@@ -94,7 +94,7 @@ export default async function EditCampaignDraftPage({
       ) : null}
 
       <FieldHelp title="Sent campaigns are read-only">
-        <p>After you send from Messages, this draft locks — duplicate in the database if you need a variant later.</p>
+        <p>After you send from Messages, this draft locks - duplicate in the database if you need a variant later.</p>
       </FieldHelp>
 
       <CampaignDraftEditor

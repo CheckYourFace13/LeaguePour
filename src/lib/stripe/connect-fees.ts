@@ -1,7 +1,7 @@
 /** LeaguePour takes 5% of the venue's listed entry fee (deducted before the venue receives funds). */
 export const PLATFORM_FEE_BPS = 500;
 
-/** Flat service fee charged to the player on top of the entry fee — covers Stripe processing + platform margin. */
+/** Flat service fee charged to the player on top of the entry fee - covers Stripe processing + platform margin. */
 export const PLAYER_SERVICE_FEE_CENTS = 150;
 
 /**

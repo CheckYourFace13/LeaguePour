@@ -1,5 +1,5 @@
 /**
- * Real customer testimonials only — never fabricate quotes for marketing pages.
+ * Real customer testimonials only - never fabricate quotes for marketing pages.
  *
  * Each entry must include:
  * - venueName

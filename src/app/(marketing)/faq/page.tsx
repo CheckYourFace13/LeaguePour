@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: "Is LeaguePour for concerts or DJs?",
-    a: "No — it's for participation events: trivia, leagues, brackets, buy-ins, and structured games.",
+    a: "No - it's for participation events: trivia, leagues, brackets, buy-ins, and structured games.",
   },
   {
     q: "Can we collect entry fees?",
@@ -44,11 +44,11 @@ const faqs = [
   },
   {
     q: "Do players need to create an account?",
-    a: "Yes — players create a free LeaguePour account to register for competitions, view their history, and manage alerts. Sign-up takes under a minute.",
+    a: "Yes - players create a free LeaguePour account to register for competitions, view their history, and manage alerts. Sign-up takes under a minute.",
   },
   {
     q: "Can I run free events with no entry fee?",
-    a: "Yes. Set the entry fee to $0 and players register without a payment. The platform is free to use for free events — you only pay the subscription plan for your venue.",
+    a: "Yes. Set the entry fee to $0 and players register without a payment. The platform is free to use for free events - you only pay the subscription plan for your venue.",
   },
   {
     q: "What happens if I need to cancel an event?",

@@ -93,7 +93,7 @@ export async function submitCompetitionRegistration(
     revalidatePath("/venue/dashboard");
     revalidatePath("/venue/registrations");
     if (needsPay) return { ok: true, flow: "pay", registrationId: reg.id };
-    // Free registration — send confirmation email
+    // Free registration - send confirmation email
     if (session.user.email) {
       await sendRegistrationConfirmationEmail({
         to: session.user.email,
@@ -161,7 +161,7 @@ export async function submitCompetitionRegistration(
   revalidatePath("/venue/dashboard");
   revalidatePath("/venue/registrations");
   if (needsPay) return { ok: true, flow: "pay", registrationId: reg.id };
-  // Free team registration — send confirmation email
+  // Free team registration - send confirmation email
   if (session.user.email) {
     await sendRegistrationConfirmationEmail({
       to: session.user.email,

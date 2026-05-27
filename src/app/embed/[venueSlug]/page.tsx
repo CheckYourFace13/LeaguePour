@@ -62,7 +62,7 @@ export default async function EmbedVenuePage({
       {/* Competition list */}
       {competitions.length === 0 ? (
         <p className="text-sm text-gray-500 py-6 text-center">
-          No upcoming events right now — check back soon.
+          No upcoming events right now - check back soon.
         </p>
       ) : (
         <div className="flex flex-col gap-3">

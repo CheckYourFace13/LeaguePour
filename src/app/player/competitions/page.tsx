@@ -60,7 +60,7 @@ export default async function PlayerCompetitionsPage() {
                       <p className="text-xs text-lp-muted">{r.competition.venue.name}</p>
                       <p className="font-display text-lg font-semibold">{r.competition.title}</p>
                       <p className="mt-1 text-sm text-lp-muted">
-                        Starts {formatDate(r.competition.startAt)} · Listed fee{" "}
+                        Starts {formatDate(r.competition.startAt)} | Listed fee{" "}
                         {formatMoney(r.competition.entryFeeCents, r.competition.entryFeeCurrency)}
                       </p>
                     </div>

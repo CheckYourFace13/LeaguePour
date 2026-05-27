@@ -24,12 +24,12 @@ const steps = [
   {
     n: "2",
     title: "Connect your Stripe account",
-    body: 'Click "Connect Stripe" in your venue profile. Stripe walks you through entering your business info and bank account — it takes about 5 minutes. This is how entry fees reach your bank directly. You\'ll need your business name, address, EIN or SSN (for tax purposes), and bank account number.',
+    body: 'Click "Connect Stripe" in your venue profile. Stripe walks you through entering your business info and bank account - it takes about 5 minutes. This is how entry fees reach your bank directly. You\'ll need your business name, address, EIN or SSN (for tax purposes), and bank account number.',
   },
   {
     n: "3",
     title: "Build a competition",
-    body: "Set your event name, date, entry fee, team format, and participant cap. Publish it and share the link — or print the QR code for tables and door signage.",
+    body: "Set your event name, date, entry fee, team format, and participant cap. Publish it and share the link - or print the QR code for tables and door signage.",
   },
   {
     n: "4",
@@ -70,27 +70,27 @@ export default function ForVenuesPage() {
         <p className="lp-kicker text-lp-accent">What you get</p>
         <ul className="mt-5 space-y-3 text-lp-muted text-base">
           <li className="flex gap-3">
-            <span className="text-lp-accent font-bold">·</span>
+            <span className="text-lp-accent font-bold">|</span>
             <span>Public signup pages with a shareable link and printable QR code</span>
           </li>
           <li className="flex gap-3">
-            <span className="text-lp-accent font-bold">·</span>
-            <span>Entry fees paid directly to your bank via Stripe — we never hold your money</span>
+            <span className="text-lp-accent font-bold">|</span>
+            <span>Entry fees paid directly to your bank via Stripe - we never hold your money</span>
           </li>
           <li className="flex gap-3">
-            <span className="text-lp-accent font-bold">·</span>
+            <span className="text-lp-accent font-bold">|</span>
             <span>Team or solo formats, participant caps, and waitlists</span>
           </li>
           <li className="flex gap-3">
-            <span className="text-lp-accent font-bold">·</span>
+            <span className="text-lp-accent font-bold">|</span>
             <span>Standings, brackets, and match tracking</span>
           </li>
           <li className="flex gap-3">
-            <span className="text-lp-accent font-bold">·</span>
+            <span className="text-lp-accent font-bold">|</span>
             <span>Email and SMS campaigns to re-engage your player audience</span>
           </li>
           <li className="flex gap-3">
-            <span className="text-lp-accent font-bold">·</span>
+            <span className="text-lp-accent font-bold">|</span>
             <span>Staff roles so managers and coordinators can help run events</span>
           </li>
         </ul>
@@ -103,7 +103,7 @@ export default function ForVenuesPage() {
           From sign-up to collecting entry fees in under 10 minutes
         </h2>
         <p className="mt-3 text-lp-muted">
-          The most important step is connecting your Stripe account — that&apos;s what gets money into your bank. Here&apos;s the full flow:
+          The most important step is connecting your Stripe account - that&apos;s what gets money into your bank. Here&apos;s the full flow:
         </p>
         <div className="mt-8 space-y-4">
           {steps.map((s) => (
@@ -126,13 +126,13 @@ export default function ForVenuesPage() {
         <p className="text-sm text-lp-muted leading-relaxed">
           <strong className="text-lp-text">Why do I need a Stripe account?</strong> Stripe is the payment processor
           that moves money from players into your bank. LeaguePour uses Stripe Connect so your bank account is linked
-          directly — entry fees never sit in our account. You keep control, and Stripe handles all the security and compliance.
+          directly - entry fees never sit in our account. You keep control, and Stripe handles all the security and compliance.
         </p>
         <p className="text-sm text-lp-muted leading-relaxed">
           <strong className="text-lp-text">What does it cost?</strong> LeaguePour charges a{" "}
           <strong className="text-lp-text">5% venue fee</strong> on paid registrations, deducted before your payout.
           Players also pay a <strong className="text-lp-text">$1.50 service fee</strong> added on top of your entry
-          price — this covers Stripe&apos;s card processing costs so you don&apos;t have to. Free events have no fees at all.
+          price - this covers Stripe&apos;s card processing costs so you don&apos;t have to. Free events have no fees at all.
         </p>
         <div className="rounded-[8px] bg-lp-bg/80 border border-lp-border p-4 text-sm space-y-2">
           <p className="font-semibold text-lp-text">Example: $10 entry fee</p>

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   title:
     "Tournament & League Management for Bars & Breweries | LeaguePour",
   description:
-    "Bar tournament software, league management, paid signups, QR codes, venue event hubs, and local event discovery — plus brackets and venue-first operations for dart, cornhole, trivia, and brewery events.",
+    "Bar tournament software, league management, paid signups, QR codes, venue event hubs, and local event discovery - plus brackets and venue-first operations for dart, cornhole, trivia, and brewery events.",
   alternates: { canonical: "/features/tournaments" },
   keywords: [
     "bar tournament software",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Tournament & League Management Built for Bars & Breweries",
     description:
-      "Run bar competitions with signups, payments, brackets, and repeat-player marketing — built for venues, not hobby brackets.",
+      "Run bar competitions with signups, payments, brackets, and repeat-player marketing - built for venues, not hobby brackets.",
     url: "/features/tournaments",
   },
 };
@@ -44,7 +44,7 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      name: "LeaguePour — Tournament & League Management",
+      name: "LeaguePour - Tournament & League Management",
       applicationCategory: "BusinessApplication",
       operatingSystem: "Web",
       url: `${getPublicSiteUrl()}/features/tournaments`,
@@ -119,14 +119,14 @@ const competitionTypes = [
   {
     title: "Poker & specialty nights",
     href: "/poker-tournament-software",
-    body: "Registration lists and structured nights — check local rules before collecting buy-ins.",
+    body: "Registration lists and structured nights - check local rules before collecting buy-ins.",
   },
 ];
 
 const venueOps = [
   "Staff roles so owners, managers, and coordinators can share the workload",
   "Registration list doubles as your night-of check-in sheet",
-  "Match score entry from the venue dashboard — bracket cards update on Standings",
+  "Match score entry from the venue dashboard - bracket cards update on Standings",
   "Public scoreboard view for bar TVs and projector displays",
   "Waivers and rules published on the signup page before players pay",
   "Duplicate or reopen signup for the next season without rebuilding from scratch",
@@ -135,7 +135,7 @@ const venueOps = [
 const signupPayment = [
   "Solo, captain-led team, or full roster team registration",
   "Free events or paid entry fees collected through Stripe Checkout",
-  "Entry fees deposit to your venue Stripe account — LeaguePour does not hold your funds",
+  "Entry fees deposit to your venue Stripe account - LeaguePour does not hold your funds",
   "Participant caps with automatic waitlist when spots fill",
   "Downloadable QR codes for tables, windows, and social posts",
   "Payment records tied to registrations; refunds processed through Stripe when you issue them",
@@ -153,7 +153,7 @@ const growth = [
 const featureCards: { title: string; body: string }[] = [
   {
     title: "Single elimination tournaments",
-    body: "Designed for today: pick the format, assign matches, enter scores — bracket cards on Standings. Auto-bracket generation is on the roadmap.",
+    body: "Designed for today: pick the format, assign matches, enter scores - bracket cards on Standings. Auto-bracket generation is on the roadmap.",
   },
   {
     title: "Double elimination tournaments",
@@ -169,14 +169,14 @@ const featureCards: { title: string; body: string }[] = [
   },
   { title: "Weekly recurring leagues", body: "Set recurring rules and signup windows so the same night runs week after week." },
   { title: "Team-based signups", body: "Register full teams with caps sized to your boards, tables, or lanes." },
-  { title: "Captain-managed teams", body: "One captain registers and invites partners — common for doubles and euchre." },
+  { title: "Captain-managed teams", body: "One captain registers and invites partners - common for doubles and euchre." },
   { title: "Free events or paid entry fees", body: "Set entry to $0 for free nights or collect buy-ins before players arrive." },
-  { title: "QR code signup", body: "Download a PNG QR from the venue or competition page — scan to open signup." },
+  { title: "QR code signup", body: "Download a PNG QR from the venue or competition page - scan to open signup." },
   { title: "Mobile-friendly public event page", body: "Players register from any phone browser; no app install required." },
   { title: "Staff/admin score entry", body: "Venue staff enter match scores; bracket and standings views refresh from those rows." },
   {
     title: "Participant self-reporting",
-    body: "Built to support player-submitted scores where you want lighter staff load — today, venues enter scores in the dashboard.",
+    body: "Built to support player-submitted scores where you want lighter staff load - today, venues enter scores in the dashboard.",
   },
   {
     title: "Station/table/board assignment",
@@ -185,7 +185,7 @@ const featureCards: { title: string; body: string }[] = [
   { title: "Check-in list", body: "Confirmed and waitlisted registrations in one place for door and table staff." },
   {
     title: "Printable bracket",
-    body: "Bracket cards on the Standings page — screenshot or print from the browser for wall brackets.",
+    body: "Bracket cards on the Standings page - screenshot or print from the browser for wall brackets.",
   },
   { title: "Public standings", body: "Leaderboards on your public venue and competition pages for in-bar displays." },
   { title: "Stripe payments", body: "Card payments through Stripe Connect; payouts follow your Stripe schedule." },
@@ -217,7 +217,7 @@ const featureCards: { title: string; body: string }[] = [
   { title: "Email reminders", body: "Campaign drafts to remind registrants about deadlines, results, and the next event." },
   {
     title: "Player reactivation",
-    body: "Message past participants and followers who opted in — fill the next league from people who already know your bar.",
+    body: "Message past participants and followers who opted in - fill the next league from people who already know your bar.",
   },
   {
     title: "Sponsor and prize promotion",
@@ -225,7 +225,7 @@ const featureCards: { title: string; body: string }[] = [
   },
   {
     title: "Food and drink specials",
-    body: "Promote specials in event copy and player emails — tie the bracket to tonight's menu.",
+    body: "Promote specials in event copy and player emails - tie the bracket to tonight's menu.",
   },
   {
     title: "Shareable flyers and QR codes",
@@ -276,7 +276,7 @@ const faqs = [
   },
   {
     q: "Will LeaguePour match Challonge-style bracket depth?",
-    a: "That is the goal. LeaguePour already leads on venue signups, payments, discovery, and repeat-player marketing. The bracket engine roadmap covers auto-generated trees, seeding, pool play, Swiss, and best-of series — without sacrificing the bar-first workflow.",
+    a: "That is the goal. LeaguePour already leads on venue signups, payments, discovery, and repeat-player marketing. The bracket engine roadmap covers auto-generated trees, seeding, pool play, Swiss, and best-of series - without sacrificing the bar-first workflow.",
   },
   {
     q: "Do entry fees go to LeaguePour or my venue?",
@@ -292,11 +292,11 @@ const faqs = [
   },
   {
     q: "Is this replacing my POS or reservation system?",
-    a: "No. LeaguePour handles competition signup, payments for entry fees, brackets, and player communication — not table reservations or kitchen tickets.",
+    a: "No. LeaguePour handles competition signup, payments for entry fees, brackets, and player communication - not table reservations or kitchen tickets.",
   },
   {
     q: "Does LeaguePour have every feature Challonge offers today?",
-    a: "Not yet. LeaguePour leads on venue operations — paid signups, QR codes, venue hubs, local discovery, and repeat-player campaigns. Bulk import, drag-and-drop seeding, station queues, and API access are on the roadmap. Check the comparison table for what is live vs planned.",
+    a: "Not yet. LeaguePour leads on venue operations - paid signups, QR codes, venue hubs, local discovery, and repeat-player campaigns. Bulk import, drag-and-drop seeding, station queues, and API access are on the roadmap. Check the comparison table for what is live vs planned.",
   },
   {
     q: "What do I need to get started?",
@@ -407,7 +407,7 @@ export default function TournamentsFeaturePage() {
 
       <TournamentVisualBand
         title="Brackets, signups, and standings without the chaos"
-        copy="Pick an established format, collect registrations, track teams, enter scores, and keep the night moving. LeaguePour is built for real venues — not just online brackets."
+        copy="Pick an established format, collect registrations, track teams, enter scores, and keep the night moving. LeaguePour is built for real venues - not just online brackets."
       />
 
       <VenuePainPoints />
@@ -420,7 +420,7 @@ export default function TournamentsFeaturePage() {
           </h2>
           <p className="mt-3 max-w-3xl text-lp-muted leading-relaxed">
             LeaguePour is built for real venue operators. Pick your game, number of teams, available time, and whether
-            everyone should play more than once — LeaguePour helps you choose the format that fits the night. The smart
+            everyone should play more than once - LeaguePour helps you choose the format that fits the night. The smart
             setup wizard is <span className="font-semibold text-lp-accent">Planned</span> in the competition builder;
             recommendations below use established formats only.
           </p>
@@ -445,7 +445,7 @@ export default function TournamentsFeaturePage() {
             <FormatStatusBadge status="Planned" />
           </div>
           <p className="mt-3 text-sm text-lp-muted leading-relaxed">
-            Coming to the competition builder — answer a few questions and LeaguePour recommends an established format
+            Coming to the competition builder - answer a few questions and LeaguePour recommends an established format
             (no custom or experimental styles).
           </p>
           <ul className="mt-6 space-y-4">
@@ -507,7 +507,7 @@ export default function TournamentsFeaturePage() {
             Run every kind of bar competition
           </h2>
           <p className="mt-3 max-w-2xl text-lp-muted leading-relaxed">
-            LeaguePour is built around how real bars run nights — not office park esports. Pick a format template, set
+            LeaguePour is built around how real bars run nights - not office park esports. Pick a format template, set
             caps and fees, and publish a signup page your regulars can actually use on a phone.
           </p>
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -539,7 +539,7 @@ export default function TournamentsFeaturePage() {
           </h2>
           <p className="mt-3 text-lp-muted leading-relaxed">
             Brackets are only half the job. You need check-in, staff permissions, scores on the board, and a plan for
-            next week — without a tournament director certification.
+            next week - without a tournament director certification.
           </p>
           <ul className="mt-6 space-y-3">
             {venueOps.map((item) => (
@@ -580,14 +580,14 @@ export default function TournamentsFeaturePage() {
             <Link href="/how-it-works" className="font-semibold text-lp-accent hover:underline">
               How setup works →
             </Link>
-            {" · "}
+            {" | "}
             <Link href="/pricing" className="font-semibold text-lp-accent hover:underline">
               Pricing & fees →
             </Link>
           </p>
           <NativePromoCard
             className="mt-10"
-            title="More than brackets — built to make the night profitable"
+            title="More than brackets - built to make the night profitable"
             bullets={[
               "Collect entry fees before players arrive",
               "Promote food and drink specials",
@@ -631,7 +631,7 @@ export default function TournamentsFeaturePage() {
           <p className="mt-3 max-w-2xl text-lp-muted leading-relaxed">
             Challonge-style tools excel at drawing brackets for hobby tournaments. LeaguePour is venue-first: paid
             signups to your Stripe account, public event pages, staff score entry, and marketing that fills the next
-            league night — not just tonight&apos;s final.
+            league night - not just tonight&apos;s final.
           </p>
           <p className="mt-2 text-sm text-lp-muted">
             <span className="font-semibold text-lp-accent">Roadmap</span> and{" "}
@@ -673,7 +673,7 @@ export default function TournamentsFeaturePage() {
             Bracket engine roadmap
           </h2>
           <p className="mt-3 text-sm text-lp-muted leading-relaxed">
-            Goal: bracket and tournament setup as good as or better than generic tournament tools — while keeping
+            Goal: bracket and tournament setup as good as or better than generic tournament tools - while keeping
             venue-first signups, payments, and discovery. Generic tools organize matchups; LeaguePour helps venues fill
             the room.
           </p>
@@ -693,7 +693,7 @@ export default function TournamentsFeaturePage() {
             Everything in one venue platform
           </h2>
           <p className="mt-3 text-lp-muted leading-relaxed">
-            From bracket styles to payouts — what LeaguePour supports for bars, breweries, taprooms, and sports bars.
+            From bracket styles to payouts - what LeaguePour supports for bars, breweries, taprooms, and sports bars.
           </p>
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {featureCards.map((f) => (
@@ -725,7 +725,7 @@ export default function TournamentsFeaturePage() {
         <NativePromoCard
           className="mt-16 border-lp-border/80 bg-lp-surface/50"
           title="Want more visibility for every league night?"
-          copy="Paid venue plans are built to help events get found, promoted, and repeated — not just bracketed."
+          copy="Paid venue plans are built to help events get found, promoted, and repeated - not just bracketed."
           ctaHref="/pricing"
           ctaLabel="Compare plans"
         />

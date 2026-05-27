@@ -158,7 +158,7 @@ export default function SignupVenuePage() {
           {searchMsg ? <p className="text-sm text-lp-text-soft">{searchMsg}</p> : null}
           {picked ? (
             <p className="text-sm font-medium text-lp-success">
-              Locked: {picked.name} — {picked.formattedAddress}
+              Locked: {picked.name} - {picked.formattedAddress}
             </p>
           ) : (
             <p className="text-sm text-lp-text-soft">Skip only if you will add it later in Venue profile.</p>

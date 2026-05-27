@@ -17,11 +17,11 @@ export const metadata: Metadata = {
 const steps = [
   {
     title: "Pick a format",
-    body: "Trivia, darts, bags, cards, pool, shuffleboard, or custom — smart defaults for fees, teams, and signup windows.",
+    body: "Trivia, darts, bags, cards, pool, shuffleboard, or custom - smart defaults for fees, teams, and signup windows.",
   },
   {
     title: "Publish signup",
-    body: "Share your public page. Solo, captain, or team paths — waivers and spots stay visible.",
+    body: "Share your public page. Solo, captain, or team paths - waivers and spots stay visible.",
   },
   {
     title: "Run it",
@@ -29,7 +29,7 @@ const steps = [
   },
   {
     title: "Fill the next one",
-    body: "Reach opted-in followers and registrants — drafts for closing soon and next season.",
+    body: "Reach opted-in followers and registrants - drafts for closing soon and next season.",
   },
 ];
 

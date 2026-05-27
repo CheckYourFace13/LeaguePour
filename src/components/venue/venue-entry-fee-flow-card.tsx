@@ -29,17 +29,17 @@ export function VenueEntryFeeFlowCard({ stripeChargesEnabled, stripePayoutsEnabl
       <div>
         <p className="lp-kicker text-lp-accent">How entry fee payments work</p>
         <p className="mt-2 text-sm leading-relaxed text-lp-muted">
-          LeaguePour uses <strong className="text-lp-text">Stripe Connect</strong> — entry fees go straight to your bank
+          LeaguePour uses <strong className="text-lp-text">Stripe Connect</strong> - entry fees go straight to your bank
           account, we never hold your money. Two small fees apply: a{" "}
           <strong className="text-lp-text">{platformPct}% venue fee</strong> deducted from your payout, plus a{" "}
           <strong className="text-lp-text">{formatUsdCents(serviceFee)} service fee</strong> added on top for the
-          player. Stripe's processing costs come out of the service fee — you don't pay them.
+          player. Stripe's processing costs come out of the service fee - you don't pay them.
         </p>
       </div>
 
       <div className="rounded-[10px] border border-lp-border bg-lp-bg/60 p-4 text-sm space-y-3">
         <p className="text-xs font-bold uppercase tracking-wider text-lp-muted">
-          Example — {formatUsdCents(entry)} entry fee
+          Example - {formatUsdCents(entry)} entry fee
         </p>
 
         <div className="space-y-1.5">
@@ -73,10 +73,10 @@ export function VenueEntryFeeFlowCard({ stripeChargesEnabled, stripePayoutsEnabl
         Connect status:{" "}
         <span className={connectLive ? "font-semibold text-lp-accent" : "font-semibold text-amber-500"}>
           {connectLive
-            ? "Ready — players can pay entry fees"
+            ? "Ready - players can pay entry fees"
             : stripeAccountId
-              ? "Stripe account exists but setup is incomplete — click Continue Stripe setup"
-              : "Not connected — complete Stripe setup so players can pay"}
+              ? "Stripe account exists but setup is incomplete - click Continue Stripe setup"
+              : "Not connected - complete Stripe setup so players can pay"}
         </span>
       </p>
     </div>

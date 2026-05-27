@@ -58,7 +58,7 @@ export default async function VenueCompetitionsPage({
       {list.length === 0 ? (
         <EmptyState
           title="No competitions yet"
-          description="Publish your first signup page — blind draws, leagues, or one-night brackets. Players discover you from your public venue profile."
+          description="Publish your first signup page - blind draws, leagues, or one-night brackets. Players discover you from your public venue profile."
           action={
             canCreate ? (
               <Button asChild size="lg">
@@ -81,13 +81,13 @@ export default async function VenueCompetitionsPage({
                   <CardHeader className="p-0">
                     <CardTitle className="text-lg">{c.title}</CardTitle>
                     <CardDescription>
-                      Starts {formatDate(c.startAt)} · {c._count.registrations} registered
+                      Starts {formatDate(c.startAt)} | {c._count.registrations} registered
                     </CardDescription>
                   </CardHeader>
                   <Badge variant="muted">{c.status.replaceAll("_", " ")}</Badge>
                 </div>
                 <p className="mt-3 text-sm text-lp-muted">
-                  Listed fee {formatMoney(c.entryFeeCents, c.entryFeeCurrency)} · {c.kind.replaceAll("_", " ")}
+                  Listed fee {formatMoney(c.entryFeeCents, c.entryFeeCurrency)} | {c.kind.replaceAll("_", " ")}
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <Button variant="secondary" asChild>

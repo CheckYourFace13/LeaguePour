@@ -3,7 +3,7 @@ import { PaymentStatus, RegistrationStatus } from "@/generated/prisma/enums";
 export type PaymentSlice = { status: PaymentStatus; provider: string };
 
 const LEGACY_NOTE =
-  "Legacy test record in LeaguePour — not a live Stripe charge. Contact the venue if this looks wrong.";
+  "Legacy test record in LeaguePour - not a live Stripe charge. Contact the venue if this looks wrong.";
 
 function isLegacyPlaceholderProcessor(provider: string | null | undefined): boolean {
   if (!provider) return false;
@@ -94,7 +94,7 @@ export function presentRegistrationPayment(args: {
       return {
         ui,
         shortLabel: "No payment",
-        description: "This competition has no entry fee — no payment step.",
+        description: "This competition has no entry fee - no payment step.",
         badgeVariant: "muted",
       };
     case "payment_pending":
@@ -124,7 +124,7 @@ export function presentRegistrationPayment(args: {
         ui,
         shortLabel: "Paid",
         description: stripe
-          ? "Payment succeeded via Stripe — your entry is confirmed in LeaguePour."
+          ? "Payment succeeded via Stripe - your entry is confirmed in LeaguePour."
           : "Payment marked succeeded.",
         badgeVariant: "success",
       };
@@ -133,7 +133,7 @@ export function presentRegistrationPayment(args: {
         ui,
         shortLabel: "Refunded",
         description: stripe
-          ? "This payment was refunded through Stripe — the registration is cancelled in LeaguePour."
+          ? "This payment was refunded through Stripe - the registration is cancelled in LeaguePour."
           : "Payment marked refunded.",
         badgeVariant: "muted",
       };
@@ -148,7 +148,7 @@ export function presentRegistrationPayment(args: {
       return {
         ui,
         shortLabel: "Refunded (legacy)",
-        description: `Refunded in legacy test data — no Stripe money movement. ${LEGACY_NOTE}`,
+        description: `Refunded in legacy test data - no Stripe money movement. ${LEGACY_NOTE}`,
         badgeVariant: "muted",
       };
     default:

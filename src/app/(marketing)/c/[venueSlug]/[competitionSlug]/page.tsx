@@ -198,7 +198,7 @@ export default async function PublicCompetitionPage({
         </p>
         {comp.entryFeeCents > 0 ? (
           <p className="text-sm leading-relaxed text-lp-muted">
-            The venue sets this amount. Paid events use Stripe Checkout — you complete payment on Stripe’s secure page,
+            The venue sets this amount. Paid events use Stripe Checkout - you complete payment on Stripe’s secure page,
             and LeaguePour updates your registration when Stripe confirms success.
           </p>
         ) : null}
@@ -210,7 +210,7 @@ export default async function PublicCompetitionPage({
         </p>
         {spots != null ? (
           <p className="text-base font-semibold text-lp-success">
-            {filled} of {comp.participantCap} reserved · {spots} spots left
+            {filled} of {comp.participantCap} reserved | {spots} spots left
           </p>
         ) : (
           <p className="text-base text-lp-muted">{filled} signed up</p>
@@ -243,7 +243,7 @@ export default async function PublicCompetitionPage({
               <li key={nextComp.id} className="rounded-[10px] border border-lp-border bg-lp-surface/40 px-4 py-3">
                 <p className="font-semibold text-lp-text">{nextComp.title}</p>
                 <p className="mt-1 text-sm text-lp-muted">
-                  {nextComp.kind.replaceAll("_", " ")} · Starts {formatDateTime(nextComp.startAt)} ·{" "}
+                  {nextComp.kind.replaceAll("_", " ")} | Starts {formatDateTime(nextComp.startAt)} |{" "}
                   {formatMoney(nextComp.entryFeeCents, nextComp.entryFeeCurrency)}
                 </p>
                 <Link

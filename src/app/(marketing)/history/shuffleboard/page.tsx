@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "History of Shuffleboard | Five Centuries at the Table | LeaguePour",
   description:
-    "Shuffleboard has been a tavern game since Tudor England — Henry VIII banned it in 1532 and people kept playing anyway. The full history from 'shovelboard' to bar staple.",
+    "Shuffleboard has been a tavern game since Tudor England - Henry VIII banned it in 1532 and people kept playing anyway. The full history from 'shovelboard' to bar staple.",
   alternates: { canonical: "/history/shuffleboard" },
   keywords: [
     "history of shuffleboard",
@@ -69,17 +69,17 @@ export default function ShuffleboardHistoryPage() {
             <h2 className="font-display text-2xl font-bold">Shovelboard in Tudor England</h2>
             <p className="mt-4">
               The game appears in English records as far back as the 15th century under the name
-              "shove-groat" or "slide-groat" — a reference to the coin (a groat) that players would
+              "shove-groat" or "slide-groat" - a reference to the coin (a groat) that players would
               push along a table or bench toward a target zone. The goal was simple: slide your coin
               or disk as close to the far end of the table as possible without falling off. The game
-              required a steady hand and an understanding of how the surface played — not unlike what
+              required a steady hand and an understanding of how the surface played - not unlike what
               your regulars are doing on your shuffleboard table right now.
             </p>
             <p className="mt-4">
               The name evolved over time. "Shovelboard" and "shuffle-board" appear in 16th-century
               documents, and the game was clearly widespread enough to attract attention from the
-              Crown. In 1532, Henry VIII issued a proclamation banning the game — along with bowls
-              and several other recreations — for servants and laborers. The concern was not that the
+              Crown. In 1532, Henry VIII issued a proclamation banning the game - along with bowls
+              and several other recreations - for servants and laborers. The concern was not that the
               games were inherently harmful but that they were pulling workers away from archery
               practice. England's military strategy depended on skilled archers, and idle entertainment
               was seen as a direct threat to that readiness.
@@ -94,8 +94,8 @@ export default function ShuffleboardHistoryPage() {
           <section>
             <h2 className="font-display text-2xl font-bold">A game for all classes</h2>
             <p className="mt-4">
-              What made shovelboard persist across class lines was its scalability. The basic equipment —
-              a smooth, long table or bench and disks to push — could be assembled cheaply. A tavern
+              What made shovelboard persist across class lines was its scalability. The basic equipment -
+              a smooth, long table or bench and disks to push - could be assembled cheaply. A tavern
               could build a shovelboard table from planks; a great house could commission an elaborate
               one in fine wood. Both were playing essentially the same game.
             </p>
@@ -115,14 +115,14 @@ export default function ShuffleboardHistoryPage() {
           <section>
             <h2 className="font-display text-2xl font-bold">The table version develops</h2>
             <p className="mt-4">
-              The floor or deck version of shuffleboard — where players use long-handled cues to push
-              weighted pucks toward scoring zones painted on the ground — developed as a variant, likely
+              The floor or deck version of shuffleboard - where players use long-handled cues to push
+              weighted pucks toward scoring zones painted on the ground - developed as a variant, likely
               in the 19th century. This version became popular on cruise ships and in outdoor settings,
               and it's what most people picture when they hear "shuffleboard" today.
             </p>
             <p className="mt-4">
               The table version, though, is the direct descendant of the original shovelboard. Players
-              stand at one end of a long, narrow table — typically 9 to 22 feet long — and push weighted
+              stand at one end of a long, narrow table - typically 9 to 22 feet long - and push weighted
               pucks toward the scoring zones at the far end. The table's surface is coated with a
               powdered silicone or shuffleboard wax (called "shuffleboard sand" or "cheese") that
               reduces friction and allows the pucks to glide smoothly.
@@ -147,7 +147,7 @@ export default function ShuffleboardHistoryPage() {
             <p className="mt-4">
               Shuffleboard's popularity in bars waned somewhat during the latter half of the 20th
               century, as pool tables and video games competed for floor space. The tables take up
-              significant room — a full-size competitive table is 22 feet long — which made them
+              significant room - a full-size competitive table is 22 feet long - which made them
               impractical as bars got smaller or rearranged for other purposes.
             </p>
           </section>
@@ -157,8 +157,8 @@ export default function ShuffleboardHistoryPage() {
             <p className="mt-4">
               Shuffleboard has come back strongly in the last fifteen years, driven partly by the craft
               bar and gastropub movement. Venues investing in game programming have found that a
-              shuffleboard table — placed in a dedicated games area with good lighting and comfortable
-              seating nearby — generates long dwell times and social energy that other games don't quite
+              shuffleboard table - placed in a dedicated games area with good lighting and comfortable
+              seating nearby - generates long dwell times and social energy that other games don't quite
               replicate. It's slower than darts, more conversational, easier on the back than pool.
             </p>
             <p className="mt-4">
@@ -184,7 +184,7 @@ export default function ShuffleboardHistoryPage() {
                 rel="noopener noreferrer"
                 className="text-lp-accent hover:underline"
               >
-                Wikipedia — Shuffleboard
+                Wikipedia - Shuffleboard
               </a>
             </li>
             <li>
@@ -194,7 +194,7 @@ export default function ShuffleboardHistoryPage() {
                 rel="noopener noreferrer"
                 className="text-lp-accent hover:underline"
               >
-                Wikipedia — Table shuffleboard
+                Wikipedia - Table shuffleboard
               </a>
             </li>
           </ul>

@@ -31,7 +31,7 @@ export default async function MarketingPage() {
         <h1 className="lp-page-title text-3xl md:text-4xl">Marketing</h1>
         <p className="mt-2 text-lp-muted">Drafts, audiences, consent-first sends.</p>
       </div>
-      <FieldHelp title="Drafts & sends" example="Build here, send from Messages — in-app delivery until ESP/SMS is connected.">
+      <FieldHelp title="Drafts & sends" example="Build here, send from Messages - in-app delivery until ESP/SMS is connected.">
         <p>
           Tie each send to followers, a competition’s confirmed players, or a saved CRM tag. Edit copy anytime before
           send.
@@ -76,7 +76,7 @@ export default async function MarketingPage() {
                 <Badge variant="muted">{d.type.replaceAll("_", " ")}</Badge>
               </div>
               <p className="text-xs text-lp-muted">
-                {d.channel} · {campaignAudienceSummary(d)}
+                {d.channel} | {campaignAudienceSummary(d)}
               </p>
               <p className="mt-1 text-sm text-lp-muted line-clamp-3">{d.body}</p>
               {canCreate ? (

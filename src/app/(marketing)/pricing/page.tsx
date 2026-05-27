@@ -46,15 +46,15 @@ export default function PricingPage() {
             </p>
             <ul className="mt-8 space-y-2.5 text-[1.02rem] leading-snug text-lp-text-soft">
               <li className="flex gap-2">
-                <span className="text-lp-accent">·</span>
+                <span className="text-lp-accent">|</span>
                 <span>{t.eventLimitLabel} / mo</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-lp-accent">·</span>
+                <span className="text-lp-accent">|</span>
                 <span>Stripe Connect entry fees</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-lp-accent">·</span>
+                <span className="text-lp-accent">|</span>
                 <span>Campaigns & audience</span>
               </li>
             </ul>
@@ -65,7 +65,7 @@ export default function PricingPage() {
         ))}
       </div>
       <p className="mt-10 text-center text-sm text-lp-text-soft">
-        Platform fee on paid registrations — set in Venue profile.
+        Platform fee on paid registrations - set in Venue profile.
       </p>
       <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-base">
         <Link href="/features" className="font-semibold text-lp-accent hover:underline">

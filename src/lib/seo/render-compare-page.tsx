@@ -77,7 +77,7 @@ export function CompareDiscoveryPage({ slug }: { slug: string }) {
           page.leaguePourFocus,
           "Challonge-style tools organize brackets. LeaguePour helps venues fill the room.",
           "Live today: paid signups, QR codes, venue hubs, waitlists, staff score entry, and campaigns.",
-          "Auto-generated bracket trees, pool play, and Swiss are on the roadmap — see format guide.",
+          "Auto-generated bracket trees, pool play, and Swiss are on the roadmap - see format guide.",
         ],
       }}
       formatSection={DEFAULT_FORMAT_SECTION}

@@ -6,7 +6,7 @@ import { OUTREACH_CITIES, type OutreachCity } from "@/lib/outreach-cities";
 
 const PLACES_BASE = "https://maps.googleapis.com/maps/api/place";
 
-// ——— Stats / progress ———
+// --- Stats / progress ---
 
 export async function getOutreachStats() {
   await requireOwnerSession();
@@ -68,7 +68,7 @@ export async function getOutreachStats() {
   };
 }
 
-// ——— Sweep a specific city ———
+// --- Sweep a specific city ---
 
 export async function sweepCity(
   city: string,
@@ -134,7 +134,7 @@ export async function sweepCity(
         phone = dd.result?.formatted_phone_number;
         website = dd.result?.website;
       } catch {
-        // detail fetch failed — continue without
+        // detail fetch failed - continue without
       }
 
       toUpsert.push({
@@ -189,7 +189,7 @@ export async function sweepCity(
   return { added, skipped };
 }
 
-// ——— Sweep the next unprocessed city ———
+// --- Sweep the next unprocessed city ---
 
 export async function sweepNextCity(): Promise<{
   city?: OutreachCity;
@@ -221,7 +221,7 @@ export async function sweepNextCity(): Promise<{
   }
 
   if (!target) {
-    // All cities done — restart from Chicago
+    // All cities done - restart from Chicago
     target = OUTREACH_CITIES[0];
     if (!target) return { added: 0, skipped: 0, allDone: true };
     // Clear existing contacts to start fresh (keep status history by resetting to NOT_CONTACTED)
@@ -240,7 +240,7 @@ export async function sweepNextCity(): Promise<{
   return { city: target, ...result };
 }
 
-// ——— Contact management ———
+// --- Contact management ---
 
 export async function updateContactStatus(
   id: string,

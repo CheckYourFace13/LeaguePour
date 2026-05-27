@@ -2,7 +2,7 @@ import type { DiscoveryComparisonRow } from "@/components/seo/LeaguePourDiscover
 import { BRACKET_ENGINE_ROADMAP, formatsWithPickerLabels } from "@/lib/tournament-formats";
 
 export const VENUE_WHY_ITEMS = [
-  "Paid signups through Stripe — entry fees go to your venue account",
+  "Paid signups through Stripe - entry fees go to your venue account",
   "Public venue hub and mobile-friendly competition pages",
   "QR codes for tables, windows, and social posts",
   "Waitlists, team formats, and staff score entry (manual match rows today)",
@@ -10,7 +10,7 @@ export const VENUE_WHY_ITEMS = [
   "Local SEO pages so players can find your bar",
 ];
 
-/** Honest vs generic tools — no overclaim on auto-brackets. */
+/** Honest vs generic tools - no overclaim on auto-brackets. */
 export const CORE_COMPARISON_ROWS: DiscoveryComparisonRow[] = [
   { feature: "Manual match & score tracking", generic: "Sometimes", leaguepour: true },
   { feature: "Auto-generated bracket trees", generic: true, leaguepour: "Roadmap" },
@@ -62,14 +62,14 @@ export const ENTRY_FEE_REVENUE_PROMO = {
 
 export const BRING_PLAYERS_BACK_PROMO = {
   title: "Bring past players back",
-  copy: "Email campaigns and venue hubs keep your player list warm between league nights — not just the night of the bracket.",
+  copy: "Email campaigns and venue hubs keep your player list warm between league nights, not just the night of the bracket.",
   ctaHref: "/venue/marketing",
   ctaLabel: "Venue marketing",
 };
 
 export const UPGRADE_PROMO = {
   title: "Want more visibility for every league night?",
-  copy: "Paid venue plans help events get found, promoted, and repeated — while bracket automation continues to improve.",
+  copy: "Paid venue plans help events get found, promoted, and repeated - while bracket automation continues to improve.",
   ctaHref: "/pricing",
   ctaLabel: "Compare plans",
 };
@@ -84,7 +84,7 @@ export const ROADMAP_ITEMS = [...BRACKET_ENGINE_ROADMAP];
 export const DEFAULT_FORMAT_SECTION = {
   title: "Established tournament formats",
   intro:
-    "LeaguePour supports familiar bar formats today (manual matches & standings). Auto-bracket generation and advanced controls are on the roadmap — see status labels below.",
+    "LeaguePour supports familiar bar formats today (manual matches & standings). Auto-bracket generation and advanced controls are on the roadmap - see status labels below.",
   ctaHref: "/features/tournaments",
   ctaLabel: "Full format & bracket guide",
   formats: formatsWithPickerLabels().map((f) => ({

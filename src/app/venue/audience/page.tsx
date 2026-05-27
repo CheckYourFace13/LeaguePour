@@ -43,7 +43,7 @@ export default async function AudiencePage() {
       </div>
       <FieldHelp title="Communication eligibility">
         <p>
-          Players must opt in. Tags like “repeat darts” help you segment without stalking — combine
+          Players must opt in. Tags like “repeat darts” help you segment without stalking - combine
           with event type filters when you launch the next blind draw.
         </p>
       </FieldHelp>

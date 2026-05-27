@@ -6,7 +6,7 @@ import { getPublicSiteUrl } from "@/lib/site-url";
 export const metadata: Metadata = {
   title: "Bar Trivia Software & Signup Management | LeaguePour",
   description:
-    "Run trivia nights at your bar with LeaguePour. Online team registration, entry fees, standings, and repeat player alerts — trivia night management made simple.",
+    "Run trivia nights at your bar with LeaguePour. Online team registration, entry fees, standings, and repeat player alerts - trivia night management made simple.",
   alternates: { canonical: "/bar-trivia-software" },
   keywords: [
     "bar trivia software",
@@ -30,7 +30,7 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      name: "LeaguePour — Bar Trivia Software",
+      name: "LeaguePour - Bar Trivia Software",
       applicationCategory: "BusinessApplication",
       operatingSystem: "Web",
       url: `${getPublicSiteUrl()}/bar-trivia-software`,
@@ -61,7 +61,7 @@ const jsonLd = {
           name: "Does LeaguePour support trivia team registration?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes — teams register with a captain who names the team. You can set max team size and cap the total number of teams per night.",
+            text: "Yes - teams register with a captain who names the team. You can set max team size and cap the total number of teams per night.",
           },
         },
         {
@@ -79,7 +79,7 @@ const jsonLd = {
 
 const features = [
   { title: "Team & solo signup", body: "Teams register online with a name and captain. Cap the night at your table limit automatically." },
-  { title: "Free or paid entry", body: "Run free trivia nights or collect buy-ins — set the entry fee to any amount, including $0." },
+  { title: "Free or paid entry", body: "Run free trivia nights or collect buy-ins - set the entry fee to any amount, including $0." },
   { title: "Weekly recurring events", body: "Set up your Thursday trivia once. Reopen signup each week with one click." },
   { title: "Live standings", body: "Update scores between rounds. Standings display on your public page in real time." },
   { title: "Repeat player marketing", body: "Email or text your regulars about next week's theme, prizes, or special nights." },
@@ -98,7 +98,7 @@ export default function BarTriviaSoftwarePage() {
         </h1>
         <p className="mt-5 max-w-2xl text-lg text-lp-muted">
           LeaguePour handles trivia night team registration, entry fees, standings, and player communication
-          — so you focus on the questions, not the clipboard.
+          - so you focus on the questions, not the clipboard.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Button asChild size="lg">
@@ -126,9 +126,9 @@ export default function BarTriviaSoftwarePage() {
           <ol className="mt-6 space-y-5">
             {[
               { n: 1, title: "Create your trivia night", body: "Set your format (teams, solo), entry fee, table cap, and signup window. Name the night and add your rules." },
-              { n: 2, title: "Players register before they arrive", body: "Share a link or QR. Teams sign up and pay online — no more walk-up chaos or overfilling the room." },
+              { n: 2, title: "Players register before they arrive", body: "Share a link or QR. Teams sign up and pay online - no more walk-up chaos or overfilling the room." },
               { n: 3, title: "Run the night", body: "Check in teams, post scores after each round, and show a live leaderboard on your venue page." },
-              { n: 4, title: "Bring them back next week", body: "Email or text all registered players from last night with one message — announce next week's theme and open signup." },
+              { n: 4, title: "Bring them back next week", body: "Email or text all registered players from last night with one message - announce next week's theme and open signup." },
             ].map((s) => (
               <li key={s.n} className="flex gap-4">
                 <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-lp-accent/20 text-sm font-bold text-lp-accent">{s.n}</span>
@@ -147,8 +147,8 @@ export default function BarTriviaSoftwarePage() {
             {[
               { q: "Can LeaguePour handle weekly trivia nights?", a: "Yes. Set up a recurring trivia night with weekly signup windows, team caps, entry fees, and automated player reminders." },
               { q: "How does team registration work?", a: "One player registers as captain and names the team. You set the max team size. Captains can invite teammates or they register separately." },
-              { q: "Can I run free and paid trivia on the same account?", a: "Yes. Each event has its own entry fee — set it to $0 for free nights or any amount for paid buy-ins." },
-              { q: "How do I notify players about next week's trivia?", a: "Use the built-in campaign tool — send an email to all players who registered for your last trivia night in seconds." },
+              { q: "Can I run free and paid trivia on the same account?", a: "Yes. Each event has its own entry fee - set it to $0 for free nights or any amount for paid buy-ins." },
+              { q: "How do I notify players about next week's trivia?", a: "Use the built-in campaign tool - send an email to all players who registered for your last trivia night in seconds." },
             ].map((f) => (
               <details key={f.q} className="rounded-xl border border-lp-border bg-lp-surface/40 px-5 py-4">
                 <summary className="cursor-pointer list-none font-semibold text-lp-text [&::-webkit-details-marker]:hidden">{f.q}</summary>

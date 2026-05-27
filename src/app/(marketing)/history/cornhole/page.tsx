@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "History of Cornhole | The Origin of America's Backyard Game | LeaguePour",
   description:
-    "The disputed origins of cornhole — Ohio vs Wisconsin claims, German immigrant theories, 19th century rural roots, the ACA's founding in 2005, and how it became a bar league staple.",
+    "The disputed origins of cornhole - Ohio vs Wisconsin claims, German immigrant theories, 19th century rural roots, the ACA's founding in 2005, and how it became a bar league staple.",
   alternates: { canonical: "/history/cornhole" },
   keywords: [
     "history of cornhole",
@@ -71,13 +71,13 @@ export default function CornholeHistoryPage() {
               The state of Ohio claims cornhole as its own, with Cincinnati often cited as the city of
               origin. The most specific story attributes the game to a Midwestern farmer or craftsman in
               the late 19th century who built a simple platform game using dried corn kernels in a bag
-              as a throwing object. The dried corn — lighter than a bean bag, slower through the air —
+              as a throwing object. The dried corn - lighter than a bean bag, slower through the air -
               turned out to be ideal for the purpose.
             </p>
             <p className="mt-4">
               Wisconsin has a competing claim, and some accounts trace a similar game back to German
               immigrants who brought a version of it with them during the great immigration waves of
-              the 19th century. The German game — sometimes called "Sackloch" or similar variants — involved
+              the 19th century. The German game - sometimes called "Sackloch" or similar variants - involved
               throwing weighted sacks at a target board. Whether this was a direct ancestor of American
               cornhole or simply a parallel development is genuinely unclear.
             </p>
@@ -100,7 +100,7 @@ export default function CornholeHistoryPage() {
               game, a game you played at family reunions when the weather was good.
             </p>
             <p className="mt-4">
-              That informality was part of its appeal — low cost, easy setup, no referees required —
+              That informality was part of its appeal - low cost, easy setup, no referees required -
               but it also meant the game had no consistent identity. Two people playing "cornhole" in
               Ohio and two people playing it in Kentucky might be playing games that barely resembled
               each other.
@@ -154,7 +154,7 @@ export default function CornholeHistoryPage() {
               By the 2010s, cornhole had crossed from regional pastime to national institution. ESPN
               began broadcasting the American Cornhole League, which was founded in 2015 and positioned
               the game as a legitimate competitive sport rather than a backyard novelty. Watching people
-              play cornhole on ESPN was jarring to some and entirely natural to others — which, depending
+              play cornhole on ESPN was jarring to some and entirely natural to others - which, depending
               on your view, says something about both the sport and cable programming in general.
             </p>
             <p className="mt-4">
@@ -168,7 +168,7 @@ export default function CornholeHistoryPage() {
           <section>
             <h2 className="font-display text-2xl font-bold">Cornhole in bars</h2>
             <p className="mt-4">
-              Bars started picking up cornhole seriously as outdoor drinking areas expanded — patios,
+              Bars started picking up cornhole seriously as outdoor drinking areas expanded - patios,
               beer gardens, and rooftop spaces that needed activity programming. The game requires almost
               no maintenance, travels well, and draws people into longer stays. It's easy to run as a
               league format without staff needing to learn anything complicated.
@@ -176,8 +176,8 @@ export default function CornholeHistoryPage() {
             <p className="mt-4">
               Bar cornhole leagues today typically run doubles formats with bracket or round-robin play.
               The ACA's standardization means bar leagues can use the same rules as sanctioned tournaments,
-              which matters to serious players. And the game's accessibility — genuinely anyone can play
-              at a basic level — means it fills tables with players who might not touch darts or pool.
+              which matters to serious players. And the game's accessibility - genuinely anyone can play
+              at a basic level - means it fills tables with players who might not touch darts or pool.
             </p>
           </section>
         </div>
@@ -202,7 +202,7 @@ export default function CornholeHistoryPage() {
                 rel="noopener noreferrer"
                 className="text-lp-accent hover:underline"
               >
-                Wikipedia — Cornhole
+                Wikipedia - Cornhole
               </a>
             </li>
           </ul>
@@ -212,7 +212,7 @@ export default function CornholeHistoryPage() {
           <h2 className="font-display text-xl font-bold">Run a cornhole tournament at your bar</h2>
           <p className="mt-2 text-lp-muted">
             LeaguePour handles online signup, team registration, entry fees, brackets, and standings for
-            bar cornhole tournaments — indoor or patio.
+            bar cornhole tournaments - indoor or patio.
           </p>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg">

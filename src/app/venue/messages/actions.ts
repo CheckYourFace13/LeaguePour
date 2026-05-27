@@ -48,7 +48,7 @@ export async function sendDraftCampaignFormAction(formData: FormData) {
             name: campaign.name,
             subject: campaign.subject,
             body: campaign.body,
-            note: "In-app notification log — connect ESP/SMS to deliver externally.",
+            note: "In-app notification log - connect ESP/SMS to deliver externally.",
           },
           status: NotificationStatus.QUEUED,
         },

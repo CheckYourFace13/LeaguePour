@@ -20,9 +20,9 @@ const notices: Record<string, string> = {
   removed: "Staff access removed.",
   forbidden: "You need owner or manager access to change staff.",
   invalid: "Check the email and role you entered.",
-  "no-user": "No LeaguePour account exists for that email yet — they must sign up first.",
+  "no-user": "No LeaguePour account exists for that email yet - they must sign up first.",
   exists: "That person is already on this venue’s staff list.",
-  self: "You cannot change or remove your own row from this screen — ask another owner.",
+  self: "You cannot change or remove your own row from this screen - ask another owner.",
   "last-owner": "This venue needs at least one owner. Add another owner before changing this one.",
   missing: "That staff row was not found.",
 };
@@ -53,7 +53,7 @@ export default async function VenueStaffPage({
           Your role: <span className="font-semibold text-lp-text">{venueRoleLabel(access.role)}</span>
           <span className="mt-2 block max-w-2xl text-sm leading-relaxed md:text-base">
             Add teammates who already have LeaguePour accounts, tune roles, and keep at least one owner. No invite email
-            is sent yet — they must sign up first, then you add their email here.
+            is sent yet - they must sign up first, then you add their email here.
           </span>
         </p>
       </div>
@@ -72,7 +72,7 @@ export default async function VenueStaffPage({
 
       <FieldHelp title="How adding staff works">
         <p>
-          Enter the email on an <span className="font-semibold text-lp-text">existing</span> LeaguePour account — they
+          Enter the email on an <span className="font-semibold text-lp-text">existing</span> LeaguePour account - they
           show up here with the role you pick. No automated invite email yet.
         </p>
       </FieldHelp>

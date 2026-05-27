@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "For Players | Join Bar Leagues & Tournaments | LeaguePour",
   description:
-    "Find and join bar competitions near you on LeaguePour. Sign up for trivia nights, dart leagues, cornhole tournaments, pool leagues, and more — one account, secure payments.",
+    "Find and join bar competitions near you on LeaguePour. Sign up for trivia nights, dart leagues, cornhole tournaments, pool leagues, and more - one account, secure payments.",
   alternates: { canonical: "/for-players" },
   openGraph: {
     title: "LeaguePour for Players | Join Bar Leagues & Tournaments",
-    description: "One account to find and join venue competitions — trivia, darts, cornhole, pool, and more.",
+    description: "One account to find and join venue competitions - trivia, darts, cornhole, pool, and more.",
     url: "/for-players",
   },
 };
@@ -21,11 +21,11 @@ const benefits = [
   },
   {
     title: "Secure entry fee payments",
-    body: "Pay entry fees safely via Stripe Checkout. Your card is never stored by the venue — all payments are processed securely and you get an instant confirmation email.",
+    body: "Pay entry fees safely via Stripe Checkout. Your card is never stored by the venue - all payments are processed securely and you get an instant confirmation email.",
   },
   {
     title: "Follow venues you love",
-    body: "Follow your local bar and get notified when they open signup for new leagues and tournaments — trivia nights, dart leagues, cornhole, pool, and more.",
+    body: "Follow your local bar and get notified when they open signup for new leagues and tournaments - trivia nights, dart leagues, cornhole, pool, and more.",
   },
   {
     title: "Manage all your registrations",
@@ -33,7 +33,7 @@ const benefits = [
   },
   {
     title: "Control your alerts",
-    body: "Choose email or SMS (or both) for each venue you follow. Never miss a league night — and never get spam you didn't ask for.",
+    body: "Choose email or SMS (or both) for each venue you follow. Never miss a league night - and never get spam you didn't ask for.",
   },
   {
     title: "Team-based or solo",
@@ -61,7 +61,7 @@ export default function ForPlayersPage() {
         <span className="text-lp-accent">Register in minutes.</span>
       </h1>
       <p className="mt-5 max-w-2xl text-lg text-lp-muted">
-        LeaguePour connects players to local bar competitions — trivia, dart leagues, cornhole, pool, and
+        LeaguePour connects players to local bar competitions - trivia, dart leagues, cornhole, pool, and
         more. One free account. Secure payments. You control your alerts.
       </p>
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -87,7 +87,7 @@ export default function ForPlayersPage() {
 
       <div className="mt-20">
         <h2 className="font-display text-2xl font-bold">Bar competitions you can join</h2>
-        <p className="mt-2 text-lp-muted">LeaguePour venues run all kinds of events — find one near you.</p>
+        <p className="mt-2 text-lp-muted">LeaguePour venues run all kinds of events - find one near you.</p>
         <div className="mt-6 flex flex-wrap gap-3">
           {sports.map((s) => (
             <Link

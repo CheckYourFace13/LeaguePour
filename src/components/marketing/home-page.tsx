@@ -78,7 +78,7 @@ export function HomePage() {
             <p className="lp-kicker text-lp-accent">Real venue nights</p>
             <h2 className="mt-2 font-display text-3xl font-bold md:text-4xl">Everything around the bracket matters</h2>
             <p className="mt-4 text-lg text-lp-muted leading-relaxed">
-              Signups, payments, QR codes, standings, event specials, and repeat-player campaigns — the parts that turn
+              Signups, payments, QR codes, standings, event specials, and repeat-player campaigns - the parts that turn
               one tournament into a packed weekly league night.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
@@ -123,7 +123,7 @@ export function HomePage() {
             <div>
               <h2 className="lp-page-title text-4xl md:text-5xl">Built for players</h2>
               <p className="mt-3 max-w-xl text-lg text-lp-text-soft">
-                Find local events, join solo or with your crew, and register from your phone — no app download required.
+                Find local events, join solo or with your crew, and register from your phone. No app download required.
               </p>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                 <Button asChild size="lg">

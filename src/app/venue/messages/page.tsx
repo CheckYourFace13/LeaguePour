@@ -14,10 +14,10 @@ import { CampaignSendNowButton } from "@/app/venue/campaigns/campaign-send-now-b
 
 function noticeBanner(notice?: string, count?: string) {
   if (notice === "sent") {
-    return `Campaign marked sent · ${count ?? "0"} in-app notifications logged (external email/SMS not wired yet).`;
+    return `Campaign marked sent | ${count ?? "0"} in-app notifications logged (external email/SMS not wired yet).`;
   }
   if (notice === "no-recipients") {
-    return "No recipients matched this campaign’s audience rules — nothing was sent.";
+    return "No recipients matched this campaign’s audience rules - nothing was sent.";
   }
   if (notice === "not-draft") return "That campaign is not in draft status anymore.";
   if (notice === "missing") return "Missing campaign id.";
@@ -95,7 +95,7 @@ export default async function MessagesPage({
       {campaigns.length === 0 ? (
         <EmptyState
           title="No campaigns yet"
-          description="Start a draft anytime — audience rules are real; delivery is in-app until providers are connected."
+          description="Start a draft anytime - audience rules are real; delivery is in-app until providers are connected."
           action={
             <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
               {canSend ? (
@@ -120,7 +120,7 @@ export default async function MessagesPage({
                 <div className="min-w-0 flex-1 space-y-2">
                   <p className="font-display text-lg font-bold text-lp-text">{c.name}</p>
                   <p className="text-sm text-lp-muted">
-                    {c.channel} · {c.status.replaceAll("_", " ")} · {campaignAudienceSummary(c)}
+                    {c.channel} | {c.status.replaceAll("_", " ")} | {campaignAudienceSummary(c)}
                   </p>
                   {c.subject ? <p className="text-base font-medium text-lp-text-soft">{c.subject}</p> : null}
                   <p className="line-clamp-3 text-sm text-lp-muted">{c.body}</p>
@@ -158,11 +158,11 @@ export default async function MessagesPage({
         <Link href={venueAppRoutes.marketing} className="font-semibold text-lp-accent hover:underline">
           Marketing hub
         </Link>
-        {" · "}
+        {" | "}
         <Link href={venueAppRoutes.competitions} className="font-semibold text-lp-accent hover:underline">
           Competitions
         </Link>
-        {" · "}
+        {" | "}
         <Link href={venueAppRoutes.dashboard} className="font-semibold text-lp-accent hover:underline">
           Dashboard
         </Link>
