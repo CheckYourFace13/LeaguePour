@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { LeaguePourProductMockup } from "@/components/marketing/LeaguePourProductMockup";
 import { LeaguePourDiscoveryLanding } from "@/components/seo/LeaguePourDiscoveryLanding";
 import {
   fetchDiscoveryCompetitionsForKind,
@@ -12,6 +13,7 @@ import {
   buildSoftwareApplicationJsonLd,
 } from "@/lib/seo/json-ld-builders";
 import { getDiscoveryGameBySlug } from "@/lib/seo/discovery-games";
+import { marketingImages } from "@/lib/marketing-images";
 import {
   BRACKET_ROADMAP_SECTION,
   BRING_PLAYERS_BACK_PROMO,
@@ -147,7 +149,7 @@ export async function SoftwareDiscoveryPage({ slug }: { slug: SoftwarePageSlug }
       kicker="Venue software"
       heroTitle={page.heroTitle}
       heroIntro={page.heroIntro}
-      primaryCta={{ href: "/signup/venue", label: "Create your venue" }}
+      primaryCta={{ href: "/signup/venue", label: "Start hosting events" }}
       secondaryCta={{ href: "/pricing", label: "See pricing" }}
       venues={venues}
       competitions={competitions}
@@ -179,6 +181,12 @@ export async function SoftwareDiscoveryPage({ slug }: { slug: SoftwarePageSlug }
       reactivationPromo={BRING_PLAYERS_BACK_PROMO}
       upgradePromo={UPGRADE_PROMO}
       roadmap={BRACKET_ROADMAP_SECTION}
+      heroImage={slug === "bar-tournament-software" ? marketingImages.realVenueNights : undefined}
+      afterHero={
+        slug === "bar-tournament-software" ? (
+          <LeaguePourProductMockup compact className="mt-12 max-w-3xl" />
+        ) : undefined
+      }
       jsonLdGraphs={jsonLd}
     />
   );

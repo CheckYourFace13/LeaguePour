@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { LeaguePourProductMockup } from "@/components/marketing/LeaguePourProductMockup";
 import { LeaguePourDiscoveryLanding } from "@/components/seo/LeaguePourDiscoveryLanding";
 import { DISCOVERY_GAMES, getDiscoveryGameBySlug } from "@/lib/seo/discovery-games";
 import {
@@ -11,6 +12,7 @@ import {
   buildFaqPageJsonLd,
   buildItemListJsonLd,
 } from "@/lib/seo/json-ld-builders";
+import { marketingImages } from "@/lib/marketing-images";
 import { getAllOutreachCitySlugs } from "@/lib/seo/outreach-city-slugs";
 import {
   BRACKET_ROADMAP_SECTION,
@@ -95,7 +97,7 @@ export async function FindDiscoveryPage({ findSlug }: { findSlug: string }) {
     },
     {
       q: "I run a bar — how do I get listed?",
-      a: "Create your venue on LeaguePour, publish a competition, and your hub appears in discovery.",
+      a: "Sign up on LeaguePour, publish a competition, and your hub appears in discovery.",
     },
   ];
 
@@ -126,7 +128,7 @@ export async function FindDiscoveryPage({ findSlug }: { findSlug: string }) {
       heroTitle={game.patronHeadline}
       heroIntro={`Browse partner bars and upcoming ${game.pluralLabel.toLowerCase()} on LeaguePour — the public discovery engine for local bar competitions. Every venue and event listed here is real.`}
       primaryCta={{ href: "/signup/player", label: "Join as a player" }}
-      secondaryCta={{ href: "/signup/venue", label: "Claim / create your venue" }}
+      secondaryCta={{ href: "/signup/venue", label: "Venue signup" }}
       venues={venues}
       competitions={competitions}
       whyLeaguePour={{ title: "Why players use LeaguePour", items: VENUE_WHY_ITEMS }}
@@ -150,7 +152,7 @@ export async function FindDiscoveryPage({ findSlug }: { findSlug: string }) {
         title: `No ${game.pluralLabel.toLowerCase()} listed yet`,
         body: `Know a bar that runs ${game.pluralLabel.toLowerCase()}? Ask them to publish on LeaguePour, or create a venue if you are the operator.`,
         ctaHref: "/signup/venue",
-        ctaLabel: "Create your venue",
+        ctaLabel: "Start hosting events",
       }}
       sponsorPromo={FEATURE_SPONSOR_PROMO}
       revenuePromo={ENTRY_FEE_REVENUE_PROMO}
@@ -158,6 +160,12 @@ export async function FindDiscoveryPage({ findSlug }: { findSlug: string }) {
       reactivationPromo={BRING_PLAYERS_BACK_PROMO}
       upgradePromo={UPGRADE_PROMO}
       roadmap={BRACKET_ROADMAP_SECTION}
+      heroImage={findSlug === "dart-leagues" ? marketingImages.playerDiscovery : undefined}
+      afterHero={
+        findSlug === "dart-leagues" ? (
+          <LeaguePourProductMockup compact className="mt-12 max-w-3xl" />
+        ) : undefined
+      }
       jsonLdGraphs={jsonLd}
     />
   );

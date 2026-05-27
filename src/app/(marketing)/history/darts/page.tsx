@@ -157,7 +157,7 @@ export default function DartsHistoryPage() {
             <p className="mt-4">
               Phil Taylor — "The Power" — dominated the sport from the early 1990s through the 2010s,
               winning 16 PDC World Championship titles. His rivalry with players like John Part, Adrian
-              Lewis, and eventually Gary Anderson and Michael van Gerwen elevated the sport's profile
+              Lewis, and eventually Gary Anderson and Michael van Gerwen raised the sport's profile
               enormously. Taylor is widely considered the greatest darts player of all time, though van
               Gerwen has mounted a serious case for that title in the years since Taylor's retirement.
             </p>

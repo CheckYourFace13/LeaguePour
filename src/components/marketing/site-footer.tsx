@@ -9,13 +9,31 @@ const cols = [
       { href: marketingRoutes.howItWorks, label: "How it works" },
       { href: marketingRoutes.pricing, label: "Pricing" },
       { href: marketingRoutes.faq, label: "FAQ" },
+      { href: "/guides", label: "Guides" },
+      { href: "/for-venues", label: "For venues" },
+      { href: "/for-players", label: "For players" },
+    ],
+  },
+  {
+    title: "Games",
+    links: [
+      { href: "/bar-trivia-software", label: "Trivia" },
+      { href: "/dart-league-software", label: "Darts" },
+      { href: "/cornhole-tournament-software", label: "Cornhole" },
+      { href: "/pool-league-management", label: "Pool" },
+      { href: "/euchre-tournament-software", label: "Euchre" },
+      { href: "/poker-tournament-software", label: "Poker" },
+      { href: "/shuffleboard-league-software", label: "Shuffleboard" },
+      { href: "/music-bingo-software", label: "Music bingo" },
     ],
   },
   {
     title: "Company",
     links: [
-      { href: "/signup/venue", label: "Create venue" },
+      { href: "/signup/venue", label: "Start hosting events" },
       { href: "/contact", label: "Contact" },
+      { href: "/rules", label: "Rules library" },
+      { href: "/history", label: "Game history" },
       { href: marketingRoutes.terms, label: "Terms" },
       { href: marketingRoutes.privacy, label: "Privacy" },
     ],
@@ -25,7 +43,7 @@ const cols = [
 export function SiteFooter() {
   return (
     <footer className="mt-auto border-t border-lp-border-strong bg-lp-surface">
-      <div className="mx-auto grid max-w-6xl gap-12 px-4 py-14 md:grid-cols-4 md:px-6 md:py-16">
+      <div className="mx-auto grid max-w-6xl gap-12 px-4 py-14 md:grid-cols-5 md:px-6 md:py-16">
         <div className="md:col-span-2">
           <p className="font-display text-[2rem] font-extrabold tracking-tight">
             League<span className="text-lp-accent">Pour</span>

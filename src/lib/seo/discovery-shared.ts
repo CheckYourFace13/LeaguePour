@@ -45,7 +45,7 @@ export const PROMOTE_LEAGUE_PROMO = {
   title: "Promote your league night",
   copy: "Publish signup, share your QR code, and let LeaguePour help players discover your next dart, trivia, or cornhole night.",
   ctaHref: "/signup/venue",
-  ctaLabel: "Create your venue",
+  ctaLabel: "Start hosting events",
 };
 
 export const ENTRY_FEE_REVENUE_PROMO = {

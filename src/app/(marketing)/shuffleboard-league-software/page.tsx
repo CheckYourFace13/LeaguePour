@@ -249,7 +249,7 @@ export default function ShuffleboardLeagueSoftwarePage() {
           <p className="mt-2 text-lp-muted">Set up in minutes. Free to start, no credit card required.</p>
           <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Button asChild size="lg">
-              <Link href="/signup/venue">Create your venue</Link>
+              <Link href="/signup/venue">Start hosting events</Link>
             </Button>
             <Button asChild size="lg" variant="secondary">
               <Link href="/how-it-works">See how it works</Link>

@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { ChallongeComparisonVisual } from "@/components/marketing/ChallongeComparisonVisual";
+import { LeaguePourProductMockup } from "@/components/marketing/LeaguePourProductMockup";
 import { LeaguePourDiscoveryLanding } from "@/components/seo/LeaguePourDiscoveryLanding";
 import { getComparePage } from "@/lib/seo/compare-pages";
+import { marketingImages } from "@/lib/marketing-images";
 import {
   buildBreadcrumbJsonLd,
   buildFaqPageJsonLd,
@@ -57,12 +60,14 @@ export function CompareDiscoveryPage({ slug }: { slug: string }) {
     buildFaqPageJsonLd(faqs),
   ];
 
+  const isChallonge = slug === "challonge";
+
   return (
     <LeaguePourDiscoveryLanding
       kicker="Compare"
       heroTitle={page.heroTitle}
       heroIntro={page.heroIntro}
-      primaryCta={{ href: "/signup/venue", label: "Create your venue" }}
+      primaryCta={{ href: "/signup/venue", label: "Start hosting events" }}
       secondaryCta={{ href: "/features/tournaments", label: "Tournament features" }}
       venues={[]}
       competitions={[]}
@@ -70,9 +75,9 @@ export function CompareDiscoveryPage({ slug }: { slug: string }) {
         title: "Why bars choose LeaguePour",
         items: [
           page.leaguePourFocus,
-          "Generic bracket tools organize matchups. LeaguePour helps venues fill the room.",
+          "Challonge-style tools organize brackets. LeaguePour helps venues fill the room.",
           "Live today: paid signups, QR codes, venue hubs, waitlists, staff score entry, and campaigns.",
-          "Bracket engine: auto-generated trees, pool play, and Swiss are on the roadmap — see format guide.",
+          "Auto-generated bracket trees, pool play, and Swiss are on the roadmap — see format guide.",
         ],
       }}
       formatSection={DEFAULT_FORMAT_SECTION}
@@ -95,6 +100,9 @@ export function CompareDiscoveryPage({ slug }: { slug: string }) {
       reactivationPromo={BRING_PLAYERS_BACK_PROMO}
       upgradePromo={UPGRADE_PROMO}
       roadmap={BRACKET_ROADMAP_SECTION}
+      heroImage={isChallonge ? marketingImages.realVenueNights : undefined}
+      afterHero={isChallonge ? <LeaguePourProductMockup compact className="mt-12 max-w-3xl" /> : undefined}
+      fullWidthAfterHero={isChallonge ? <ChallongeComparisonVisual /> : undefined}
       jsonLdGraphs={jsonLd}
     />
   );

@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "npx prisma db push && prisma generate && next build",
     "start": "next start",
+    "package:hostinger": "powershell -ExecutionPolicy Bypass -File scripts/package-hostinger.ps1",
     "lint": "eslint",
     "postinstall": "prisma generate",
     "db:push": "prisma db push",

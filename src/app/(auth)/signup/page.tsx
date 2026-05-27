@@ -15,7 +15,7 @@ export default function SignupHubPage() {
           <p className="mt-3 font-display text-2xl font-extrabold tracking-tight text-lp-text md:text-[1.75rem]">Run the room</p>
           <p className="mt-3 flex-1 text-[1.0625rem] text-lp-text-soft">Signups, entry fees, brackets.</p>
           <Button className="mt-8 w-full" size="lg" asChild>
-            <Link href="/signup/venue">Create venue</Link>
+            <Link href="/signup/venue">Start hosting events</Link>
           </Button>
         </Card>
         <Card className="flex flex-col p-6 md:p-7">
@@ -23,7 +23,7 @@ export default function SignupHubPage() {
           <p className="mt-3 font-display text-2xl font-extrabold tracking-tight text-lp-text md:text-[1.75rem]">Play</p>
           <p className="mt-3 flex-1 text-[1.0625rem] text-lp-text-soft">One profile for every venue.</p>
           <Button className="mt-8 w-full" size="lg" variant="secondary" asChild>
-            <Link href="/signup/player">Join as player</Link>
+            <Link href="/signup/player">Find events</Link>
           </Button>
         </Card>
       </div>

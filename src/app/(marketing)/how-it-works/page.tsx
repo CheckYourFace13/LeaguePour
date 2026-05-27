@@ -54,7 +54,7 @@ export default function HowItWorksPage() {
       </ol>
       <div className="mt-14 flex flex-col gap-3 sm:flex-row">
         <Button asChild size="lg">
-          <Link href="/signup/venue">Create venue</Link>
+          <Link href="/signup/venue">Start hosting events</Link>
         </Button>
         <Button asChild size="lg" variant="secondary">
           <Link href="/pricing">See pricing</Link>

@@ -268,7 +268,7 @@ export default function CornholeTournamentIdeas() {
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg">
-              <Link href="/signup/venue">Create your venue — free</Link>
+              <Link href="/signup/venue">Start hosting events — free</Link>
             </Button>
             <Button asChild size="lg" variant="secondary">
               <Link href="/pricing">See pricing</Link>

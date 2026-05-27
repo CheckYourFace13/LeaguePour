@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Check, Minus } from "lucide-react";
+import { MarketingImage } from "@/components/marketing/marketing-image";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatMoney } from "@/lib/utils";
 import type { DiscoveryCompetitionRow, DiscoveryVenueRow } from "@/lib/seo/discovery-data";
@@ -49,6 +50,9 @@ export type LeaguePourDiscoveryLandingProps = {
   reactivationPromo?: DiscoveryPromoSlot;
   upgradePromo?: DiscoveryPromoSlot;
   roadmap?: { title: string; items: string[] };
+  heroImage?: { src: string; alt: string; width: number; height: number };
+  afterHero?: React.ReactNode;
+  fullWidthAfterHero?: React.ReactNode;
   jsonLdGraphs: Record<string, unknown>[];
 };
 
@@ -112,6 +116,9 @@ export function LeaguePourDiscoveryLanding({
   reactivationPromo,
   upgradePromo,
   roadmap,
+  heroImage,
+  afterHero,
+  fullWidthAfterHero,
   jsonLdGraphs,
 }: LeaguePourDiscoveryLandingProps) {
   return (
@@ -123,7 +130,7 @@ export function LeaguePourDiscoveryLanding({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }}
         />
       ))}
-      <div className="mx-auto max-w-5xl px-4 py-16 md:px-6 md:py-20">
+      <div className="mx-auto max-w-5xl px-4 pt-16 md:px-6 md:pt-20 pb-8">
         <p className="lp-kicker text-lp-accent">{kicker}</p>
         <h1 className="mt-2 font-display text-4xl font-bold leading-tight md:text-5xl">{heroTitle}</h1>
         <p className="mt-5 max-w-3xl text-lg text-lp-muted leading-relaxed">{heroIntro}</p>
@@ -138,6 +145,19 @@ export function LeaguePourDiscoveryLanding({
             <Link href={secondaryCta.href}>{secondaryCta.label}</Link>
           </Button>
         </div>
+
+        {heroImage ? (
+          <div className="mt-12 max-w-4xl">
+            <MarketingImage {...heroImage} priority />
+          </div>
+        ) : null}
+
+        {afterHero}
+      </div>
+
+      {fullWidthAfterHero}
+
+      <div className="mx-auto max-w-5xl px-4 pb-16 md:px-6 md:pb-20">
 
         {venues.length > 0 ? (
           <section className="mt-16" aria-labelledby="partner-venues">

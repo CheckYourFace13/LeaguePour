@@ -17,10 +17,10 @@ export const brand = {
 
 export const cta = {
   /** Primary venue acquisition — same label everywhere for clarity */
-  startVenue: "Create venue",
+  startVenue: "Start hosting events",
   viewPricing: "See pricing",
-  browseEvents: "Browse events",
-  joinPlayer: "Join as player",
+  browseEvents: "Find events",
+  joinPlayer: "Find events",
   signup: "Sign up",
   login: "Log in",
   buildCompetition: "New competition",
@@ -28,5 +28,5 @@ export const cta = {
   venueDashboard: "Venue home",
   playerDashboard: "Player home",
   /** @deprecated use startVenue */
-  trial: "Create venue",
+  trial: "Start hosting events",
 } as const;

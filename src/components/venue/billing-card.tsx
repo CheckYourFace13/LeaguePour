@@ -87,7 +87,7 @@ export function BillingCard({ currentPlan, subscriptionStatus, subscriptionPerio
           <p className="text-sm text-lp-muted">
             {subscriptionStatus === "canceled"
               ? "Your subscription has ended. Choose a plan below to reactivate."
-              : "Choose a plan to start your subscription and unlock all features."}
+              : "Choose a plan to start your subscription and access all features."}
           </p>
 
           <div className="flex gap-2">

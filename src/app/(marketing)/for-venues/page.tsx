@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 const steps = [
   {
     n: "1",
-    title: "Create your venue",
+    title: "Start hosting events",
     body: "Sign up in under 2 minutes. Add your venue name, type, and address. Your public signup page is live immediately.",
   },
   {
@@ -167,7 +167,7 @@ export default function ForVenuesPage() {
         <p className="font-display text-xl font-bold text-lp-text">Ready to fill your next event?</p>
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Button asChild size="lg">
-            <Link href="/signup/venue">Create your venue</Link>
+            <Link href="/signup/venue">Start hosting events</Link>
           </Button>
           <Button asChild size="lg" variant="secondary">
             <Link href="/how-it-works">See how it works</Link>

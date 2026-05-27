@@ -92,7 +92,7 @@ export default function FaqPage() {
         <p className="mt-10 text-sm text-lp-muted">
           Ready to launch?{" "}
           <Link className="font-semibold text-lp-accent hover:underline" href="/signup/venue">
-            Create venue
+            Start hosting events
           </Link>
           . Compare{" "}
           <Link className="font-semibold text-lp-accent hover:underline" href="/pricing">

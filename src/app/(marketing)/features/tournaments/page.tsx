@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Check, Minus } from "lucide-react";
+import { TournamentVisualBand } from "@/components/marketing/TournamentVisualBand";
+import { VenuePainPoints } from "@/components/marketing/VenuePainPoints";
 import { Button } from "@/components/ui/button";
 import { getPublicSiteUrl } from "@/lib/site-url";
 import {
@@ -390,18 +392,27 @@ export default function TournamentsFeaturePage() {
         </h1>
         <p className="mt-5 max-w-3xl text-lg text-lp-muted leading-relaxed">
           Run dart leagues, cornhole tournaments, trivia nights, euchre leagues, poker nights, pool tournaments, and
-          recurring bar events from one simple platform. LeaguePour helps venues collect signups, take payments, build
-          brackets, manage teams, share QR codes, and turn one-time events into repeat customers.
+          recurring bar events from one simple platform. LeaguePour helps venues collect signups, take payments, track
+          matches and standings, manage teams, share QR codes, and turn one-time events into repeat customers.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Button asChild size="lg">
-            <Link href="/signup/venue">Create Your First Event</Link>
+            <Link href="/signup/venue">Start hosting events</Link>
           </Button>
           <Button asChild size="lg" variant="secondary">
             <Link href="/pricing">See Pricing</Link>
           </Button>
         </div>
+      </div>
 
+      <TournamentVisualBand
+        title="Brackets, signups, and standings without the chaos"
+        copy="Pick an established format, collect registrations, track teams, enter scores, and keep the night moving. LeaguePour is built for real venues — not just online brackets."
+      />
+
+      <VenuePainPoints />
+
+      <div className="mx-auto max-w-5xl px-4 pb-16 md:px-6 md:pb-20">
         {/* Bracket formats + wizard */}
         <section className="mt-20" aria-labelledby="format-wizard">
           <h2 id="format-wizard" className="font-display text-2xl font-bold md:text-3xl">
@@ -722,10 +733,10 @@ export default function TournamentsFeaturePage() {
         {/* Bottom CTA */}
         <div className="mt-10 rounded-2xl border border-lp-accent/20 bg-lp-accent/10 p-8 text-center">
           <h2 className="font-display text-2xl font-bold">Ready to run your next league night?</h2>
-          <p className="mt-2 text-lp-muted">Create your venue, publish a competition, and share the signup link tonight.</p>
+          <p className="mt-2 text-lp-muted">Publish a competition, share the signup link, and fill seats tonight.</p>
           <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Button asChild size="lg">
-              <Link href="/signup/venue">Create Your First Event</Link>
+              <Link href="/signup/venue">Start hosting events</Link>
             </Button>
             <Button asChild size="lg" variant="secondary">
               <Link href="/pricing">See Pricing</Link>
