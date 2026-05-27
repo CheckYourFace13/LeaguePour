@@ -71,7 +71,7 @@ export function SiteFooter() {
         ))}
       </div>
       <div className="border-t border-lp-border/70 py-7 text-center text-[0.9375rem] font-medium text-lp-text-soft">
-        {"\u00A9"} {new Date().getFullYear()} LeaguePour. All rights reserved.
+        Copyright {new Date().getFullYear()} LeaguePour. All rights reserved.
       </div>
     </footer>
   );
