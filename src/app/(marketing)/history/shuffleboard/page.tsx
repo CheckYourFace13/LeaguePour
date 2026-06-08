@@ -208,7 +208,7 @@ export default function ShuffleboardHistoryPage() {
           </p>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg">
-              <Link href="/signup/venue">Get started free</Link>
+              <Link href="/signup/venue">Start hosting events</Link>
             </Button>
             <Button asChild size="lg" variant="secondary">
               <Link href="/shuffleboard-league-software">See shuffleboard features</Link>

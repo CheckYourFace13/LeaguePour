@@ -42,7 +42,11 @@ export default function FeaturesPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-16 md:px-6 md:py-20">
       <h1 className="font-display text-4xl font-bold">Features</h1>
-      <p className="mt-4 max-w-xl text-lg text-lp-muted">What you get on night one.</p>
+      <p className="mt-4 max-w-2xl text-lg text-lp-muted leading-relaxed">
+        LeaguePour is venue software for recurring bar competitions: trivia leagues, dart nights, cornhole
+        tournaments, pool leagues, and other participation events. Below is what venues use on night one and what
+        players see on the public signup page.
+      </p>
       <div className="mt-8 flex flex-wrap gap-3">
         <Button asChild size="lg">
           <Link href="/signup/venue">{cta.startVenue}</Link>
@@ -51,10 +55,25 @@ export default function FeaturesPage() {
           <Link href="/pricing">See pricing</Link>
         </Button>
       </div>
+      <div className="mt-10 rounded-2xl border border-lp-border bg-lp-surface/40 p-6">
+        <h2 className="font-display text-lg font-bold">Who this is for</h2>
+        <p className="mt-3 text-sm text-lp-muted leading-relaxed">
+          Owners, managers, and hosts at bars, breweries, restaurants, and taprooms who run paid or free competitions
+          and want signups, payments, and player follow-up in one workflow. LeaguePour is not a ticketing platform for
+          concerts or DJs.
+        </p>
+      </div>
       <div className="mt-14 grid gap-10 md:grid-cols-3">
         {groups.map((g) => (
           <div key={g.title} className="rounded-2xl border border-lp-border bg-lp-surface/40 p-6">
             <h2 className="font-display text-lg font-bold">{g.title}</h2>
+            <p className="mt-2 text-xs text-lp-muted">
+              {g.title === "Builder"
+                ? "Set up the event before doors open."
+                : g.title === "Night-of"
+                  ? "Run check-in, scores, and standings during the event."
+                  : "Bring the same players back for the next league night."}
+            </p>
             <ul className="mt-5 space-y-3">
               {g.items.map((item) => (
                 <li key={item} className="flex gap-2 text-sm text-lp-muted">

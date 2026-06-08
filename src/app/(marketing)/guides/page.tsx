@@ -73,7 +73,8 @@ export default function GuidesIndexPage() {
         <p className="mt-5 max-w-2xl text-lg text-lp-muted">
           Running leagues and tournaments is one of the best ways to drive consistent foot traffic
           and build a loyal customer base. These guides cover the formats, logistics, and operational
-          details that actually matter - written by people who have helped bars do this at scale.
+          details that actually matter - practical notes for operators using LeaguePour or planning their first league
+          night.
         </p>
 
         <div className="mt-12 space-y-4">

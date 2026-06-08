@@ -38,7 +38,28 @@ export default function HowItWorksPage() {
     <div className="mx-auto max-w-3xl px-4 py-16 md:px-6 md:py-20">
       <p className="text-xs font-bold uppercase tracking-wider text-lp-muted">Flow</p>
       <h1 className="mt-2 font-display text-4xl font-bold">How LeaguePour works</h1>
-      <p className="mt-4 text-lg text-lp-muted">Four steps. Self-serve.</p>
+      <p className="mt-4 max-w-2xl text-lg text-lp-muted leading-relaxed">
+        LeaguePour connects venue operators and players for bar competitions. Venues publish events and collect fees;
+        players find events and register from their phone. Four steps, self-serve.
+      </p>
+      <div className="mt-8 rounded-xl border border-lp-border bg-lp-surface/40 p-5 text-sm text-lp-muted">
+        <p className="font-semibold text-lp-text">Venue signup</p>
+        <p className="mt-2">
+          Create a venue account, connect Stripe for paid events, and publish your first competition.{" "}
+          <Link href="/for-venues" className="text-lp-accent hover:underline">
+            See the venue guide
+          </Link>
+          .
+        </p>
+        <p className="mt-4 font-semibold text-lp-text">Player signup</p>
+        <p className="mt-2">
+          Create a free player account, follow venues, and register when signup opens.{" "}
+          <Link href="/for-players" className="text-lp-accent hover:underline">
+            See the player guide
+          </Link>
+          .
+        </p>
+      </div>
       <ol className="mt-12 space-y-10">
         {steps.map((s, i) => (
           <li key={s.title} className="flex gap-5">

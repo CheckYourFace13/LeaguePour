@@ -6,7 +6,17 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/venue/", "/player/", "/api/"],
+      disallow: [
+        "/venue/",
+        "/player/",
+        "/api/",
+        "/internal/",
+        "/login",
+        "/signup",
+        "/forgot-password",
+        "/reset-password",
+        "/embed/",
+      ],
     },
     sitemap: `${getPublicSiteUrl()}/sitemap.xml`,
   };

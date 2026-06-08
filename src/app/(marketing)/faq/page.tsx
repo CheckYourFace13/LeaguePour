@@ -54,6 +54,18 @@ const faqs = [
     q: "What happens if I need to cancel an event?",
     a: "Refunds are processed through Stripe. You can issue full refunds from your Stripe dashboard, and players' registrations are updated to cancelled automatically.",
   },
+  {
+    q: "Who is LeaguePour for?",
+    a: "Bars, breweries, restaurants, and taprooms that host participation events: trivia, dart leagues, cornhole, pool, cards, and similar game nights. Players use LeaguePour to find events and register. LeaguePour is not for concerts, DJs, or general ticketing.",
+  },
+  {
+    q: "Where is LeaguePour available?",
+    a: "Venues can sign up self-serve in the United States. Player discovery shows real venues and competitions as they publish events. There is no fake directory data.",
+  },
+  {
+    q: "How do I contact LeaguePour?",
+    a: "Email hello@leaguepour.com or use the contact form at leaguepour.com/contact. We typically reply within 1-2 business days.",
+  },
 ];
 
 const jsonLd = {

@@ -62,7 +62,7 @@ export function ContactForm() {
           id="message"
           name="message"
           className="mt-1.5"
-          placeholder="What you run, timeline, question…"
+          placeholder="What you run, timeline, question..."
         />
       </div>
       <Button type="submit" className="w-full" size="lg">

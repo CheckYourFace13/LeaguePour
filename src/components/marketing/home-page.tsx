@@ -117,6 +117,84 @@ export function HomePage() {
 
       <VenuePainPoints />
 
+      <section className="mx-auto max-w-6xl px-4 py-14 md:px-6 md:py-18">
+        <p className="lp-kicker text-lp-accent">What LeaguePour solves</p>
+        <h2 className="mt-2 font-display text-3xl font-bold md:text-4xl">
+          One place for signups, payments, and repeat league nights
+        </h2>
+        <div className="mt-8 grid gap-6 md:grid-cols-2">
+          <Card className="p-6">
+            <h3 className="font-display text-xl font-bold">For bars and venues</h3>
+            <p className="mt-3 text-base text-lp-text-soft leading-relaxed">
+              Stop juggling paper sheets, Venmo screenshots, and Facebook posts. Publish a competition, share a signup
+              link or QR code, collect entry fees through Stripe Connect, track teams and standings, and message players
+              who opted in for the next night.
+            </p>
+          </Card>
+          <Card className="p-6">
+            <h3 className="font-display text-xl font-bold">For players</h3>
+            <p className="mt-3 text-base text-lp-text-soft leading-relaxed">
+              One free account works at any LeaguePour venue. Find events, register from your phone, pay entry fees
+              securely, and manage alerts per venue. No app download required.
+            </p>
+          </Card>
+        </div>
+      </section>
+
+      <section className="border-y border-lp-border bg-lp-surface/40">
+        <div className="mx-auto max-w-6xl px-4 py-14 md:px-6 md:py-18">
+          <p className="lp-kicker text-lp-accent">How a bar gets started</p>
+          <h2 className="mt-2 font-display text-3xl font-bold md:text-4xl">Five steps from signup to a full room</h2>
+          <ol className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {[
+              { n: "1", title: "Create your venue", body: "Add your bar name, address, and public hub. Your venue page is live right away." },
+              { n: "2", title: "Connect Stripe", body: "Link Stripe Connect so entry fees deposit to your bank. LeaguePour does not hold your funds." },
+              { n: "3", title: "Publish an event", body: "Set format, dates, entry fee, team size, and cap. Share the link or print a QR code." },
+              { n: "4", title: "Players register and pay", body: "Players sign up from their phone. Paid events use Stripe Checkout. You see who is confirmed." },
+              { n: "5", title: "Run scores and fill the next night", body: "Enter scores, post standings, and message your audience for the next league or tournament." },
+            ].map((step) => (
+              <li key={step.n} className="rounded-xl border border-lp-border bg-white p-5">
+                <span className="font-display text-sm font-bold text-lp-accent">Step {step.n}</span>
+                <h3 className="mt-2 font-display text-lg font-bold">{step.title}</h3>
+                <p className="mt-2 text-sm text-lp-text-soft leading-relaxed">{step.body}</p>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-6 text-sm text-lp-muted">
+            LeaguePour is self-serve. Venues in the United States can sign up today. Player discovery grows as more
+            venues publish events in your area.
+          </p>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-14 md:px-6 md:py-18">
+        <p className="lp-kicker text-lp-accent">Payments and registration</p>
+        <h2 className="mt-2 font-display text-3xl font-bold md:text-4xl">How money and spots work</h2>
+        <div className="mt-8 grid gap-6 md:grid-cols-3">
+          <Card className="p-6">
+            <h3 className="font-display text-lg font-bold">Entry fees</h3>
+            <p className="mt-2 text-sm text-lp-text-soft leading-relaxed">
+              Venues set the listed entry fee. Players pay through Stripe Checkout. Funds go to the venue Stripe account
+              minus the platform fee shown in venue settings.
+            </p>
+          </Card>
+          <Card className="p-6">
+            <h3 className="font-display text-lg font-bold">Free events</h3>
+            <p className="mt-2 text-sm text-lp-text-soft leading-relaxed">
+              Set the fee to $0 and players register without payment. Useful for open trivia nights or trial leagues
+              while you build a crowd.
+            </p>
+          </Card>
+          <Card className="p-6">
+            <h3 className="font-display text-lg font-bold">Standings</h3>
+            <p className="mt-2 text-sm text-lp-text-soft leading-relaxed">
+              Staff enter scores from the venue dashboard. Standings update on the public competition page so players
+              can follow the night without asking at the bar.
+            </p>
+          </Card>
+        </div>
+      </section>
+
       <section className="border-y border-lp-border bg-lp-surface/40">
         <div className="mx-auto max-w-6xl px-4 py-14 md:px-6 md:py-18">
           <div className="grid gap-10 lg:grid-cols-2 lg:items-center">

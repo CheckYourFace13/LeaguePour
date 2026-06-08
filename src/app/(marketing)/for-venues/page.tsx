@@ -57,7 +57,7 @@ export default function ForVenuesPage() {
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Button asChild size="lg">
-            <Link href="/signup/venue">Get started free</Link>
+            <Link href="/signup/venue">Start hosting events</Link>
           </Button>
           <Button asChild size="lg" variant="secondary">
             <Link href="/pricing">See pricing</Link>
