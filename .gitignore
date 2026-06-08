@@ -42,3 +42,7 @@ next-env.d.ts
 
 /src/generated/prisma
 .claude/
+
+# Hostinger deploy artifacts
+leaguepour-build-package/
+leaguepour-next-build.zip
