@@ -30,6 +30,7 @@ const cols = [
   {
     title: "Company",
     links: [
+      { href: "/about", label: "About" },
       { href: "/signup/venue", label: "Start hosting events" },
       { href: "/contact", label: "Contact" },
       { href: "/rules", label: "Rules library" },
