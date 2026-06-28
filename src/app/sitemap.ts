@@ -7,6 +7,39 @@ import { getAllSoftwareSlugs } from "@/lib/seo/render-software-page";
 import { getAllOutreachCitySlugs } from "@/lib/seo/outreach-city-slugs";
 import { getPublicSiteUrl } from "@/lib/site-url";
 
+const VS_BASE = "https://venuesprocket.com";
+
+const vsSitemapPages: MetadataRoute.Sitemap = [
+  "",
+  "/features",
+  "/pricing",
+  "/start",
+  "/leaguepour",
+  "/private-event-booking-software",
+  "/beo-software",
+  "/event-contract-software",
+  "/event-deposit-software",
+  "/venue-marketing-software",
+  "/restaurant-event-management-software",
+  "/brewery-event-management-software",
+  "/bar-event-management-software",
+  "/taproom-event-management-software",
+  "/banquet-hall-software",
+  "/compare/tripleseat",
+  "/compare/perfect-venue",
+  "/compare/planning-pod",
+  "/compare/caterease",
+  "/compare/event-temple",
+  "/compare/honeybook",
+  "/compare/google-forms",
+  "/compare/email-pdf",
+].map((path) => ({
+  url: `${VS_BASE}${path}`,
+  lastModified: new Date(),
+  changeFrequency: "weekly" as const,
+  priority: path === "" ? 1 : path.includes("/compare/") ? 0.9 : 0.85,
+}));
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getPublicSiteUrl();
   const citySlugs = getAllOutreachCitySlugs();
@@ -103,5 +136,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  return [...staticPages, ...venuePages, ...compPages];
+  return [...staticPages, ...venuePages, ...compPages, ...vsSitemapPages];
 }

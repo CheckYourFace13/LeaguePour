@@ -200,6 +200,15 @@ model Venue {
   venueFollows  VenueFollow[]
   promoCodes    PromoCode[]
 
+  // VenueSprocket relations
+  vsConfig         VenueVsConfig?
+  privateEventLeads PrivateEventLead[]
+  privateEvents    PrivateEvent[]
+  vsCustomers      VsCustomer[]
+  vsPayments       VsPayment[]
+  menuPackages     MenuPackage[]
+  beveragePackages BeveragePackage[]
+
   @@schema("leaguepour_lp")
 }
 
@@ -635,6 +644,466 @@ model Notification {
   status    NotificationStatus  @default(QUEUED)
   createdAt DateTime            @default(now())
   sentAt    DateTime?
+
+  @@schema("leaguepour_lp")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// VenueSprocket — private event management
+// ═══════════════════════════════════════════════════════════════
+
+// ——— VS enums ———
+
+enum VsPlan {
+  VS_FREE
+  VS_STARTER
+  VS_PRO
+  VS_GROWTH
+  VS_ENTERPRISE
+
+  @@schema("leaguepour_lp")
+}
+
+enum VsEventType {
+  BIRTHDAY
+  CORPORATE
+  HOLIDAY_PARTY
+  REHEARSAL_DINNER
+  SHOWER
+  FUNDRAISER
+  PRIVATE_ROOM
+  WEDDING
+  ANNIVERSARY
+  TASTING
+  BUYOUT
+  OTHER
+
+  @@schema("leaguepour_lp")
+}
+
+enum VsLeadStatus {
+  NEW
+  CONTACTED
+  PROPOSAL_SENT
+  CONTRACT_SENT
+  DEPOSIT_PENDING
+  BOOKED
+  FINAL_DETAILS
+  BEO_READY
+  COMPLETED
+  LOST
+
+  @@schema("leaguepour_lp")
+}
+
+enum VsEventStatus {
+  INQUIRY
+  PROPOSAL_OUT
+  CONTRACT_OUT
+  DEPOSIT_DUE
+  CONFIRMED
+  BEO_DRAFT
+  BEO_FINAL
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+
+  @@schema("leaguepour_lp")
+}
+
+enum VsProposalStatus {
+  DRAFT
+  SENT
+  VIEWED
+  ACCEPTED
+  REJECTED
+  EXPIRED
+
+  @@schema("leaguepour_lp")
+}
+
+enum VsContractStatus {
+  DRAFT
+  SENT
+  SIGNED
+  VOIDED
+
+  @@schema("leaguepour_lp")
+}
+
+enum VsPaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
+  FAILED
+
+  @@schema("leaguepour_lp")
+}
+
+enum VsBeoStatus {
+  DRAFT
+  NEEDS_REVIEW
+  FINAL
+
+  @@schema("leaguepour_lp")
+}
+
+enum VsMarketingPageType {
+  BIRTHDAY_PARTY
+  CORPORATE_EVENT
+  HOLIDAY_PARTY
+  REHEARSAL_DINNER
+  SHOWER
+  FUNDRAISER
+  PRIVATE_DINING
+  BUYOUT
+  TASTING
+  SEASONAL
+  CITY
+  CUSTOM
+
+  @@schema("leaguepour_lp")
+}
+
+enum VsAutomationTrigger {
+  LEAD_CREATED
+  LEAD_NO_RESPONSE_24H
+  LEAD_NO_RESPONSE_72H
+  PROPOSAL_VIEWED
+  PROPOSAL_ACCEPTED
+  CONTRACT_SENT
+  CONTRACT_SIGNED
+  DEPOSIT_PAID
+  EVENT_MINUS_7DAYS
+  EVENT_MINUS_1DAY
+  EVENT_COMPLETED
+
+  @@schema("leaguepour_lp")
+}
+
+// ——— VS venue config ———
+
+/// VenueSprocket-specific settings for a Venue (extends the shared Venue record)
+model VenueVsConfig {
+  id                 String   @id @default(cuid())
+  venueId            String   @unique
+  vsPlan             VsPlan   @default(VS_FREE)
+  vsEnabled          Boolean  @default(true)
+  marketingEnabled   Boolean  @default(false)
+  leaguePourEnabled  Boolean  @default(false)
+  publicEmail        String?
+  publicPhone        String?
+  contractTemplate   String?  @db.Text
+  defaultDepositPct  Int      @default(25)
+  defaultDepositFlat Int?
+  timezone           String   @default("America/Chicago")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  venue        Venue          @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  eventSpaces  EventSpace[]
+  marketingPages VsMarketingPage[]
+  automations  VsAutomation[]
+
+  @@schema("leaguepour_lp")
+}
+
+// ——— Event spaces (rooms) ———
+
+model EventSpace {
+  id               String   @id @default(cuid())
+  venueConfigId    String
+  name             String
+  capacitySeated   Int?
+  capacityStanding Int?
+  description      String?  @db.Text
+  roomFee          Int      @default(0)
+  minimumSpend     Int      @default(0)
+  amenities        String[]
+  photoUrls        String[]
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  venueConfig    VenueVsConfig    @relation(fields: [venueConfigId], references: [id], onDelete: Cascade)
+  privateEvents  PrivateEvent[]
+
+  @@schema("leaguepour_lp")
+}
+
+// ——— Private event lead ———
+
+model PrivateEventLead {
+  id              String       @id @default(cuid())
+  venueId         String
+  vsCustomerId    String?
+  source          String?
+  eventType       VsEventType  @default(OTHER)
+  preferredDate   DateTime?
+  alternateDate   DateTime?
+  startTime       String?
+  endTime         String?
+  guestCount      Int?
+  budgetRange     String?
+  customerName    String
+  customerEmail   String
+  customerPhone   String?
+  notes           String?      @db.Text
+  status          VsLeadStatus @default(NEW)
+  assignedUserId  String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  venue        Venue         @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  privateEvent PrivateEvent?
+  vsCustomer   VsCustomer?   @relation(fields: [vsCustomerId], references: [id])
+
+  @@index([venueId, status])
+  @@index([customerEmail])
+  @@schema("leaguepour_lp")
+}
+
+// ——— Private event ———
+
+model PrivateEvent {
+  id                   String        @id @default(cuid())
+  venueId              String
+  leadId               String?       @unique
+  eventSpaceId         String?
+  vsCustomerId         String?
+  eventName            String
+  eventType            VsEventType   @default(OTHER)
+  eventDate            DateTime
+  startTime            String
+  endTime              String
+  setupTime            String?
+  teardownTime         String?
+  guestCountEstimated  Int?
+  guestCountFinal      Int?
+  status               VsEventStatus @default(INQUIRY)
+  internalNotes        String?       @db.Text
+  customerNotes        String?       @db.Text
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  venue       Venue             @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  lead        PrivateEventLead? @relation(fields: [leadId], references: [id])
+  eventSpace  EventSpace?       @relation(fields: [eventSpaceId], references: [id])
+  vsCustomer  VsCustomer?       @relation(fields: [vsCustomerId], references: [id])
+  proposals   VsProposal[]
+  contracts   VsContract[]
+  vsPayments  VsPayment[]
+  beos        VsBeo[]
+
+  @@index([venueId, eventDate])
+  @@schema("leaguepour_lp")
+}
+
+// ——— Customer CRM ———
+
+model VsCustomer {
+  id              String   @id @default(cuid())
+  venueId         String
+  name            String
+  email           String
+  phone           String?
+  company         String?
+  notes           String?  @db.Text
+  tags            String[]
+  marketingOptIn  Boolean  @default(false)
+  source          String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  venue         Venue              @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  privateEvents PrivateEvent[]
+  leads         PrivateEventLead[]
+
+  @@unique([venueId, email])
+  @@index([venueId])
+  @@schema("leaguepour_lp")
+}
+
+// ——— Proposal ———
+
+model VsProposal {
+  id              String           @id @default(cuid())
+  privateEventId  String
+  version         Int              @default(1)
+  status          VsProposalStatus @default(DRAFT)
+  lineItems       Json?
+  packageOptions  Json?
+  minimumSpend    Int              @default(0)
+  roomFee         Int              @default(0)
+  taxesFees       Int              @default(0)
+  depositAmount   Int              @default(0)
+  totalAmount     Int              @default(0)
+  publicToken     String           @unique @default(cuid())
+  expiresAt       DateTime?
+  viewedAt        DateTime?
+  acceptedAt      DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  privateEvent PrivateEvent @relation(fields: [privateEventId], references: [id], onDelete: Cascade)
+  contract     VsContract?
+
+  @@schema("leaguepour_lp")
+}
+
+// ——— Contract ———
+
+model VsContract {
+  id             String           @id @default(cuid())
+  privateEventId String
+  proposalId     String?          @unique
+  version        Int              @default(1)
+  status         VsContractStatus @default(DRAFT)
+  contractText   String           @db.Text
+  signerName     String?
+  signerEmail    String?
+  typedSignature String?
+  signedAt       DateTime?
+  ipAddress      String?
+  userAgent      String?
+  pdfUrl         String?
+  publicToken    String           @unique @default(cuid())
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  privateEvent PrivateEvent @relation(fields: [privateEventId], references: [id], onDelete: Cascade)
+  proposal     VsProposal?  @relation(fields: [proposalId], references: [id])
+
+  @@schema("leaguepour_lp")
+}
+
+// ——— Deposit / payment ———
+
+model VsPayment {
+  id                     String          @id @default(cuid())
+  venueId                String
+  privateEventId         String
+  stripePaymentIntentId  String?         @unique
+  stripeCheckoutSessionId String?        @unique
+  amountCents            Int
+  currency               String          @default("USD")
+  type                   String          @default("deposit")
+  status                 VsPaymentStatus @default(PENDING)
+  dueDate                DateTime?
+  paidAt                 DateTime?
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+
+  venue        Venue        @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  privateEvent PrivateEvent @relation(fields: [privateEventId], references: [id], onDelete: Cascade)
+
+  @@index([venueId])
+  @@schema("leaguepour_lp")
+}
+
+// ——— BEO ———
+
+model VsBeo {
+  id                  String      @id @default(cuid())
+  privateEventId      String
+  version             Int         @default(1)
+  status              VsBeoStatus @default(DRAFT)
+  eventSummary        String?     @db.Text
+  contactInfo         Json?
+  timeline            Json?
+  roomSetup           String?     @db.Text
+  foodDetails         String?     @db.Text
+  beverageDetails     String?     @db.Text
+  staffingNotes       String?     @db.Text
+  avNeeds             String?     @db.Text
+  allergies           String?     @db.Text
+  specialInstructions String?     @db.Text
+  internalNotes       String?     @db.Text
+  pdfUrl              String?
+  finalizedAt         DateTime?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  privateEvent PrivateEvent @relation(fields: [privateEventId], references: [id], onDelete: Cascade)
+
+  @@schema("leaguepour_lp")
+}
+
+// ——— Menu and beverage packages ———
+
+model MenuPackage {
+  id          String   @id @default(cuid())
+  venueId     String
+  name        String
+  description String?  @db.Text
+  priceType   String   @default("per_person")
+  priceCents  Int      @default(0)
+  items       Json?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  venue Venue @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  @@schema("leaguepour_lp")
+}
+
+model BeveragePackage {
+  id          String   @id @default(cuid())
+  venueId     String
+  name        String
+  description String?  @db.Text
+  priceType   String   @default("per_person")
+  priceCents  Int      @default(0)
+  items       Json?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  venue Venue @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  @@schema("leaguepour_lp")
+}
+
+// ——— Marketing pages ———
+
+model VsMarketingPage {
+  id              String              @id @default(cuid())
+  venueConfigId   String
+  pageType        VsMarketingPageType
+  slug            String
+  title           String
+  metaDescription String?
+  content         Json?
+  targetKeyword   String?
+  city            String?
+  eventType       VsEventType?
+  isPublished     Boolean             @default(false)
+  publishedAt     DateTime?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  venueConfig VenueVsConfig @relation(fields: [venueConfigId], references: [id], onDelete: Cascade)
+
+  @@unique([venueConfigId, slug])
+  @@schema("leaguepour_lp")
+}
+
+// ——— Automations ———
+
+model VsAutomation {
+  id              String              @id @default(cuid())
+  venueConfigId   String
+  name            String
+  trigger         VsAutomationTrigger
+  delayHours      Int                 @default(0)
+  emailSubject    String?
+  emailBody       String?             @db.Text
+  isActive        Boolean             @default(true)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  venueConfig VenueVsConfig @relation(fields: [venueConfigId], references: [id], onDelete: Cascade)
 
   @@schema("leaguepour_lp")
 }

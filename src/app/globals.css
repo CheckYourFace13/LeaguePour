@@ -141,3 +141,115 @@ body {
 h1, h2, h3, h4 {
   color: var(--lp-text);
 }
+
+/* ─── VenueSprocket Design Tokens ─────────────────────────────────────────── */
+/*
+  VS palette: forest green + amber gold + warm neutral.
+  Distinct from LP blue to signal a different product identity.
+*/
+
+:root {
+  --vs-bg: #f8faf8;
+  --vs-surface: #ffffff;
+  --vs-surface-2: #eef5ef;
+  --vs-border: #c3d9c7;
+  --vs-border-strong: #8ab890;
+  --vs-muted: #3d5c44;
+  --vs-text: #111f14;
+  --vs-text-soft: #2d4a34;
+  --vs-accent: #1a5f3f;
+  --vs-accent-hover: #155930;
+  --vs-accent-2: #f59e0b;
+  --vs-success: #1a5f3f;
+  --vs-warning: #b45309;
+  --vs-radius: 12px;
+  --vs-radius-sm: 8px;
+  --vs-focus: rgba(26, 95, 63, 0.32);
+}
+
+@theme inline {
+  --color-vs-bg: var(--vs-bg);
+  --color-vs-surface: var(--vs-surface);
+  --color-vs-surface-2: var(--vs-surface-2);
+  --color-vs-border: var(--vs-border);
+  --color-vs-border-strong: var(--vs-border-strong);
+  --color-vs-muted: var(--vs-muted);
+  --color-vs-text: var(--vs-text);
+  --color-vs-text-soft: var(--vs-text-soft);
+  --color-vs-accent: var(--vs-accent);
+  --color-vs-accent-hover: var(--vs-accent-hover);
+  --color-vs-accent-2: var(--vs-accent-2);
+  --color-vs-success: var(--vs-success);
+  --color-vs-warning: var(--vs-warning);
+}
+
+.vs-card {
+  border-radius: var(--vs-radius);
+  border: 1px solid var(--vs-border-strong);
+  background: var(--vs-surface);
+  box-shadow: 0 12px 30px -20px rgba(10, 40, 18, 0.22);
+}
+
+.vs-card-muted {
+  border-radius: var(--vs-radius);
+  border: 1px solid var(--vs-border);
+  background: var(--vs-surface-2);
+}
+
+.vs-kicker {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--vs-accent);
+}
+
+.vs-section {
+  padding-top: 4.5rem;
+  padding-bottom: 4.5rem;
+}
+@media (min-width: 768px) {
+  .vs-section {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+}
+
+.vs-hero-wash {
+  background: radial-gradient(
+    120% 70% at 50% -10%,
+    color-mix(in oklab, var(--vs-accent-2) 22%, transparent) 0%,
+    transparent 55%
+  );
+}
+
+.vs-page-title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  color: var(--vs-text);
+}
+
+.vs-page-sub {
+  margin-top: 0.75rem;
+  font-size: 1.125rem;
+  line-height: 1.55;
+  color: var(--vs-text-soft);
+  max-width: 42rem;
+}
+
+.vs-pricing-card {
+  border-color: var(--vs-border-strong);
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--vs-surface-2) 90%, transparent) 0%,
+    var(--vs-surface) 100%
+  );
+  box-shadow: 0 16px 38px -24px rgba(10, 40, 18, 0.24);
+}
+
+.vs-feature-ring {
+  border-color: color-mix(in oklab, var(--vs-accent) 45%, var(--vs-border));
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--vs-accent) 24%, transparent), 0 18px 44px -26px rgba(26, 95, 63, 0.4);
+}
