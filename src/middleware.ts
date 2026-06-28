@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { getPublicSiteUrl } from "@/lib/site-url";
 
-const protectedPrefixes = ["/venue", "/player"];
+const protectedPrefixes = ["/venue", "/player", "/app"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -43,5 +43,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/venue/:path*", "/player/:path*"],
+  matcher: ["/venue/:path*", "/player/:path*", "/app/:path*"],
 };
