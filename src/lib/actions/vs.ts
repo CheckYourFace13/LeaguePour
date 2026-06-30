@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
+import { sendVsLeadNotificationEmail, sendVsInquiryConfirmationEmail } from "@/lib/email";
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -40,22 +41,71 @@ export async function createPrivateEventLeadPublic(formData: FormData) {
   const customerEmail = String(formData.get("customerEmail") || "").trim();
   if (!customerName || !customerEmail) return { error: "Name and email are required" };
 
-  await prisma.privateEventLead.create({
+  const eventType = String(formData.get("eventType") || "OTHER");
+  const preferredDate = formData.get("preferredDate")
+    ? new Date(String(formData.get("preferredDate")))
+    : null;
+  const customerPhone = String(formData.get("customerPhone") || "") || null;
+  const guestCount = formData.get("guestCount") ? Number(formData.get("guestCount")) : null;
+  const budgetRange = String(formData.get("budgetRange") || "") || null;
+  const notes = String(formData.get("notes") || "") || null;
+
+  const lead = await prisma.privateEventLead.create({
     data: {
       venueId,
       customerName,
       customerEmail,
-      customerPhone: String(formData.get("customerPhone") || "") || null,
-      eventType: (String(formData.get("eventType")) as never) || "OTHER",
-      preferredDate: formData.get("preferredDate")
-        ? new Date(String(formData.get("preferredDate")))
-        : null,
-      guestCount: formData.get("guestCount") ? Number(formData.get("guestCount")) : null,
-      budgetRange: String(formData.get("budgetRange") || "") || null,
-      notes: String(formData.get("notes") || "") || null,
+      customerPhone,
+      eventType: eventType as never,
+      preferredDate,
+      guestCount,
+      budgetRange,
+      notes,
       source: "inquiry_form",
     },
   });
+
+  // Fetch venue contact info for notification email
+  const venue = await prisma.venue.findUnique({
+    where: { id: venueId },
+    select: {
+      name: true,
+      phone: true,
+      vsConfig: { select: { publicEmail: true } },
+    },
+  });
+
+  if (venue) {
+    const notifyEmail = venue.vsConfig?.publicEmail ?? null;
+    const baseUrl = process.env.NEXTAUTH_URL ?? "https://leaguepour.com";
+    const dashboardUrl = `${baseUrl}/app/leads/${lead.id}`;
+
+    // Fire both emails concurrently, soft-fail if Resend not configured
+    void Promise.all([
+      notifyEmail
+        ? sendVsLeadNotificationEmail({
+            to: notifyEmail,
+            venueName: venue.name,
+            customerName,
+            customerEmail,
+            customerPhone,
+            eventType,
+            preferredDate,
+            guestCount,
+            budgetRange,
+            notes,
+            dashboardUrl,
+          })
+        : Promise.resolve(),
+      sendVsInquiryConfirmationEmail({
+        to: customerEmail,
+        customerName,
+        venueName: venue.name,
+        eventType,
+        preferredDate,
+      }),
+    ]);
+  }
 
   return { ok: true };
 }
