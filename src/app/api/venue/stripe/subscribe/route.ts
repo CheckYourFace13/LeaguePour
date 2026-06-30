@@ -6,6 +6,7 @@ import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import {
   createSubscriptionCheckoutUrl,
   getOrCreateBillingCustomer,
+  subscriptionIsActive,
   type BillingInterval,
 } from "@/lib/stripe/billing";
 import { isStripePaymentsConfigured } from "@/lib/stripe/env";
@@ -33,7 +34,13 @@ export async function POST(req: Request) {
 
   const venue = await prisma.venue.findUnique({
     where: { id: access.venueId },
-    select: { id: true, name: true, stripeBillingCustomerId: true },
+    select: {
+      id: true,
+      name: true,
+      stripeBillingCustomerId: true,
+      subscriptionStatus: true,
+      vsConfig: { select: { id: true } },
+    },
   });
   if (!venue) return NextResponse.json({ error: "Venue not found" }, { status: 404 });
 
@@ -48,9 +55,20 @@ export async function POST(req: Request) {
     });
   }
 
+  // Auto-apply bundle discount if venue already has VenueSprocket active
+  const hasVsActive = Boolean(venue.vsConfig);
+  const hasLpActive = subscriptionIsActive(venue.subscriptionStatus);
+  const bundleDiscount = hasVsActive && !hasLpActive;
+
   try {
-    const url = await createSubscriptionCheckoutUrl({ customerId, plan, interval, venueId: venue.id });
-    return NextResponse.json({ url });
+    const url = await createSubscriptionCheckoutUrl({
+      customerId,
+      plan,
+      interval,
+      venueId: venue.id,
+      bundleDiscount,
+    });
+    return NextResponse.json({ url, bundleDiscount });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
     console.error("[billing subscribe]", msg);

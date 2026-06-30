@@ -75,6 +75,35 @@ export default function PricingPage() {
           Compare venue use cases
         </Link>
       </div>
+
+      {/* Bundle discount */}
+      <div className="mt-16 rounded-2xl border-2 border-lp-accent/30 bg-lp-surface/60 p-8 flex flex-col md:flex-row gap-6 items-center justify-between">
+        <div className="flex-1">
+          <p className="text-xs font-bold uppercase tracking-widest text-lp-accent mb-2">Bundle & save 50%</p>
+          <p className="font-display text-xl font-bold text-lp-text">
+            Already have VenueSprocket?
+          </p>
+          <p className="mt-2 text-sm text-lp-muted leading-relaxed">
+            Venues using <strong className="text-lp-text">VenueSprocket</strong> for private events automatically get
+            50% off their LeaguePour subscription — no code needed. The discount applies at checkout when you sign in.
+          </p>
+          <p className="mt-2 text-sm text-lp-muted">
+            The reverse works too — LeaguePour subscribers get 50% off VenueSprocket.
+          </p>
+        </div>
+        <div className="shrink-0 text-center">
+          <p className="text-4xl font-extrabold text-lp-accent font-display">50%</p>
+          <p className="text-sm font-semibold text-lp-text-soft mt-1">off your second<br/>subscription</p>
+          <a
+            href="https://venuesprocket.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex rounded-lg border border-lp-border-strong px-5 py-2.5 text-sm font-bold text-lp-text hover:bg-lp-surface transition-colors"
+          >
+            See VenueSprocket →
+          </a>
+        </div>
+      </div>
     </div>
   );
 }

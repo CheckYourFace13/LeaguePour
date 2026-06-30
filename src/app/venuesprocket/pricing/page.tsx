@@ -228,6 +228,36 @@ export default function VsPricingPage() {
           </div>
         </div>
 
+        {/* Bundle discount */}
+        <div className="mt-16 rounded-2xl border-2 border-vs-accent/30 bg-vs-surface/60 p-8 flex flex-col md:flex-row gap-6 items-center justify-between max-w-3xl mx-auto">
+          <div className="flex-1">
+            <p className="text-xs font-bold uppercase tracking-widest text-vs-accent mb-2">Bundle & save 50%</p>
+            <p className="font-display text-xl font-bold text-vs-text">
+              Already have LeaguePour?
+            </p>
+            <p className="mt-2 text-sm text-vs-text-soft leading-relaxed">
+              Venues running <strong className="text-vs-text">LeaguePour</strong> for bar leagues and competitions
+              automatically get 50% off their VenueSprocket subscription — no code needed. The discount applies
+              at checkout when you sign in.
+            </p>
+            <p className="mt-2 text-sm text-vs-text-soft">
+              The reverse works too — VenueSprocket subscribers get 50% off LeaguePour.
+            </p>
+          </div>
+          <div className="shrink-0 text-center">
+            <p className="text-4xl font-extrabold text-vs-accent font-display">50%</p>
+            <p className="text-sm font-semibold text-vs-text-soft mt-1">off your second<br/>subscription</p>
+            <a
+              href="https://leaguepour.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex rounded-lg border border-vs-border-strong px-5 py-2.5 text-sm font-bold text-vs-text hover:bg-vs-surface transition-colors"
+            >
+              See LeaguePour →
+            </a>
+          </div>
+        </div>
+
       </div>
     </div>
   );

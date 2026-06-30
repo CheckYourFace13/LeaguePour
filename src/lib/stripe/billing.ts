@@ -24,6 +24,8 @@ import { getAppBaseUrl } from "@/lib/stripe/env";
 
 export type BillingInterval = "monthly" | "annual";
 
+export const BUNDLE_COUPON_ID = "VSBUNDLE50";
+
 export function billingPriceLookupKey(plan: BillingPlan, interval: BillingInterval): string {
   return `leaguepour_${plan.toLowerCase()}_${interval}`;
 }
@@ -45,6 +47,25 @@ export async function getOrCreateBillingCustomer(venueId: string, venueName: str
   return customer.id;
 }
 
+/** Ensure the bundle coupon exists in Stripe (50% off forever). Idempotent. */
+export async function getOrCreateBundleCoupon(): Promise<string> {
+  const stripe = getStripe();
+  try {
+    const existing = await stripe.coupons.retrieve(BUNDLE_COUPON_ID);
+    if (existing && !existing.deleted) return existing.id;
+  } catch {
+    // Not found — create it
+  }
+  const coupon = await stripe.coupons.create({
+    id: BUNDLE_COUPON_ID,
+    name: "VenueSprocket + LeaguePour Bundle — 50% off",
+    percent_off: 50,
+    duration: "forever",
+    metadata: { source: "bundle_discount" },
+  });
+  return coupon.id;
+}
+
 /** Create a Stripe Checkout session in subscription mode for a venue plan. */
 export async function createSubscriptionCheckoutUrl(opts: {
   customerId: string;
@@ -53,6 +74,7 @@ export async function createSubscriptionCheckoutUrl(opts: {
   venueId: string;
   successPath?: string;
   cancelPath?: string;
+  bundleDiscount?: boolean;
 }): Promise<string> {
   const stripe = getStripe();
   const base = getAppBaseUrl();
@@ -66,6 +88,11 @@ export async function createSubscriptionCheckoutUrl(opts: {
     );
   }
 
+  // Bundle discount: auto-apply 50% coupon; can't combine with allow_promotion_codes
+  const discountOpts: Record<string, unknown> = opts.bundleDiscount
+    ? { discounts: [{ coupon: await getOrCreateBundleCoupon() }] }
+    : { allow_promotion_codes: true };
+
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     customer: opts.customerId,
@@ -74,7 +101,7 @@ export async function createSubscriptionCheckoutUrl(opts: {
     subscription_data: { metadata: { venueId: opts.venueId, plan: opts.plan } },
     success_url: `${base}${opts.successPath ?? "/venue/settings"}?notice=subscribed`,
     cancel_url: `${base}${opts.cancelPath ?? "/venue/settings"}?notice=subscribe-cancel`,
-    allow_promotion_codes: true,
+    ...discountOpts,
   });
 
   if (!session.url) throw new Error("Stripe did not return a checkout URL");
