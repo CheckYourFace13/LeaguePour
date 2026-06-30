@@ -162,6 +162,29 @@ export default function ForVenuesPage() {
         </p>
       </div>
 
+      {/* VenueSprocket cross-promo */}
+      <div className="rounded-xl border border-lp-border bg-lp-surface/60 p-7 flex flex-col sm:flex-row gap-6 items-start">
+        <div className="flex-1">
+          <p className="text-xs font-bold uppercase tracking-widest text-lp-muted mb-1">Also from LeaguePour</p>
+          <p className="font-display text-xl font-bold text-lp-text">Need to manage private events?</p>
+          <p className="mt-2 text-sm text-lp-muted leading-relaxed">
+            <strong className="text-lp-text">VenueSprocket</strong> handles private event bookings — birthday parties,
+            corporate buyouts, holiday parties. Collect inquiries online, send proposals, get contracts signed,
+            and build BEOs. Built for the same bars and venues that use LeaguePour.
+          </p>
+        </div>
+        <div className="shrink-0">
+          <a
+            href="https://venuesprocket.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex rounded-lg border border-lp-border-strong bg-lp-bg px-5 py-2.5 text-sm font-bold text-lp-text hover:bg-lp-surface whitespace-nowrap"
+          >
+            See VenueSprocket →
+          </a>
+        </div>
+      </div>
+
       {/* CTA */}
       <div className="text-center space-y-4">
         <p className="font-display text-xl font-bold text-lp-text">Ready to fill your next event?</p>

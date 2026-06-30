@@ -52,6 +52,28 @@ export function SiteFooter() {
           <p className="mt-4 max-w-md text-[1.0625rem] leading-relaxed text-lp-text-soft">
             Competitions, signups, and entry fees for bars and venues, built for repeat nights.
           </p>
+          <div className="mt-6 rounded-xl border border-lp-border bg-lp-bg/60 px-4 py-4">
+            <p className="text-xs font-bold uppercase tracking-widest text-lp-muted mb-1">Also from LeaguePour</p>
+            <a
+              href="https://venuesprocket.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-display text-lg font-extrabold tracking-tight text-lp-text hover:text-lp-accent"
+            >
+              VenueSprocket
+            </a>
+            <p className="mt-1 text-sm text-lp-text-soft">
+              Private event management — leads, proposals, contracts, and BEOs for your venue.
+            </p>
+            <a
+              href="https://venuesprocket.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-flex text-sm font-semibold text-lp-accent hover:underline"
+            >
+              Learn more →
+            </a>
+          </div>
         </div>
         {cols.map((c) => (
           <div key={c.title}>
