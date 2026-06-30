@@ -18,15 +18,9 @@ export default function ContactPage() {
         read every message.
       </p>
 
-      <div className="mt-8 space-y-4 rounded-xl border border-lp-border bg-lp-surface/40 p-5 text-sm text-lp-muted">
+      <div className="mt-8 space-y-3 rounded-xl border border-lp-border bg-lp-surface/40 p-5 text-sm text-lp-muted">
         <p>
-          <span className="font-semibold text-lp-text">Email:</span>{" "}
-          <a href="mailto:hello@leaguepour.com" className="text-lp-accent hover:underline">
-            hello@leaguepour.com
-          </a>
-        </p>
-        <p>
-          <span className="font-semibold text-lp-text">Typical response time:</span> 1-2 business days.
+          <span className="font-semibold text-lp-text">Typical response time:</span> 1–2 business days.
         </p>
         <p>
           <span className="font-semibold text-lp-text">Venue setup help:</span> Include your bar name, city, and what

@@ -94,7 +94,9 @@ export function VsFooter() {
         </div>
       </div>
       <div className="border-t border-vs-border py-6 text-center text-sm text-vs-muted">
-        Copyright {new Date().getFullYear()} VenueSprocket. All rights reserved.
+        Copyright {new Date().getFullYear()} VenueSprocket — a{" "}
+        <a href="https://leaguepour.com" className="hover:text-vs-accent transition-colors">LeaguePour</a>{" "}
+        product. All rights reserved.
       </div>
     </footer>
   );

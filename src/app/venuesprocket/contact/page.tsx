@@ -29,7 +29,7 @@ export default function VsContactPage() {
           <div className="vs-card p-8">
             <h2 className="font-display text-xl font-bold text-[var(--vs-text)] mb-6">Book a demo</h2>
             <form
-              action="https://formsubmit.co/chris@iscreamstudio.com"
+              action="https://formsubmit.co/hello@venuesprocket.com"
               method="POST"
               className="space-y-4"
             >
@@ -169,10 +169,8 @@ export default function VsContactPage() {
             </div>
 
             <div>
-              <p className="text-sm font-semibold text-[var(--vs-text)] mb-1">Prefer email?</p>
-              <a href="mailto:chris@iscreamstudio.com" className="text-sm text-[var(--vs-accent)] hover:underline">
-                chris@iscreamstudio.com
-              </a>
+              <p className="text-sm font-semibold text-[var(--vs-text)] mb-1">General questions?</p>
+              <p className="text-sm text-[var(--vs-muted)]">Use the form and we'll get back to you within 1–2 business days.</p>
             </div>
           </div>
         </div>
