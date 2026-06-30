@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { signContract } from "@/lib/actions/vs";
 
 export default function SignContractForm({ token, venueName }: { token: string; venueName: string }) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState(false);
   const [sigName, setSigName] = useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -19,21 +20,8 @@ export default function SignContractForm({ token, venueName }: { token: string; 
     if (result && "error" in result) {
       setError(result.error ?? "Something went wrong");
     } else {
-      setDone(true);
+      router.push(`/deposit/pay?token=${token}`);
     }
-  }
-
-  if (done) {
-    return (
-      <div className="rounded-2xl border border-[var(--vs-accent)]/30 bg-[color-mix(in_oklab,var(--vs-accent)_6%,transparent)] p-8 text-center">
-        <div className="text-4xl mb-4">✅</div>
-        <h2 className="font-display text-xl font-bold text-[var(--vs-accent)] mb-2">You're all set!</h2>
-        <p className="text-[var(--vs-text-soft)]">
-          Your contract with <strong>{venueName}</strong> has been signed. You'll receive a confirmation
-          email and the team will reach out about the next steps.
-        </p>
-      </div>
-    );
   }
 
   return (

@@ -96,6 +96,9 @@ export async function POST(request: Request) {
             }
             await handleSubscriptionUpsert(sub);
           }
+        } else if (session.metadata?.type === "vs_deposit") {
+          // VenueSprocket private event deposit
+          await fulfillVsDeposit(session);
         } else if (session.id) {
           const res = await fulfillStripeCheckoutSessionId(session.id, event.id);
           if (res.ok && session.metadata?.registrationId) {
@@ -186,4 +189,26 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({ received: true });
+}
+
+async function fulfillVsDeposit(session: Stripe.Checkout.Session) {
+  const vsPaymentId = session.metadata?.vsPaymentId;
+  if (!vsPaymentId) return;
+
+  const payment = await prisma.vsPayment.findUnique({ where: { id: vsPaymentId } });
+  if (!payment || payment.status === "PAID") return;
+
+  const piId = typeof session.payment_intent === "string" ? session.payment_intent : null;
+  await prisma.vsPayment.update({
+    where: { id: vsPaymentId },
+    data: {
+      status: "PAID",
+      paidAt: new Date(),
+      ...(piId ? { stripePaymentIntentId: piId } : {}),
+    },
+  });
+  await prisma.privateEvent.updateMany({
+    where: { id: payment.privateEventId },
+    data: { status: "DEPOSIT_PAID" },
+  });
 }
