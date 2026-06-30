@@ -149,22 +149,22 @@ h1, h2, h3, h4 {
 */
 
 :root {
-  --vs-bg: #f8faf8;
+  --vs-bg: #f7f7f6;
   --vs-surface: #ffffff;
-  --vs-surface-2: #eef5ef;
-  --vs-border: #c3d9c7;
-  --vs-border-strong: #8ab890;
-  --vs-muted: #3d5c44;
-  --vs-text: #111f14;
-  --vs-text-soft: #2d4a34;
-  --vs-accent: #1a5f3f;
-  --vs-accent-hover: #155930;
-  --vs-accent-2: #f59e0b;
-  --vs-success: #1a5f3f;
-  --vs-warning: #b45309;
+  --vs-surface-2: #f0efed;
+  --vs-border: #dddbd7;
+  --vs-border-strong: #b8b4ae;
+  --vs-muted: #6b6560;
+  --vs-text: #0e0d0c;
+  --vs-text-soft: #3c3830;
+  --vs-accent: #b87333;
+  --vs-accent-hover: #9a5f28;
+  --vs-accent-2: #2c3e50;
+  --vs-success: #2d6a4f;
+  --vs-warning: #c77b2a;
   --vs-radius: 12px;
   --vs-radius-sm: 8px;
-  --vs-focus: rgba(26, 95, 63, 0.32);
+  --vs-focus: rgba(184, 115, 51, 0.28);
 }
 
 @theme inline {
@@ -187,7 +187,7 @@ h1, h2, h3, h4 {
   border-radius: var(--vs-radius);
   border: 1px solid var(--vs-border-strong);
   background: var(--vs-surface);
-  box-shadow: 0 12px 30px -20px rgba(10, 40, 18, 0.22);
+  box-shadow: 0 12px 30px -20px rgba(14, 13, 12, 0.18);
 }
 
 .vs-card-muted {
@@ -246,10 +246,10 @@ h1, h2, h3, h4 {
     color-mix(in oklab, var(--vs-surface-2) 90%, transparent) 0%,
     var(--vs-surface) 100%
   );
-  box-shadow: 0 16px 38px -24px rgba(10, 40, 18, 0.24);
+  box-shadow: 0 16px 38px -24px rgba(14, 13, 12, 0.20);
 }
 
 .vs-feature-ring {
   border-color: color-mix(in oklab, var(--vs-accent) 45%, var(--vs-border));
-  box-shadow: 0 0 0 2px color-mix(in oklab, var(--vs-accent) 24%, transparent), 0 18px 44px -26px rgba(26, 95, 63, 0.4);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--vs-accent) 24%, transparent), 0 18px 44px -26px rgba(184, 115, 51, 0.35);
 }
