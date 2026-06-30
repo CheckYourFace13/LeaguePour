@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { marketingRoutes } from "@/lib/routes";
+import { LpMarkSvg } from "@/components/lp-logo";
 
 const cols = [
   {
@@ -46,14 +47,23 @@ export function SiteFooter() {
     <footer className="mt-auto border-t border-lp-border-strong bg-lp-surface">
       <div className="mx-auto grid max-w-6xl gap-12 px-4 py-14 md:grid-cols-5 md:px-6 md:py-16">
         <div className="md:col-span-2">
-          <p className="font-display text-[2rem] font-extrabold tracking-tight">
-            League<span className="text-lp-accent">Pour</span>
+          <div className="flex items-center gap-3">
+            <LpMarkSvg size={38} />
+            <p className="font-display text-[2rem] font-extrabold tracking-tight">
+              League<span className="text-lp-accent">Pour</span>
+            </p>
+          </div>
+          <p className="mt-1 text-xs font-semibold uppercase tracking-widest text-lp-muted">
+            by{" "}
+            <a href="https://venuesprocket.com" className="hover:text-lp-accent transition-colors">
+              VenueSprocket
+            </a>
           </p>
           <p className="mt-4 max-w-md text-[1.0625rem] leading-relaxed text-lp-text-soft">
             Competitions, signups, and entry fees for bars and venues, built for repeat nights.
           </p>
           <div className="mt-6 rounded-xl border border-lp-border bg-lp-bg/60 px-4 py-4">
-            <p className="text-xs font-bold uppercase tracking-widest text-lp-muted mb-1">Also from LeaguePour</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-lp-muted mb-1">Our full platform</p>
             <a
               href="https://venuesprocket.com"
               target="_blank"
@@ -94,7 +104,9 @@ export function SiteFooter() {
         ))}
       </div>
       <div className="border-t border-lp-border/70 py-7 text-center text-[0.9375rem] font-medium text-lp-text-soft">
-        Copyright {new Date().getFullYear()} LeaguePour. All rights reserved.
+        Copyright {new Date().getFullYear()}{" "}
+        <a href="https://venuesprocket.com" className="hover:text-lp-accent transition-colors">VenueSprocket</a>
+        {" "}— LeaguePour is a VenueSprocket product. All rights reserved.
       </div>
     </footer>
   );

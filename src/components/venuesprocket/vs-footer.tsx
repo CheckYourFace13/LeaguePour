@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { VsMarkSvg } from "@/components/venuesprocket/vs-logo";
 
 const cols = [
   {
@@ -7,7 +8,7 @@ const cols = [
       { href: "/features", label: "Features" },
       { href: "/pricing", label: "Pricing" },
       { href: "/start", label: "Start Free" },
-      { href: "/leaguepour", label: "LeaguePour Module" },
+      { href: "/leaguepour", label: "LeaguePour" },
     ],
   },
   {
@@ -56,20 +57,22 @@ export function VsFooter() {
     <footer className="mt-auto border-t border-vs-border bg-vs-surface-2">
       <div className="mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-16">
         {/* Brand */}
-        <div className="mb-10">
-          <p className="font-display text-2xl font-extrabold tracking-tight text-vs-text">
-            Venue<span className="text-vs-accent">Sprocket</span>
-          </p>
-          <p className="mt-2 max-w-sm text-sm text-vs-text-soft leading-relaxed">
-            Simple private event management for restaurants, breweries, bars, taprooms, and event spaces.
-          </p>
-          <p className="mt-3 text-sm text-vs-muted">
-            Includes{" "}
-            <Link href="/leaguepour" className="font-semibold text-vs-accent hover:underline">
-              LeaguePour by VenueSprocket
-            </Link>{" "}
-            for leagues, tournaments, and game nights.
-          </p>
+        <div className="mb-10 flex items-start gap-4">
+          <VsMarkSvg size={40} />
+          <div>
+            <p className="font-display text-2xl font-extrabold tracking-tight text-vs-text leading-none">
+              Venue<span className="text-vs-accent">Sprocket</span>
+            </p>
+            <p className="mt-2 max-w-sm text-sm text-vs-text-soft leading-relaxed">
+              Simple private event management for restaurants, breweries, bars, taprooms, and event spaces.
+            </p>
+            <div className="mt-3 flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-widest text-vs-muted">Also includes</span>
+              <Link href="/leaguepour" className="text-sm font-semibold text-vs-accent hover:underline">
+                LeaguePour →
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Columns */}
@@ -94,9 +97,7 @@ export function VsFooter() {
         </div>
       </div>
       <div className="border-t border-vs-border py-6 text-center text-sm text-vs-muted">
-        Copyright {new Date().getFullYear()} VenueSprocket — a{" "}
-        <a href="https://leaguepour.com" className="hover:text-vs-accent transition-colors">LeaguePour</a>{" "}
-        product. All rights reserved.
+        Copyright {new Date().getFullYear()} VenueSprocket. All rights reserved.
       </div>
     </footer>
   );

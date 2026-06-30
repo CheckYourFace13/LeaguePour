@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { VsLogo } from "@/components/venuesprocket/vs-logo";
 
 const navLinks = [
   { href: "/features", label: "Features" },
@@ -12,9 +13,7 @@ export function VsHeader() {
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 md:px-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
-          <span className="font-display text-xl font-extrabold tracking-tight text-vs-text">
-            Venue<span className="text-vs-accent">Sprocket</span>
-          </span>
+          <VsLogo size={32} showWordmark={true} />
         </Link>
 
         {/* Nav */}
