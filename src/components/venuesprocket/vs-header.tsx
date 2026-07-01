@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { VsLogo } from "@/components/venuesprocket/vs-logo";
+import Image from "next/image";
 
 const navLinks = [
   { href: "/features", label: "Features" },
@@ -12,8 +12,8 @@ export function VsHeader() {
     <header className="sticky top-0 z-50 border-b border-vs-border bg-vs-surface/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 md:px-6">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 shrink-0">
-          <VsLogo size={32} showWordmark={true} />
+        <Link href="/" className="flex items-center shrink-0">
+          <Image src="/logos/venuesprocket-full-logo.png" alt="VenueSprocket" width={225} height={36} priority />
         </Link>
 
         {/* Nav */}
