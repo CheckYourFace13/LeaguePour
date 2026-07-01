@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-  <!-- LP beer mug favicon -->
-  <path d="M 7 11 L 9 28 L 22 28 L 24 11 Z" fill="#1a73ff"/>
-  <path d="M 23 14 Q 30 14 30 20 Q 30 26 23 26" stroke="#1a73ff" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-  <ellipse cx="9.5" cy="11" rx="3.5" ry="3" fill="white"/>
-  <ellipse cx="15.5" cy="9" rx="4" ry="3" fill="white"/>
-  <ellipse cx="21.5" cy="11" rx="3.5" ry="3" fill="white"/>
-  <path d="M 14.5 16.5 L 15.4 19.3 L 18.4 19.3 L 16 21 L 16.9 23.8 L 14.5 22.1 L 12.1 23.8 L 13 21 L 10.6 19.3 L 13.6 19.3 Z" fill="white" opacity="0.9"/>
-</svg>
