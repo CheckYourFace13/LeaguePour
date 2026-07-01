@@ -16,12 +16,26 @@ const steps = [
 ];
 
 const plans = [
-  { name: "Free", price: "$0", highlight: false, features: ["Inquiry form", "Up to 10 leads/mo", "Lead dashboard", "Email notifications"] },
-  { name: "Pro", price: "$79/mo", highlight: true, features: ["Everything in Free", "Unlimited inquiries", "Proposals", "Contracts + e-signature", "Stripe deposits", "BEO builder", "Customer CRM"] },
-  { name: "Growth", price: "$149/mo", highlight: false, features: ["Everything in Pro", "SEO marketing pages", "LeaguePour module", "Advanced automations", "Multi-room support"] },
+  { key: "free", name: "Free", price: "$0", highlight: false, features: ["Inquiry form", "Up to 10 leads/mo", "Lead dashboard", "Email notifications"] },
+  { key: "pro", name: "Pro", price: "$79/mo", highlight: true, features: ["Everything in Free", "Unlimited inquiries", "Proposals", "Contracts + e-signature", "Stripe deposits", "BEO builder", "Customer CRM"] },
+  { key: "growth", name: "Growth", price: "$149/mo", highlight: false, features: ["Everything in Pro", "SEO marketing pages", "LeaguePour module", "Advanced automations", "Multi-room support"] },
 ];
 
-export default function VsStartPage() {
+export default async function VsStartPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ plan?: string }>;
+}) {
+  const { plan } = await searchParams;
+
+  // Build the signup URL — always goes to the shared venue signup, tagged for VS context
+  const signupHref = plan && plan !== "free"
+    ? `/signup/venue?from=vs&plan=${plan}`
+    : `/signup/venue?from=vs`;
+
+  const selectedPlan = plans.find((p) => p.key === plan);
+  const selectedLabel = selectedPlan?.name ?? null;
+
   return (
     <div className="vs-section px-4 md:px-6">
       <div className="mx-auto max-w-3xl">
@@ -30,33 +44,35 @@ export default function VsStartPage() {
         <div className="text-center mb-14">
           <p className="vs-kicker mb-3">Get started</p>
           <h1 className="vs-page-title text-4xl md:text-5xl mb-4">
-            Start free. Be live today.
+            {selectedLabel ? `Start ${selectedLabel} — ${selectedPlan!.price}` : "Start free. Be live today."}
           </h1>
           <p className="vs-page-sub mx-auto text-center max-w-2xl">
-            Your venue's private event inquiry page can be live in under ten minutes.
-            No credit card required to start.
+            {selectedLabel
+              ? "Create your account and go straight to checkout. Cancel anytime."
+              : "Your venue's private event inquiry page can be live in under ten minutes. No credit card required to start."}
           </p>
         </div>
 
-        {/* Sign up CTA — when VS auth is built this becomes a form */}
+        {/* Sign up CTA */}
         <div className="mb-14 rounded-2xl border-2 border-vs-accent/40 bg-vs-surface p-10 text-center">
           <p className="text-vs-muted text-sm mb-3 font-semibold uppercase tracking-widest">Step one</p>
           <h2 className="font-display text-2xl font-bold text-vs-text mb-4">
-            Create your free account
+            {selectedLabel ? `Create your ${selectedLabel} account` : "Create your free account"}
           </h2>
           <p className="text-vs-text-soft mb-6">
-            Sign up with your email. No credit card. No onboarding call required.
+            {selectedLabel
+              ? "Create your account — you'll be taken to checkout immediately after."
+              : "Sign up with your email. No credit card. No onboarding call required."}
           </p>
-          {/* Placeholder — will be wired to /app/signup when VS auth is built */}
           <Link
-            href="/app/signup"
+            href={signupHref}
             className="inline-flex rounded-xl bg-vs-accent px-10 py-4 text-xl font-bold text-white hover:bg-vs-accent-hover transition-colors"
           >
-            Create Free Account
+            {selectedLabel ? `Create Account & Checkout →` : "Create Free Account →"}
           </Link>
           <p className="mt-4 text-xs text-vs-muted">
             Already have an account?{" "}
-            <Link href="/app/login" className="font-semibold text-vs-accent hover:underline">
+            <Link href="/login" className="font-semibold text-vs-accent hover:underline">
               Log in
             </Link>
           </p>
@@ -100,7 +116,7 @@ export default function VsStartPage() {
               >
                 <p className="text-xs font-bold uppercase tracking-widest text-vs-muted mb-1">{p.name}</p>
                 <p className="font-display text-2xl font-extrabold text-vs-text mb-4">{p.price}</p>
-                <ul className="space-y-2">
+                <ul className="space-y-2 mb-4">
                   {p.features.map((f) => (
                     <li key={f} className="flex items-start gap-2 text-xs text-vs-text-soft">
                       <span className="text-vs-accent font-bold shrink-0">✓</span>
@@ -108,6 +124,17 @@ export default function VsStartPage() {
                     </li>
                   ))}
                 </ul>
+                <Link
+                  href={p.key === "free" ? `/signup/venue?from=vs` : `/start?plan=${p.key}`}
+                  className={[
+                    "block w-full rounded-lg py-2.5 text-center text-sm font-bold transition-colors",
+                    p.highlight
+                      ? "bg-vs-accent text-white hover:bg-vs-accent-hover"
+                      : "border border-vs-border-strong text-vs-text hover:border-vs-accent hover:text-vs-accent",
+                  ].join(" ")}
+                >
+                  Start {p.name}
+                </Link>
               </div>
             ))}
           </div>

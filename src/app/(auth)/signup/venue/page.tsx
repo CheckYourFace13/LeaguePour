@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,9 @@ import { Card } from "@/components/ui/card";
 
 export default function SignupVenuePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const plan = searchParams.get("plan");
+  const fromVs = searchParams.get("from") === "vs";
   const [msg, setMsg] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [matches, setMatches] = useState<
@@ -57,7 +60,38 @@ export default function SignupVenuePage() {
       setMsg(data.error ?? "Could not create account");
       return;
     }
-    await signIn("credentials", { email: body.email, password: body.password, redirect: false });
+    const signInResult = await signIn("credentials", {
+      email: body.email,
+      password: body.password,
+      redirect: false,
+    });
+    if (!signInResult?.ok) {
+      setMsg("Account created — please log in to continue.");
+      router.push("/login");
+      return;
+    }
+
+    // If a plan was selected, go straight to Stripe checkout
+    if (plan) {
+      try {
+        const apiPath = fromVs
+          ? "/api/venuesprocket/subscribe"
+          : "/api/venue/stripe/subscribe";
+        const subRes = await fetch(apiPath, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ plan: plan.toUpperCase(), interval: "monthly" }),
+        });
+        const subData = await subRes.json().catch(() => ({}));
+        if (subData.url) {
+          window.location.href = subData.url;
+          return;
+        }
+      } catch {
+        // Fall through to dashboard if billing fails
+      }
+    }
+
     router.push("/venue/dashboard");
     router.refresh();
   }
