@@ -1,5 +1,6 @@
 import { getStripe } from "@/lib/stripe/server";
 import { prisma } from "@/lib/db";
+import { VsEventStatus } from "@/generated/prisma/enums";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +51,7 @@ export default async function DepositSuccessPage({
         });
         await prisma.privateEvent.updateMany({
           where: { id: payment.privateEventId },
-          data: { status: "DEPOSIT_PAID" },
+          data: { status: VsEventStatus.CONFIRMED },
         });
       }
     }

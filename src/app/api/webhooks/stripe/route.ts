@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@/lib/db";
-import { BillingPlan } from "@/generated/prisma/enums";
+import { BillingPlan, VsEventStatus } from "@/generated/prisma/enums";
 import { getStripeWebhookSecret } from "@/lib/stripe/env";
 import {
   applyStripeChargeRefunded,
@@ -209,6 +209,6 @@ async function fulfillVsDeposit(session: Stripe.Checkout.Session) {
   });
   await prisma.privateEvent.updateMany({
     where: { id: payment.privateEventId },
-    data: { status: "DEPOSIT_PAID" },
+    data: { status: VsEventStatus.CONFIRMED },
   });
 }

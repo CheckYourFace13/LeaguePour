@@ -21,6 +21,9 @@ const vsDomainRewrites = [
   { source: "/bar-event-management-software", destination: "/venuesprocket/bar-event-management-software" },
   { source: "/taproom-event-management-software", destination: "/venuesprocket/taproom-event-management-software" },
   { source: "/banquet-hall-software", destination: "/venuesprocket/banquet-hall-software" },
+  { source: "/contact", destination: "/venuesprocket/contact" },
+  { source: "/legal/terms", destination: "/venuesprocket/legal/terms" },
+  { source: "/legal/privacy", destination: "/venuesprocket/legal/privacy" },
 ].map((r) => ({ ...r, has: [{ type: "host" as const, value: VS_HOST }] }));
 
 const nextConfig: NextConfig = {
