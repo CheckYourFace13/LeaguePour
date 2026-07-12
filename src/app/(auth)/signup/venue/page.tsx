@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
@@ -9,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 
-export default function SignupVenuePage() {
+function SignupVenueForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const plan = searchParams.get("plan");
@@ -246,5 +247,13 @@ export default function SignupVenuePage() {
         </Link>
       </p>
     </Card>
+  );
+}
+
+export default function SignupVenuePage() {
+  return (
+    <Suspense fallback={<div className="w-full max-w-md p-6" />}>
+      <SignupVenueForm />
+    </Suspense>
   );
 }
