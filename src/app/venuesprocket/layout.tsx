@@ -26,6 +26,11 @@ export default function VenueSprocketLayout({
   return (
     <div className="min-h-screen flex flex-col bg-vs-bg text-vs-text font-sans">
       <Script
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9572509189594279"
+        strategy="afterInteractive"
+        crossOrigin="anonymous"
+      />
+      <Script
         src="https://www.googletagmanager.com/gtag/js?id=G-FHCFV1532R"
         strategy="afterInteractive"
       />
