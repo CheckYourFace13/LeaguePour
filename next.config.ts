@@ -24,6 +24,8 @@ const vsDomainRewrites = [
   { source: "/contact", destination: "/venuesprocket/contact" },
   { source: "/legal/terms", destination: "/venuesprocket/legal/terms" },
   { source: "/legal/privacy", destination: "/venuesprocket/legal/privacy" },
+  { source: "/sitemap.xml", destination: "/venuesprocket/sitemap.xml" },
+  { source: "/robots.txt", destination: "/venuesprocket/robots.txt" },
 ].map((r) => ({ ...r, has: [{ type: "host" as const, value: VS_HOST }] }));
 
 const nextConfig: NextConfig = {
