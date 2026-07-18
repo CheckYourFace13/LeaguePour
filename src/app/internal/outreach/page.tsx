@@ -8,6 +8,8 @@ import {
   updateContactStatus,
   getContacts,
   getSweptCityList,
+  harvestEmailsBatch,
+  sendOutreachBatch,
 } from "./sweep-actions";
 
 type Contact = {
@@ -19,6 +21,7 @@ type Contact = {
   country: string;
   phone: string | null;
   website: string | null;
+  email: string | null;
   rating: number | null;
   status: string;
   emailSentAt: Date | null;
@@ -34,6 +37,9 @@ type Stats = {
   responded: number;
   signedUp: number;
   notInterested: number;
+  withEmail: number;
+  readyToSend: number;
+  uncheckedWebsites: number;
   nextCity: { city: string; state: string; country: string; query: string } | null;
   allSwept: boolean;
 };
@@ -90,6 +96,9 @@ export default function OutreachPage() {
   const [sweepResult, setSweepResult] = useState<string | null>(null);
   const [autoSweep, setAutoSweep] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [harvesting, setHarvesting] = useState(false);
+  const [sendingBatch, setSendingBatch] = useState(false);
+  const [emailResult, setEmailResult] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const PAGE_SIZE = 50;
@@ -155,6 +164,39 @@ export default function OutreachPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoSweep, sweeping, stats?.sweptCities]);
 
+  async function runHarvest() {
+    setHarvesting(true);
+    setEmailResult(null);
+    try {
+      const r = await harvestEmailsBatch(30);
+      setEmailResult(
+        r.error
+          ? `Harvest error: ${r.error}`
+          : `Checked ${r.checked} websites, found ${r.found} emails. ${r.remaining.toLocaleString()} sites left to check.`,
+      );
+      await Promise.all([loadStats(), loadContacts()]);
+    } finally {
+      setHarvesting(false);
+    }
+  }
+
+  async function runSendBatch() {
+    if (!window.confirm("Send the outreach email to the next batch of up to 25 contacts?")) return;
+    setSendingBatch(true);
+    setEmailResult(null);
+    try {
+      const r = await sendOutreachBatch(25);
+      setEmailResult(
+        r.error
+          ? `Send error: ${r.error}`
+          : `Sent ${r.sent} emails. ${r.remaining.toLocaleString()} contacts with emails still queued.`,
+      );
+      await Promise.all([loadStats(), loadContacts()]);
+    } finally {
+      setSendingBatch(false);
+    }
+  }
+
   function copyEmail(c: Contact) {
     navigator.clipboard.writeText(EMAIL_TEMPLATE(c.name));
     setCopiedId(c.id);
@@ -219,6 +261,44 @@ export default function OutreachPage() {
           <p className="mt-3 text-sm text-lp-muted">{sweepResult}</p>
         )}
       </div>
+
+      {/* Email pipeline */}
+      {stats && (
+        <div className="mt-6 rounded-xl border border-lp-border bg-lp-surface/40 p-5">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 className="font-semibold text-lp-text">Email pipeline</h2>
+              <p className="mt-1 text-sm text-lp-muted">
+                {stats.withEmail.toLocaleString()} contacts have an email
+                {" · "}{stats.readyToSend.toLocaleString()} ready to send
+                {" · "}{stats.uncheckedWebsites.toLocaleString()} websites not yet checked
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                size="md"
+                variant="secondary"
+                onClick={runHarvest}
+                disabled={harvesting || (stats.uncheckedWebsites === 0)}
+              >
+                {harvesting ? "Scanning websites…" : "Find emails (30 sites)"}
+              </Button>
+              <Button
+                size="md"
+                onClick={runSendBatch}
+                disabled={sendingBatch || stats.readyToSend === 0}
+              >
+                {sendingBatch ? "Sending…" : `Send batch (${Math.min(25, stats.readyToSend)})`}
+              </Button>
+            </div>
+          </div>
+          {emailResult && <p className="mt-3 text-sm text-lp-muted">{emailResult}</p>}
+          <p className="mt-2 text-xs text-lp-muted">
+            Emails include an unsubscribe link and go out from your Resend domain. Keep batches
+            small (a few per day at first) to build sender reputation.
+          </p>
+        </div>
+      )}
 
       {/* Stat cards */}
       {stats && (
@@ -303,6 +383,9 @@ export default function OutreachPage() {
                 <p className="mt-0.5 text-xs text-lp-muted">{bar.address}</p>
                 <div className="mt-1.5 flex flex-wrap gap-3 text-xs">
                   {bar.phone && <span className="text-lp-muted">{bar.phone}</span>}
+                  {bar.email && (
+                    <span className="text-lp-success font-medium">{bar.email}</span>
+                  )}
                   {bar.website && (
                     <a
                       href={bar.website}

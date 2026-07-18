@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { VsContactForm } from "@/components/venuesprocket/vs-contact-form";
 
 export const metadata: Metadata = {
   title: "Contact & Demo | VenueSprocket",
@@ -27,113 +28,10 @@ export default function VsContactPage() {
 
           {/* Contact form */}
           <div className="vs-card p-8">
-            <h2 className="font-display text-xl font-bold text-[var(--vs-text)] mb-6">Book a demo</h2>
-            <form
-              action="https://formsubmit.co/hello@venuesprocket.com"
-              method="POST"
-              className="space-y-4"
-            >
-              <input type="hidden" name="_subject" value="VenueSprocket demo request" />
-              <input type="hidden" name="_next" value="https://venuesprocket.com/contact?sent=1" />
-              <input type="hidden" name="_captcha" value="false" />
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <label className="block text-sm font-semibold text-[var(--vs-text)] mb-1">First name</label>
-                  <input
-                    type="text"
-                    name="first_name"
-                    required
-                    className="w-full rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-3 py-2.5 text-sm focus:border-[var(--vs-accent)] focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-[var(--vs-text)] mb-1">Last name</label>
-                  <input
-                    type="text"
-                    name="last_name"
-                    required
-                    className="w-full rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-3 py-2.5 text-sm focus:border-[var(--vs-accent)] focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-[var(--vs-text)] mb-1">Work email</label>
-                <input
-                  type="email"
-                  name="email"
-                  required
-                  className="w-full rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-3 py-2.5 text-sm focus:border-[var(--vs-accent)] focus:outline-none"
-                  placeholder="you@yourvenue.com"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-[var(--vs-text)] mb-1">Venue / business name</label>
-                <input
-                  type="text"
-                  name="venue_name"
-                  required
-                  className="w-full rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-3 py-2.5 text-sm focus:border-[var(--vs-accent)] focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-[var(--vs-text)] mb-1">Venue type</label>
-                <select
-                  name="venue_type"
-                  className="w-full rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-3 py-2.5 text-sm focus:border-[var(--vs-accent)] focus:outline-none"
-                >
-                  <option value="">Select...</option>
-                  <option>Bar / sports bar</option>
-                  <option>Brewery / taproom</option>
-                  <option>Restaurant</option>
-                  <option>Banquet hall / event space</option>
-                  <option>Hotel / resort</option>
-                  <option>Other</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-[var(--vs-text)] mb-1">
-                  How many private events do you host per month?
-                </label>
-                <select
-                  name="events_per_month"
-                  className="w-full rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-3 py-2.5 text-sm focus:border-[var(--vs-accent)] focus:outline-none"
-                >
-                  <option value="">Select...</option>
-                  <option>0–2 (just getting started)</option>
-                  <option>3–10</option>
-                  <option>11–25</option>
-                  <option>26+</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-[var(--vs-text)] mb-1">
-                  Anything else you'd like us to know?
-                </label>
-                <textarea
-                  name="message"
-                  rows={3}
-                  className="w-full rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-3 py-2.5 text-sm focus:border-[var(--vs-accent)] focus:outline-none"
-                  placeholder="Current tools, pain points, questions..."
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full rounded-xl bg-[var(--vs-accent)] py-3.5 text-sm font-bold text-white hover:bg-[var(--vs-accent-hover)] transition-colors"
-              >
-                Request demo →
-              </button>
-
-              <p className="text-center text-xs text-[var(--vs-muted)]">
-                No sales pressure. Just a helpful walkthrough.
-              </p>
-            </form>
+            <h2 className="font-display text-xl font-bold text-[var(--vs-text)] mb-6">
+              Book a demo or ask for a change
+            </h2>
+            <VsContactForm />
           </div>
 
           {/* Info sidebar */}

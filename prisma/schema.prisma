@@ -116,6 +116,9 @@ model OutreachContact {
   country     String         @default("US")
   phone       String?
   website     String?
+  /** Harvested from the venue's website — Google Places does not provide emails. */
+  email          String?
+  emailCheckedAt DateTime?
   rating      Float?
   status      OutreachStatus @default(NOT_CONTACTED)
   emailSentAt DateTime?

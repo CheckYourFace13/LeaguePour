@@ -2,20 +2,33 @@
 
 import { requireOwnerSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/db";
+import { sendEmailBatch } from "@/lib/email";
 import { googlePlacesBarSweep } from "@/lib/google-places";
+import {
+  ensureOutreachEmailColumns,
+  findEmailOnWebsite,
+  outreachEmailHtml,
+  outreachEmailSubject,
+} from "@/lib/outreach-email";
 import { OUTREACH_CITIES, type OutreachCity } from "@/lib/outreach-cities";
 
 // --- Stats / progress ---
 
 export async function getOutreachStats() {
   await requireOwnerSession();
+  await ensureOutreachEmailColumns();
 
-  const [statusCounts, totalContacts] = await Promise.all([
+  const [statusCounts, totalContacts, withEmail, readyToSend, unchecked] = await Promise.all([
     prisma.outreachContact.groupBy({
       by: ["status"],
       _count: { id: true },
     }),
     prisma.outreachContact.count(),
+    prisma.outreachContact.count({ where: { email: { not: null } } }),
+    prisma.outreachContact.count({ where: { email: { not: null }, status: "NOT_CONTACTED" } }),
+    prisma.outreachContact.count({
+      where: { email: null, emailCheckedAt: null, website: { not: null }, status: "NOT_CONTACTED" },
+    }),
   ]);
 
   // Which cities have been swept (any contact with that city+state+country)
@@ -59,8 +72,118 @@ export async function getOutreachStats() {
     responded: byStatus["RESPONDED"] ?? 0,
     signedUp: byStatus["SIGNED_UP"] ?? 0,
     notInterested: byStatus["NOT_INTERESTED"] ?? 0,
+    withEmail,
+    readyToSend,
+    uncheckedWebsites: unchecked,
     nextCity,
     allSwept: sweptCities >= totalCities,
+  };
+}
+
+// --- Email harvesting & sending ---
+
+/**
+ * Scan venue websites for contact emails, a batch at a time.
+ * Marks each contact checked so repeated runs walk the whole list.
+ */
+export async function harvestEmailsBatch(limit = 30): Promise<{
+  checked: number;
+  found: number;
+  remaining: number;
+  error?: string;
+}> {
+  try {
+    await requireOwnerSession();
+  } catch {
+    return { checked: 0, found: 0, remaining: 0, error: "Not authorised" };
+  }
+  await ensureOutreachEmailColumns();
+
+  const batch = await prisma.outreachContact.findMany({
+    where: { email: null, emailCheckedAt: null, website: { not: null }, status: "NOT_CONTACTED" },
+    orderBy: { rating: "desc" },
+    take: Math.min(Math.max(limit, 1), 60),
+    select: { id: true, website: true },
+  });
+
+  let found = 0;
+  const CONCURRENCY = 6;
+  for (let i = 0; i < batch.length; i += CONCURRENCY) {
+    const chunk = batch.slice(i, i + CONCURRENCY);
+    await Promise.all(
+      chunk.map(async (c) => {
+        const email = c.website ? await findEmailOnWebsite(c.website) : null;
+        if (email) found++;
+        await prisma.outreachContact.update({
+          where: { id: c.id },
+          data: { email, emailCheckedAt: new Date() },
+        });
+      }),
+    );
+  }
+
+  const remaining = await prisma.outreachContact.count({
+    where: { email: null, emailCheckedAt: null, website: { not: null }, status: "NOT_CONTACTED" },
+  });
+  return { checked: batch.length, found, remaining };
+}
+
+/**
+ * Send the outreach email to a batch of contacts that have a harvested email
+ * and have not been contacted. Keeps batches small to protect sender
+ * reputation (warm up gradually). Marks contacts EMAIL_SENT on success.
+ */
+export async function sendOutreachBatch(limit = 25): Promise<{
+  sent: number;
+  failed: number;
+  remaining: number;
+  error?: string;
+}> {
+  try {
+    await requireOwnerSession();
+  } catch {
+    return { sent: 0, failed: 0, remaining: 0, error: "Not authorised" };
+  }
+  await ensureOutreachEmailColumns();
+
+  if (!process.env.RESEND_API_KEY?.trim()) {
+    return { sent: 0, failed: 0, remaining: 0, error: "RESEND_API_KEY not configured" };
+  }
+
+  const batch = await prisma.outreachContact.findMany({
+    where: { email: { not: null }, status: "NOT_CONTACTED" },
+    orderBy: { rating: "desc" },
+    take: Math.min(Math.max(limit, 1), 50),
+    select: { id: true, name: true, email: true },
+  });
+  if (batch.length === 0) {
+    return { sent: 0, failed: 0, remaining: 0 };
+  }
+
+  const result = await sendEmailBatch(
+    batch.map((c) => ({
+      to: c.email as string,
+      subject: outreachEmailSubject(c.name),
+      html: outreachEmailHtml(c.name, c.id),
+      replyTo: "hello@leaguepour.com",
+    })),
+  );
+
+  if (result.ok && result.sent > 0) {
+    await prisma.outreachContact.updateMany({
+      where: { id: { in: batch.map((c) => c.id) } },
+      data: { status: "EMAIL_SENT", emailSentAt: new Date() },
+    });
+  }
+
+  const remaining = await prisma.outreachContact.count({
+    where: { email: { not: null }, status: "NOT_CONTACTED" },
+  });
+  return {
+    sent: result.ok ? batch.length : 0,
+    failed: result.ok ? 0 : batch.length,
+    remaining,
+    ...(result.ok ? {} : { error: "Resend batch send failed - check server logs" }),
   };
 }
 
@@ -240,6 +363,7 @@ export async function getContacts(opts: {
   pageSize?: number;
 }) {
   await requireOwnerSession();
+  await ensureOutreachEmailColumns();
 
   const page = opts.page ?? 0;
   const pageSize = opts.pageSize ?? 50;
