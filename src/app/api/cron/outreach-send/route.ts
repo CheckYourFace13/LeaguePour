@@ -20,7 +20,8 @@ import {
  *    when one is configured.
  */
 
-const HARVEST_PER_RUN = 60;
+const HARVEST_BATCHES_PER_RUN = 2; // 2 × 60 sites keeps the email backlog growing ahead of sends
+const HARVEST_PER_BATCH = 60;
 const SEND_PER_RUN = 25;
 const THROTTLE_HOURS = 20;
 
@@ -61,7 +62,16 @@ export async function GET(request: Request) {
       return NextResponse.json({ ok: true, skipped: "Batch already sent in the past 20 hours." });
     }
 
-    const harvest = await harvestEmailsCore(HARVEST_PER_RUN);
+    let harvest = { checked: 0, found: 0, remaining: 0 };
+    for (let i = 0; i < HARVEST_BATCHES_PER_RUN; i++) {
+      const h = await harvestEmailsCore(HARVEST_PER_BATCH);
+      harvest = {
+        checked: harvest.checked + h.checked,
+        found: harvest.found + h.found,
+        remaining: h.remaining,
+      };
+      if (h.remaining === 0) break;
+    }
     const send = await sendOutreachCore(SEND_PER_RUN);
 
     console.log("[outreach cron]", { harvest, send });

@@ -97,6 +97,7 @@ export default function OutreachPage() {
   const [autoSweep, setAutoSweep] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [harvesting, setHarvesting] = useState(false);
+  const [autoHarvest, setAutoHarvest] = useState(false);
   const [sendingBatch, setSendingBatch] = useState(false);
   const [confirmSend, setConfirmSend] = useState(false);
   const [emailResult, setEmailResult] = useState<string | null>(null);
@@ -175,11 +176,22 @@ export default function OutreachPage() {
           ? `Harvest error: ${r.error}`
           : `Checked ${r.checked} websites, found ${r.found} emails. ${r.remaining.toLocaleString()} sites left to check.`,
       );
+      if (r.error || r.remaining === 0) setAutoHarvest(false);
       await Promise.all([loadStats(), loadContacts()]);
     } finally {
       setHarvesting(false);
     }
   }
+
+  // Auto-harvest: keep scanning website batches until the whole list is checked
+  useEffect(() => {
+    if (!autoHarvest || harvesting) return;
+    const t = setTimeout(() => {
+      void runHarvest();
+    }, 1500);
+    return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoHarvest, harvesting, stats?.uncheckedWebsites]);
 
   async function runSendBatch() {
     if (!confirmSend) {
@@ -280,12 +292,22 @@ export default function OutreachPage() {
                 {" · "}{stats.uncheckedWebsites.toLocaleString()} websites not yet checked
               </p>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <label className="flex items-center gap-2 text-sm text-lp-muted cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 accent-lp-accent"
+                  checked={autoHarvest}
+                  onChange={(e) => setAutoHarvest(e.target.checked)}
+                  disabled={stats.uncheckedWebsites === 0}
+                />
+                Auto-harvest
+              </label>
               <Button
                 size="md"
                 variant="secondary"
                 onClick={runHarvest}
-                disabled={harvesting || (stats.uncheckedWebsites === 0)}
+                disabled={harvesting || autoHarvest || (stats.uncheckedWebsites === 0)}
               >
                 {harvesting ? "Scanning websites…" : "Find emails (30 sites)"}
               </Button>
