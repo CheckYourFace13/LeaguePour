@@ -93,6 +93,23 @@ export default async function VsDashboardPage() {
         </Link>
       </div>
 
+      {/* LeaguePour cross-sell */}
+      <div className="rounded-xl border border-[var(--vs-border)] border-l-4 border-l-[#1a73ff] bg-[var(--vs-surface)] p-5">
+        <p className="font-bold text-[var(--vs-text)]">
+          Slow weeknights? Fill them with <span className="text-[#1a73ff]">LeaguePour</span> game nights
+        </p>
+        <p className="mt-1 text-sm text-[var(--vs-muted)]">
+          Trivia, darts, cornhole, pool — QR signups, paid entries via Stripe, and live standings run
+          from this same account. VenueSprocket venues get 50% off forever.
+        </p>
+        <Link
+          href="/venue/dashboard"
+          className="mt-3 inline-flex rounded-lg border border-[#1a73ff] px-4 py-2 text-sm font-bold text-[#1a73ff] hover:bg-[#1a73ff]/5 transition-colors"
+        >
+          Open game nights →
+        </Link>
+      </div>
+
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard label="New leads" value={newLeads} href="/app/leads?status=NEW" />

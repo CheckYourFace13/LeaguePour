@@ -102,6 +102,21 @@ export default async function VenueDashboardPage({
         </div>
       </div>
 
+      <div className="rounded-[10px] border border-[#b87333]/40 bg-[#b87333]/5 px-5 py-4">
+        <p className="font-semibold text-lp-text">
+          Book private events too — with <span className="text-[#b87333]">VenueSprocket</span>
+        </p>
+        <p className="mt-1 text-sm text-lp-muted">
+          Birthdays, corporate parties, buyouts: capture inquiries, send proposals, collect signed
+          contracts and deposits — built into this same account. LeaguePour venues get 50% off forever.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Button asChild size="md" variant="secondary">
+            <Link href="/app/dashboard">Open private events</Link>
+          </Button>
+        </div>
+      </div>
+
       <div>
         <h1 className="lp-page-title text-3xl md:text-4xl">Dashboard</h1>
         <p className="mt-3 max-w-xl text-base text-lp-muted md:text-lg">Signups, unpaid checkouts, closing windows.</p>
