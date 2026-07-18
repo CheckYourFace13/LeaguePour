@@ -10,6 +10,7 @@ import {
   Megaphone,
   Menu,
   Settings,
+  Shield,
   Trophy,
   UserCog,
   Users,
@@ -40,17 +41,20 @@ export function VenueAppShell({
   venueName,
   staffRole,
   canManageStaff,
+  isAdmin = false,
   children,
 }: {
   venueSlug: string;
   venueName: string;
   staffRole: string;
   canManageStaff: boolean;
+  isAdmin?: boolean;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const nav = navItems.filter((item) => !("requiresStaffAdmin" in item) || !item.requiresStaffAdmin || canManageStaff);
+  const filtered = navItems.filter((item) => !("requiresStaffAdmin" in item) || !item.requiresStaffAdmin || canManageStaff);
+  const nav = isAdmin ? [...filtered, { href: "/internal/admin", label: "Admin", icon: Shield }] : filtered;
 
   return (
     <div className="min-h-full bg-lp-bg">

@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { VenueAppShell } from "@/components/app/venue-app-shell";
+import { emailIsOwner } from "@/lib/admin-auth";
 import { prisma } from "@/lib/db";
 import { primaryVenueAccess } from "@/lib/session-venue";
 import { resolvePrimaryVenueAccess, venueStaffCanManageStaff } from "@/lib/venue-permissions";
@@ -25,6 +26,7 @@ export default async function VenueLayout({ children }: { children: React.ReactN
       venueName={venue.name}
       staffRole={access.role}
       canManageStaff={venueStaffCanManageStaff(access.role)}
+      isAdmin={emailIsOwner(session.user.email)}
     >
       {children}
     </VenueAppShell>

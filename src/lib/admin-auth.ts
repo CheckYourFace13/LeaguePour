@@ -9,6 +9,12 @@ function ownerEmails(): string[] {
     .filter(Boolean);
 }
 
+/** Non-redirecting owner check for conditional UI (e.g. the Admin nav link). */
+export function emailIsOwner(email: string | null | undefined): boolean {
+  if (!email) return false;
+  return ownerEmails().includes(email.toLowerCase());
+}
+
 export async function requireOwnerSession() {
   const session = await auth();
   const email = session?.user?.email?.toLowerCase() ?? "";

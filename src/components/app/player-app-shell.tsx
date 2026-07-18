@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { CreditCard, Heart, LayoutGrid, Menu, Search, Settings, Trophy, X } from "lucide-react";
+import { CreditCard, Heart, LayoutGrid, Menu, Search, Settings, Shield, Trophy, X } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { playerAppRoutes } from "@/lib/routes";
 import { Button } from "@/components/ui/button";
@@ -19,9 +19,18 @@ const nav = [
   { href: playerAppRoutes.settings, label: "Account", icon: Settings },
 ];
 
-export function PlayerAppShell({ children }: { children: React.ReactNode }) {
+const adminItem = { href: "/internal/admin", label: "Admin", icon: Shield };
+
+export function PlayerAppShell({
+  children,
+  isAdmin = false,
+}: {
+  children: React.ReactNode;
+  isAdmin?: boolean;
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const items = isAdmin ? [...nav, adminItem] : nav;
 
   return (
     <div className="min-h-full bg-lp-bg">
@@ -34,7 +43,7 @@ export function PlayerAppShell({ children }: { children: React.ReactNode }) {
             <p className="mt-2 text-base font-semibold text-lp-text-soft">Player</p>
           </div>
           <nav className="flex flex-1 flex-col gap-1 p-3">
-            {nav.map((item) => {
+            {items.map((item) => {
               const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
                 <Link
@@ -90,7 +99,7 @@ export function PlayerAppShell({ children }: { children: React.ReactNode }) {
                 </button>
               </div>
               <nav className="mt-8 flex flex-col gap-0.5">
-                {nav.map((item) => (
+                {items.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
