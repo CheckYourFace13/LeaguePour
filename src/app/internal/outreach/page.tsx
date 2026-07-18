@@ -98,6 +98,7 @@ export default function OutreachPage() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [harvesting, setHarvesting] = useState(false);
   const [sendingBatch, setSendingBatch] = useState(false);
+  const [confirmSend, setConfirmSend] = useState(false);
   const [emailResult, setEmailResult] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -181,7 +182,12 @@ export default function OutreachPage() {
   }
 
   async function runSendBatch() {
-    if (!window.confirm("Send the outreach email to the next batch of up to 25 contacts?")) return;
+    if (!confirmSend) {
+      setConfirmSend(true);
+      setTimeout(() => setConfirmSend(false), 5000);
+      return;
+    }
+    setConfirmSend(false);
     setSendingBatch(true);
     setEmailResult(null);
     try {
@@ -288,7 +294,11 @@ export default function OutreachPage() {
                 onClick={runSendBatch}
                 disabled={sendingBatch || stats.readyToSend === 0}
               >
-                {sendingBatch ? "Sending…" : `Send batch (${Math.min(25, stats.readyToSend)})`}
+                {sendingBatch
+                  ? "Sending…"
+                  : confirmSend
+                    ? `Confirm: email ${Math.min(25, stats.readyToSend)} bars`
+                    : `Send batch (${Math.min(25, stats.readyToSend)})`}
               </Button>
             </div>
           </div>

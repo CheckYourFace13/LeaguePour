@@ -1,10 +1,13 @@
 /**
- * Outreach email support: harvest addresses from venue websites and build the
- * cold-outreach email. Google Places provides no email addresses, so we scan
- * each venue's own site (homepage + common contact pages) for one.
+ * Outreach email support: harvest addresses from venue websites, build the
+ * cold-outreach email, and run harvest/send batches. Google Places provides no
+ * email addresses, so we scan each venue's own site (homepage + common contact
+ * pages) for one. The batch cores here are shared by the owner-only server
+ * actions and the daily cron route.
  */
 
 import { prisma } from "@/lib/db";
+import { sendEmailBatch } from "@/lib/email";
 import { getPublicSiteUrl } from "@/lib/site-url";
 
 // The production DB may not have the new columns until the migration is applied
@@ -121,6 +124,103 @@ function getPostalAddress(): string {
     process.env.OUTREACH_POSTAL_ADDRESS?.trim() ||
     "LeaguePour, Chicago, IL, USA"
   );
+}
+
+// ── Batch cores (shared by owner actions and the daily cron) ────────────────
+
+export async function harvestEmailsCore(limit: number): Promise<{
+  checked: number;
+  found: number;
+  remaining: number;
+}> {
+  await ensureOutreachEmailColumns();
+
+  const batch = await prisma.outreachContact.findMany({
+    where: { email: null, emailCheckedAt: null, website: { not: null }, status: "NOT_CONTACTED" },
+    orderBy: { rating: "desc" },
+    take: Math.min(Math.max(limit, 1), 60),
+    select: { id: true, website: true },
+  });
+
+  let found = 0;
+  const CONCURRENCY = 6;
+  for (let i = 0; i < batch.length; i += CONCURRENCY) {
+    const chunk = batch.slice(i, i + CONCURRENCY);
+    await Promise.all(
+      chunk.map(async (c) => {
+        const email = c.website ? await findEmailOnWebsite(c.website) : null;
+        if (email) found++;
+        await prisma.outreachContact.update({
+          where: { id: c.id },
+          data: { email, emailCheckedAt: new Date() },
+        });
+      }),
+    );
+  }
+
+  const remaining = await prisma.outreachContact.count({
+    where: { email: null, emailCheckedAt: null, website: { not: null }, status: "NOT_CONTACTED" },
+  });
+  return { checked: batch.length, found, remaining };
+}
+
+export async function sendOutreachCore(limit: number): Promise<{
+  sent: number;
+  failed: number;
+  remaining: number;
+  error?: string;
+}> {
+  await ensureOutreachEmailColumns();
+
+  if (!process.env.RESEND_API_KEY?.trim()) {
+    return { sent: 0, failed: 0, remaining: 0, error: "RESEND_API_KEY not configured" };
+  }
+
+  const batch = await prisma.outreachContact.findMany({
+    where: { email: { not: null }, status: "NOT_CONTACTED" },
+    orderBy: { rating: "desc" },
+    take: Math.min(Math.max(limit, 1), 50),
+    select: { id: true, name: true, email: true },
+  });
+  if (batch.length === 0) {
+    return { sent: 0, failed: 0, remaining: 0 };
+  }
+
+  const result = await sendEmailBatch(
+    batch.map((c) => ({
+      to: c.email as string,
+      subject: outreachEmailSubject(c.name),
+      html: outreachEmailHtml(c.name, c.id),
+      replyTo: "hello@leaguepour.com",
+    })),
+  );
+
+  if (result.ok && result.sent > 0) {
+    await prisma.outreachContact.updateMany({
+      where: { id: { in: batch.map((c) => c.id) } },
+      data: { status: "EMAIL_SENT", emailSentAt: new Date() },
+    });
+  }
+
+  const remaining = await prisma.outreachContact.count({
+    where: { email: { not: null }, status: "NOT_CONTACTED" },
+  });
+  return {
+    sent: result.ok ? batch.length : 0,
+    failed: result.ok ? 0 : batch.length,
+    remaining,
+    ...(result.ok ? {} : { error: "Resend batch send failed - check server logs" }),
+  };
+}
+
+/** True if an outreach batch already went out within the past `hours`. */
+export async function outreachSentWithinHours(hours: number): Promise<boolean> {
+  await ensureOutreachEmailColumns();
+  const since = new Date(Date.now() - hours * 60 * 60 * 1000);
+  const recent = await prisma.outreachContact.count({
+    where: { emailSentAt: { gte: since } },
+  });
+  return recent > 0;
 }
 
 export function outreachEmailSubject(barName: string): string {

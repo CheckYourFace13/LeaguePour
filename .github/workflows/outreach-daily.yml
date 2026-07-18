@@ -1,0 +1,21 @@
+name: Daily outreach batch
+
+# Fires at 14:00 and 15:00 UTC so one of them is always 9am America/Chicago
+# (14:00 UTC = 9am CDT in summer; 15:00 UTC = 9am CST in winter). The endpoint
+# rejects the wrong-hour hit and throttles to one batch per 20 hours, so the
+# double schedule never double-sends.
+on:
+  schedule:
+    - cron: "0 14 * * *"
+    - cron: "0 15 * * *"
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger outreach send
+        run: |
+          resp=$(curl -sS --max-time 300 "https://leaguepour.com/api/cron/outreach-send")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1
