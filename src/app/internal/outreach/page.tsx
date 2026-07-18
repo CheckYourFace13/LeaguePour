@@ -132,7 +132,8 @@ export default function OutreachPage() {
       if (result.error) {
         setSweepResult(`Error: ${result.error}`);
       } else if (result.allDone) {
-        setSweepResult("All cities complete - restarting from Chicago.");
+        setAutoSweep(false);
+        setSweepResult("All cities swept.");
       } else {
         setSweepResult(
           `Swept ${result.city?.city}, ${result.city?.state}: ${result.added} new contacts added, ${result.skipped} already known.`,

@@ -50,9 +50,6 @@ export async function getOutreachStats() {
     }
   }
 
-  // If all swept, restart from beginning
-  if (!nextCity) nextCity = OUTREACH_CITIES[0] ?? null;
-
   return {
     totalCities,
     sweptCities,
@@ -188,14 +185,11 @@ export async function sweepNextCity(): Promise<{
   }
 
   if (!target) {
-    // All cities done - restart from Chicago
-    target = OUTREACH_CITIES[0];
-    if (!target) return { added: 0, skipped: 0, allDone: true };
-    // Clear existing contacts to start fresh (keep status history by resetting to NOT_CONTACTED)
-    await prisma.outreachContact.updateMany({
-      where: {},
-      data: { status: "NOT_CONTACTED" },
-    });
+    // All cities covered. Never reset statuses here — that would wipe the
+    // outreach pipeline (EMAIL_SENT / RESPONDED / ...). Re-sweeping a city to
+    // refresh contact data goes through sweepCity, which upserts without
+    // touching status.
+    return { added: 0, skipped: 0, allDone: true };
   }
 
   const result = await sweepCity(
