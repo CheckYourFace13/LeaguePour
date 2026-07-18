@@ -2,7 +2,7 @@
  * Resend email delivery.
  * Env vars required: RESEND_API_KEY, RESEND_FROM (optional, defaults to onboarding@resend.dev).
  *
- * For production: set RESEND_FROM to a verified domain address, e.g. "LeaguePour <no-reply@leaguepour.com>"
+ * For production: set RESEND_FROM to a verified domain address, e.g. "LeaguePour <hello@leaguepour.com>"
  */
 
 const RESEND_API = "https://api.resend.com";
@@ -208,7 +208,7 @@ export function sendVsLeadNotificationEmail(opts: {
     subject: `New inquiry: ${opts.eventType.replace(/_/g, " ")} from ${opts.customerName}`,
     html: vsBaseHtml(content),
     replyTo: opts.customerEmail,
-    from: "VenueSprocket <no-reply@venuesprocket.com>",
+    from: "VenueSprocket <hello@venuesprocket.com>",
   });
 }
 
@@ -240,7 +240,7 @@ export function sendVsInquiryConfirmationEmail(opts: {
     to: opts.to,
     subject: `Your inquiry to ${opts.venueName} — we'll be in touch soon`,
     html: vsBaseHtml(content),
-    from: "VenueSprocket <no-reply@venuesprocket.com>",
+    from: "VenueSprocket <hello@venuesprocket.com>",
   });
 }
 
