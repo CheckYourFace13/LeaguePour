@@ -53,9 +53,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     images: [{ url: "/og-image.png", width: 1200, height: 630 }],
   },
-  icons: {
-    icon: "/favicon.ico",
-  },
+  // Icons come from the app/icon.png + app/apple-icon.png file conventions;
+  // an explicit icons entry here would suppress those generated links.
   verification: {
     google: "LwIFXTG8T_HfBPtfvblat8kld4HFp1C8wqUTEfzPKCc",
   },

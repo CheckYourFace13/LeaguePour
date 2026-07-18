@@ -6,6 +6,7 @@ const VS_HOST = process.env.VENUESPROCKET_HOST ?? "venuesprocket.com";
 
 const vsDomainRewrites = [
   { source: "/", destination: "/venuesprocket" },
+  { source: "/favicon.ico", destination: "/venuesprocket/icon.png" },
   { source: "/features", destination: "/venuesprocket/features" },
   { source: "/pricing", destination: "/venuesprocket/pricing" },
   { source: "/start", destination: "/venuesprocket/start" },

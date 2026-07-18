@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { HomePage } from "@/components/marketing/home-page";
 
 export const metadata: Metadata = {
-  title: "LeaguePour | Venue Competition Software for Bars",
+  title: { absolute: "LeaguePour | Venue Competition Software for Bars" },
   description:
     "LeaguePour is venue competition software for bars: tournament signup software, player registration, Stripe entry fees, and league management in one platform.",
   alternates: { canonical: "/" },
