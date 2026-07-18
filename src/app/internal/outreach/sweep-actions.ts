@@ -2,9 +2,8 @@
 
 import { requireOwnerSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/db";
+import { googlePlacesBarSweep } from "@/lib/google-places";
 import { OUTREACH_CITIES, type OutreachCity } from "@/lib/outreach-cities";
-
-const PLACES_BASE = "https://maps.googleapis.com/maps/api/place";
 
 // --- Stats / progress ---
 
@@ -82,8 +81,9 @@ export async function sweepCity(
     return { added: 0, skipped: 0, error: "Not authorised" };
   }
 
-  const apiKey = process.env.GOOGLE_PLACES_API_KEY;
-  if (!apiKey) return { added: 0, skipped: 0, error: "GOOGLE_PLACES_API_KEY not configured" };
+  if (!process.env.GOOGLE_PLACES_API_KEY?.trim()) {
+    return { added: 0, skipped: 0, error: "GOOGLE_PLACES_API_KEY not configured" };
+  }
 
   const seen = new Set<string>();
   const toUpsert: {
@@ -98,58 +98,25 @@ export async function sweepCity(
     rating?: number;
   }[] = [];
 
-  const searchUrl = new URL(`${PLACES_BASE}/textsearch/json`);
-  searchUrl.searchParams.set("query", query);
-  searchUrl.searchParams.set("type", "bar");
-  searchUrl.searchParams.set("key", apiKey);
-
   try {
-    const res = await fetch(searchUrl.toString());
-    if (!res.ok) return { added: 0, skipped: 0, error: `Places API error ${res.status}` };
-
-    const data = (await res.json()) as {
-      results: {
-        place_id: string;
-        name: string;
-        formatted_address: string;
-        rating?: number;
-      }[];
-    };
-
-    for (const place of data.results ?? []) {
-      if (seen.has(place.place_id)) continue;
-      seen.add(place.place_id);
-
-      let phone: string | undefined;
-      let website: string | undefined;
-      try {
-        const detailUrl = new URL(`${PLACES_BASE}/details/json`);
-        detailUrl.searchParams.set("place_id", place.place_id);
-        detailUrl.searchParams.set("fields", "formatted_phone_number,website");
-        detailUrl.searchParams.set("key", apiKey);
-        const dr = await fetch(detailUrl.toString());
-        const dd = (await dr.json()) as {
-          result: { formatted_phone_number?: string; website?: string };
-        };
-        phone = dd.result?.formatted_phone_number;
-        website = dd.result?.website;
-      } catch {
-        // detail fetch failed - continue without
-      }
-
+    const places = await googlePlacesBarSweep(query, 40);
+    if (places.length === 0) {
+      return { added: 0, skipped: 0, error: `Places API returned no bars for "${query}"` };
+    }
+    for (const place of places) {
+      if (seen.has(place.placeId)) continue;
+      seen.add(place.placeId);
       toUpsert.push({
-        placeId: place.place_id,
+        placeId: place.placeId,
         name: place.name,
-        address: place.formatted_address,
+        address: place.formattedAddress,
         city,
         state,
         country,
-        phone,
-        website,
-        rating: place.rating,
+        phone: place.phone ?? undefined,
+        website: place.websiteUrl ?? undefined,
+        rating: place.rating ?? undefined,
       });
-
-      if (toUpsert.length >= 40) break;
     }
   } catch (err) {
     return { added: 0, skipped: 0, error: err instanceof Error ? err.message : "Unknown error" };

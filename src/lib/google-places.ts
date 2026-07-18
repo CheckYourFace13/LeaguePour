@@ -201,6 +201,86 @@ async function googlePlaceDetailsLegacy(placeId: string, key: string) {
   };
 }
 
+export type OutreachBarResult = {
+  placeId: string;
+  name: string;
+  formattedAddress: string;
+  rating: number | null;
+  phone: string | null;
+  websiteUrl: string | null;
+};
+
+type BarSweepResponse = {
+  places?: Array<{
+    id?: string;
+    name?: string;
+    displayName?: { text?: string };
+    formattedAddress?: string;
+    rating?: number;
+    websiteUri?: string;
+    nationalPhoneNumber?: string;
+  }>;
+  nextPageToken?: string;
+};
+
+/**
+ * Bulk bar search for outreach sweeps (Places API v1 only — the legacy API is not
+ * enabled for this key). Contact fields ride along in the field mask, so no
+ * per-place details calls are needed. Throws on API failure so callers can
+ * surface the error instead of silently recording an empty sweep.
+ */
+export async function googlePlacesBarSweep(query: string, maxResults = 40): Promise<OutreachBarResult[]> {
+  const key = getGooglePlacesKey();
+  const out: OutreachBarResult[] = [];
+  let pageToken: string | undefined;
+
+  while (out.length < maxResults) {
+    const res = await fetch("https://places.googleapis.com/v1/places:searchText", {
+      method: "POST",
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": key,
+        "X-Goog-FieldMask":
+          "places.id,places.name,places.displayName,places.formattedAddress,places.rating,places.websiteUri,places.nationalPhoneNumber,nextPageToken",
+      },
+      body: JSON.stringify({
+        textQuery: query,
+        includedType: "bar",
+        languageCode: "en",
+        pageSize: 20,
+        ...(pageToken ? { pageToken } : {}),
+      }),
+    });
+    const data = await parseJsonOrNull<BarSweepResponse>(res);
+    if (!res.ok) {
+      const err = new Error(`Google Places sweep failed (HTTP ${res.status})`) as GooglePlacesError;
+      err.status = res.status;
+      err.body = data;
+      throw err;
+    }
+
+    for (const p of data?.places ?? []) {
+      const placeId = placeIdFromNewPlace(p);
+      const name = p.displayName?.text?.trim();
+      if (!placeId || !name) continue;
+      out.push({
+        placeId,
+        name,
+        formattedAddress: p.formattedAddress ?? "",
+        rating: typeof p.rating === "number" ? p.rating : null,
+        phone: p.nationalPhoneNumber ?? null,
+        websiteUrl: p.websiteUri ?? null,
+      });
+    }
+
+    pageToken = data?.nextPageToken;
+    if (!pageToken) break;
+  }
+
+  return out.slice(0, maxResults);
+}
+
 export async function googlePlaceDetails(placeId: string) {
   const key = getGooglePlacesKey();
   const errors: GooglePlacesError[] = [];
