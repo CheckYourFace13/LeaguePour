@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "VenueSprocket — Book More Private Events. Run Them Better.",
+  title: { absolute: "VenueSprocket — Book More Private Events. Run Them Better." },
   description:
     "VenueSprocket helps restaurants, breweries, bars, taprooms, and event spaces capture inquiries, send proposals, sign contracts, collect deposits, and create BEOs. Start free.",
   alternates: { canonical: "https://venuesprocket.com" },
   openGraph: {
-    title: "VenueSprocket — Book More Private Events. Run Them Better.",
+    title: { absolute: "VenueSprocket — Book More Private Events. Run Them Better." },
     description:
       "Simple private event software for restaurants, bars, breweries, and taprooms. Inquiries, proposals, contracts, deposits, BEOs, and marketing pages in one place.",
     url: "https://venuesprocket.com",

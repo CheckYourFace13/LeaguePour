@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Features — VenueSprocket Private Event Management",
+  title: "Features",
   description:
     "VenueSprocket features: inquiry forms, proposal builder, e-signature contracts, Stripe deposits, BEO builder, customer CRM, marketing pages, and LeaguePour game nights.",
   alternates: { canonical: "https://venuesprocket.com/features" },
