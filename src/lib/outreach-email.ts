@@ -65,7 +65,7 @@ function pickBestEmail(emails: string[], siteHost: string | null): string | null
 async function fetchPageText(url: string): Promise<string | null> {
   try {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 6000);
+    const timer = setTimeout(() => controller.abort(), 3500);
     const res = await fetch(url, {
       signal: controller.signal,
       redirect: "follow",
@@ -102,9 +102,14 @@ export async function findEmailOnWebsite(website: string): Promise<string | null
   ];
 
   const found: string[] = [];
-  for (const url of candidates) {
+  for (const [i, url] of candidates.entries()) {
     const html = await fetchPageText(url);
-    if (!html) continue;
+    // Homepage totally unreachable (timeout/DNS/refused) - the domain is dead,
+    // don't burn the time budget probing /contact and /contact-us too.
+    if (!html) {
+      if (i === 0) break;
+      continue;
+    }
     // mailto: links first — they're deliberate contact addresses
     const mailtos = [...html.matchAll(/mailto:([^"'?\s>]+)/gi)].map((m) => decodeURIComponent(m[1]));
     found.push(...mailtos);

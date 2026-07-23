@@ -13,14 +13,19 @@ import {
  * Safety gates (no shared secret needed for the scheduled path):
  *  - Throttle: refuses if a batch already went out in the past 20 hours,
  *    so at most one batch per day no matter who calls it.
- *  - Time window: only runs 9-11am America/Chicago (the workflow fires at
- *    both 14:00 and 15:00 UTC so 9am survives DST; the wrong-hour hit is
- *    rejected here and the right one proceeds).
+ *  - Time window: only runs 9-11am America/Chicago. The workflow's single
+ *    15:00 UTC schedule lands at 10am Chicago in summer (CDT) or 9am in
+ *    winter (CST) - both fall inside this window without needing a second
+ *    schedule entry (a second entry previously caused two near-simultaneous
+ *    requests to race for the same DB connection).
  *  - manual=1 skips the time window (still throttled); requires CRON_SECRET
  *    when one is configured.
  */
 
-const HARVEST_BATCHES_PER_RUN = 2; // 2 × 60 sites keeps the email backlog growing ahead of sends
+// Kept to 1 batch: the backlog is already thousands of emails deep, and each
+// site check can take a few seconds in the worst case (dead/slow domains) -
+// harvesting too many per run risks exceeding the workflow's request timeout.
+const HARVEST_BATCHES_PER_RUN = 1;
 const HARVEST_PER_BATCH = 60;
 const SEND_PER_RUN = 25;
 const THROTTLE_HOURS = 20;

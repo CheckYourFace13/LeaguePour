@@ -1,12 +1,14 @@
 name: Daily outreach batch
 
-# Fires at 14:00 and 15:00 UTC so one of them is always 9am America/Chicago
-# (14:00 UTC = 9am CDT in summer; 15:00 UTC = 9am CST in winter). The endpoint
-# rejects the wrong-hour hit and throttles to one batch per 20 hours, so the
-# double schedule never double-sends.
+# Single schedule at 15:00 UTC = 10am America/Chicago in summer (CDT) or
+# 9am in winter (CST) - both land inside the route's 9-11am Chicago window,
+# so one entry covers both DST regimes. (A previous version used two
+# schedule entries to "guarantee" 9am exactly; under GitHub Actions' normal
+# scheduling jitter both could land in the valid window on the same
+# morning and race each other for the same DB connection, which is what
+# caused a same-day failed run. One schedule removes that race entirely.)
 on:
   schedule:
-    - cron: "0 14 * * *"
     - cron: "0 15 * * *"
   workflow_dispatch:
 
@@ -16,6 +18,6 @@ jobs:
     steps:
       - name: Trigger outreach send
         run: |
-          resp=$(curl -sS --max-time 300 "https://leaguepour.com/api/cron/outreach-send")
+          resp=$(curl -sS --max-time 600 "https://leaguepour.com/api/cron/outreach-send")
           echo "$resp"
           echo "$resp" | grep -q '"ok":true' || exit 1
