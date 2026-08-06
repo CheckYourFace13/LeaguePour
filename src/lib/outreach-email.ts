@@ -32,6 +32,15 @@ export async function ensureOutreachEmailColumns(): Promise<void> {
 
 const EMAIL_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
 
+/**
+ * Strict last-word validator: mailto: links and scraped HTML can leave stray
+ * trailing characters (backslashes from escaped JSON-in-HTML, quotes,
+ * trailing punctuation) on an otherwise-plausible address. Resend's batch
+ * send API rejects the whole batch if even one recipient fails this shape,
+ * so this check is the final gate before an email is ever stored or sent.
+ */
+const STRICT_EMAIL_RE = /^[A-Z0-9._%+-]+@[A-Z0-9-]+(?:\.[A-Z0-9-]+)*\.[A-Z]{2,}$/i;
+
 /** Hosts/patterns that show up in page source but are never a venue's contact address. */
 const JUNK_PATTERNS = [
   /\.(png|jpe?g|gif|webp|svg|css|js|woff2?)$/i,
@@ -41,14 +50,16 @@ const JUNK_PATTERNS = [
   /^[0-9a-f]{16,}@/i,
 ];
 
-function isPlausibleEmail(email: string): boolean {
-  if (email.length > 254) return false;
-  return !JUNK_PATTERNS.some((re) => re.test(email));
+export function isPlausibleEmail(email: string): boolean {
+  const trimmed = email.trim();
+  if (trimmed.length === 0 || trimmed.length > 254) return false;
+  if (!STRICT_EMAIL_RE.test(trimmed)) return false;
+  return !JUNK_PATTERNS.some((re) => re.test(trimmed));
 }
 
 /** Prefer generic venue inboxes, then same-domain addresses, then anything plausible. */
 function pickBestEmail(emails: string[], siteHost: string | null): string | null {
-  const unique = [...new Set(emails.map((e) => e.toLowerCase()))].filter(isPlausibleEmail);
+  const unique = [...new Set(emails.map((e) => e.trim().toLowerCase()))].filter(isPlausibleEmail);
   if (unique.length === 0) return null;
   const generic = unique.find((e) =>
     /^(info|contact|hello|events|booking|bookings|inquiries|manager|office|bar)@/.test(e),
@@ -111,7 +122,7 @@ export async function findEmailOnWebsite(website: string): Promise<string | null
       continue;
     }
     // mailto: links first — they're deliberate contact addresses
-    const mailtos = [...html.matchAll(/mailto:([^"'?\s>]+)/gi)].map((m) => decodeURIComponent(m[1]));
+    const mailtos = [...html.matchAll(/mailto:([^"'?\s\\<>]+)/gi)].map((m) => decodeURIComponent(m[1]));
     found.push(...mailtos);
     found.push(...(html.match(EMAIL_RE) ?? []));
     if (mailtos.length > 0) break;
@@ -181,12 +192,43 @@ export async function sendOutreachCore(limit: number): Promise<{
     return { sent: 0, failed: 0, remaining: 0, error: "RESEND_API_KEY not configured" };
   }
 
-  const batch = await prisma.outreachContact.findMany({
-    where: { email: { not: null }, status: "NOT_CONTACTED" },
-    orderBy: { rating: "desc" },
-    take: Math.min(Math.max(limit, 1), 50),
-    select: { id: true, name: true, email: true },
-  });
+  const take = Math.min(Math.max(limit, 1), 50);
+
+  // Pull candidates in pages, screening out any with a malformed email (a
+  // single bad `to` address fails Resend's whole batch call). Bad rows are
+  // self-healed by clearing their email so they never recur; the remainder
+  // is backfilled from the next page until the batch is full or contacts
+  // run out. Capped at a few pages so a corrupted run can't loop forever.
+  const batch: { id: string; name: string; email: string }[] = [];
+  const invalidIds: string[] = [];
+  for (let page = 0; batch.length < take && page < 5; page++) {
+    const candidates = await prisma.outreachContact.findMany({
+      where: { email: { not: null }, status: "NOT_CONTACTED" },
+      orderBy: { rating: "desc" },
+      skip: page * take,
+      take,
+      select: { id: true, name: true, email: true },
+    });
+    if (candidates.length === 0) break;
+    for (const c of candidates) {
+      if (batch.length >= take) break;
+      if (c.email && isPlausibleEmail(c.email)) {
+        batch.push({ id: c.id, name: c.name, email: c.email });
+      } else {
+        invalidIds.push(c.id);
+      }
+    }
+    if (candidates.length < take) break;
+  }
+
+  if (invalidIds.length > 0) {
+    console.warn("[outreach] clearing malformed emails", invalidIds);
+    await prisma.outreachContact.updateMany({
+      where: { id: { in: invalidIds } },
+      data: { email: null, emailCheckedAt: null },
+    });
+  }
+
   if (batch.length === 0) {
     return { sent: 0, failed: 0, remaining: 0 };
   }
