@@ -11,6 +11,14 @@ export const metadata: Metadata = {
     description:
       "Simple private event software for restaurants, bars, breweries, and taprooms. Inquiries, proposals, contracts, deposits, BEOs, and marketing pages in one place.",
     url: "https://venuesprocket.com",
+    images: ["/venuesprocket/opengraph-image"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: { absolute: "VenueSprocket — Book More Private Events. Run Them Better." },
+    description:
+      "Simple private event software for restaurants, bars, breweries, and taprooms. Inquiries, proposals, contracts, deposits, BEOs, and marketing pages in one place.",
+    images: ["/venuesprocket/opengraph-image"],
   },
 };
 

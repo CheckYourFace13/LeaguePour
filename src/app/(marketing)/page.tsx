@@ -11,10 +11,13 @@ export const metadata: Metadata = {
     description:
       "Bar competition software for trivia, dart league, cornhole tournament, and recurring game nights.",
     url: "/",
+    images: ["/opengraph-image"],
   },
   twitter: {
+    card: "summary_large_image",
     title: "LeaguePour | Venue Competition Software for Bars",
     description: "Tournament signup and player registration software built for bars and venue game nights.",
+    images: ["/opengraph-image"],
   },
 };
 
