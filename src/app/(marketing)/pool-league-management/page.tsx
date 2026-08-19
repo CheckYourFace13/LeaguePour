@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { getPublicSiteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
-  title: "Pool League Management Software for Bars | LeaguePour",
+  title: { absolute: "Pool League Management Software for Bars | LeaguePour" },
   description:
     "Manage 8-ball and 9-ball pool leagues at your bar with LeaguePour. Online signup, entry fees via Stripe, standings, and player communication - no paper brackets.",
   alternates: { canonical: "/pool-league-management" },

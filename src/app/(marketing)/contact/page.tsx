@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ContactForm } from "@/components/marketing/contact-form";
 
 export const metadata: Metadata = {
-  title: "Contact LeaguePour",
+  title: { absolute: "Contact LeaguePour" },
   description:
     "Contact LeaguePour for venue setup help, billing questions, player support, or migration from spreadsheets and paper signups.",
   alternates: { canonical: "/contact" },

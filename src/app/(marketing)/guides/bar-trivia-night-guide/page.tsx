@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "How to Run Trivia Night at Your Bar | LeaguePour Guide",
+  title: { absolute: "How to Run Trivia Night at Your Bar | LeaguePour Guide" },
   description:
     "A complete guide to running trivia night at your bar. Hosting tips, theme ideas, team sizes, scoring systems, prizes, and how to keep a full room of regulars coming back every week.",
   alternates: { canonical: "/guides/bar-trivia-night-guide" },

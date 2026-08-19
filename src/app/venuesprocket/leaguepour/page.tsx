@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "LeaguePour by VenueSprocket — Fill Slow Nights with Leagues and Game Nights",
+  title: { absolute: "LeaguePour by VenueSprocket — Fill Slow Nights with Leagues and Game Nights" },
   description:
     "LeaguePour is the public event module inside VenueSprocket. Run dart leagues, cornhole tournaments, trivia nights, pool leagues, and bar game competitions with QR signups, standings, and Stripe entry fees.",
   alternates: { canonical: "https://venuesprocket.com/leaguepour" },

@@ -93,7 +93,7 @@ export async function buildSoftwareMetadata(slug: SoftwarePageSlug): Promise<Met
   if (!page) return {};
   const path = `/software/${slug}`;
   return {
-    title: page.title,
+    title: { absolute: page.title },
     description: page.description,
     alternates: { canonical: path },
     openGraph: { title: page.title, description: page.description, url: path },

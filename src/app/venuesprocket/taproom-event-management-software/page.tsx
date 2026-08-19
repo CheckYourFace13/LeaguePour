@@ -5,7 +5,7 @@ import { VS_LANDING_DATA } from "@/lib/seo/vs-landing-data";
 const data = VS_LANDING_DATA["taproom-event-management-software"];
 
 export const metadata: Metadata = {
-  title: data.metaTitle,
+  title: { absolute: data.metaTitle },
   description: data.metaDescription,
   alternates: { canonical: `https://venuesprocket.com/taproom-event-management-software` },
 };

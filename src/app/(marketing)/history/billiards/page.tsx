@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "History of Billiards & Pool | From Kings to Corner Bars | LeaguePour",
+  title: { absolute: "History of Billiards & Pool | From Kings to Corner Bars | LeaguePour" },
   description:
     "How billiards went from a 15th-century French lawn game to a royal pastime to every dive bar in America - including the story of why we call it 'pool' and when 8-ball became standard.",
   alternates: { canonical: "/history/billiards" },

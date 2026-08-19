@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { formatUsdCents, PLAN_DEFINITIONS } from "@/lib/pricing";
 
 export const metadata: Metadata = {
-  title: "LeaguePour Pricing | Bar Event Registration Software Plans",
+  title: { absolute: "LeaguePour Pricing | Bar Event Registration Software Plans" },
   description:
     "Pricing for LeaguePour venue competition software. Plans for trivia signup software, dart league software, and cornhole tournament software.",
   alternates: { canonical: "/pricing" },

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | VenueSprocket",
+  title: { absolute: "Privacy Policy | VenueSprocket" },
   description: "How VenueSprocket collects, uses, and protects your data.",
   alternates: { canonical: "https://venuesprocket.com/legal/privacy" },
 };

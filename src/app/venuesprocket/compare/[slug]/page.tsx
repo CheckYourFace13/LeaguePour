@@ -16,7 +16,7 @@ export async function generateMetadata({
   const data = VS_COMPARE_DATA[slug];
   if (!data) return {};
   return {
-    title: `VenueSprocket vs ${data.competitorName} — Private Event Software Comparison`,
+    title: { absolute: `VenueSprocket vs ${data.competitorName} — Private Event Software Comparison | VenueSprocket` },
     description: `How VenueSprocket compares to ${data.competitorName} for private event booking, BEOs, contracts, and deposits. Built for restaurants, bars, breweries, and taprooms.`,
     alternates: { canonical: `https://venuesprocket.com/compare/${slug}` },
     openGraph: {

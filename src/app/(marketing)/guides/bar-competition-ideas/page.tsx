@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "25 Bar Competition Ideas That Fill Seats | LeaguePour",
+  title: { absolute: "25 Bar Competition Ideas That Fill Seats | LeaguePour" },
   description:
     "25 bar competition ideas across darts, cornhole, trivia, pool, poker, shuffleboard, and more - with notes on what makes each one work and how to get started.",
   alternates: { canonical: "/guides/bar-competition-ideas" },

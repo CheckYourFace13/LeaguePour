@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | VenueSprocket",
+  title: { absolute: "Terms of Service | VenueSprocket" },
   description: "VenueSprocket terms of service for venues using private event management software.",
   alternates: { canonical: "https://venuesprocket.com/legal/terms" },
 };

@@ -14,8 +14,9 @@ import {
 } from "@/lib/tournament-formats";
 
 export const metadata: Metadata = {
-  title:
-    "Tournament & League Management for Bars & Breweries | LeaguePour",
+  title: {
+    absolute: "Tournament & League Management for Bars & Breweries | LeaguePour",
+  },
   description:
     "Bar tournament software, league management, paid signups, QR codes, venue event hubs, and local event discovery - plus brackets and venue-first operations for dart, cornhole, trivia, and brewery events.",
   alternates: { canonical: "/features/tournaments" },

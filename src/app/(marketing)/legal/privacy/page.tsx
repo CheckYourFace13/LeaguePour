@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | LeaguePour",
+  title: { absolute: "Privacy Policy | LeaguePour" },
   description:
     "LeaguePour privacy policy: what data we collect, how we use it, player marketing preferences, and how to contact us.",
   alternates: { canonical: "/legal/privacy" },

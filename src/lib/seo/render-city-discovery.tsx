@@ -100,7 +100,7 @@ export async function buildCityDiscoveryMetadata(
   });
 
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: path },
     openGraph: { title, description, url: path },

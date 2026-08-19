@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Shuffleboard League Software for Bars | LeaguePour",
+  title: { absolute: "Shuffleboard League Software for Bars | LeaguePour" },
   description:
     "Run shuffleboard leagues and tournaments at your bar with LeaguePour. Online signup, entry fees via Stripe, standings, and bracket management - no spreadsheets needed.",
   alternates: { canonical: "/shuffleboard-league-software" },

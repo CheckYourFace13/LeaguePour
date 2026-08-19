@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { getPublicSiteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
-  title: "Dart League Software for Bars | LeaguePour",
+  title: { absolute: "Dart League Software for Bars | LeaguePour" },
   description:
     "Run dart leagues at your bar with LeaguePour. Online signup, team registration, entry fees via Stripe, standings, and bracket management - no spreadsheets needed.",
   alternates: { canonical: "/dart-league-software" },

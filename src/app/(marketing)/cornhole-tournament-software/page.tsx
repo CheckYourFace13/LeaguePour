@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { getPublicSiteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
-  title: "Cornhole Tournament Software for Bars | LeaguePour",
+  title: { absolute: "Cornhole Tournament Software for Bars | LeaguePour" },
   description:
     "Run cornhole and bag toss tournaments at your bar with LeaguePour. Online team registration, entry fees via Stripe, brackets, standings, and player alerts.",
   alternates: { canonical: "/cornhole-tournament-software" },

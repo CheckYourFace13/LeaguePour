@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "How LeaguePour Works | Tournament Signup Software for Bars",
+  title: { absolute: "How LeaguePour Works | Tournament Signup Software for Bars" },
   description:
     "How LeaguePour works for venue competition software: pick a format, launch bar event registration, run standings, and fill the next league night.",
   alternates: { canonical: "/how-it-works" },

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Music Bingo Software for Bars | LeaguePour",
+  title: { absolute: "Music Bingo Software for Bars | LeaguePour" },
   description:
     "Run music bingo nights at your bar with LeaguePour. Online team registration, entry fees via Stripe, and player notifications - all in one platform built for bars.",
   alternates: { canonical: "/music-bingo-software" },

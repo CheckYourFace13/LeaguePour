@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "History of Cornhole | The Origin of America's Backyard Game | LeaguePour",
+  title: { absolute: "History of Cornhole | The Origin of America's Backyard Game | LeaguePour" },
   description:
     "The disputed origins of cornhole - Ohio vs Wisconsin claims, German immigrant theories, 19th century rural roots, the ACA's founding in 2005, and how it became a bar league staple.",
   alternates: { canonical: "/history/cornhole" },

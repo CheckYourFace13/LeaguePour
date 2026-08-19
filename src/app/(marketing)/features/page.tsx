@@ -5,7 +5,7 @@ import { cta } from "@/lib/brand";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "LeaguePour Features | Competition Management Platform for Venues",
+  title: { absolute: "LeaguePour Features | Competition Management Platform for Venues" },
   description:
     "LeaguePour features for venue competition software: tournament signup, bar event registration, league management, standings, and Stripe Connect entry fees.",
   alternates: { canonical: "/features" },

@@ -3,9 +3,10 @@ import Link from "next/link";
 import { VsContactForm } from "@/components/venuesprocket/vs-contact-form";
 
 export const metadata: Metadata = {
-  title: "Contact & Demo | VenueSprocket",
+  title: { absolute: "Contact & Demo | VenueSprocket" },
   description:
     "Book a free 20-minute demo of VenueSprocket and see how we help bars, breweries, and restaurants manage private events end-to-end.",
+  alternates: { canonical: "https://venuesprocket.com/contact" },
 };
 
 export default function VsContactPage() {

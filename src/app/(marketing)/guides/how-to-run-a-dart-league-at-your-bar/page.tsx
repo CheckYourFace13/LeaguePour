@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "How to Run a Dart League at Your Bar | LeaguePour Guide",
+  title: { absolute: "How to Run a Dart League at Your Bar | LeaguePour Guide" },
   description:
     "A complete guide to starting and running a dart league at your bar. Covers formats (501, Cricket, round-robin), entry fees, scheduling, promotion, disputes, and building a loyal player base.",
   alternates: { canonical: "/guides/how-to-run-a-dart-league-at-your-bar" },

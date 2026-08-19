@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 export const metadata: Metadata = {
-  title: "For Venues | LeaguePour Bar Competition Software",
+  title: { absolute: "For Venues | LeaguePour Bar Competition Software" },
   description:
     "LeaguePour for bars and taprooms: venue competition software, tournament signup software for bars, and player registration with Stripe entry fees.",
   alternates: { canonical: "/for-venues" },

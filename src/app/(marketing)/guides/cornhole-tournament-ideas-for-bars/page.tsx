@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Cornhole Tournament Ideas for Bars | LeaguePour Guide",
+  title: { absolute: "Cornhole Tournament Ideas for Bars | LeaguePour Guide" },
   description:
     "Cornhole tournament ideas for bars: bracket formats, team sizes, prize structures, sponsorship, seasonal themes, and promotion tips that actually fill your patio.",
   alternates: { canonical: "/guides/cornhole-tournament-ideas-for-bars" },

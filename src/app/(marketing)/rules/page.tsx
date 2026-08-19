@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Official Rules for Bar Games | LeaguePour Resource Guide",
+  title: { absolute: "Official Rules for Bar Games | LeaguePour Resource Guide" },
   description:
     "Direct links to official rules from the governing bodies and associations that maintain them - darts, cornhole, pool, shuffleboard, poker, trivia, and more. No paraphrasing, just the real sources.",
   alternates: { canonical: "/rules" },

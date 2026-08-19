@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Euchre Tournament Software for Bars | LeaguePour",
+  title: { absolute: "Euchre Tournament Software for Bars | LeaguePour" },
   description:
     "Run euchre tournaments and euchre leagues at your bar with LeaguePour. Online signup, entry fees via Stripe, standings, and bracket management - no spreadsheets.",
   alternates: { canonical: "/euchre-tournament-software" },

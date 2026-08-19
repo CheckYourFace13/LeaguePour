@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | LeaguePour",
+  title: { absolute: "Terms of Service | LeaguePour" },
   description:
     "LeaguePour terms of service for venues and players: acceptable use, payments, refunds, and responsibilities.",
   alternates: { canonical: "/legal/terms" },

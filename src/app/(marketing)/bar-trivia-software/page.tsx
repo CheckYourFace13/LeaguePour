@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { getPublicSiteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
-  title: "Bar Trivia Software & Signup Management | LeaguePour",
+  title: { absolute: "Bar Trivia Software & Signup Management | LeaguePour" },
   description:
     "Run trivia nights at your bar with LeaguePour. Online team registration, entry fees, standings, and repeat player alerts - trivia night management made simple.",
   alternates: { canonical: "/bar-trivia-software" },

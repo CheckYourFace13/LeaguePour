@@ -25,7 +25,7 @@ export async function buildCompareMetadata(slug: string): Promise<Metadata> {
   if (!page) return {};
   const path = `/compare/${slug}`;
   return {
-    title: page.title,
+    title: { absolute: page.title },
     description: page.description,
     alternates: { canonical: path },
     openGraph: { title: page.title, description: page.description, url: path },

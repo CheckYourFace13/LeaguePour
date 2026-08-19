@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "History of Shuffleboard | Five Centuries at the Table | LeaguePour",
+  title: { absolute: "History of Shuffleboard | Five Centuries at the Table | LeaguePour" },
   description:
     "Shuffleboard has been a tavern game since Tudor England - Henry VIII banned it in 1532 and people kept playing anyway. The full history from 'shovelboard' to bar staple.",
   alternates: { canonical: "/history/shuffleboard" },

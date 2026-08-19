@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Bar Game History | How Your Favorite Bar Games Came to Be | LeaguePour",
+  title: { absolute: "Bar Game History | How Your Favorite Bar Games Came to Be | LeaguePour" },
   description:
     "The real history behind the games your bar runs every week - darts, cornhole, billiards, trivia, and shuffleboard. Where they started, how they spread, and why they stuck.",
   alternates: { canonical: "/history" },

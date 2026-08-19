@@ -59,7 +59,7 @@ export async function buildFindMetadata(findSlug: string): Promise<Metadata> {
   const description = `Discover real ${game.pluralLabel.toLowerCase()} at partner bars. Bar tournament software with paid signups, QR codes, venue hubs, and local event discovery.`;
 
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: path },
     openGraph: { title, description, url: path },

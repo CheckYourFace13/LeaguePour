@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "History of Darts | From English Pubs to World Sport | LeaguePour",
+  title: { absolute: "History of Darts | From English Pubs to World Sport | LeaguePour" },
   description:
     "The real history of darts - medieval English origins, how elm tree cross-sections became boards, Brian Gamlin's number arrangement in 1896, the rise of the WDF, and the Phil Taylor era.",
   alternates: { canonical: "/history/darts" },

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "LeaguePour FAQ | Bar Tournament Platform Questions",
+  title: { absolute: "LeaguePour FAQ | Bar Tournament Platform Questions" },
   description:
     "Answers about LeaguePour venue competition software, entry fee tournaments, team registration, and league management for bars.",
   alternates: { canonical: "/faq" },

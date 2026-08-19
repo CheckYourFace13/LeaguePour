@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Bar Competition Guides | LeaguePour",
+  title: { absolute: "Bar Competition Guides | LeaguePour" },
   description:
     "Free guides for bar owners on running dart leagues, cornhole tournaments, trivia nights, and more. Learn how to collect entry fees, fill seats, and keep players coming back.",
   alternates: { canonical: "/guides" },

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "How to Collect Entry Fees at Your Bar (The Right Way) | LeaguePour",
+  title: { absolute: "How to Collect Entry Fees at Your Bar (The Right Way) | LeaguePour" },
   description:
     "Learn why cash entry fees create problems, how online payments via Stripe work for bar competitions, legal considerations, how to communicate fees to players, and how to handle refunds.",
   alternates: { canonical: "/guides/how-to-collect-entry-fees-at-your-bar" },
