@@ -1,9 +1,28 @@
 import Link from "next/link";
 import type { VsLandingData } from "@/lib/seo/vs-landing-data";
+import {
+  buildFaqPageJsonLd,
+  buildSoftwareApplicationJsonLd,
+  jsonLdScript,
+} from "@/lib/seo/json-ld-builders";
+
+const VS_BASE_URL = "https://venuesprocket.com";
 
 export function VsLandingPage({ data }: { data: VsLandingData }) {
+  const jsonLd = jsonLdScript([
+    buildSoftwareApplicationJsonLd({
+      name: data.title,
+      description: data.metaDescription,
+      path: `/${data.slug}`,
+      baseUrl: VS_BASE_URL,
+      priceRange: { low: "0", high: "149", offerCount: "4" },
+    }),
+    buildFaqPageJsonLd(data.faqs),
+  ]);
+
   return (
     <div className="vs-section px-4 md:px-6">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
       <div className="mx-auto max-w-4xl">
 
         {/* Hero */}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { VsHeader } from "@/components/venuesprocket/vs-header";
 import { VsFooter } from "@/components/venuesprocket/vs-footer";
+import { VsSiteJsonLd } from "@/components/venuesprocket/vs-site-json-ld";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://venuesprocket.com"),
@@ -16,6 +17,10 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
   },
+  twitter: {
+    card: "summary_large_image",
+  },
+  // OG/Twitter share image comes from app/venuesprocket/opengraph-image.tsx.
 };
 
 export default function VenueSprocketLayout({
@@ -42,6 +47,7 @@ export default function VenueSprocketLayout({
           gtag('config', 'G-FHCFV1532R');
         `}
       </Script>
+      <VsSiteJsonLd />
       <VsHeader />
       <main className="flex-1">{children}</main>
       <VsFooter />

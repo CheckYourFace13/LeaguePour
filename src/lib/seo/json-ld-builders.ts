@@ -1,7 +1,12 @@
 import { getPublicSiteUrl } from "@/lib/site-url";
 
-export function absoluteUrl(path: string): string {
-  const base = getPublicSiteUrl();
+/**
+ * getPublicSiteUrl() always resolves to leaguepour.com - pass baseUrl
+ * explicitly (e.g. "https://venuesprocket.com") when building JSON-LD for
+ * the VenueSprocket segment, or these URLs point at the wrong domain.
+ */
+export function absoluteUrl(path: string, baseUrl?: string): string {
+  const base = baseUrl ?? getPublicSiteUrl();
   return path.startsWith("http") ? path : `${base}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
@@ -62,22 +67,25 @@ export function buildSoftwareApplicationJsonLd(input: {
   description: string;
   path: string;
   keywords?: string;
+  baseUrl?: string;
+  priceRange?: { low: string; high: string; offerCount: string };
 }): Record<string, unknown> {
+  const price = input.priceRange ?? { low: "29", high: "299", offerCount: "4" };
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     name: input.name,
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
-    url: absoluteUrl(input.path),
+    url: absoluteUrl(input.path, input.baseUrl),
     description: input.description,
     ...(input.keywords ? { keywords: input.keywords } : {}),
     offers: {
       "@type": "AggregateOffer",
-      lowPrice: "29",
-      highPrice: "299",
+      lowPrice: price.low,
+      highPrice: price.high,
       priceCurrency: "USD",
-      offerCount: "4",
+      offerCount: price.offerCount,
     },
   };
 }

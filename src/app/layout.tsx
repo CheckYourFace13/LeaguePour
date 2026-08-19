@@ -41,7 +41,6 @@ export const metadata: Metadata = {
   applicationName: "LeaguePour",
   twitter: {
     card: "summary_large_image",
-    images: ["/og-image.png"],
     title: "LeaguePour",
     description: "Run competitions. Collect entry fees. Bring players back.",
   },
@@ -51,10 +50,10 @@ export const metadata: Metadata = {
     siteName: "LeaguePour",
     type: "website",
     locale: "en_US",
-    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
   },
   // Icons come from the app/icon.png + app/apple-icon.png file conventions;
   // an explicit icons entry here would suppress those generated links.
+  // Same for the OG/Twitter share image: app/opengraph-image.tsx generates it.
   verification: {
     google: "LwIFXTG8T_HfBPtfvblat8kld4HFp1C8wqUTEfzPKCc",
   },
