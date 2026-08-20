@@ -59,6 +59,20 @@ const guides = [
       "A full list of competition formats - darts, cornhole, trivia, pool, poker, shuffleboard, cards, and more - with a brief description of what makes each one work.",
     tag: "Ideas",
   },
+  {
+    href: "/guides/how-to-start-a-pool-league",
+    title: "How to Start a Pool League at Your Bar",
+    description:
+      "Choosing 8-ball or 9-ball, handicapping mixed-skill players, table logistics, entry fees, and how to run league night without the chaos.",
+    tag: "Pool",
+  },
+  {
+    href: "/guides/how-to-increase-bar-traffic-on-slow-nights",
+    title: "How to Increase Bar Traffic on Slow Nights",
+    description:
+      "Why one-off drink specials don't stick, how to pick one recurring anchor event, and how to build a slow Tuesday into a full one.",
+    tag: "Operations",
+  },
 ];
 
 export default function GuidesIndexPage() {

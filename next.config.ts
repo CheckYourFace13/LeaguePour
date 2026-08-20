@@ -22,6 +22,8 @@ const vsDomainRewrites = [
   { source: "/bar-event-management-software", destination: "/venuesprocket/bar-event-management-software" },
   { source: "/taproom-event-management-software", destination: "/venuesprocket/taproom-event-management-software" },
   { source: "/banquet-hall-software", destination: "/venuesprocket/banquet-hall-software" },
+  { source: "/guides", destination: "/venuesprocket/guides" },
+  { source: "/guides/:path*", destination: "/venuesprocket/guides/:path*" },
   { source: "/contact", destination: "/venuesprocket/contact" },
   { source: "/legal/terms", destination: "/venuesprocket/legal/terms" },
   { source: "/legal/privacy", destination: "/venuesprocket/legal/privacy" },

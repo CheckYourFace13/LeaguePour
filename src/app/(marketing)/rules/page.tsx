@@ -268,6 +268,27 @@ export default function RulesPage() {
         </div>
 
         <div className="mt-10">
+          <p className="text-sm font-semibold text-lp-text">Run a league in one of these games?</p>
+          <div className="mt-3 flex flex-wrap gap-4 text-sm">
+            <Link href="/dart-league-software" className="text-lp-accent hover:underline">
+              Dart league software →
+            </Link>
+            <Link href="/cornhole-tournament-software" className="text-lp-accent hover:underline">
+              Cornhole tournament software →
+            </Link>
+            <Link href="/pool-league-management" className="text-lp-accent hover:underline">
+              Pool league management →
+            </Link>
+            <Link href="/shuffleboard-league-software" className="text-lp-accent hover:underline">
+              Shuffleboard league software →
+            </Link>
+            <Link href="/euchre-tournament-software" className="text-lp-accent hover:underline">
+              Euchre tournament software →
+            </Link>
+          </div>
+        </div>
+
+        <div className="mt-6">
           <p className="text-sm font-semibold text-lp-text">Explore game history</p>
           <div className="mt-3 flex flex-wrap gap-4 text-sm">
             <Link href="/history/darts" className="text-lp-accent hover:underline">

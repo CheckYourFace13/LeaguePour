@@ -106,6 +106,7 @@ export default function PoolLeagueManagementPage() {
         </div>
 
         <div className="mt-10 flex flex-wrap gap-4 text-sm">
+          <Link href="/guides/how-to-start-a-pool-league" className="font-semibold text-lp-accent hover:underline">Guide: How to start a pool league →</Link>
           <Link href="/dart-league-software" className="font-semibold text-lp-accent hover:underline">Dart league software →</Link>
           <Link href="/cornhole-tournament-software" className="font-semibold text-lp-accent hover:underline">Cornhole tournament software →</Link>
           <Link href="/bar-trivia-software" className="font-semibold text-lp-accent hover:underline">Bar trivia software →</Link>

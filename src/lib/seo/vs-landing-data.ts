@@ -13,6 +13,8 @@ export type VsLandingData = {
   faqs: { q: string; a: string }[];
   cta: string;
   ctaSub: string;
+  relatedLinks?: { slug: string; label: string }[];
+  guideLinks?: { href: string; label: string }[];
 };
 
 export const VS_LANDING_DATA: Record<string, VsLandingData> = {
@@ -77,6 +79,15 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     ],
     cta: "Start free today",
     ctaSub: "Your inquiry form can be live in under ten minutes.",
+    relatedLinks: [
+      { slug: "beo-software", label: "BEO software" },
+      { slug: "event-contract-software", label: "Event contract software" },
+      { slug: "event-deposit-software", label: "Event deposit software" },
+    ],
+    guideLinks: [
+      { href: "/guides/private-event-inquiry-form-template", label: "Inquiry form template" },
+      { href: "/guides/what-is-a-beo", label: "What is a BEO?" },
+    ],
   },
 
   "beo-software": {
@@ -140,6 +151,16 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     ],
     cta: "Start building BEOs",
     ctaSub: "Generate your first BEO from an existing event in minutes.",
+    relatedLinks: [
+      { slug: "event-contract-software", label: "Event contract software" },
+      { slug: "event-deposit-software", label: "Event deposit software" },
+      { slug: "private-event-booking-software", label: "Private event booking software" },
+    ],
+    guideLinks: [
+      { href: "/guides/what-is-a-beo", label: "What is a BEO?" },
+      { href: "/guides/beo-template", label: "BEO template" },
+      { href: "/guides/beo-vs-contract", label: "BEO vs. contract" },
+    ],
   },
 
   "event-contract-software": {
@@ -202,6 +223,14 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     ],
     cta: "Start getting contracts signed",
     ctaSub: "First contract can be sent in under ten minutes.",
+    relatedLinks: [
+      { slug: "event-deposit-software", label: "Event deposit software" },
+      { slug: "beo-software", label: "BEO software" },
+      { slug: "private-event-booking-software", label: "Private event booking software" },
+    ],
+    guideLinks: [
+      { href: "/guides/beo-vs-contract", label: "BEO vs. contract" },
+    ],
   },
 
   "event-deposit-software": {
@@ -264,6 +293,11 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     ],
     cta: "Start collecting deposits online",
     ctaSub: "Connect Stripe and receive your first deposit in the same session.",
+    relatedLinks: [
+      { slug: "event-contract-software", label: "Event contract software" },
+      { slug: "beo-software", label: "BEO software" },
+      { slug: "private-event-booking-software", label: "Private event booking software" },
+    ],
   },
 
   "venue-marketing-software": {
@@ -326,6 +360,11 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     ],
     cta: "Start generating leads from search",
     ctaSub: "Marketing pages publish on the Growth plan.",
+    relatedLinks: [
+      { slug: "private-event-booking-software", label: "Private event booking software" },
+      { slug: "restaurant-event-management-software", label: "Restaurant event management" },
+      { slug: "bar-event-management-software", label: "Bar event management" },
+    ],
   },
 
   "restaurant-event-management-software": {
@@ -389,6 +428,11 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     ],
     cta: "Start managing restaurant events",
     ctaSub: "Your inquiry form can be live today.",
+    relatedLinks: [
+      { slug: "beo-software", label: "BEO software" },
+      { slug: "event-contract-software", label: "Event contract software" },
+      { slug: "event-deposit-software", label: "Event deposit software" },
+    ],
   },
 
   "brewery-event-management-software": {
@@ -451,6 +495,11 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     ],
     cta: "Start booking taproom events",
     ctaSub: "Free to start. Upgrade for contracts, deposits, and BEOs.",
+    relatedLinks: [
+      { slug: "beo-software", label: "BEO software" },
+      { slug: "event-contract-software", label: "Event contract software" },
+      { slug: "event-deposit-software", label: "Event deposit software" },
+    ],
   },
 
   "bar-event-management-software": {
@@ -514,6 +563,11 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     ],
     cta: "Start booking bar events",
     ctaSub: "Free plan gets your inquiry form live immediately.",
+    relatedLinks: [
+      { slug: "event-contract-software", label: "Event contract software" },
+      { slug: "event-deposit-software", label: "Event deposit software" },
+      { slug: "private-event-booking-software", label: "Private event booking software" },
+    ],
   },
 
   "taproom-event-management-software": {
@@ -576,6 +630,11 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     ],
     cta: "Start managing taproom events",
     ctaSub: "Your inquiry page can be live in ten minutes.",
+    relatedLinks: [
+      { slug: "beo-software", label: "BEO software" },
+      { slug: "event-contract-software", label: "Event contract software" },
+      { slug: "venue-marketing-software", label: "Venue marketing software" },
+    ],
   },
 
   "banquet-hall-software": {
@@ -639,5 +698,10 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     ],
     cta: "Start managing banquet hall events",
     ctaSub: "Free plan available. Pro plan adds contracts, deposits, and BEOs.",
+    relatedLinks: [
+      { slug: "beo-software", label: "BEO software" },
+      { slug: "event-contract-software", label: "Event contract software" },
+      { slug: "event-deposit-software", label: "Event deposit software" },
+    ],
   },
 };

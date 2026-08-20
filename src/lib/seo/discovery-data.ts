@@ -242,6 +242,50 @@ export async function fetchDiscoveryVenuesForKind(
   }
 }
 
+/** Cities with at least one real (non-disabled) venue or active competition, regardless of game. */
+export async function getCitySlugsWithRealData(): Promise<Set<string>> {
+  const { getOutreachCitySlug } = await import("@/lib/seo/outreach-city-slugs");
+  const slugs = new Set<string>();
+  try {
+    const [venues, competitions] = await Promise.all([
+      prisma.venue.findMany({
+        where: { isDisabled: false, city: { not: null }, state: { not: null } },
+        select: { city: true, state: true },
+      }),
+      prisma.competition.findMany({
+        where: {
+          status: { in: [...ACTIVE_STATUSES] },
+          venue: { isDisabled: false, city: { not: null }, state: { not: null } },
+        },
+        select: { venue: { select: { city: true, state: true } } },
+      }),
+    ]);
+    for (const v of venues) {
+      if (v.city && v.state) slugs.add(getOutreachCitySlug(v.city, v.state));
+    }
+    for (const c of competitions) {
+      if (c.venue.city && c.venue.state) slugs.add(getOutreachCitySlug(c.venue.city, c.venue.state));
+    }
+  } catch {
+    return new Set();
+  }
+  return slugs;
+}
+
+/** Sitemap helper: discovery paths for city-only pages with real venue or competition data. */
+export async function getSitemapCityOnlyPaths(
+  prefixes: ("bar-leagues" | "events" | "bars")[],
+  citySlugs: string[],
+): Promise<string[]> {
+  const withData = await getCitySlugsWithRealData();
+  const paths: string[] = [];
+  for (const slug of citySlugs) {
+    if (!withData.has(slug)) continue;
+    for (const prefix of prefixes) paths.push(`/${prefix}/${slug}`);
+  }
+  return paths;
+}
+
 /** Sitemap helper: discovery paths for city+game pairs with real venue or competition data. */
 export async function getSitemapCityGamePaths(
   prefixes: ("bar-leagues" | "events" | "bars")[],

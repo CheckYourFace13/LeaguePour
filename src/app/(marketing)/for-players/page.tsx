@@ -46,10 +46,10 @@ const sports = [
   { name: "Dart leagues", href: "/dart-league-software" },
   { name: "Cornhole tournaments", href: "/cornhole-tournament-software" },
   { name: "Pool leagues", href: "/pool-league-management" },
-  { name: "Shuffleboard", href: "/for-venues" },
-  { name: "Poker & cards", href: "/for-venues" },
-  { name: "Music bingo", href: "/for-venues" },
-  { name: "Euchre & more", href: "/for-venues" },
+  { name: "Shuffleboard", href: "/shuffleboard-league-software" },
+  { name: "Poker & cards", href: "/poker-tournament-software" },
+  { name: "Music bingo", href: "/music-bingo-software" },
+  { name: "Euchre & more", href: "/euchre-tournament-software" },
 ];
 
 export default function ForPlayersPage() {

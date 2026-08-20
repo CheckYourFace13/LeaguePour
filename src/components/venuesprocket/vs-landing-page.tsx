@@ -123,6 +123,46 @@ export function VsLandingPage({ data }: { data: VsLandingData }) {
           </Link>
         </div>
 
+        {/* Related tools */}
+        {data.relatedLinks && data.relatedLinks.length > 0 ? (
+          <div className="mt-12">
+            <p className="text-sm text-vs-muted text-center mb-4">
+              Related VenueSprocket tools
+            </p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {data.relatedLinks.map((r) => (
+                <Link
+                  key={r.slug}
+                  href={`/${r.slug}`}
+                  className="rounded-lg border border-vs-border bg-vs-bg px-3 py-1.5 text-xs font-semibold text-vs-muted hover:border-vs-accent hover:text-vs-accent transition-colors"
+                >
+                  {r.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {/* Guides */}
+        {data.guideLinks && data.guideLinks.length > 0 ? (
+          <div className="mt-12">
+            <p className="text-sm text-vs-muted text-center mb-4">
+              Free guides
+            </p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {data.guideLinks.map((g) => (
+                <Link
+                  key={g.href}
+                  href={g.href}
+                  className="rounded-lg border border-vs-border bg-vs-bg px-3 py-1.5 text-xs font-semibold text-vs-muted hover:border-vs-accent hover:text-vs-accent transition-colors"
+                >
+                  {g.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
         {/* Comparison links */}
         <div className="mt-12">
           <p className="text-sm text-vs-muted text-center mb-4">

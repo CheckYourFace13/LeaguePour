@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/db";
 import { getAllCompareSlugs } from "@/lib/seo/compare-pages";
-import { getSitemapCityGamePaths } from "@/lib/seo/discovery-data";
+import { getSitemapCityGamePaths, getSitemapCityOnlyPaths } from "@/lib/seo/discovery-data";
 import { getAllFindSlugs } from "@/lib/seo/render-find-page";
 import { getAllSoftwareSlugs } from "@/lib/seo/render-software-page";
 import { getAllOutreachCitySlugs } from "@/lib/seo/outreach-city-slugs";
@@ -15,9 +15,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let venues: { slug: string; updatedAt: Date }[] = [];
   let competitions: { slug: string; updatedAt: Date; venue: { slug: string } }[] = [];
   let cityGamePaths: string[] = [];
+  let cityDiscoveryPaths: string[] = [];
+
+  const discoveryPrefixes = ["bar-leagues", "events", "bars"] as const;
 
   try {
-    [venues, competitions, cityGamePaths] = await Promise.all([
+    [venues, competitions, cityGamePaths, cityDiscoveryPaths] = await Promise.all([
       prisma.venue.findMany({
         where: { isDisabled: false },
         select: { slug: true, updatedAt: true },
@@ -32,17 +35,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         take: 5000,
       }),
       getSitemapCityGamePaths(["bar-leagues", "events", "bars"]),
+      getSitemapCityOnlyPaths([...discoveryPrefixes], citySlugs),
     ]);
   } catch {
     venues = [];
     competitions = [];
     cityGamePaths = [];
+    cityDiscoveryPaths = [];
   }
-
-  const discoveryPrefixes = ["bar-leagues", "events", "bars"] as const;
-  const cityDiscoveryPaths = discoveryPrefixes.flatMap((prefix) =>
-    citySlugs.map((s) => `/${prefix}/${s}`),
-  );
 
   const staticPages: MetadataRoute.Sitemap = [
     "",
@@ -72,6 +72,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/guides/bar-trivia-night-guide",
     "/guides/how-to-collect-entry-fees-at-your-bar",
     "/guides/bar-competition-ideas",
+    "/guides/how-to-start-a-pool-league",
+    "/guides/how-to-increase-bar-traffic-on-slow-nights",
     "/history",
     "/history/darts",
     "/history/cornhole",

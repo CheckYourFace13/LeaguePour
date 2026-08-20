@@ -34,7 +34,7 @@ import {
   VENUE_WHY_ITEMS,
   type DiscoveryRoutePrefix,
 } from "@/lib/seo/discovery-shared";
-import { discoveryRobots, shouldIndexDiscoveryPage } from "@/lib/seo/should-index-discovery-page";
+import { discoveryRobots } from "@/lib/seo/should-index-discovery-page";
 
 const PREFIX_COPY: Record<
   DiscoveryRoutePrefix,
@@ -93,12 +93,6 @@ export async function buildCityDiscoveryMetadata(
     fetchDiscoveryCompetitionsForCity(city, game?.kind, 1),
   ]);
 
-  const indexable = shouldIndexDiscoveryPage({
-    venueCount: venues.length,
-    competitionCount: competitions.length,
-    hasEditorialContent: !gameSlug,
-  });
-
   return {
     title: { absolute: title },
     description,
@@ -107,9 +101,7 @@ export async function buildCityDiscoveryMetadata(
     robots: discoveryRobots({
       venueCount: venues.length,
       competitionCount: competitions.length,
-      hasEditorialContent: !gameSlug,
     }),
-    ...(indexable ? {} : {}),
   };
 }
 

@@ -185,6 +185,13 @@ export default function ForVenuesPage() {
         </div>
       </div>
 
+      {/* Related guide */}
+      <div className="text-sm">
+        <Link href="/guides/how-to-increase-bar-traffic-on-slow-nights" className="font-semibold text-lp-accent hover:underline">
+          Guide: How to increase bar traffic on slow nights →
+        </Link>
+      </div>
+
       {/* CTA */}
       <div className="text-center space-y-4">
         <p className="font-display text-xl font-bold text-lp-text">Ready to fill your next event?</p>

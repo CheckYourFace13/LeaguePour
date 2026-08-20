@@ -45,6 +45,7 @@ const cols = [
   {
     title: "Company",
     links: [
+      { href: "/guides", label: "Guides" },
       { href: "/contact", label: "Contact" },
       { href: "/legal/terms", label: "Terms" },
       { href: "/legal/privacy", label: "Privacy" },

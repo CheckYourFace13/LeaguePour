@@ -329,6 +329,8 @@ export default function BarCompetitionIdeas() {
           <Link href="/guides" className="font-semibold text-lp-accent hover:underline">← All guides</Link>
           <Link href="/guides/how-to-run-a-dart-league-at-your-bar" className="font-semibold text-lp-accent hover:underline">How to run a dart league →</Link>
           <Link href="/guides/cornhole-tournament-ideas-for-bars" className="font-semibold text-lp-accent hover:underline">Cornhole tournament ideas →</Link>
+          <Link href="/euchre-tournament-software" className="font-semibold text-lp-accent hover:underline">Euchre tournament software →</Link>
+          <Link href="/music-bingo-software" className="font-semibold text-lp-accent hover:underline">Music bingo software →</Link>
         </div>
       </div>
     </>

@@ -214,6 +214,28 @@ export default async function VsComparePage({
             </Link>
           </div>
 
+          {/* Related VenueSprocket tools */}
+          <div className="mb-16">
+            <h2 className="font-display text-xl font-bold text-vs-text mb-4">
+              Related VenueSprocket tools
+            </h2>
+            <div className="flex flex-wrap gap-3">
+              {[
+                { slug: "private-event-booking-software", label: "Private event booking software" },
+                { slug: "beo-software", label: "BEO software" },
+                { slug: "event-contract-software", label: "Event contract software" },
+              ].map((r) => (
+                <Link
+                  key={r.slug}
+                  href={`/${r.slug}`}
+                  className="rounded-lg border border-vs-border bg-vs-surface px-4 py-2 text-sm font-semibold text-vs-text-soft hover:border-vs-accent hover:text-vs-accent transition-colors"
+                >
+                  {r.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
           {/* More comparisons */}
           {otherComparisons.length > 0 && (
             <div>
