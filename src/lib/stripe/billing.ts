@@ -66,12 +66,23 @@ export async function getOrCreateBundleCoupon(): Promise<string> {
   return coupon.id;
 }
 
+/**
+ * Which product this subscription belongs to. LeaguePour and VenueSprocket subscriptions
+ * for the same venue are separate Stripe Subscription objects sharing one Stripe Customer -
+ * this tag lets the webhook route each one's state to the correct DB fields instead of both
+ * writing to Venue.subscriptionId and clobbering each other.
+ */
+export type BillingProduct = "lp" | "vs";
+
 /** Create a Stripe Checkout session in subscription mode for a venue plan. */
 export async function createSubscriptionCheckoutUrl(opts: {
   customerId: string;
   plan: BillingPlan;
   interval: BillingInterval;
   venueId: string;
+  product?: BillingProduct;
+  /** For product "vs": the VenueSprocket-native plan tier to persist on VenueVsConfig.vsPlan. */
+  vsPlan?: string;
   successPath?: string;
   cancelPath?: string;
   bundleDiscount?: boolean;
@@ -79,6 +90,7 @@ export async function createSubscriptionCheckoutUrl(opts: {
   const stripe = getStripe();
   const base = getAppBaseUrl();
   const lookupKey = billingPriceLookupKey(opts.plan, opts.interval);
+  const product = opts.product ?? "lp";
 
   const prices = await stripe.prices.list({ lookup_keys: [lookupKey], limit: 1 });
   if (!prices.data[0]) {
@@ -93,12 +105,19 @@ export async function createSubscriptionCheckoutUrl(opts: {
     ? { discounts: [{ coupon: await getOrCreateBundleCoupon() }] }
     : { allow_promotion_codes: true };
 
+  const subscriptionMetadata: Record<string, string> = {
+    venueId: opts.venueId,
+    plan: opts.plan,
+    product,
+    ...(opts.vsPlan ? { vsPlan: opts.vsPlan } : {}),
+  };
+
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     customer: opts.customerId,
     line_items: [{ price: prices.data[0].id, quantity: 1 }],
-    metadata: { venueId: opts.venueId, plan: opts.plan, interval: opts.interval },
-    subscription_data: { metadata: { venueId: opts.venueId, plan: opts.plan } },
+    metadata: { ...subscriptionMetadata, interval: opts.interval },
+    subscription_data: { metadata: subscriptionMetadata },
     success_url: `${base}${opts.successPath ?? "/venue/settings"}?notice=subscribed`,
     cancel_url: `${base}${opts.cancelPath ?? "/venue/settings"}?notice=subscribe-cancel`,
     ...discountOpts,

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@/lib/db";
-import { BillingPlan, VsEventStatus } from "@/generated/prisma/enums";
+import { BillingPlan, VsEventStatus, VsPlan } from "@/generated/prisma/enums";
 import { getStripeWebhookSecret } from "@/lib/stripe/env";
 import {
   applyStripeChargeRefunded,
@@ -21,6 +21,21 @@ function parseBillingPlan(raw: string | null | undefined): BillingPlan | null {
   return null;
 }
 
+function parseVsPlan(raw: string | null | undefined): VsPlan | null {
+  if (!raw) return null;
+  const upper = raw.toUpperCase();
+  if (Object.values(VsPlan).includes(upper as VsPlan)) return upper as VsPlan;
+  return null;
+}
+
+/**
+ * LeaguePour and VenueSprocket subscriptions for the same venue are separate Stripe
+ * Subscription objects, tagged with metadata.product ("lp" | "vs") at checkout. Subscriptions
+ * created before that tag existed have no metadata.product - treat those as "lp" so existing
+ * LeaguePour subscribers are unaffected. Routing on this tag (rather than always writing to
+ * Venue.subscriptionId) is what prevents one product's webhook from overwriting the other's
+ * tracked subscription state for venues that hold both.
+ */
 async function handleSubscriptionUpsert(sub: Stripe.Subscription) {
   const venueId = sub.metadata?.venueId;
   if (!venueId) {
@@ -28,12 +43,40 @@ async function handleSubscriptionUpsert(sub: Stripe.Subscription) {
     return;
   }
 
-  const plan = parseBillingPlan(sub.metadata?.plan);
+  const product = sub.metadata?.product === "vs" ? "vs" : "lp";
   const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer?.id ?? null;
   const periodEnd = sub.current_period_end
     ? new Date(sub.current_period_end * 1000)
     : null;
 
+  if (product === "vs") {
+    const vsPlan = parseVsPlan(sub.metadata?.vsPlan);
+    await prisma.venueVsConfig.upsert({
+      where: { venueId },
+      create: {
+        venueId,
+        vsSubscriptionId: sub.id,
+        vsSubscriptionStatus: sub.status,
+        vsSubscriptionPeriodEnd: periodEnd,
+        ...(vsPlan ? { vsPlan } : {}),
+      },
+      update: {
+        vsSubscriptionId: sub.id,
+        vsSubscriptionStatus: sub.status,
+        vsSubscriptionPeriodEnd: periodEnd,
+        ...(vsPlan ? { vsPlan } : {}),
+      },
+    });
+    if (customerId) {
+      await prisma.venue.updateMany({
+        where: { id: venueId, stripeBillingCustomerId: null },
+        data: { stripeBillingCustomerId: customerId },
+      });
+    }
+    return;
+  }
+
+  const plan = parseBillingPlan(sub.metadata?.plan);
   await prisma.venue.updateMany({
     where: { id: venueId },
     data: {
@@ -49,6 +92,21 @@ async function handleSubscriptionUpsert(sub: Stripe.Subscription) {
 async function handleSubscriptionDeleted(sub: Stripe.Subscription) {
   const venueId = sub.metadata?.venueId;
   if (!venueId) return;
+
+  const product = sub.metadata?.product === "vs" ? "vs" : "lp";
+
+  if (product === "vs") {
+    await prisma.venueVsConfig.updateMany({
+      where: { venueId },
+      data: {
+        vsSubscriptionId: null,
+        vsSubscriptionStatus: "canceled",
+        vsSubscriptionPeriodEnd: null,
+        vsPlan: VsPlan.VS_FREE,
+      },
+    });
+    return;
+  }
 
   await prisma.venue.updateMany({
     where: { id: venueId },

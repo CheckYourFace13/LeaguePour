@@ -39,7 +39,7 @@ export async function POST(req: Request) {
       name: true,
       stripeBillingCustomerId: true,
       subscriptionStatus: true,
-      vsConfig: { select: { id: true } },
+      vsConfig: { select: { vsSubscriptionStatus: true } },
     },
   });
   if (!venue) return NextResponse.json({ error: "Venue not found" }, { status: 404 });
@@ -55,8 +55,10 @@ export async function POST(req: Request) {
     });
   }
 
-  // Auto-apply bundle discount if venue already has VenueSprocket active
-  const hasVsActive = Boolean(venue.vsConfig);
+  // Auto-apply bundle discount if venue already has a paid, active VenueSprocket subscription
+  // (not merely a VenueVsConfig row - one is created for any venue that visits the VS app,
+  // free tier included).
+  const hasVsActive = subscriptionIsActive(venue.vsConfig?.vsSubscriptionStatus);
   const hasLpActive = subscriptionIsActive(venue.subscriptionStatus);
   const bundleDiscount = hasVsActive && !hasLpActive;
 
@@ -66,6 +68,7 @@ export async function POST(req: Request) {
       plan,
       interval,
       venueId: venue.id,
+      product: "lp",
       bundleDiscount,
     });
     return NextResponse.json({ url, bundleDiscount });

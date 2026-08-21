@@ -180,6 +180,16 @@ export async function harvestEmailsCore(limit: number): Promise<{
   return { checked: batch.length, found, remaining };
 }
 
+// Fixed key for a Postgres advisory lock around the send-and-mark critical section below.
+// Session-level advisory locks don't play safely with a pooled connection (the release could
+// land on a different connection than the acquire and never take effect), so this uses the
+// transaction-scoped variant (`pg_try_advisory_xact_lock`), which always releases automatically
+// when the transaction ends - no way to leak a stuck lock. Without this, two near-simultaneous
+// invocations (the daily cron plus a manual "Send batch" click, or a duplicate cron trigger)
+// could both pass the outreachSentWithinHours() throttle check before either had written
+// emailSentAt, sending the same batch of contacts a cold email twice.
+const OUTREACH_SEND_LOCK_KEY = BigInt(729_312_400_123);
+
 export async function sendOutreachCore(limit: number): Promise<{
   sent: number;
   failed: number;
@@ -192,6 +202,23 @@ export async function sendOutreachCore(limit: number): Promise<{
     return { sent: 0, failed: 0, remaining: 0, error: "RESEND_API_KEY not configured" };
   }
 
+  return prisma.$transaction(
+    async (tx) => sendOutreachLocked(tx, limit),
+    { timeout: 30_000 },
+  );
+}
+
+async function sendOutreachLocked(
+  tx: Parameters<Parameters<typeof prisma.$transaction>[0]>[0],
+  limit: number,
+): Promise<{ sent: number; failed: number; remaining: number; error?: string }> {
+  const [{ locked }] = await tx.$queryRaw<{ locked: boolean }[]>`
+    SELECT pg_try_advisory_xact_lock(${OUTREACH_SEND_LOCK_KEY}) AS locked
+  `;
+  if (!locked) {
+    return { sent: 0, failed: 0, remaining: 0, error: "Another outreach send is already in progress" };
+  }
+
   const take = Math.min(Math.max(limit, 1), 50);
 
   // Pull candidates in pages, screening out any with a malformed email (a
@@ -202,7 +229,7 @@ export async function sendOutreachCore(limit: number): Promise<{
   const batch: { id: string; name: string; email: string }[] = [];
   const invalidIds: string[] = [];
   for (let page = 0; batch.length < take && page < 5; page++) {
-    const candidates = await prisma.outreachContact.findMany({
+    const candidates = await tx.outreachContact.findMany({
       where: { email: { not: null }, status: "NOT_CONTACTED" },
       orderBy: { rating: "desc" },
       skip: page * take,
@@ -223,7 +250,7 @@ export async function sendOutreachCore(limit: number): Promise<{
 
   if (invalidIds.length > 0) {
     console.warn("[outreach] clearing malformed emails", invalidIds);
-    await prisma.outreachContact.updateMany({
+    await tx.outreachContact.updateMany({
       where: { id: { in: invalidIds } },
       data: { email: null, emailCheckedAt: null },
     });
@@ -242,21 +269,38 @@ export async function sendOutreachCore(limit: number): Promise<{
     })),
   );
 
-  if (result.ok && result.sent > 0) {
-    await prisma.outreachContact.updateMany({
+  // Only mark the batch EMAIL_SENT on a full clean success. Resend's batch response doesn't
+  // reliably tell us *which* recipients failed on a partial success (result.sent < batch.length),
+  // so guessing would risk marking someone EMAIL_SENT who never actually received anything -
+  // silently losing them from the pipeline forever, since retries only target NOT_CONTACTED
+  // contacts. Leaving the whole batch untouched on partial failure risks a few duplicate sends
+  // to whoever *did* succeed on the next run - a much smaller cost than losing a lead outright.
+  if (result.ok && result.sent === batch.length) {
+    await tx.outreachContact.updateMany({
       where: { id: { in: batch.map((c) => c.id) } },
       data: { status: "EMAIL_SENT", emailSentAt: new Date() },
     });
+  } else if (result.ok && result.sent > 0) {
+    console.warn(
+      `[outreach] partial batch send (${result.sent}/${batch.length}) - leaving all contacts NOT_CONTACTED to avoid mismarking`,
+    );
   }
 
-  const remaining = await prisma.outreachContact.count({
+  const remaining = await tx.outreachContact.count({
     where: { email: { not: null }, status: "NOT_CONTACTED" },
   });
+  const fullSuccess = result.ok && result.sent === batch.length;
   return {
-    sent: result.ok ? batch.length : 0,
-    failed: result.ok ? 0 : batch.length,
+    sent: fullSuccess ? batch.length : 0,
+    failed: fullSuccess ? 0 : batch.length,
     remaining,
-    ...(result.ok ? {} : { error: "Resend batch send failed - check server logs" }),
+    ...(fullSuccess
+      ? {}
+      : {
+          error: result.ok
+            ? `Resend accepted only ${result.sent}/${batch.length} - batch left unmarked for retry`
+            : "Resend batch send failed - check server logs",
+        }),
   };
 }
 

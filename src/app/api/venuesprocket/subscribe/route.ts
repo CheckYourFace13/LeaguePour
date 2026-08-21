@@ -11,7 +11,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import { BillingPlan } from "@/generated/prisma/enums";
+import { BillingPlan, VsPlan } from "@/generated/prisma/enums";
 import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import {
   createSubscriptionCheckoutUrl,
@@ -21,11 +21,20 @@ import {
 import { isStripePaymentsConfigured } from "@/lib/stripe/env";
 import type { BillingInterval } from "@/lib/stripe/billing";
 
-// VS plan name → LP BillingPlan enum
+// VS plan name → LP BillingPlan enum (Stripe price catalog is shared; VS plans map onto
+// LP price tiers of the same dollar amount - see comment in lib/stripe/billing.ts).
 const VS_PLAN_MAP: Record<string, BillingPlan> = {
   starter: BillingPlan.STARTER,
   pro: BillingPlan.GROWTH,
   growth: BillingPlan.PRO,
+};
+
+// VS plan name → VenueSprocket-native plan tier, persisted to VenueVsConfig.vsPlan
+// (kept separate from the LP price-tier mapping above, which only exists to pick a Stripe price).
+const VS_PLAN_TIER: Record<string, VsPlan> = {
+  starter: VsPlan.VS_STARTER,
+  pro: VsPlan.VS_PRO,
+  growth: VsPlan.VS_GROWTH,
 };
 
 export async function POST(req: Request) {
@@ -83,6 +92,8 @@ export async function POST(req: Request) {
       plan,
       interval,
       venueId: venue.id,
+      product: "vs",
+      vsPlan: VS_PLAN_TIER[vsPlanName],
       bundleDiscount,
       // Return to VS dashboard after payment
       successPath: "/venue/dashboard?notice=vs-subscribed",

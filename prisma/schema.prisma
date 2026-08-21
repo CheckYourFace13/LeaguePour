@@ -800,6 +800,11 @@ model VenueVsConfig {
   defaultDepositPct  Int      @default(25)
   defaultDepositFlat Int?
   timezone           String   @default("America/Chicago")
+  /// Active Stripe Subscription id for the VenueSprocket plan (separate from Venue.subscriptionId,
+  /// which tracks LeaguePour's subscription). A venue can hold one active subscription per product.
+  vsSubscriptionId          String?    @unique
+  vsSubscriptionStatus      String?
+  vsSubscriptionPeriodEnd   DateTime?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 

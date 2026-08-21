@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,6 +31,13 @@ function SignupVenueForm() {
   } | null>(null);
   const [loadingMatches, setLoadingMatches] = useState(false);
   const [searchMsg, setSearchMsg] = useState<string | null>(null);
+
+  // This form is shared by both brands (routing after signup already branches on `from=vs`).
+  // Without this, a visitor arriving from venuesprocket.com sees a browser tab and heading that
+  // both say "LeaguePour" - a confusing "did I click the wrong thing?" moment right at signup.
+  useEffect(() => {
+    if (fromVs) document.title = "Create Your Free Account | VenueSprocket";
+  }, [fromVs]);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -93,7 +100,7 @@ function SignupVenueForm() {
       }
     }
 
-    router.push("/venue/dashboard");
+    router.push(fromVs ? "/app/dashboard" : "/venue/dashboard");
     router.refresh();
   }
 
@@ -149,8 +156,14 @@ function SignupVenueForm() {
 
   return (
     <Card className="w-full max-w-md p-6 md:p-8">
-      <h1 className="lp-page-title text-3xl md:text-4xl">Venue signup</h1>
-      <p className="mt-3 text-lg text-lp-text-soft">Account + venue in one flow (~2 min).</p>
+      <h1 className="lp-page-title text-3xl md:text-4xl">
+        {fromVs ? "Create your VenueSprocket account" : "Venue signup"}
+      </h1>
+      <p className="mt-3 text-lg text-lp-text-soft">
+        {fromVs
+          ? "Free to start. Account + venue in one flow (~2 min)."
+          : "Account + venue in one flow (~2 min)."}
+      </p>
       {msg ? (
         <p className="mt-4 rounded-[10px] border border-lp-warning/40 bg-lp-warning/10 px-4 py-3 text-base">{msg}</p>
       ) : null}
