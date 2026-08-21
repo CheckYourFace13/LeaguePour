@@ -13,6 +13,8 @@ import {
   createStripeConnectOnboardingAction,
   refreshStripeConnectStatusAction,
 } from "./actions";
+import { TrackView } from "@/components/analytics/track-view";
+import { TrackClick } from "@/components/analytics/track-click";
 
 export default async function VenueProfilePage({
   searchParams,
@@ -39,6 +41,9 @@ export default async function VenueProfilePage({
         <div className="rounded-[10px] border border-lp-accent/35 bg-lp-accent/10 px-4 py-3 text-sm font-medium text-lp-text">
           Profile saved.
         </div>
+      ) : null}
+      {notice === "connect-return" && venue.stripeChargesEnabled ? (
+        <TrackView event="stripe_connect_completed" params={{ product: "lp" }} />
       ) : null}
       <Card className="space-y-5">
         <div>
@@ -75,9 +80,11 @@ export default async function VenueProfilePage({
         </p>
         <div className="flex flex-col gap-2 sm:flex-row">
           <form action={createStripeConnectOnboardingAction}>
-            <Button type="submit" size="lg">
-              {venue.stripeAccountId ? "Continue Stripe setup" : "Connect Stripe"}
-            </Button>
+            <TrackClick event="stripe_connect_started" params={{ product: "lp" }}>
+              <Button type="submit" size="lg">
+                {venue.stripeAccountId ? "Continue Stripe setup" : "Connect Stripe"}
+              </Button>
+            </TrackClick>
           </form>
           <form action={refreshStripeConnectStatusAction}>
             <Button type="submit" size="lg" variant="secondary">

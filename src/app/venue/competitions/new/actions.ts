@@ -133,5 +133,5 @@ export async function createCompetitionAction(formData: FormData) {
 
   revalidatePath("/venue/dashboard");
   revalidatePath("/venue/competitions");
-  redirect(`/venue/competitions/${comp.id}`);
+  redirect(`/venue/competitions/${comp.id}?created=1${publish ? "&published=1" : ""}`);
 }

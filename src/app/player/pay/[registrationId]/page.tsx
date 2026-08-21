@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { TrackView } from "@/components/analytics/track-view";
 import { prisma } from "@/lib/db";
 import { PaymentStatus, RegistrationStatus } from "@/generated/prisma/enums";
 import { CheckoutReturnPoller } from "@/components/player/checkout-return-poller";
@@ -108,6 +109,12 @@ export default async function PayRegistrationPage({
   if (paidAndConfirmed) {
     return (
       <div className="mx-auto max-w-lg px-4 py-12 md:px-6 md:py-16">
+        {sp.awaiting_webhook === "1" ? (
+          <TrackView
+            event="registration_completed"
+            params={{ product: "lp", competitionId: reg.competitionId, paid: true }}
+          />
+        ) : null}
         <p className="lp-kicker">Entry paid</p>
         <h1 className="lp-page-title mt-3 text-3xl md:text-4xl">You are confirmed</h1>
         <p className="mt-3 text-base text-lp-muted">{reg.competition.venue.name}</p>

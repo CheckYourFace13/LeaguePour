@@ -8,6 +8,7 @@ import { marketingRoutes, venueAppRoutes } from "@/lib/routes";
 import { resolvePrimaryVenueAccess, venueStaffCanManageStaff } from "@/lib/venue-permissions";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
+import { TrackView } from "@/components/analytics/track-view";
 
 const notices: Record<string, string> = {
   subscribed: "Subscription activated - welcome aboard!",
@@ -43,6 +44,7 @@ export default async function VenueSettingsPage({
         <p className="mt-2 text-lp-muted">Core controls for profile, staff, billing, and competition defaults.</p>
       </div>
 
+      {notice === "subscribed" ? <TrackView event="subscription_activated" params={{ product: "lp" }} /> : null}
       {notice && notices[notice] ? (
         <div className="rounded-[10px] border border-lp-accent/35 bg-lp-accent/10 px-4 py-3 text-sm font-medium text-lp-text">
           {notices[notice]}

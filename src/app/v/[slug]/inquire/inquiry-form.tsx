@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createPrivateEventLeadPublic } from "@/lib/actions/vs";
+import { trackEvent } from "@/lib/analytics";
 
 const EVENT_TYPES = [
   { value: "BIRTHDAY", label: "Birthday party" },
@@ -40,6 +41,7 @@ export default function InquirePageClient({
     if (result && "error" in result) {
       setError(result.error ?? "Something went wrong");
     } else {
+      trackEvent("inquiry_received", { product: "vs", venueId });
       setSubmitted(true);
     }
   }

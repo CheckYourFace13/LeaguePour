@@ -10,9 +10,11 @@ export async function GET(request: Request) {
   let ok = false;
   if (id) {
     try {
+      // Unsubscribing from either brand's cold outreach stops both - same company, same
+      // recipient's reasonable expectation, and the safer choice against spam complaints.
       const res = await prisma.outreachContact.updateMany({
         where: { id },
-        data: { status: "NOT_INTERESTED", notes: "Unsubscribed via email link" },
+        data: { status: "NOT_INTERESTED", vsStatus: "NOT_INTERESTED", notes: "Unsubscribed via email link" },
       });
       ok = res.count > 0;
     } catch (err) {

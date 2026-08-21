@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { formatUsdCents, PLAN_DEFINITIONS } from "@/lib/pricing";
+import { TrackView } from "@/components/analytics/track-view";
+import { PlanSelectLink } from "@/components/analytics/plan-select-link";
 
 export const metadata: Metadata = {
   title: { absolute: "LeaguePour Pricing | Bar Event Registration Software Plans" },
@@ -23,6 +25,7 @@ export const metadata: Metadata = {
 export default function PricingPage() {
   return (
     <div className="lp-section mx-auto max-w-6xl px-4 md:px-6">
+      <TrackView event="pricing_view" params={{ product: "lp" }} />
       <h1 className="lp-page-title text-5xl md:text-6xl">Pricing</h1>
       <p className="lp-page-sub mt-5 max-w-xl text-xl text-lp-text-soft">
         Simple tiers. Annual saves 10%.
@@ -59,7 +62,13 @@ export default function PricingPage() {
               </li>
             </ul>
             <Button className="mt-10 w-full text-[1.05rem]" variant={t.featured ? "primary" : "secondary"} asChild>
-              <Link href={`/signup/venue?plan=${t.plan.toLowerCase()}`}>Choose {t.name}</Link>
+              <PlanSelectLink
+                href={`/signup/venue?plan=${t.plan.toLowerCase()}`}
+                plan={t.plan.toLowerCase()}
+                product="lp"
+              >
+                Choose {t.name}
+              </PlanSelectLink>
             </Button>
           </Card>
         ))}

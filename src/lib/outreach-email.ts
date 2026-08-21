@@ -93,19 +93,43 @@ async function fetchPageText(url: string): Promise<string | null> {
   }
 }
 
-/** Scan a venue website (homepage + common contact paths) for a contact email. */
-export async function findEmailOnWebsite(website: string): Promise<string | null> {
+/**
+ * Signals that a business's own website shows evidence of private-event business - the
+ * VenueSprocket eligibility bar. Deliberately conservative (checks for actual event-booking
+ * language, not just "party" appearing anywhere) so VS outreach targets businesses that plausibly
+ * sell private events, not every restaurant with a website.
+ */
+const VS_EVENT_SIGNAL_RE =
+  /private\s+(dining|event|party|parties)|book\s+(your|a)\s+(event|party)|event\s+space|banquet|corporate\s+event|host\s+your\s+(event|party)|rehearsal\s+dinner|buyout|catering\s*(&|and)?\s*events?|weddings?|holiday\s+part(y|ies)/i;
+
+function classifyVsEligibility(pagesText: string[]): { eligible: boolean; note: string } {
+  const hit = pagesText.find((t) => VS_EVENT_SIGNAL_RE.test(t));
+  if (!hit) return { eligible: false, note: "No private-event language found on site" };
+  const match = hit.match(VS_EVENT_SIGNAL_RE);
+  return { eligible: true, note: `Site mentions "${match?.[0] ?? "private events"}"` };
+}
+
+/**
+ * Scan a venue website (homepage + common contact paths) for a contact email, and separately
+ * for VenueSprocket eligibility signals - one fetch pass serves both, since eligibility scanning
+ * needs the same pages email harvesting already downloads.
+ */
+export async function probeWebsite(
+  website: string,
+): Promise<{ email: string | null; vsEligible: boolean; vsEligibilityNote: string }> {
   let base: URL;
   try {
     base = new URL(website.startsWith("http") ? website : `https://${website}`);
   } catch {
-    return null;
+    return { email: null, vsEligible: false, vsEligibilityNote: "Invalid website URL" };
   }
   // Social/profile links never expose a venue inbox worth scraping.
   if (/(facebook|instagram|twitter|x|linktr|tiktok|untappd|yelp)\.(com|ee)$/i.test(base.hostname.replace(/^www\./, ""))) {
-    return null;
+    return { email: null, vsEligible: false, vsEligibilityNote: "Website is a social profile, not scanned" };
   }
 
+  // Same 3 pages email harvesting already fetches - a business that books private events
+  // almost always mentions it on the homepage or contact page, so this needs no extra fetches.
   const candidates = [
     base.href,
     new URL("/contact", base).href,
@@ -113,23 +137,30 @@ export async function findEmailOnWebsite(website: string): Promise<string | null
   ];
 
   const found: string[] = [];
+  const pagesText: string[] = [];
   for (const [i, url] of candidates.entries()) {
     const html = await fetchPageText(url);
     // Homepage totally unreachable (timeout/DNS/refused) - the domain is dead,
-    // don't burn the time budget probing /contact and /contact-us too.
+    // don't burn the time budget probing the rest.
     if (!html) {
       if (i === 0) break;
       continue;
     }
+    pagesText.push(html);
     // mailto: links first — they're deliberate contact addresses
     const mailtos = [...html.matchAll(/mailto:([^"'?\s\\<>]+)/gi)].map((m) => decodeURIComponent(m[1]));
     found.push(...mailtos);
     found.push(...(html.match(EMAIL_RE) ?? []));
-    if (mailtos.length > 0) break;
-    if (found.some(isPlausibleEmail)) break;
+    if (mailtos.length > 0 && found.some(isPlausibleEmail)) break;
   }
 
-  return pickBestEmail(found, base.hostname);
+  const { eligible, note } = classifyVsEligibility(pagesText);
+  return { email: pickBestEmail(found, base.hostname), vsEligible: eligible, vsEligibilityNote: note };
+}
+
+/** @deprecated use probeWebsite - kept for any external callers expecting the old shape. */
+export async function findEmailOnWebsite(website: string): Promise<string | null> {
+  return (await probeWebsite(website)).email;
 }
 
 // ── Outreach email content ───────────────────────────────────────────────────
@@ -164,11 +195,18 @@ export async function harvestEmailsCore(limit: number): Promise<{
     const chunk = batch.slice(i, i + CONCURRENCY);
     await Promise.all(
       chunk.map(async (c) => {
-        const email = c.website ? await findEmailOnWebsite(c.website) : null;
-        if (email) found++;
+        const probe = c.website
+          ? await probeWebsite(c.website)
+          : { email: null, vsEligible: false, vsEligibilityNote: "No website on file" };
+        if (probe.email) found++;
         await prisma.outreachContact.update({
           where: { id: c.id },
-          data: { email, emailCheckedAt: new Date() },
+          data: {
+            email: probe.email,
+            emailCheckedAt: new Date(),
+            vsEligible: probe.vsEligible,
+            vsEligibilityNote: probe.vsEligibilityNote,
+          },
         });
       }),
     );
@@ -189,6 +227,12 @@ export async function harvestEmailsCore(limit: number): Promise<{
 // could both pass the outreachSentWithinHours() throttle check before either had written
 // emailSentAt, sending the same batch of contacts a cold email twice.
 const OUTREACH_SEND_LOCK_KEY = BigInt(729_312_400_123);
+const VS_OUTREACH_SEND_LOCK_KEY = BigInt(729_312_400_124);
+
+// Neither brand cold-emails a business the other brand has contacted within this window, and
+// neither cold-emails a business that has already signed up for either product - see the
+// cross-brand suppression rules in sendOutreachLocked / sendVsOutreachLocked below.
+const CROSS_BRAND_COOLING_OFF_HOURS = 14 * 24;
 
 export async function sendOutreachCore(limit: number): Promise<{
   sent: number;
@@ -226,11 +270,19 @@ async function sendOutreachLocked(
   // self-healed by clearing their email so they never recur; the remainder
   // is backfilled from the next page until the batch is full or contacts
   // run out. Capped at a few pages so a corrupted run can't loop forever.
+  const vsCoolingOffSince = new Date(Date.now() - CROSS_BRAND_COOLING_OFF_HOURS * 60 * 60 * 1000);
   const batch: { id: string; name: string; email: string }[] = [];
   const invalidIds: string[] = [];
   for (let page = 0; batch.length < take && page < 5; page++) {
     const candidates = await tx.outreachContact.findMany({
-      where: { email: { not: null }, status: "NOT_CONTACTED" },
+      where: {
+        email: { not: null },
+        status: "NOT_CONTACTED",
+        // Cross-brand suppression: don't cold-email a business VenueSprocket already contacted
+        // recently, and never cold-email a business that's already a VenueSprocket customer.
+        vsStatus: { not: "SIGNED_UP" },
+        OR: [{ vsEmailSentAt: null }, { vsEmailSentAt: { lt: vsCoolingOffSince } }],
+      },
       orderBy: { rating: "desc" },
       skip: page * take,
       take,
@@ -314,6 +366,132 @@ export async function outreachSentWithinHours(hours: number): Promise<boolean> {
   return recent > 0;
 }
 
+// ── VenueSprocket outreach (separate lane, same infrastructure) ─────────────
+//
+// Reuses the harvested contact/email/eligibility data above, but is its own campaign end to
+// end: its own eligibility gate (vsEligible, set from real website content - see
+// classifyVsEligibility), its own throttle/lock/send cap, its own copy and sender, and its own
+// status field (vsStatus) so an LP-contacted business and a VS-contacted business are tracked
+// independently on the same row. Cross-brand suppression (no double cold-emailing the same
+// business, no cold-emailing an existing customer of either product) is enforced in both
+// directions - see the vsStatus/vsEmailSentAt filter in sendOutreachLocked above and the
+// status/emailSentAt filter in sendVsOutreachLocked below.
+
+/** True if a VenueSprocket outreach batch already went out within the past `hours`. */
+export async function vsOutreachSentWithinHours(hours: number): Promise<boolean> {
+  const since = new Date(Date.now() - hours * 60 * 60 * 1000);
+  const recent = await prisma.outreachContact.count({
+    where: { vsEmailSentAt: { gte: since } },
+  });
+  return recent > 0;
+}
+
+export async function sendVsOutreachCore(limit: number): Promise<{
+  sent: number;
+  failed: number;
+  remaining: number;
+  error?: string;
+}> {
+  if (!process.env.RESEND_API_KEY?.trim()) {
+    return { sent: 0, failed: 0, remaining: 0, error: "RESEND_API_KEY not configured" };
+  }
+  return prisma.$transaction(async (tx) => sendVsOutreachLocked(tx, limit), { timeout: 30_000 });
+}
+
+async function sendVsOutreachLocked(
+  tx: Parameters<Parameters<typeof prisma.$transaction>[0]>[0],
+  limit: number,
+): Promise<{ sent: number; failed: number; remaining: number; error?: string }> {
+  const [{ locked }] = await tx.$queryRaw<{ locked: boolean }[]>`
+    SELECT pg_try_advisory_xact_lock(${VS_OUTREACH_SEND_LOCK_KEY}) AS locked
+  `;
+  if (!locked) {
+    return { sent: 0, failed: 0, remaining: 0, error: "Another VenueSprocket outreach send is already in progress" };
+  }
+
+  const take = Math.min(Math.max(limit, 1), 50);
+  const lpCoolingOffSince = new Date(Date.now() - CROSS_BRAND_COOLING_OFF_HOURS * 60 * 60 * 1000);
+
+  const vsBatch: { id: string; name: string; email: string }[] = [];
+  const invalidIds: string[] = [];
+  for (let page = 0; vsBatch.length < take && page < 5; page++) {
+    const candidates = await tx.outreachContact.findMany({
+      where: {
+        email: { not: null },
+        vsEligible: true,
+        vsStatus: null,
+        // Cross-brand suppression: don't cold-email a business LeaguePour already contacted
+        // recently, and never cold-email a business that's already a LeaguePour customer.
+        status: { not: "SIGNED_UP" },
+        OR: [{ emailSentAt: null }, { emailSentAt: { lt: lpCoolingOffSince } }],
+      },
+      orderBy: { rating: "desc" },
+      skip: page * take,
+      take,
+      select: { id: true, name: true, email: true },
+    });
+    if (candidates.length === 0) break;
+    for (const c of candidates) {
+      if (vsBatch.length >= take) break;
+      if (c.email && isPlausibleEmail(c.email)) {
+        vsBatch.push({ id: c.id, name: c.name, email: c.email });
+      } else {
+        invalidIds.push(c.id);
+      }
+    }
+    if (candidates.length < take) break;
+  }
+
+  if (invalidIds.length > 0) {
+    await tx.outreachContact.updateMany({
+      where: { id: { in: invalidIds } },
+      data: { email: null, emailCheckedAt: null },
+    });
+  }
+
+  if (vsBatch.length === 0) {
+    return { sent: 0, failed: 0, remaining: 0 };
+  }
+
+  const result = await sendEmailBatch(
+    vsBatch.map((c) => ({
+      to: c.email as string,
+      subject: vsOutreachEmailSubject(c.name),
+      html: vsOutreachEmailHtml(c.name, c.id),
+      from: "VenueSprocket <hello@venuesprocket.com>",
+      replyTo: "hello@venuesprocket.com",
+    })),
+  );
+
+  if (result.ok && result.sent === vsBatch.length) {
+    await tx.outreachContact.updateMany({
+      where: { id: { in: vsBatch.map((c) => c.id) } },
+      data: { vsStatus: "EMAIL_SENT", vsEmailSentAt: new Date() },
+    });
+  } else if (result.ok && result.sent > 0) {
+    console.warn(
+      `[vs-outreach] partial batch send (${result.sent}/${vsBatch.length}) - leaving all contacts unmarked to avoid mismarking`,
+    );
+  }
+
+  const remaining = await tx.outreachContact.count({
+    where: { email: { not: null }, vsEligible: true, vsStatus: null },
+  });
+  const fullSuccess = result.ok && result.sent === vsBatch.length;
+  return {
+    sent: fullSuccess ? vsBatch.length : 0,
+    failed: fullSuccess ? 0 : vsBatch.length,
+    remaining,
+    ...(fullSuccess
+      ? {}
+      : {
+          error: result.ok
+            ? `Resend accepted only ${result.sent}/${vsBatch.length} - batch left unmarked for retry`
+            : "Resend batch send failed - check server logs",
+        }),
+  };
+}
+
 export function outreachEmailSubject(barName: string): string {
   return `Run dart leagues & trivia nights at ${barName} — free to try`;
 }
@@ -356,6 +534,59 @@ export function outreachEmailHtml(barName: string, contactId: string): string {
       You're receiving this one-time note because ${barName} is publicly listed as a bar/venue.
       ${getPostalAddress()}<br>
       <a href="${unsubscribeUrl}" style="color:#9aa5b4;">Unsubscribe — never hear from us again</a>
+    </p>
+  </div>
+</div>
+</body>
+</html>`;
+}
+
+// VenueSprocket's own copy/positioning - private-event booking and operations, not league
+// software. Deliberately does not mention LeaguePour; that cross-sell happens in-app after
+// signup, not in a cold email to a business that's never heard of either product.
+export function vsOutreachEmailSubject(venueName: string): string {
+  return `Turning private event inquiries into bookings at ${venueName}`;
+}
+
+export function vsOutreachEmailHtml(venueName: string, contactId: string): string {
+  const site = "https://venuesprocket.com";
+  const unsubscribeUrl = `${site}/api/outreach/unsubscribe?c=${contactId}`;
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f4f0e8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1a1512;">
+<div style="max-width:560px;margin:32px auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+  <div style="background:#1a1512;padding:24px 32px;">
+    <h1 style="margin:0;font-size:20px;font-weight:800;color:#ffffff;">Venue<span style="color:#b87333;">Sprocket</span></h1>
+  </div>
+  <div style="padding:28px 32px;">
+    <p style="margin:0 0 14px;line-height:1.6;font-size:15px;color:#4a4038;">Hi ${venueName} team,</p>
+    <p style="margin:0 0 14px;line-height:1.6;font-size:15px;color:#4a4038;">
+      I wanted to reach out about <strong>VenueSprocket</strong>, built for restaurants, bars, and breweries that
+      book private events - birthday parties, corporate events, rehearsal dinners, buyouts - and manage the whole
+      process from first inquiry to the day of the event.
+    </p>
+    <ul style="margin:0 0 14px;padding-left:20px;line-height:1.7;font-size:15px;color:#4a4038;">
+      <li>A public inquiry form so leads land in one place instead of scattered emails and DMs</li>
+      <li>Proposals and contracts customers can review and sign from their phone</li>
+      <li>Stripe deposit collection - no more chasing checks</li>
+      <li>A clean BEO for your staff on the day of the event</li>
+    </ul>
+    <p style="margin:0 0 14px;line-height:1.6;font-size:15px;color:#4a4038;">
+      The free plan gets your inquiry form live in about ten minutes, no card required - you can see how it works
+      before paying for anything.
+    </p>
+    <a href="${site}/start" style="display:inline-block;background:#b87333;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:700;font-size:15px;margin:6px 0 18px;">Start free</a>
+    <p style="margin:0;line-height:1.6;font-size:15px;color:#4a4038;">
+      Happy to answer any questions - just reply to this email.<br><br>
+      Best,<br>Chris<br>VenueSprocket · <a href="${site}" style="color:#b87333;">venuesprocket.com</a>
+    </p>
+  </div>
+  <div style="padding:18px 32px;border-top:1px solid #ece4d8;">
+    <p style="margin:0;font-size:12px;color:#9a8f80;line-height:1.6;">
+      You're receiving this one-time note because ${venueName} is publicly listed as a venue that hosts private
+      events. ${getPostalAddress()}<br>
+      <a href="${unsubscribeUrl}" style="color:#9a8f80;">Unsubscribe — never hear from us again</a>
     </p>
   </div>
 </div>

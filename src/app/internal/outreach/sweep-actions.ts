@@ -7,7 +7,9 @@ import {
   ensureOutreachEmailColumns,
   harvestEmailsCore,
   sendOutreachCore,
+  sendVsOutreachCore,
 } from "@/lib/outreach-email";
+import { runJob } from "@/lib/job-runs";
 import { OUTREACH_CITIES, type OutreachCity } from "@/lib/outreach-cities";
 
 // --- Stats / progress ---
@@ -115,6 +117,70 @@ export async function sendOutreachBatch(limit = 25): Promise<{
     return { sent: 0, failed: 0, remaining: 0, error: "Not authorised" };
   }
   return sendOutreachCore(limit);
+}
+
+// --- VenueSprocket outreach (separate lane) ---
+
+export async function getVsOutreachStats() {
+  await requireOwnerSession();
+
+  const [statusCounts, eligible, withEmailEligible, readyToSend] = await Promise.all([
+    prisma.outreachContact.groupBy({
+      by: ["vsStatus"],
+      where: { vsEligible: true },
+      _count: { id: true },
+    }),
+    prisma.outreachContact.count({ where: { vsEligible: true } }),
+    prisma.outreachContact.count({ where: { vsEligible: true, email: { not: null } } }),
+    prisma.outreachContact.count({
+      where: { vsEligible: true, email: { not: null }, vsStatus: null },
+    }),
+  ]);
+
+  const byStatus = Object.fromEntries(
+    statusCounts.map((s: { vsStatus: string | null; _count: { id: number } }) => [
+      s.vsStatus ?? "NOT_CONTACTED",
+      s._count.id,
+    ]),
+  ) as Record<string, number>;
+
+  return {
+    eligible,
+    withEmailEligible,
+    readyToSend,
+    emailSent: byStatus["EMAIL_SENT"] ?? 0,
+    responded: byStatus["RESPONDED"] ?? 0,
+    signedUp: byStatus["SIGNED_UP"] ?? 0,
+    notInterested: byStatus["NOT_INTERESTED"] ?? 0,
+  };
+}
+
+/**
+ * Send the VenueSprocket outreach email to a batch of eligible, unsent contacts.
+ * Deliberately manual-only for now (no automatic daily cron, unlike the LeaguePour lane) -
+ * this is a brand-new communication channel to real businesses that has not gone out even once
+ * yet, so it stays behind an explicit owner click, with a conservative default batch size, until
+ * there's a track record to automate against.
+ */
+export async function sendVsOutreachBatch(limit = 5): Promise<{
+  sent: number;
+  failed: number;
+  remaining: number;
+  error?: string;
+}> {
+  try {
+    await requireOwnerSession();
+  } catch {
+    return { sent: 0, failed: 0, remaining: 0, error: "Not authorised" };
+  }
+  return runJob("vs-outreach-send", async () => {
+    const result = await sendVsOutreachCore(limit);
+    return {
+      status: result.error ? "failure" : result.sent > 0 ? "success" : "skipped",
+      detail: `sent ${result.sent}, remaining ${result.remaining}${result.error ? ` - ${result.error}` : ""}`,
+      result,
+    };
+  });
 }
 
 // --- Sweep a specific city ---

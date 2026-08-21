@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { TrackView } from "@/components/analytics/track-view";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,10 +41,10 @@ export default async function CompetitionDetailPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ notice?: string }>;
+  searchParams: Promise<{ notice?: string; created?: string; published?: string }>;
 }) {
   const { id } = await params;
-  const { notice } = await searchParams;
+  const { notice, created, published } = await searchParams;
   const session = await auth();
   const access = await resolvePrimaryVenueAccess(session);
   if (!access) redirect("/signup/venue");
@@ -89,6 +90,12 @@ export default async function CompetitionDetailPage({
 
   return (
     <div className="space-y-8 md:space-y-10">
+      {created === "1" ? (
+        <TrackView event="competition_created" params={{ product: "lp", competitionId: comp.id, kind: comp.kind }} />
+      ) : null}
+      {published === "1" ? (
+        <TrackView event="competition_published" params={{ product: "lp", competitionId: comp.id, kind: comp.kind }} />
+      ) : null}
       {notice && notices[notice] ? (
         <div
           className={

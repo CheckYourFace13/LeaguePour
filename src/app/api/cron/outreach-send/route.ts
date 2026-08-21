@@ -4,6 +4,7 @@ import {
   outreachSentWithinHours,
   sendOutreachCore,
 } from "@/lib/outreach-email";
+import { runJob } from "@/lib/job-runs";
 
 /**
  * Daily outreach batch: harvest emails from more venue websites, then send the
@@ -62,25 +63,41 @@ export async function GET(request: Request) {
     }
   }
 
+  type Outcome = {
+    ok: boolean;
+    skipped?: string;
+    harvest?: { checked: number; found: number; remaining: number };
+    send?: Awaited<ReturnType<typeof sendOutreachCore>>;
+  };
+
   try {
-    if (await outreachSentWithinHours(THROTTLE_HOURS)) {
-      return NextResponse.json({ ok: true, skipped: "Batch already sent in the past 20 hours." });
-    }
+    const outcome = await runJob<Outcome>("lp-outreach-send", async () => {
+      if (await outreachSentWithinHours(THROTTLE_HOURS)) {
+        const detail = "Batch already sent in the past 20 hours.";
+        return { status: "skipped", detail, result: { ok: true, skipped: detail } };
+      }
 
-    let harvest = { checked: 0, found: 0, remaining: 0 };
-    for (let i = 0; i < HARVEST_BATCHES_PER_RUN; i++) {
-      const h = await harvestEmailsCore(HARVEST_PER_BATCH);
-      harvest = {
-        checked: harvest.checked + h.checked,
-        found: harvest.found + h.found,
-        remaining: h.remaining,
+      let harvest = { checked: 0, found: 0, remaining: 0 };
+      for (let i = 0; i < HARVEST_BATCHES_PER_RUN; i++) {
+        const h = await harvestEmailsCore(HARVEST_PER_BATCH);
+        harvest = {
+          checked: harvest.checked + h.checked,
+          found: harvest.found + h.found,
+          remaining: h.remaining,
+        };
+        if (h.remaining === 0) break;
+      }
+      const send = await sendOutreachCore(SEND_PER_RUN);
+
+      console.log("[outreach cron]", { harvest, send });
+      return {
+        status: send.error ? "failure" : "success",
+        detail: `harvested ${harvest.found}/${harvest.checked}, sent ${send.sent}, remaining ${send.remaining}${send.error ? ` - ${send.error}` : ""}`,
+        result: { ok: !send.error, harvest, send },
       };
-      if (h.remaining === 0) break;
-    }
-    const send = await sendOutreachCore(SEND_PER_RUN);
+    });
 
-    console.log("[outreach cron]", { harvest, send });
-    return NextResponse.json({ ok: !send.error, harvest, send });
+    return NextResponse.json(outcome);
   } catch (err) {
     console.error("[outreach cron] failed", err);
     return NextResponse.json({ ok: false, error: "Outreach cron failed." }, { status: 500 });

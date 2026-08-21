@@ -4,9 +4,17 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import { saveBeo } from "@/lib/actions/vs";
+import { TrackView } from "@/components/analytics/track-view";
 
-export default async function VsBeoPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function VsBeoPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ created?: string }>;
+}) {
   const { id } = await params;
+  const { created } = await searchParams;
   const session = await auth();
   const access = await resolvePrimaryVenueAccess(session);
   if (!access) redirect("/login");
@@ -52,6 +60,9 @@ export default async function VsBeoPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="space-y-6 max-w-2xl">
+      {created === "1" ? (
+        <TrackView event="beo_created" params={{ product: "vs", beoId: beo.id }} />
+      ) : null}
       <div>
         <Link href={`/app/events/${event.id}`} className="text-sm text-[var(--vs-muted)] hover:text-[var(--vs-accent)]">
           ← {event.eventName}

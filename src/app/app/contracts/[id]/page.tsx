@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import { sendContract } from "@/lib/actions/vs";
+import { TrackClick } from "@/components/analytics/track-click";
 
 export default async function VsContractPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -85,9 +86,11 @@ export default async function VsContractPage({ params }: { params: Promise<{ id:
       <div className="flex flex-wrap gap-3">
         {contract.status === "DRAFT" && (
           <form action={sendContract.bind(null, contract.id)}>
-            <button type="submit" className="rounded-lg bg-[var(--vs-accent)] px-5 py-2.5 text-sm font-bold text-white hover:bg-[var(--vs-accent-hover)]">
-              Activate for signing
-            </button>
+            <TrackClick event="contract_sent" params={{ product: "vs", contractId: contract.id }}>
+              <button type="submit" className="rounded-lg bg-[var(--vs-accent)] px-5 py-2.5 text-sm font-bold text-white hover:bg-[var(--vs-accent-hover)]">
+                Activate for signing
+              </button>
+            </TrackClick>
           </form>
         )}
         {contract.status !== "DRAFT" && contract.status !== "SIGNED" && (

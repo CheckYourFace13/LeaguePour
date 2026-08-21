@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { TrackView } from "@/components/analytics/track-view";
+import { PlanSelectLink } from "@/components/analytics/plan-select-link";
 
 export const metadata: Metadata = {
   title: { absolute: "Pricing | VenueSprocket" },
@@ -132,6 +134,7 @@ const faqs = [
 export default function VsPricingPage() {
   return (
     <div className="vs-section px-4 md:px-6">
+      <TrackView event="pricing_view" params={{ product: "vs" }} />
       <div className="mx-auto max-w-6xl">
 
         {/* Hero */}
@@ -179,8 +182,10 @@ export default function VsPricingPage() {
                   </li>
                 ))}
               </ul>
-              <Link
+              <PlanSelectLink
                 href={p.ctaHref}
+                plan={p.name.toLowerCase()}
+                product="vs"
                 className={[
                   "mt-auto block rounded-lg px-4 py-3 text-center text-sm font-bold transition-colors",
                   p.highlight
@@ -189,7 +194,7 @@ export default function VsPricingPage() {
                 ].join(" ")}
               >
                 {p.cta}
-              </Link>
+              </PlanSelectLink>
             </div>
           ))}
         </div>

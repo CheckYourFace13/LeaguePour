@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import { redirect } from "next/navigation";
 import { createEventFromLead } from "@/lib/actions/vs";
+import { TrackView } from "@/components/analytics/track-view";
 
 function StatCard({ label, value, href }: { label: string; value: number | string; href?: string }) {
   const inner = (
@@ -17,11 +18,16 @@ function StatCard({ label, value, href }: { label: string; value: number | strin
   return href ? <Link href={href}>{inner}</Link> : inner;
 }
 
-export default async function VsDashboardPage() {
+export default async function VsDashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ notice?: string }>;
+}) {
   const session = await auth();
   const access = await resolvePrimaryVenueAccess(session);
   if (!access) redirect("/login");
 
+  const { notice } = await searchParams;
   const venueId = access.venueId;
 
   const [
@@ -66,6 +72,14 @@ export default async function VsDashboardPage() {
 
   return (
     <div className="space-y-8">
+      {notice === "vs-subscribed" ? (
+        <TrackView event="subscription_activated" params={{ product: "vs" }} />
+      ) : null}
+      {notice === "vs-subscribed" ? (
+        <div className="rounded-lg border border-green-600/30 bg-green-600/10 px-4 py-3 text-sm font-semibold text-[var(--vs-text)]">
+          You&apos;re subscribed — proposals, contracts, deposits, and BEOs are unlocked.
+        </div>
+      ) : null}
       <div>
         <h1 className="font-display text-3xl font-extrabold text-[var(--vs-text)]">Dashboard</h1>
         <p className="mt-1 text-[var(--vs-muted)]">Your private event overview</p>

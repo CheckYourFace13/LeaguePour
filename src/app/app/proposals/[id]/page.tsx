@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import { sendProposal } from "@/lib/actions/vs";
+import { TrackClick } from "@/components/analytics/track-click";
 
 export default async function VsProposalPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -122,9 +123,11 @@ export default async function VsProposalPage({ params }: { params: Promise<{ id:
       <div className="flex flex-wrap gap-3">
         {proposal.status === "DRAFT" && (
           <form action={sendProposal.bind(null, proposal.id)}>
-            <button type="submit" className="rounded-lg bg-[var(--vs-accent)] px-5 py-2.5 text-sm font-bold text-white hover:bg-[var(--vs-accent-hover)]">
-              Send to customer
-            </button>
+            <TrackClick event="proposal_sent" params={{ product: "vs", proposalId: proposal.id }}>
+              <button type="submit" className="rounded-lg bg-[var(--vs-accent)] px-5 py-2.5 text-sm font-bold text-white hover:bg-[var(--vs-accent-hover)]">
+                Send to customer
+              </button>
+            </TrackClick>
           </form>
         )}
         {proposal.status !== "DRAFT" && (

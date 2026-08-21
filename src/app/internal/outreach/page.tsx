@@ -10,6 +10,8 @@ import {
   getSweptCityList,
   harvestEmailsBatch,
   sendOutreachBatch,
+  getVsOutreachStats,
+  sendVsOutreachBatch,
 } from "./sweep-actions";
 
 type Contact = {
@@ -42,6 +44,16 @@ type Stats = {
   uncheckedWebsites: number;
   nextCity: { city: string; state: string; country: string; query: string } | null;
   allSwept: boolean;
+};
+
+type VsStats = {
+  eligible: number;
+  withEmailEligible: number;
+  readyToSend: number;
+  emailSent: number;
+  responded: number;
+  signedUp: number;
+  notInterested: number;
 };
 
 const EMAIL_TEMPLATE = (barName: string) =>
@@ -101,6 +113,10 @@ export default function OutreachPage() {
   const [sendingBatch, setSendingBatch] = useState(false);
   const [confirmSend, setConfirmSend] = useState(false);
   const [emailResult, setEmailResult] = useState<string | null>(null);
+  const [vsStats, setVsStats] = useState<VsStats | null>(null);
+  const [sendingVsBatch, setSendingVsBatch] = useState(false);
+  const [confirmVsSend, setConfirmVsSend] = useState(false);
+  const [vsEmailResult, setVsEmailResult] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const PAGE_SIZE = 50;
@@ -108,6 +124,11 @@ export default function OutreachPage() {
   const loadStats = useCallback(async () => {
     const s = await getOutreachStats();
     setStats(s as Stats);
+  }, []);
+
+  const loadVsStats = useCallback(async () => {
+    const s = await getVsOutreachStats();
+    setVsStats(s as VsStats);
   }, []);
 
   const loadContacts = useCallback(async () => {
@@ -128,8 +149,9 @@ export default function OutreachPage() {
 
   useEffect(() => {
     void loadStats();
+    void loadVsStats();
     void loadSweptCities();
-  }, [loadStats, loadSweptCities]);
+  }, [loadStats, loadVsStats, loadSweptCities]);
 
   useEffect(() => {
     void loadContacts();
@@ -212,6 +234,28 @@ export default function OutreachPage() {
       await Promise.all([loadStats(), loadContacts()]);
     } finally {
       setSendingBatch(false);
+    }
+  }
+
+  async function runSendVsBatch() {
+    if (!confirmVsSend) {
+      setConfirmVsSend(true);
+      setTimeout(() => setConfirmVsSend(false), 5000);
+      return;
+    }
+    setConfirmVsSend(false);
+    setSendingVsBatch(true);
+    setVsEmailResult(null);
+    try {
+      const r = await sendVsOutreachBatch(5);
+      setVsEmailResult(
+        r.error
+          ? `Send error: ${r.error}`
+          : `Sent ${r.sent} emails. ${r.remaining.toLocaleString()} eligible contacts still queued.`,
+      );
+      await Promise.all([loadVsStats(), loadStats()]);
+    } finally {
+      setSendingVsBatch(false);
     }
   }
 
@@ -328,6 +372,47 @@ export default function OutreachPage() {
           <p className="mt-2 text-xs text-lp-muted">
             Emails include an unsubscribe link and go out from your Resend domain. Keep batches
             small (a few per day at first) to build sender reputation.
+          </p>
+        </div>
+      )}
+
+      {/* VenueSprocket outreach - separate lane, shares the same prospect list */}
+      {vsStats && (
+        <div className="mt-6 rounded-xl border border-[#b87333]/30 bg-[#b87333]/5 p-5">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 className="font-semibold text-lp-text">VenueSprocket outreach</h2>
+              <p className="mt-1 text-sm text-lp-muted">
+                {vsStats.eligible.toLocaleString()} prospects show private-event evidence on their site
+                {" · "}{vsStats.withEmailEligible.toLocaleString()} have an email
+                {" · "}{vsStats.readyToSend.toLocaleString()} ready to send
+              </p>
+              <p className="mt-1 text-xs text-lp-muted">
+                Sent {vsStats.emailSent.toLocaleString()} · Responded {vsStats.responded.toLocaleString()}
+                {" · "}Signed up {vsStats.signedUp.toLocaleString()} · Not interested {vsStats.notInterested.toLocaleString()}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                size="md"
+                onClick={runSendVsBatch}
+                disabled={sendingVsBatch || vsStats.readyToSend === 0}
+              >
+                {sendingVsBatch
+                  ? "Sending…"
+                  : confirmVsSend
+                    ? `Confirm: email ${Math.min(5, vsStats.readyToSend)} venues`
+                    : `Send VS batch (${Math.min(5, vsStats.readyToSend)})`}
+              </Button>
+            </div>
+          </div>
+          {vsEmailResult && <p className="mt-3 text-sm text-lp-muted">{vsEmailResult}</p>}
+          <p className="mt-2 text-xs text-lp-muted">
+            Eligibility comes from the venue's own website mentioning private events, parties,
+            banquets, or corporate events - not the LeaguePour prospect list at large. Manual-only
+            for now (no daily cron) until this lane has a track record. A business already
+            contacted by LeaguePour recently, or already signed up for either product, is
+            automatically excluded.
           </p>
         </div>
       )}

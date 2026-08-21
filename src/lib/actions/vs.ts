@@ -386,7 +386,7 @@ export async function createBeo(eventId: string) {
   });
 
   revalidatePath(`/app/events/${eventId}`);
-  redirect(`/app/beos/${beo.id}`);
+  redirect(`/app/beos/${beo.id}?created=1`);
 }
 
 export async function saveBeo(beoId: string, formData: FormData) {

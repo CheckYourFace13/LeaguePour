@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signContract } from "@/lib/actions/vs";
+import { trackEvent } from "@/lib/analytics";
 
 export default function SignContractForm({ token, venueName }: { token: string; venueName: string }) {
   const router = useRouter();
@@ -20,6 +21,10 @@ export default function SignContractForm({ token, venueName }: { token: string; 
     if (result && "error" in result) {
       setError(result.error ?? "Something went wrong");
     } else {
+      trackEvent("contract_signed", { product: "vs", eventId: result.eventId });
+      // Deposit becomes payable immediately after signing (see signContract in src/lib/actions/vs.ts,
+      // which flips the event to DEPOSIT_DUE) - no separate "make deposit available" step exists.
+      trackEvent("deposit_requested", { product: "vs", eventId: result.eventId });
       router.push(`/deposit/pay?token=${token}`);
     }
   }

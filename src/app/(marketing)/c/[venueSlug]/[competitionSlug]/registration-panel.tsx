@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import { RegistrationFormat } from "@/generated/prisma/enums";
+import { trackEvent } from "@/lib/analytics";
 import { cta } from "@/lib/brand";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,6 +72,10 @@ export function RegistrationPanel({
   const totalSteps = needsTeam ? 3 : 2;
   const needsPay = entryFeeCents > 0;
 
+  function startRegistration() {
+    trackEvent("registration_started", { product: "lp", competitionId, teamFormat });
+  }
+
   async function onSubmit() {
     setLoading(true);
     setErr(null);
@@ -87,6 +92,7 @@ export function RegistrationPanel({
       router.push(`/player/pay/${res.registrationId}`);
       return;
     }
+    trackEvent("registration_completed", { product: "lp", competitionId, teamFormat, paid: false });
     setDone(true);
   }
 
@@ -214,7 +220,17 @@ export function RegistrationPanel({
             placeholder="Your team name"
             className="min-h-12 text-base"
           />
-          <Button type="button" size="lg" className="w-full sm:w-auto" onClick={() => teamName.trim() && setStep(1)}>
+          <Button
+            type="button"
+            size="lg"
+            className="w-full sm:w-auto"
+            onClick={() => {
+              if (teamName.trim()) {
+                startRegistration();
+                setStep(1);
+              }
+            }}
+          >
             Continue
           </Button>
         </div>
@@ -225,7 +241,14 @@ export function RegistrationPanel({
           <p className="text-base text-lp-muted">
             Registering as a <span className="font-semibold text-lp-text">solo player</span>.
           </p>
-          <Button type="button" size="lg" onClick={() => setStep(1)}>
+          <Button
+            type="button"
+            size="lg"
+            onClick={() => {
+              startRegistration();
+              setStep(1);
+            }}
+          >
             Continue
           </Button>
         </div>

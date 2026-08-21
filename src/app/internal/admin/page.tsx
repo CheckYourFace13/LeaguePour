@@ -15,6 +15,11 @@ import {
   togglePromoCodeAction,
   unpublishCompetitionAction,
 } from "./actions";
+import {
+  getLeaguePourMetrics,
+  getVenueSprocketMetrics,
+} from "@/lib/admin-metrics";
+import { BusinessHealthDashboard } from "./business-health-dashboard";
 
 export const dynamic = "force-dynamic";
 
@@ -49,6 +54,11 @@ export default async function InternalAdminPage({ searchParams }: AdminPageProps
         mode: "insensitive" as const,
       }
     : undefined;
+
+  const [lpMetrics, vsMetrics] = await Promise.all([
+    getLeaguePourMetrics(),
+    getVenueSprocketMetrics(),
+  ]);
 
   const [venues, users, competitions, registrations, payments, promoCodes] = await Promise.all([
     prisma.venue.findMany({
@@ -140,6 +150,8 @@ export default async function InternalAdminPage({ searchParams }: AdminPageProps
           ) : null}
         </form>
       </Card>
+
+      <BusinessHealthDashboard lp={lpMetrics} vs={vsMetrics} />
 
       <Card className="space-y-4">
         {sectionTitle("Promo / Discount Codes", promoCodes.length)}

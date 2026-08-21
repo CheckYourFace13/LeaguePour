@@ -1,6 +1,7 @@
 import { getStripe } from "@/lib/stripe/server";
 import { prisma } from "@/lib/db";
 import { VsEventStatus } from "@/generated/prisma/enums";
+import { TrackView } from "@/components/analytics/track-view";
 
 export const dynamic = "force-dynamic";
 
@@ -37,9 +38,11 @@ export default async function DepositSuccessPage({
     }
 
     const vsPaymentId = session.metadata?.vsPaymentId;
+    let justPaid = false;
     if (vsPaymentId) {
       const payment = await prisma.vsPayment.findUnique({ where: { id: vsPaymentId } });
       if (payment && payment.status !== "PAID") {
+        justPaid = true;
         const piId = typeof session.payment_intent === "string" ? session.payment_intent : null;
         await prisma.vsPayment.update({
           where: { id: vsPaymentId },
@@ -56,7 +59,14 @@ export default async function DepositSuccessPage({
       }
     }
 
-    return <SuccessView message="Your deposit has been received and your event date is confirmed." />;
+    return (
+      <>
+        {justPaid && vsPaymentId ? (
+          <TrackView event="deposit_paid" params={{ product: "vs", paymentId: vsPaymentId }} />
+        ) : null}
+        <SuccessView message="Your deposit has been received and your event date is confirmed." />
+      </>
+    );
   } catch (err) {
     console.error("[deposit success]", err);
     return <ErrorView message="Could not verify your payment. The venue has been notified — you will not be double-charged." />;

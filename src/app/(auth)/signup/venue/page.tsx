@@ -4,11 +4,12 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { trackEvent } from "@/lib/analytics";
 
 function SignupVenueForm() {
   const router = useRouter();
@@ -39,6 +40,14 @@ function SignupVenueForm() {
     if (fromVs) document.title = "Create Your Free Account | VenueSprocket";
   }, [fromVs]);
 
+  const startedTracked = useRef(false);
+  useEffect(() => {
+    if (startedTracked.current) return;
+    startedTracked.current = true;
+    trackEvent("signup_started", { product: fromVs ? "vs" : "lp", plan: plan ?? undefined });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setMsg(null);
@@ -68,6 +77,9 @@ function SignupVenueForm() {
       setMsg(data.error ?? "Could not create account");
       return;
     }
+    const product = fromVs ? "vs" : "lp";
+    trackEvent("account_created", { product });
+    trackEvent("venue_created", { product });
     const signInResult = await signIn("credentials", {
       email: body.email,
       password: body.password,
@@ -92,6 +104,7 @@ function SignupVenueForm() {
         });
         const subData = await subRes.json().catch(() => ({}));
         if (subData.url) {
+          trackEvent("checkout_started", { product, plan: plan.toLowerCase() });
           window.location.href = subData.url;
           return;
         }

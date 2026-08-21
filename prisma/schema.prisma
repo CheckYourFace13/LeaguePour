@@ -123,9 +123,38 @@ model OutreachContact {
   status      OutreachStatus @default(NOT_CONTACTED)
   emailSentAt DateTime?
   notes       String?
+  /**
+   * VenueSprocket cold-outreach state for this same business, tracked separately from the
+   * LeaguePour fields above so one prospect list serves both campaigns without a join - this
+   * is what makes cross-brand suppression (a business shouldn't get cold-emailed by both
+   * products in the same window) a single-row check instead of a cross-table query.
+   */
+  vsEligible         Boolean         @default(false)
+  vsEligibilityNote  String?
+  vsStatus           OutreachStatus?
+  vsEmailSentAt      DateTime?
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 
+  @@schema("leaguepour_lp")
+}
+
+/**
+ * Durable run history for scheduled/background jobs (outreach sends, harvests, and any future
+ * lifecycle automation), so "is this job actually healthy" is a query instead of a grep through
+ * console logs, and a failed run is detectable instead of silently disappearing.
+ */
+model JobRun {
+  id         String    @id @default(cuid())
+  /** Stable machine name, e.g. "lp-outreach-send", "vs-outreach-send", "lp-outreach-harvest". */
+  job        String
+  status     String
+  /** Free-form summary (counts, error message) - never PII. */
+  detail     String?   @db.Text
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+
+  @@index([job, startedAt])
   @@schema("leaguepour_lp")
 }
 

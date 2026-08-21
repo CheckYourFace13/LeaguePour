@@ -96,7 +96,7 @@ export async function POST(req: Request) {
       vsPlan: VS_PLAN_TIER[vsPlanName],
       bundleDiscount,
       // Return to VS dashboard after payment
-      successPath: "/venue/dashboard?notice=vs-subscribed",
+      successPath: "/app/dashboard?notice=vs-subscribed",
       cancelPath: "/pricing?notice=subscribe-cancel",
     });
     return NextResponse.json({ url, bundleDiscount });
