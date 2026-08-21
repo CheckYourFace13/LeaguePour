@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import Script from "next/script";
 import { Barlow_Condensed, Inter } from "next/font/google";
 import { AppProviders } from "@/components/providers/app-providers";
 import { getPublicSiteUrl } from "@/lib/site-url";
+import { LeaguePourGoogleTags } from "@/components/leaguepour-google-tags";
 import "./globals.css";
 
 const inter = Inter({
@@ -81,19 +81,18 @@ export default function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9572509189594279"
           crossOrigin="anonymous"
         />
-        <Script
-          async
-          src="https://www.googletagmanager.com/gtag/js?id=G-RPNMBRYF04"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-RPNMBRYF04');
-          `}
-        </Script>
+        {/*
+          Loaded from a client component rather than inlined here: this root layout wraps
+          venuesprocket.com pages too (next.config.ts's rewrites change routing, not the Host
+          header the browser actually has), and the root layout is the only one allowed to
+          render <head> - a nested layout can't remove what's already here. Deciding via
+          window.location.hostname client-side (instead of reading the request Host header on
+          the server) keeps every marketing page statically prerenderable; checking the Host
+          header here would force this layout, and everything under it, to dynamic rendering.
+          Without this gate, every VS pageview/event was also being reported into LeaguePour's
+          GA4 property, since VenueSprocket's own layout can only add its tag, not remove this one.
+        */}
+        <LeaguePourGoogleTags />
       </head>
       <body className="min-h-full flex flex-col font-sans">
         <AppProviders>{children}</AppProviders>
