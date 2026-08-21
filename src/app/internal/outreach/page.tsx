@@ -12,6 +12,7 @@ import {
   sendOutreachBatch,
   getVsOutreachStats,
   sendVsOutreachBatch,
+  setVsOutreachEnabled,
 } from "./sweep-actions";
 
 type Contact = {
@@ -54,6 +55,7 @@ type VsStats = {
   responded: number;
   signedUp: number;
   notInterested: number;
+  enabled: boolean;
 };
 
 const EMAIL_TEMPLATE = (barName: string) =>
@@ -237,6 +239,19 @@ export default function OutreachPage() {
     }
   }
 
+  const [togglingVs, setTogglingVs] = useState(false);
+
+  async function toggleVsEnabled() {
+    if (!vsStats) return;
+    setTogglingVs(true);
+    try {
+      await setVsOutreachEnabled(!vsStats.enabled);
+      await loadVsStats();
+    } finally {
+      setTogglingVs(false);
+    }
+  }
+
   async function runSendVsBatch() {
     if (!confirmVsSend) {
       setConfirmVsSend(true);
@@ -381,7 +396,16 @@ export default function OutreachPage() {
         <div className="mt-6 rounded-xl border border-[#b87333]/30 bg-[#b87333]/5 p-5">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h2 className="font-semibold text-lp-text">VenueSprocket outreach</h2>
+              <div className="flex items-center gap-2">
+                <h2 className="font-semibold text-lp-text">VenueSprocket outreach</h2>
+                <span
+                  className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                    vsStats.enabled ? "bg-green-500/15 text-green-600" : "bg-red-500/15 text-red-600"
+                  }`}
+                >
+                  {vsStats.enabled ? "AUTOMATIC: ON" : "AUTOMATIC: OFF"}
+                </span>
+              </div>
               <p className="mt-1 text-sm text-lp-muted">
                 {vsStats.eligible.toLocaleString()} prospects show private-event evidence on their site
                 {" · "}{vsStats.withEmailEligible.toLocaleString()} have an email
@@ -395,22 +419,32 @@ export default function OutreachPage() {
             <div className="flex flex-wrap items-center gap-2">
               <Button
                 size="md"
+                variant={vsStats.enabled ? "secondary" : "primary"}
+                onClick={toggleVsEnabled}
+                disabled={togglingVs}
+              >
+                {togglingVs ? "…" : vsStats.enabled ? "Turn automatic sending OFF" : "Turn automatic sending ON"}
+              </Button>
+              <Button
+                size="md"
                 onClick={runSendVsBatch}
-                disabled={sendingVsBatch || vsStats.readyToSend === 0}
+                disabled={sendingVsBatch || vsStats.readyToSend === 0 || !vsStats.enabled}
               >
                 {sendingVsBatch
                   ? "Sending…"
                   : confirmVsSend
                     ? `Confirm: email ${Math.min(5, vsStats.readyToSend)} venues`
-                    : `Send VS batch (${Math.min(5, vsStats.readyToSend)})`}
+                    : `Send VS batch now (${Math.min(5, vsStats.readyToSend)})`}
               </Button>
             </div>
           </div>
           {vsEmailResult && <p className="mt-3 text-sm text-lp-muted">{vsEmailResult}</p>}
           <p className="mt-2 text-xs text-lp-muted">
             Eligibility comes from the venue's own website mentioning private events, parties,
-            banquets, or corporate events - not the LeaguePour prospect list at large. Manual-only
-            for now (no daily cron) until this lane has a track record. A business already
+            banquets, or corporate events - not the LeaguePour prospect list at large. Runs
+            automatically once/day (10am-12pm Chicago, 5/batch) via .github/workflows/
+            vs-outreach-daily.yml when the switch above is ON - flipping it OFF stops both the
+            automatic run and the manual button instantly, no deploy needed. A business already
             contacted by LeaguePour recently, or already signed up for either product, is
             automatically excluded.
           </p>

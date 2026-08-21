@@ -1,0 +1,23 @@
+name: Daily VenueSprocket lifecycle nudges
+
+# Follow-up reminders for venue owners on stale leads, pending proposals/contracts/deposits,
+# BEO readiness, and completed-event rebooking opportunities. "New inquiry -> immediate
+# notification" is NOT part of this - that already fires synchronously on submission
+# (src/lib/actions/vs.ts) and isn't a scheduled job. Each nudge fires at most once per subject.
+#
+# Requires a CRON_SECRET repository secret matching the CRON_SECRET environment variable
+# configured on the Hostinger deployment - same one .github/workflows/db-heartbeat.yml uses.
+on:
+  schedule:
+    - cron: "30 14 * * *"
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger VS lifecycle nudges
+        run: |
+          resp=$(curl -sS --max-time 300 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/vs-lifecycle")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1

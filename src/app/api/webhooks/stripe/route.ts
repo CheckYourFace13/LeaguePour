@@ -48,6 +48,18 @@ async function handleSubscriptionUpsert(sub: Stripe.Subscription) {
   const periodEnd = sub.current_period_end
     ? new Date(sub.current_period_end * 1000)
     : null;
+  // Recorded so MRR can divide annual prices by 12 instead of assuming every subscriber pays
+  // the monthly rate (see the comment on Venue.subscriptionInterval). Falls back to reading the
+  // actual Stripe price if metadata.interval is missing (subscriptions created before this was
+  // tracked, or created directly in the Stripe dashboard rather than through our checkout).
+  const interval =
+    sub.metadata?.interval === "annual" || sub.metadata?.interval === "monthly"
+      ? sub.metadata.interval
+      : sub.items.data[0]?.price.recurring?.interval === "year"
+        ? "annual"
+        : sub.items.data[0]?.price.recurring?.interval === "month"
+          ? "monthly"
+          : null;
 
   if (product === "vs") {
     const vsPlan = parseVsPlan(sub.metadata?.vsPlan);
@@ -58,12 +70,14 @@ async function handleSubscriptionUpsert(sub: Stripe.Subscription) {
         vsSubscriptionId: sub.id,
         vsSubscriptionStatus: sub.status,
         vsSubscriptionPeriodEnd: periodEnd,
+        ...(interval ? { vsSubscriptionInterval: interval } : {}),
         ...(vsPlan ? { vsPlan } : {}),
       },
       update: {
         vsSubscriptionId: sub.id,
         vsSubscriptionStatus: sub.status,
         vsSubscriptionPeriodEnd: periodEnd,
+        ...(interval ? { vsSubscriptionInterval: interval } : {}),
         ...(vsPlan ? { vsPlan } : {}),
       },
     });
@@ -83,6 +97,7 @@ async function handleSubscriptionUpsert(sub: Stripe.Subscription) {
       subscriptionId: sub.id,
       subscriptionStatus: sub.status,
       subscriptionPeriodEnd: periodEnd,
+      ...(interval ? { subscriptionInterval: interval } : {}),
       ...(customerId ? { stripeBillingCustomerId: customerId } : {}),
       ...(plan ? { billingPlan: plan } : {}),
     },

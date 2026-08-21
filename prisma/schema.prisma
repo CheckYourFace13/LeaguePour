@@ -158,6 +158,33 @@ model JobRun {
   @@schema("leaguepour_lp")
 }
 
+/**
+ * Small general-purpose key/value settings store, read/written outside of a full deploy - e.g.
+ * the VenueSprocket outreach kill switch (key "vs_outreach_enabled"). Prefer an env var for
+ * anything that genuinely never needs to change without a deploy; use this for anything the
+ * owner should be able to flip instantly from the admin panel.
+ */
+model AppSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@schema("leaguepour_lp")
+}
+
+/**
+ * Dedup record for lifecycle nudge emails (see src/lib/lifecycle-nudges.ts and the
+ * lp-lifecycle/vs-lifecycle cron routes) - each nudge type fires at most once per subject
+ * (a venue, a competition, a lead, etc), keyed by a stable string like
+ * "venue:{id}:stripe-connect-incomplete". A row existing means "already sent, don't repeat."
+ */
+model LifecycleNudgeSent {
+  key    String   @id
+  sentAt DateTime @default(now())
+
+  @@schema("leaguepour_lp")
+}
+
 // ——— Venues & staff ———
 
 enum StaffRole {
@@ -218,6 +245,9 @@ model Venue {
   subscriptionStatus      String?
   /// When the current billing period ends (Unix→DateTime from Stripe)
   subscriptionPeriodEnd   DateTime?
+  /// "monthly" | "annual" - lets MRR divide annual prices by 12 instead of assuming every
+  /// subscriber pays the monthly rate. Null for subscriptions created before this was tracked.
+  subscriptionInterval    String?
   isDisabled      Boolean  @default(false)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -834,6 +864,8 @@ model VenueVsConfig {
   vsSubscriptionId          String?    @unique
   vsSubscriptionStatus      String?
   vsSubscriptionPeriodEnd   DateTime?
+  /// "monthly" | "annual" - see the matching comment on Venue.subscriptionInterval.
+  vsSubscriptionInterval    String?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 

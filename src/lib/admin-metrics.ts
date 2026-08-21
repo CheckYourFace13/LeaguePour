@@ -1,8 +1,15 @@
 /**
  * Aggregate business metrics for the owner dashboard (src/app/internal/admin/page.tsx).
- * Every number here is a real query against production data - nothing here is estimated
- * except MRR, which is clearly labeled as an approximation (see the comment on
- * approxMonthlyPriceCents below) because per-venue billing interval isn't tracked yet.
+ * Every number here is a real query against production data.
+ *
+ * MRR: subscriptions created after the interval-tracking fix (see Venue.subscriptionInterval /
+ * VenueVsConfig.vsSubscriptionInterval, and src/app/api/webhooks/stripe/route.ts) record whether
+ * they're billed monthly or annually, so those contribute a real monthly-equivalent figure
+ * (annual price / 12). Older subscriptions predate that tracking and have no recorded interval -
+ * those fall back to the monthly rate, the best available assumption for them specifically, not
+ * a blanket assumption across every subscriber. legacyIntervalCount on each result tells you how
+ * many active subscriptions are still on that fallback, so the dashboard can say so rather than
+ * quietly presenting a mixed-precision number as exact.
  */
 import { prisma } from "@/lib/db";
 import { BillingPlan } from "@/generated/prisma/enums";
@@ -11,23 +18,27 @@ import { getLatestJobRuns } from "@/lib/job-runs";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-/**
- * MRR here assumes every active subscriber pays the monthly rate - the DB does not currently
- * record whether an active subscription is billed monthly or annually (Stripe knows, but that
- * would mean a live API call per active venue to compute a dashboard number). This is a stated
- * approximation, not a precise revenue figure - do not treat it as bookkeeping-grade.
- */
-const LP_MONTHLY_CENTS: Record<BillingPlan, number> = Object.fromEntries(
-  PLAN_DEFINITIONS.map((p) => [p.plan, p.monthlyCents]),
-) as Record<BillingPlan, number>;
+const LP_PRICE_CENTS: Record<BillingPlan, { monthly: number; annual: number }> = Object.fromEntries(
+  PLAN_DEFINITIONS.map((p) => [p.plan, { monthly: p.monthlyCents, annual: p.annualCents }]),
+) as Record<BillingPlan, { monthly: number; annual: number }>;
 
-const VS_MONTHLY_CENTS: Record<string, number> = {
-  VS_FREE: 0,
-  VS_STARTER: 2900,
-  VS_PRO: 7900,
-  VS_GROWTH: 14900,
-  // VS_ENTERPRISE is custom-priced ("Multi-Location, Contact Us") - excluded from MRR, not zero.
+// VenueSprocket plans map onto LP's price catalog (same Stripe prices, different marketing
+// names) - see VS_PLAN_MAP in src/app/api/venuesprocket/subscribe/route.ts for the same mapping
+// used at checkout time. VS_ENTERPRISE is custom-priced ("Multi-Location, Contact Us") and
+// excluded from MRR entirely, not treated as zero.
+const VS_TO_LP_PLAN: Record<string, BillingPlan> = {
+  VS_STARTER: BillingPlan.STARTER,
+  VS_PRO: BillingPlan.GROWTH,
+  VS_GROWTH: BillingPlan.PRO,
 };
+
+function monthlyEquivalentCents(plan: BillingPlan, interval: string | null): { cents: number; wasLegacy: boolean } {
+  const price = LP_PRICE_CENTS[plan];
+  if (!price) return { cents: 0, wasLegacy: false };
+  if (interval === "annual") return { cents: Math.round(price.annual / 12), wasLegacy: false };
+  if (interval === "monthly") return { cents: price.monthly, wasLegacy: false };
+  return { cents: price.monthly, wasLegacy: true };
+}
 
 const ACTIVE_SUB_STATUSES = ["active", "trialing"];
 
@@ -61,15 +72,21 @@ export async function getLeaguePourMetrics() {
     prisma.competitionRegistration.count({ where: { createdAt: { gte: d30 } } }),
     prisma.venue.findMany({
       where: { isDisabled: false, subscriptionStatus: { in: ACTIVE_SUB_STATUSES } },
-      select: { billingPlan: true },
+      select: { billingPlan: true, subscriptionInterval: true },
     }),
     prisma.outreachContact.count({ where: { email: { not: null }, status: "NOT_CONTACTED" } }),
     prisma.outreachContact.count({ where: { emailSentAt: { gte: d7 } } }),
   ]);
 
-  const mrrCents = activeBillingPlans.reduce((sum, v) => sum + (LP_MONTHLY_CENTS[v.billingPlan] ?? 0), 0);
+  let mrrCents = 0;
+  let legacyIntervalCount = 0;
+  for (const v of activeBillingPlans) {
+    const { cents, wasLegacy } = monthlyEquivalentCents(v.billingPlan, v.subscriptionInterval);
+    mrrCents += cents;
+    if (wasLegacy) legacyIntervalCount++;
+  }
 
-  const jobs = await getLatestJobRuns(["lp-outreach-send"]);
+  const jobs = await getLatestJobRuns(["lp-outreach-send", "lp-lifecycle-nudges"]);
 
   return {
     totalVenues,
@@ -83,9 +100,11 @@ export async function getLeaguePourMetrics() {
     registrations7,
     registrations30,
     mrrCents,
+    legacyIntervalCount,
     outreachEligible,
     outreachSent7,
     latestOutreachJob: jobs["lp-outreach-send"] ?? null,
+    latestLifecycleJob: jobs["lp-lifecycle-nudges"] ?? null,
   };
 }
 
@@ -96,6 +115,7 @@ export async function getVenueSprocketMetrics() {
 
   const [
     planCounts,
+    activeVsSubs,
     newVenues7,
     newVenues30,
     leads7,
@@ -112,6 +132,10 @@ export async function getVenueSprocketMetrics() {
     vsOutreachSent7,
   ] = await Promise.all([
     prisma.venueVsConfig.groupBy({ by: ["vsPlan"], _count: { id: true } }),
+    prisma.venueVsConfig.findMany({
+      where: { vsSubscriptionStatus: { in: ACTIVE_SUB_STATUSES } },
+      select: { vsPlan: true, vsSubscriptionInterval: true },
+    }),
     prisma.venueVsConfig.count({ where: { createdAt: { gte: d7 } } }),
     prisma.venueVsConfig.count({ where: { createdAt: { gte: d30 } } }),
     prisma.privateEventLead.count({ where: { createdAt: { gte: d7 } } }),
@@ -137,12 +161,21 @@ export async function getVenueSprocketMetrics() {
   ) as Record<string, number>;
 
   const totalVenues = Object.values(byPlan).reduce((a, b) => a + b, 0);
-  const mrrCents = Object.entries(byPlan).reduce(
-    (sum, [plan, count]) => sum + (VS_MONTHLY_CENTS[plan] ?? 0) * count,
-    0,
-  );
 
-  const jobs = await getLatestJobRuns(["vs-outreach-send"]);
+  // MRR is computed from actually-active subscriptions (vsSubscriptionStatus active/trialing),
+  // not from vsPlan alone - vsPlan can lag a cancelled-but-not-yet-webhooked subscription, or a
+  // past_due/unpaid one that customer.subscription.updated doesn't reset (only .deleted does).
+  let mrrCents = 0;
+  let legacyIntervalCount = 0;
+  for (const sub of activeVsSubs) {
+    const lpPlan = VS_TO_LP_PLAN[sub.vsPlan];
+    if (!lpPlan) continue; // VS_FREE contributes 0; VS_ENTERPRISE is custom-priced, excluded
+    const { cents, wasLegacy } = monthlyEquivalentCents(lpPlan, sub.vsSubscriptionInterval);
+    mrrCents += cents;
+    if (wasLegacy) legacyIntervalCount++;
+  }
+
+  const jobs = await getLatestJobRuns(["vs-outreach-send", "vs-lifecycle-nudges"]);
 
   return {
     totalVenues,
@@ -164,13 +197,20 @@ export async function getVenueSprocketMetrics() {
     eventsBooked7,
     eventsBooked30,
     mrrCents,
+    legacyIntervalCount,
     vsOutreachEligible,
     vsOutreachSent7,
     latestVsOutreachJob: jobs["vs-outreach-send"] ?? null,
+    latestLifecycleJob: jobs["vs-lifecycle-nudges"] ?? null,
   };
 }
 
 export async function getSystemHealthMetrics() {
-  const jobs = await getLatestJobRuns(["lp-outreach-send", "vs-outreach-send"]);
+  const jobs = await getLatestJobRuns([
+    "lp-outreach-send",
+    "vs-outreach-send",
+    "lp-lifecycle-nudges",
+    "vs-lifecycle-nudges",
+  ]);
   return { jobs };
 }

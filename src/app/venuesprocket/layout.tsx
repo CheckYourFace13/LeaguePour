@@ -3,6 +3,7 @@ import Script from "next/script";
 import { VsHeader } from "@/components/venuesprocket/vs-header";
 import { VsFooter } from "@/components/venuesprocket/vs-footer";
 import { VsSiteJsonLd } from "@/components/venuesprocket/vs-site-json-ld";
+import { VenueSprocketGoogleTags } from "@/components/venuesprocket/vs-google-tags";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://venuesprocket.com"),
@@ -35,18 +36,7 @@ export default function VenueSprocketLayout({
         strategy="afterInteractive"
         crossOrigin="anonymous"
       />
-      <Script
-        src="https://www.googletagmanager.com/gtag/js?id=G-FHCFV1532R"
-        strategy="afterInteractive"
-      />
-      <Script id="vs-google-analytics" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-FHCFV1532R');
-        `}
-      </Script>
+      <VenueSprocketGoogleTags />
       <VsSiteJsonLd />
       <VsHeader />
       <main className="flex-1">{children}</main>

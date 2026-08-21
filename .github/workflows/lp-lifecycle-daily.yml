@@ -1,0 +1,23 @@
+name: Daily LeaguePour lifecycle nudges
+
+# Onboarding/stale-state reminders for venue owners (Stripe Connect incomplete, no competition
+# created, unpublished draft, zero registrations, competition completed). Each nudge fires at
+# most once per subject - see src/lib/lifecycle-nudges.ts. Independent of the outreach workflows;
+# does not touch cold-outreach send rates.
+#
+# Requires a CRON_SECRET repository secret matching the CRON_SECRET environment variable
+# configured on the Hostinger deployment - same one .github/workflows/db-heartbeat.yml uses.
+on:
+  schedule:
+    - cron: "0 14 * * *"
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger LP lifecycle nudges
+        run: |
+          resp=$(curl -sS --max-time 300 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/lp-lifecycle")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1

@@ -45,9 +45,9 @@ export function BusinessHealthDashboard({ lp, vs }: { lp: LpMetrics; vs: VsMetri
         <p className="lp-kicker">Owner operating panel</p>
         <h2 className="mt-1 font-display text-2xl font-extrabold text-lp-text">Business health</h2>
         <p className="mt-1 text-sm text-lp-text-soft">
-          Real counts from production data. MRR is an approximation - it assumes every active
-          subscriber pays the monthly rate, since billing interval (monthly vs. annual) isn&apos;t
-          tracked per venue yet.
+          Real counts from production data. MRR is computed from each active subscription&apos;s
+          real billing interval where known (annual ÷ 12); subscriptions from before interval
+          tracking was added fall back to the monthly rate for that subscription specifically.
         </p>
       </div>
 
@@ -64,11 +64,18 @@ export function BusinessHealthDashboard({ lp, vs }: { lp: LpMetrics; vs: VsMetri
             sub={`${lp.competitionsCreated30} in 30d`}
           />
           <Stat label="Registrations (7d)" value={lp.registrations7} sub={`${lp.registrations30} in 30d`} />
-          <Stat label="Approx. MRR" value={formatUsdCents(lp.mrrCents)} />
+          <Stat
+            label="MRR"
+            value={formatUsdCents(lp.mrrCents)}
+            sub={lp.legacyIntervalCount > 0 ? `${lp.legacyIntervalCount} on assumed-monthly fallback` : "interval-accurate"}
+          />
           <Stat label="Outreach eligible" value={lp.outreachEligible} sub={`${lp.outreachSent7} sent in 7d`} />
         </div>
         <p className={`mt-3 text-sm ${jobColor(lp.latestOutreachJob)}`}>
           Latest outreach job: {jobLine(lp.latestOutreachJob)}
+        </p>
+        <p className={`mt-1 text-sm ${jobColor(lp.latestLifecycleJob)}`}>
+          Latest lifecycle nudge job: {jobLine(lp.latestLifecycleJob)}
         </p>
       </div>
 
@@ -87,7 +94,11 @@ export function BusinessHealthDashboard({ lp, vs }: { lp: LpMetrics; vs: VsMetri
           <Stat label="Contracts signed" value={vs.contractsSigned7} sub={`${vs.contractsSigned30} in 30d`} />
           <Stat label="Deposits paid" value={vs.depositsPaid7} sub={`${vs.depositsPaid30} in 30d`} />
           <Stat label="Events booked" value={vs.eventsBooked7} sub={`${vs.eventsBooked30} in 30d`} />
-          <Stat label="Approx. MRR" value={formatUsdCents(vs.mrrCents)} />
+          <Stat
+            label="MRR"
+            value={formatUsdCents(vs.mrrCents)}
+            sub={vs.legacyIntervalCount > 0 ? `${vs.legacyIntervalCount} on assumed-monthly fallback` : "interval-accurate"}
+          />
           <Stat
             label="Outreach eligible"
             value={vs.vsOutreachEligible}
@@ -96,6 +107,9 @@ export function BusinessHealthDashboard({ lp, vs }: { lp: LpMetrics; vs: VsMetri
         </div>
         <p className={`mt-3 text-sm ${jobColor(vs.latestVsOutreachJob)}`}>
           Latest outreach job: {jobLine(vs.latestVsOutreachJob)}
+        </p>
+        <p className={`mt-1 text-sm ${jobColor(vs.latestLifecycleJob)}`}>
+          Latest lifecycle nudge job: {jobLine(vs.latestLifecycleJob)}
         </p>
       </div>
     </Card>

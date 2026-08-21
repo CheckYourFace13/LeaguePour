@@ -10,6 +10,7 @@ import {
   sendVsOutreachCore,
 } from "@/lib/outreach-email";
 import { runJob } from "@/lib/job-runs";
+import { getBoolSetting, setSetting } from "@/lib/app-settings";
 import { OUTREACH_CITIES, type OutreachCity } from "@/lib/outreach-cities";
 
 // --- Stats / progress ---
@@ -124,7 +125,7 @@ export async function sendOutreachBatch(limit = 25): Promise<{
 export async function getVsOutreachStats() {
   await requireOwnerSession();
 
-  const [statusCounts, eligible, withEmailEligible, readyToSend] = await Promise.all([
+  const [statusCounts, eligible, withEmailEligible, readyToSend, enabled] = await Promise.all([
     prisma.outreachContact.groupBy({
       by: ["vsStatus"],
       where: { vsEligible: true },
@@ -135,6 +136,7 @@ export async function getVsOutreachStats() {
     prisma.outreachContact.count({
       where: { vsEligible: true, email: { not: null }, vsStatus: null },
     }),
+    getBoolSetting("vs_outreach_enabled", true),
   ]);
 
   const byStatus = Object.fromEntries(
@@ -152,16 +154,28 @@ export async function getVsOutreachStats() {
     responded: byStatus["RESPONDED"] ?? 0,
     signedUp: byStatus["SIGNED_UP"] ?? 0,
     notInterested: byStatus["NOT_INTERESTED"] ?? 0,
+    enabled,
   };
 }
 
 /**
- * Send the VenueSprocket outreach email to a batch of eligible, unsent contacts.
- * Deliberately manual-only for now (no automatic daily cron, unlike the LeaguePour lane) -
- * this is a brand-new communication channel to real businesses that has not gone out even once
- * yet, so it stays behind an explicit owner click, with a conservative default batch size, until
- * there's a track record to automate against.
+ * Instant kill switch for ALL VenueSprocket outreach sending - both the automated daily cron
+ * (.github/workflows/vs-outreach-daily.yml -> /api/cron/vs-outreach-send) and the manual "Send
+ * batch" button below both check this before sending. Takes effect on the very next call, no
+ * deploy or restart needed. Deliberately stops both paths, not just the automatic one - a kill
+ * switch that a manual click can still bypass isn't a reliable way to actually stop sending.
  */
+export async function setVsOutreachEnabled(enabled: boolean): Promise<{ ok: boolean }> {
+  try {
+    await requireOwnerSession();
+  } catch {
+    return { ok: false };
+  }
+  await setSetting("vs_outreach_enabled", enabled ? "true" : "false");
+  return { ok: true };
+}
+
+/** Send the VenueSprocket outreach email to a batch of eligible, unsent contacts. */
 export async function sendVsOutreachBatch(limit = 5): Promise<{
   sent: number;
   failed: number;
@@ -172,6 +186,9 @@ export async function sendVsOutreachBatch(limit = 5): Promise<{
     await requireOwnerSession();
   } catch {
     return { sent: 0, failed: 0, remaining: 0, error: "Not authorised" };
+  }
+  if (!(await getBoolSetting("vs_outreach_enabled", true))) {
+    return { sent: 0, failed: 0, remaining: 0, error: "VS outreach is disabled (kill switch off)." };
   }
   return runJob("vs-outreach-send", async () => {
     const result = await sendVsOutreachCore(limit);

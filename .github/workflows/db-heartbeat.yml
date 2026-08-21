@@ -1,0 +1,28 @@
+name: Database heartbeat
+
+# The production database is hosted on Supabase (see .env.example, and the VenueSprocket
+# privacy policy at src/app/venuesprocket/legal/privacy/page.tsx), whose lower tiers auto-pause
+# a project after a period of inactivity (commonly 7 days). src/app/api/cron/supabase-heartbeat
+# exists to prevent that, but nothing in this repository was found to trigger it - no workflow
+# called it, and it may have been relying on an external scheduler (Supabase's own pg_cron,
+# an uptime monitor, etc.) that isn't visible from the codebase. Rather than guess whether that
+# actually exists, this gives it a guaranteed trigger; running it from here as well is harmless
+# even if another scheduler also pings it - it's a read-only SELECT now().
+#
+# Requires a CRON_SECRET repository secret (Settings -> Secrets and variables -> Actions) that
+# matches the CRON_SECRET environment variable configured on the Hostinger deployment - without
+# it this route returns 401.
+on:
+  schedule:
+    - cron: "0 6 */3 * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping database heartbeat
+        run: |
+          resp=$(curl -sS --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/supabase-heartbeat")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1

@@ -1,0 +1,25 @@
+name: Daily VenueSprocket outreach batch
+
+# Separate lane from LeaguePour's outreach (.github/workflows/outreach-daily.yml) - does not
+# change LP's schedule or send rate. 16:00 UTC = 11am America/Chicago in summer (CDT) or 10am in
+# winter (CST) - both land inside the route's 10am-12pm Chicago window. One schedule entry only,
+# same reasoning as the LP workflow: two entries risk both landing in the valid window on the
+# same morning and racing each other.
+#
+# Real off switch: flip "vs_outreach_enabled" to false on /internal/outreach (an AppSetting row,
+# no deploy needed) rather than disabling this workflow - the route checks that flag itself, so
+# a manual admin-triggered send would otherwise still be able to fire even with this workflow off.
+on:
+  schedule:
+    - cron: "0 16 * * *"
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger VenueSprocket outreach send
+        run: |
+          resp=$(curl -sS --max-time 600 "https://leaguepour.com/api/cron/vs-outreach-send")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1

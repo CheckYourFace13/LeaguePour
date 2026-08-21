@@ -109,6 +109,7 @@ export async function createSubscriptionCheckoutUrl(opts: {
     venueId: opts.venueId,
     plan: opts.plan,
     product,
+    interval: opts.interval,
     ...(opts.vsPlan ? { vsPlan: opts.vsPlan } : {}),
   };
 
@@ -116,7 +117,10 @@ export async function createSubscriptionCheckoutUrl(opts: {
     mode: "subscription",
     customer: opts.customerId,
     line_items: [{ price: prices.data[0].id, quantity: 1 }],
-    metadata: { ...subscriptionMetadata, interval: opts.interval },
+    metadata: subscriptionMetadata,
+    // Also on the subscription object itself (not just the checkout session) - the webhook only
+    // ever sees sub.metadata, and MRR needs to know monthly vs annual per active subscription
+    // rather than assuming every subscriber pays the monthly rate.
     subscription_data: { metadata: subscriptionMetadata },
     success_url: `${base}${opts.successPath ?? "/venue/settings"}?notice=subscribed`,
     cancel_url: `${base}${opts.cancelPath ?? "/venue/settings"}?notice=subscribe-cancel`,
