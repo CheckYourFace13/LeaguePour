@@ -316,9 +316,13 @@ export async function sendOutreachCore(limit: number): Promise<{
     return { sent: 0, failed: 0, remaining: 0, error: "RESEND_API_KEY not configured" };
   }
 
+  // Observed live in production: this transaction (which holds the advisory lock through the
+  // Resend batch call, not just the DB reads/writes either side of it) timed out at the default
+  // 30s with a real batch of up to SEND_PER_RUN=25 personalized emails. 90s gives the Resend
+  // call real-world headroom without changing the locking/atomicity semantics at all.
   return prisma.$transaction(
     async (tx) => sendOutreachLocked(tx, limit),
-    { timeout: 30_000 },
+    { timeout: 90_000 },
   );
 }
 
@@ -506,7 +510,9 @@ export async function sendVsOutreachCore(limit: number): Promise<{
   if (!process.env.RESEND_API_KEY?.trim()) {
     return { sent: 0, failed: 0, remaining: 0, error: "RESEND_API_KEY not configured" };
   }
-  return prisma.$transaction(async (tx) => sendVsOutreachLocked(tx, limit), { timeout: 30_000 });
+  // Same headroom as sendOutreachCore above, for the same reason (the Resend call happens
+  // inside this transaction).
+  return prisma.$transaction(async (tx) => sendVsOutreachLocked(tx, limit), { timeout: 90_000 });
 }
 
 async function sendVsOutreachLocked(
