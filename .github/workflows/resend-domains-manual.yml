@@ -1,0 +1,17 @@
+name: Resend domains check (manual)
+
+# Manual-only diagnostic: lists Resend's configured sending domains and verification status via
+# src/app/api/cron/resend-domains. Built to check whether venuesprocket.com is verified without
+# needing Resend dashboard access, after VS outreach sends started failing.
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Resend domain verification status
+        run: |
+          resp=$(curl -sS --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/resend-domains")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1
