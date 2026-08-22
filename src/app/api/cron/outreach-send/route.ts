@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import {
+  backfillVsEligibilityCore,
   harvestEmailsCore,
   outreachSentWithinHours,
   sendOutreachCore,
@@ -7,9 +8,10 @@ import {
 import { runJob } from "@/lib/job-runs";
 
 /**
- * Daily outreach batch: harvest emails from more venue websites, then send the
- * outreach email to the next 25 contacts. Triggered by the scheduled GitHub
- * Actions workflow (.github/workflows/outreach-daily.yml).
+ * Daily outreach batch: harvest emails from more venue websites, backfill VS eligibility
+ * classification for contacts harvested before that logic existed, then send the outreach email
+ * to the next 25 contacts. Triggered by the scheduled GitHub Actions workflow
+ * (.github/workflows/outreach-daily.yml).
  *
  * Safety gates (no shared secret needed for the scheduled path):
  *  - Throttle: refuses if a batch already went out in the past 20 hours,
@@ -30,6 +32,11 @@ const HARVEST_BATCHES_PER_RUN = 1;
 const HARVEST_PER_BATCH = 60;
 const SEND_PER_RUN = 25;
 const THROTTLE_HOURS = 20;
+// Same per-site cost as HARVEST_PER_BATCH (one fetch pass per site either way), run as its own
+// phase so it makes steady progress on the pre-existing backlog (contacts harvested before VS
+// eligibility detection existed) without depending on the send throttle below - this runs every
+// day this route fires, whether or not today's LP batch has already gone out.
+const VS_BACKFILL_PER_RUN = 60;
 
 function chicagoHour(): number {
   return Number(
@@ -71,6 +78,21 @@ export async function GET(request: Request) {
   };
 
   try {
+    // Own JobRun, own try/catch: a failure here should never take down the LP harvest/send phase
+    // below, and vice versa - they're independent concerns sharing one cron trigger.
+    const vsBackfill = await runJob("vs-eligibility-backfill", async () => {
+      const result = await backfillVsEligibilityCore(VS_BACKFILL_PER_RUN);
+      console.log("[vs-eligibility-backfill]", result);
+      return {
+        status: "success" as const,
+        detail: `checked ${result.checked}, ${result.eligible} eligible, ${result.remaining} remaining in backlog`,
+        result,
+      };
+    }).catch((err) => {
+      console.error("[vs-eligibility-backfill] failed", err);
+      return { checked: 0, eligible: 0, remaining: -1, error: String(err) };
+    });
+
     const outcome = await runJob<Outcome>("lp-outreach-send", async () => {
       if (await outreachSentWithinHours(THROTTLE_HOURS)) {
         const detail = "Batch already sent in the past 20 hours.";
@@ -97,7 +119,7 @@ export async function GET(request: Request) {
       };
     });
 
-    return NextResponse.json(outcome);
+    return NextResponse.json({ ...outcome, vsBackfill });
   } catch (err) {
     console.error("[outreach cron] failed", err);
     return NextResponse.json({ ok: false, error: "Outreach cron failed." }, { status: 500 });

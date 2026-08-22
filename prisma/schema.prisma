@@ -102,6 +102,8 @@ enum OutreachStatus {
   RESPONDED
   SIGNED_UP
   NOT_INTERESTED
+  BOUNCED
+  COMPLAINED
 
   @@schema("leaguepour_lp")
 }

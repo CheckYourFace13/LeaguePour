@@ -163,6 +163,65 @@ export async function findEmailOnWebsite(website: string): Promise<string | null
   return (await probeWebsite(website)).email;
 }
 
+/**
+ * Backfills vsEligible/vsEligibilityNote for contacts that were harvested before VS eligibility
+ * detection existed - harvestEmailsCore() only ever re-probes email: null AND emailCheckedAt: null
+ * rows, so anything checked before that logic was added is permanently skipped by the normal
+ * harvest path and needs this separate pass. Deliberately does NOT touch the email field at all
+ * (not even to overwrite with a fresh probe result) - a contact's already-harvested email is left
+ * exactly as-is regardless of what this re-probe of the same site finds, per instruction not to
+ * erase or redo good existing email data. Batched/resumable/per-contact-isolated the same way
+ * harvestEmailsCore is: a fetch timeout or parse failure on one site never blocks the rest of the
+ * batch, and running this again later picks up wherever the backlog (vsEligibilityNote: null)
+ * left off - safe to call repeatedly until remaining hits 0.
+ */
+export async function backfillVsEligibilityCore(limit: number): Promise<{
+  checked: number;
+  eligible: number;
+  remaining: number;
+}> {
+  const batch = await prisma.outreachContact.findMany({
+    where: { website: { not: null }, emailCheckedAt: { not: null }, vsEligibilityNote: null },
+    orderBy: { rating: "desc" },
+    take: Math.min(Math.max(limit, 1), 60),
+    select: { id: true, website: true },
+  });
+
+  let eligible = 0;
+  const CONCURRENCY = 6;
+  for (let i = 0; i < batch.length; i += CONCURRENCY) {
+    const chunk = batch.slice(i, i + CONCURRENCY);
+    await Promise.all(
+      chunk.map(async (c) => {
+        try {
+          const probe = c.website
+            ? await probeWebsite(c.website)
+            : { vsEligible: false, vsEligibilityNote: "No website on file" };
+          if (probe.vsEligible) eligible++;
+          await prisma.outreachContact.update({
+            where: { id: c.id },
+            data: { vsEligible: probe.vsEligible, vsEligibilityNote: probe.vsEligibilityNote },
+          });
+        } catch (err) {
+          // Isolated per-contact: mark it checked with a note explaining the failure rather than
+          // leaving vsEligibilityNote null forever (which would make this same row retry - and
+          // potentially fail the same way - on every future backfill run).
+          console.warn("[vs-eligibility-backfill] failed for contact", c.id, err);
+          await prisma.outreachContact.update({
+            where: { id: c.id },
+            data: { vsEligible: false, vsEligibilityNote: "Probe failed - see server logs" },
+          }).catch(() => {});
+        }
+      }),
+    );
+  }
+
+  const remaining = await prisma.outreachContact.count({
+    where: { website: { not: null }, emailCheckedAt: { not: null }, vsEligibilityNote: null },
+  });
+  return { checked: batch.length, eligible, remaining };
+}
+
 // ── Outreach email content ───────────────────────────────────────────────────
 
 /** CAN-SPAM requires a real postal address in commercial email. */
