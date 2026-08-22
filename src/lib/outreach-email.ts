@@ -10,15 +10,13 @@ import { prisma } from "@/lib/db";
 import { sendEmailBatch } from "@/lib/email";
 import { getPublicSiteUrl } from "@/lib/site-url";
 import { getBoolSetting } from "@/lib/app-settings";
-import { OutreachStatus } from "@/generated/prisma/enums";
 
-// Observed live in production: Prisma's `not`/`notIn` on this enum column compiles to SQL
-// Postgres rejects ("operator does not exist: text <> \"OutreachStatus\""), even though `in`
-// (used successfully elsewhere in the app, e.g. admin-metrics.ts) works fine. Expressing "not
-// SIGNED_UP" as an explicit inclusion list sidesteps the bug entirely.
-const NOT_SIGNED_UP_STATUSES = Object.values(OutreachStatus).filter(
-  (s) => s !== OutreachStatus.SIGNED_UP,
-);
+// Cross-brand suppression checks (LP/VS status != SIGNED_UP) are done in JS on fetched rows
+// throughout this file, not as a Prisma WHERE filter - observed live in production that every
+// enum-negation/inclusion form Prisma emits for the OutreachStatus column (`not`, `notIn`, `in`)
+// fails against Postgres with "operator does not exist", while plain equality and fetching the
+// column via `select` both work fine. Batch sizes here are small enough that filtering in JS
+// after the fetch is cheap and sidesteps the bug entirely.
 
 // The production DB may not have the new columns until the migration is applied
 // somewhere; this makes every outreach entry point self-healing. Idempotent.
@@ -365,24 +363,19 @@ async function sendOutreachLocked(
   const batch: { id: string; name: string; email: string }[] = [];
   const invalidIds: string[] = [];
   for (let page = 0; batch.length < take && page < 5; page++) {
+    // Cross-brand suppression (vsStatus not SIGNED_UP, or never contacted by VS within the
+    // cooling-off window) is filtered in JS below, not in this WHERE clause - Postgres rejects
+    // every enum-comparison form Prisma emits for OutreachStatus here (confirmed live: plain
+    // equality on `status` works fine, but `not`/`notIn`/`in` on this nullable field all throw
+    // "operator does not exist"). Batch sizes are small (take <= 50, a few pages), so filtering
+    // the fetched rows in JS instead of in SQL is cheap and sidesteps the bug entirely.
     const candidates = await tx.outreachContact
       .findMany({
-        where: {
-          email: { not: null },
-          status: "NOT_CONTACTED",
-          // Cross-brand suppression: don't cold-email a business VenueSprocket already contacted
-          // recently, and never cold-email a business that's already a VenueSprocket customer.
-          // vsStatus is nullable (most contacts), so "not SIGNED_UP" needs the null branch too -
-          // see NOT_SIGNED_UP_STATUSES above for why this is an inclusion list, not `not`/`notIn`.
-          AND: [
-            { OR: [{ vsStatus: null }, { vsStatus: { in: NOT_SIGNED_UP_STATUSES } }] },
-            { OR: [{ vsEmailSentAt: null }, { vsEmailSentAt: { lt: vsCoolingOffSince } }] },
-          ],
-        },
+        where: { email: { not: null }, status: "NOT_CONTACTED" },
         orderBy: { rating: "desc" },
         skip: page * take,
         take,
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, email: true, vsStatus: true, vsEmailSentAt: true },
       })
       .catch((err) => {
         throw new Error(`[stage:lp-send-candidates-query] ${err instanceof Error ? err.message : String(err)}`);
@@ -390,6 +383,9 @@ async function sendOutreachLocked(
     if (candidates.length === 0) break;
     for (const c of candidates) {
       if (batch.length >= take) break;
+      const vsCrossBrandOk =
+        c.vsStatus !== "SIGNED_UP" && (c.vsEmailSentAt === null || c.vsEmailSentAt < vsCoolingOffSince);
+      if (!vsCrossBrandOk) continue;
       if (c.email && isPlausibleEmail(c.email)) {
         batch.push({ id: c.id, name: c.name, email: c.email });
       } else {
@@ -512,21 +508,22 @@ export async function getVsOutreachPreviewCore(limit = 5): Promise<{
     where: { website: { not: null }, emailCheckedAt: { not: null }, vsEligibilityNote: null },
   });
   const vsEligibleTotal = await prisma.outreachContact.count({ where: { vsEligible: true } });
+  // Cross-brand check filtered in JS below - see the comment in sendOutreachLocked for why.
   const candidates = await prisma.outreachContact.findMany({
-    where: {
-      email: { not: null },
-      vsEligible: true,
-      vsStatus: null,
-      status: { in: NOT_SIGNED_UP_STATUSES }, // status is non-nullable, no null branch needed
-      OR: [{ emailSentAt: null }, { emailSentAt: { lt: lpCoolingOffSince } }],
-    },
+    where: { email: { not: null }, vsEligible: true, vsStatus: null },
     orderBy: { rating: "desc" },
     take,
-    select: { email: true },
+    select: { email: true, status: true, emailSentAt: true },
   });
   const killSwitchEnabled = await getBoolSetting("vs_outreach_enabled", true);
 
-  const nextBatchCount = candidates.filter((c) => c.email && isPlausibleEmail(c.email)).length;
+  const nextBatchCount = candidates.filter(
+    (c) =>
+      c.email &&
+      isPlausibleEmail(c.email) &&
+      c.status !== "SIGNED_UP" &&
+      (c.emailSentAt === null || c.emailSentAt < lpCoolingOffSince),
+  ).length;
   return { backfillBacklog, vsEligibleTotal, nextBatchCount, killSwitchEnabled };
 }
 
@@ -561,25 +558,23 @@ async function sendVsOutreachLocked(
   const vsBatch: { id: string; name: string; email: string }[] = [];
   const invalidIds: string[] = [];
   for (let page = 0; vsBatch.length < take && page < 5; page++) {
+    // Cross-brand suppression (LP status not SIGNED_UP, or never contacted by LP within the
+    // cooling-off window) is filtered in JS below, not in this WHERE clause - see the matching
+    // comment in sendOutreachLocked above for why (every enum-negation/inclusion form Prisma
+    // emits for OutreachStatus fails against Postgres here, but plain equality works fine).
     const candidates = await tx.outreachContact.findMany({
-      where: {
-        email: { not: null },
-        vsEligible: true,
-        vsStatus: null,
-        // Cross-brand suppression: don't cold-email a business LeaguePour already contacted
-        // recently, and never cold-email a business that's already a LeaguePour customer.
-        // status is non-nullable, no null branch needed - see NOT_SIGNED_UP_STATUSES above.
-        status: { in: NOT_SIGNED_UP_STATUSES },
-        OR: [{ emailSentAt: null }, { emailSentAt: { lt: lpCoolingOffSince } }],
-      },
+      where: { email: { not: null }, vsEligible: true, vsStatus: null },
       orderBy: { rating: "desc" },
       skip: page * take,
       take,
-      select: { id: true, name: true, email: true },
+      select: { id: true, name: true, email: true, status: true, emailSentAt: true },
     });
     if (candidates.length === 0) break;
     for (const c of candidates) {
       if (vsBatch.length >= take) break;
+      const lpCrossBrandOk =
+        c.status !== "SIGNED_UP" && (c.emailSentAt === null || c.emailSentAt < lpCoolingOffSince);
+      if (!lpCrossBrandOk) continue;
       if (c.email && isPlausibleEmail(c.email)) {
         vsBatch.push({ id: c.id, name: c.name, email: c.email });
       } else {
