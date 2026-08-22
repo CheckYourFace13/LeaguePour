@@ -255,19 +255,29 @@ export async function harvestEmailsCore(limit: number): Promise<{
     const chunk = batch.slice(i, i + CONCURRENCY);
     await Promise.all(
       chunk.map(async (c) => {
-        const probe = c.website
-          ? await probeWebsite(c.website)
-          : { email: null, vsEligible: false, vsEligibilityNote: "No website on file" };
-        if (probe.email) found++;
-        await prisma.outreachContact.update({
-          where: { id: c.id },
-          data: {
-            email: probe.email,
-            emailCheckedAt: new Date(),
-            vsEligible: probe.vsEligible,
-            vsEligibilityNote: probe.vsEligibilityNote,
-          },
-        });
+        try {
+          const probe = c.website
+            ? await probeWebsite(c.website)
+            : { email: null, vsEligible: false, vsEligibilityNote: "No website on file" };
+          if (probe.email) found++;
+          await prisma.outreachContact.update({
+            where: { id: c.id },
+            data: {
+              email: probe.email,
+              emailCheckedAt: new Date(),
+              vsEligible: probe.vsEligible,
+              vsEligibilityNote: probe.vsEligibilityNote,
+            },
+          });
+        } catch (err) {
+          // One bad site/write must never crash the whole batch and kill the LP send phase
+          // that runs right after this in the same cron invocation - see the identical pattern
+          // in backfillVsEligibilityCore below.
+          console.warn("[harvest] failed for contact", c.id, err);
+          await prisma.outreachContact
+            .update({ where: { id: c.id }, data: { emailCheckedAt: new Date() } })
+            .catch(() => {});
+        }
       }),
     );
   }
