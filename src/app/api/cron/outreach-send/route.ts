@@ -122,6 +122,12 @@ export async function GET(request: Request) {
     return NextResponse.json({ ...outcome, vsBackfill });
   } catch (err) {
     console.error("[outreach cron] failed", err);
-    return NextResponse.json({ ok: false, error: "Outreach cron failed." }, { status: 500 });
+    // Detail included in the response (not just server logs) because this route is only
+    // reachable with CRON_SECRET, and the generic message alone gave no way to diagnose a
+    // real production failure without server log access.
+    return NextResponse.json(
+      { ok: false, error: "Outreach cron failed.", detail: err instanceof Error ? err.message : String(err) },
+      { status: 500 },
+    );
   }
 }
