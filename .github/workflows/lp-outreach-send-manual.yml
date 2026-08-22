@@ -14,6 +14,6 @@ jobs:
     steps:
       - name: Trigger LP outreach send (manual override)
         run: |
-          resp=$(curl -sS --max-time 600 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/outreach-send?manual=1")
+          resp=$(curl -sS --max-time 850 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/outreach-send?manual=1")
           echo "$resp"
           echo "$resp" | grep -q '"ok":true' || exit 1
