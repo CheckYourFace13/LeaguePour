@@ -9,6 +9,7 @@
 import { prisma } from "@/lib/db";
 import { sendEmailBatch } from "@/lib/email";
 import { getPublicSiteUrl } from "@/lib/site-url";
+import { getBoolSetting } from "@/lib/app-settings";
 
 // The production DB may not have the new columns until the migration is applied
 // somewhere; this makes every outreach entry point self-healing. Idempotent.
@@ -443,6 +444,45 @@ export async function vsOutreachSentWithinHours(hours: number): Promise<boolean>
     where: { vsEmailSentAt: { gte: since } },
   });
   return recent > 0;
+}
+
+/**
+ * Read-only snapshot of the VS outreach pipeline for pre-send verification - mirrors
+ * sendVsOutreachLocked's exact selection criteria below but only counts (never selects email
+ * addresses out of the DB, never takes the advisory lock), so it's safe to call anytime without
+ * risking a send or blocking a real send from acquiring the lock.
+ */
+export async function getVsOutreachPreviewCore(limit = 5): Promise<{
+  backfillBacklog: number;
+  vsEligibleTotal: number;
+  nextBatchCount: number;
+  killSwitchEnabled: boolean;
+}> {
+  const lpCoolingOffSince = new Date(Date.now() - CROSS_BRAND_COOLING_OFF_HOURS * 60 * 60 * 1000);
+  const take = Math.min(Math.max(limit, 1), 50);
+
+  const [backfillBacklog, vsEligibleTotal, candidates, killSwitchEnabled] = await Promise.all([
+    prisma.outreachContact.count({
+      where: { website: { not: null }, emailCheckedAt: { not: null }, vsEligibilityNote: null },
+    }),
+    prisma.outreachContact.count({ where: { vsEligible: true } }),
+    prisma.outreachContact.findMany({
+      where: {
+        email: { not: null },
+        vsEligible: true,
+        vsStatus: null,
+        status: { not: "SIGNED_UP" },
+        OR: [{ emailSentAt: null }, { emailSentAt: { lt: lpCoolingOffSince } }],
+      },
+      orderBy: { rating: "desc" },
+      take,
+      select: { email: true },
+    }),
+    getBoolSetting("vs_outreach_enabled", true),
+  ]);
+
+  const nextBatchCount = candidates.filter((c) => c.email && isPlausibleEmail(c.email)).length;
+  return { backfillBacklog, vsEligibleTotal, nextBatchCount, killSwitchEnabled };
 }
 
 export async function sendVsOutreachCore(limit: number): Promise<{

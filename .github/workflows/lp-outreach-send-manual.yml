@@ -1,0 +1,19 @@
+name: LP outreach send (manual)
+
+# Manual-only admin tool: bypasses outreach-send's 9-11am Chicago time window (via manual=1)
+# while still respecting its throttle (max one batch per 20h) - see
+# src/app/api/cron/outreach-send/route.ts. Safe to run anytime: if a legitimate batch already
+# went out in the past 20 hours this safely reports skipped rather than double-sending. Also
+# runs the VS eligibility backfill phase as part of the same route, same as the daily cron.
+on:
+  workflow_dispatch:
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger LP outreach send (manual override)
+        run: |
+          resp=$(curl -sS --max-time 600 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/outreach-send?manual=1")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1

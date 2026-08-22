@@ -1,0 +1,18 @@
+name: VS outreach preview (manual)
+
+# Manual-only admin tool: read-only pre-send sanity check via
+# src/app/api/cron/vs-outreach-preview. Reports counts only (no email addresses/PII), never
+# sends anything, never touches the send throttle or advisory lock. Meant to be run before
+# vs-outreach-send-manual.yml to confirm there's an eligible, unsuppressed batch to send.
+on:
+  workflow_dispatch:
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch VS outreach preview
+        run: |
+          resp=$(curl -sS --max-time 60 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/vs-outreach-preview")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1

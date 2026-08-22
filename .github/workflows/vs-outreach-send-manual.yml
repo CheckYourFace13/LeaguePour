@@ -1,0 +1,18 @@
+name: VS outreach send (manual)
+
+# Manual-only admin tool: bypasses vs-outreach-send's 10am-12pm Chicago time window (via
+# manual=1) while still respecting its throttle (max one batch per 20h) and the
+# vs_outreach_enabled kill switch - see src/app/api/cron/vs-outreach-send/route.ts. Run
+# vs-outreach-preview-manual.yml first to confirm there's an eligible batch before using this.
+on:
+  workflow_dispatch:
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger VS outreach send (manual override)
+        run: |
+          resp=$(curl -sS --max-time 120 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/vs-outreach-send?manual=1")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1

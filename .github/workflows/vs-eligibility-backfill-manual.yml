@@ -1,0 +1,18 @@
+name: VS eligibility backfill (manual)
+
+# Manual-only admin tool: runs one bounded batch of the VS eligibility backfill
+# (src/app/api/cron/vs-eligibility-backfill) on demand, without waiting for the daily
+# outreach-daily.yml cron to reach that phase. Never sends email and never touches either
+# outreach lane's send throttle - see the route's own doc comment for why.
+on:
+  workflow_dispatch:
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run VS eligibility backfill batch
+        run: |
+          resp=$(curl -sS --max-time 120 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/vs-eligibility-backfill")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1
