@@ -251,12 +251,16 @@ export async function harvestEmailsCore(limit: number): Promise<{
 }> {
   await ensureOutreachEmailColumns();
 
-  const batch = await prisma.outreachContact.findMany({
-    where: { email: null, emailCheckedAt: null, website: { not: null }, status: "NOT_CONTACTED" },
-    orderBy: { rating: "desc" },
-    take: Math.min(Math.max(limit, 1), 60),
-    select: { id: true, website: true },
-  });
+  const batch = await prisma.outreachContact
+    .findMany({
+      where: { email: null, emailCheckedAt: null, website: { not: null }, status: "NOT_CONTACTED" },
+      orderBy: { rating: "desc" },
+      take: Math.min(Math.max(limit, 1), 60),
+      select: { id: true, website: true },
+    })
+    .catch((err) => {
+      throw new Error(`[stage:harvest-batch-query] ${err instanceof Error ? err.message : String(err)}`);
+    });
 
   let found = 0;
   const CONCURRENCY = 6;
@@ -291,9 +295,13 @@ export async function harvestEmailsCore(limit: number): Promise<{
     );
   }
 
-  const remaining = await prisma.outreachContact.count({
-    where: { email: null, emailCheckedAt: null, website: { not: null }, status: "NOT_CONTACTED" },
-  });
+  const remaining = await prisma.outreachContact
+    .count({
+      where: { email: null, emailCheckedAt: null, website: { not: null }, status: "NOT_CONTACTED" },
+    })
+    .catch((err) => {
+      throw new Error(`[stage:harvest-remaining-count] ${err instanceof Error ? err.message : String(err)}`);
+    });
   return { checked: batch.length, found, remaining };
 }
 
@@ -357,24 +365,28 @@ async function sendOutreachLocked(
   const batch: { id: string; name: string; email: string }[] = [];
   const invalidIds: string[] = [];
   for (let page = 0; batch.length < take && page < 5; page++) {
-    const candidates = await tx.outreachContact.findMany({
-      where: {
-        email: { not: null },
-        status: "NOT_CONTACTED",
-        // Cross-brand suppression: don't cold-email a business VenueSprocket already contacted
-        // recently, and never cold-email a business that's already a VenueSprocket customer.
-        // vsStatus is nullable (most contacts), so "not SIGNED_UP" needs the null branch too -
-        // see NOT_SIGNED_UP_STATUSES above for why this is an inclusion list, not `not`/`notIn`.
-        AND: [
-          { OR: [{ vsStatus: null }, { vsStatus: { in: NOT_SIGNED_UP_STATUSES } }] },
-          { OR: [{ vsEmailSentAt: null }, { vsEmailSentAt: { lt: vsCoolingOffSince } }] },
-        ],
-      },
-      orderBy: { rating: "desc" },
-      skip: page * take,
-      take,
-      select: { id: true, name: true, email: true },
-    });
+    const candidates = await tx.outreachContact
+      .findMany({
+        where: {
+          email: { not: null },
+          status: "NOT_CONTACTED",
+          // Cross-brand suppression: don't cold-email a business VenueSprocket already contacted
+          // recently, and never cold-email a business that's already a VenueSprocket customer.
+          // vsStatus is nullable (most contacts), so "not SIGNED_UP" needs the null branch too -
+          // see NOT_SIGNED_UP_STATUSES above for why this is an inclusion list, not `not`/`notIn`.
+          AND: [
+            { OR: [{ vsStatus: null }, { vsStatus: { in: NOT_SIGNED_UP_STATUSES } }] },
+            { OR: [{ vsEmailSentAt: null }, { vsEmailSentAt: { lt: vsCoolingOffSince } }] },
+          ],
+        },
+        orderBy: { rating: "desc" },
+        skip: page * take,
+        take,
+        select: { id: true, name: true, email: true },
+      })
+      .catch((err) => {
+        throw new Error(`[stage:lp-send-candidates-query] ${err instanceof Error ? err.message : String(err)}`);
+      });
     if (candidates.length === 0) break;
     for (const c of candidates) {
       if (batch.length >= take) break;
@@ -425,9 +437,13 @@ async function sendOutreachLocked(
     );
   }
 
-  const remaining = await tx.outreachContact.count({
-    where: { email: { not: null }, status: "NOT_CONTACTED" },
-  });
+  const remaining = await tx.outreachContact
+    .count({
+      where: { email: { not: null }, status: "NOT_CONTACTED" },
+    })
+    .catch((err) => {
+      throw new Error(`[stage:lp-send-remaining-count] ${err instanceof Error ? err.message : String(err)}`);
+    });
   const fullSuccess = result.ok && result.sent === batch.length;
   return {
     sent: fullSuccess ? batch.length : 0,
