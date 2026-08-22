@@ -10,6 +10,15 @@ import { prisma } from "@/lib/db";
 import { sendEmailBatch } from "@/lib/email";
 import { getPublicSiteUrl } from "@/lib/site-url";
 import { getBoolSetting } from "@/lib/app-settings";
+import { OutreachStatus } from "@/generated/prisma/enums";
+
+// Observed live in production: Prisma's `not`/`notIn` on this enum column compiles to SQL
+// Postgres rejects ("operator does not exist: text <> \"OutreachStatus\""), even though `in`
+// (used successfully elsewhere in the app, e.g. admin-metrics.ts) works fine. Expressing "not
+// SIGNED_UP" as an explicit inclusion list sidesteps the bug entirely.
+const NOT_SIGNED_UP_STATUSES = Object.values(OutreachStatus).filter(
+  (s) => s !== OutreachStatus.SIGNED_UP,
+);
 
 // The production DB may not have the new columns until the migration is applied
 // somewhere; this makes every outreach entry point self-healing. Idempotent.
@@ -354,11 +363,12 @@ async function sendOutreachLocked(
         status: "NOT_CONTACTED",
         // Cross-brand suppression: don't cold-email a business VenueSprocket already contacted
         // recently, and never cold-email a business that's already a VenueSprocket customer.
-        // notIn (not `not:`) - observed live in production that Prisma's `not` on a nullable
-        // enum column compiles to SQL Postgres rejects ("operator does not exist: text <>
-        // OutreachStatus"); notIn compiles to a form Postgres accepts.
-        vsStatus: { notIn: ["SIGNED_UP"] },
-        OR: [{ vsEmailSentAt: null }, { vsEmailSentAt: { lt: vsCoolingOffSince } }],
+        // vsStatus is nullable (most contacts), so "not SIGNED_UP" needs the null branch too -
+        // see NOT_SIGNED_UP_STATUSES above for why this is an inclusion list, not `not`/`notIn`.
+        AND: [
+          { OR: [{ vsStatus: null }, { vsStatus: { in: NOT_SIGNED_UP_STATUSES } }] },
+          { OR: [{ vsEmailSentAt: null }, { vsEmailSentAt: { lt: vsCoolingOffSince } }] },
+        ],
       },
       orderBy: { rating: "desc" },
       skip: page * take,
@@ -491,7 +501,7 @@ export async function getVsOutreachPreviewCore(limit = 5): Promise<{
       email: { not: null },
       vsEligible: true,
       vsStatus: null,
-      status: { notIn: ["SIGNED_UP"] },
+      status: { in: NOT_SIGNED_UP_STATUSES }, // status is non-nullable, no null branch needed
       OR: [{ emailSentAt: null }, { emailSentAt: { lt: lpCoolingOffSince } }],
     },
     orderBy: { rating: "desc" },
@@ -542,8 +552,8 @@ async function sendVsOutreachLocked(
         vsStatus: null,
         // Cross-brand suppression: don't cold-email a business LeaguePour already contacted
         // recently, and never cold-email a business that's already a LeaguePour customer.
-        // notIn, not `not:` - see the matching comment in sendOutreachLocked above.
-        status: { notIn: ["SIGNED_UP"] },
+        // status is non-nullable, no null branch needed - see NOT_SIGNED_UP_STATUSES above.
+        status: { in: NOT_SIGNED_UP_STATUSES },
         OR: [{ emailSentAt: null }, { emailSentAt: { lt: lpCoolingOffSince } }],
       },
       orderBy: { rating: "desc" },
