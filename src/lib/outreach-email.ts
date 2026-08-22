@@ -354,7 +354,10 @@ async function sendOutreachLocked(
         status: "NOT_CONTACTED",
         // Cross-brand suppression: don't cold-email a business VenueSprocket already contacted
         // recently, and never cold-email a business that's already a VenueSprocket customer.
-        vsStatus: { not: "SIGNED_UP" },
+        // notIn (not `not:`) - observed live in production that Prisma's `not` on a nullable
+        // enum column compiles to SQL Postgres rejects ("operator does not exist: text <>
+        // OutreachStatus"); notIn compiles to a form Postgres accepts.
+        vsStatus: { notIn: ["SIGNED_UP"] },
         OR: [{ vsEmailSentAt: null }, { vsEmailSentAt: { lt: vsCoolingOffSince } }],
       },
       orderBy: { rating: "desc" },
@@ -488,7 +491,7 @@ export async function getVsOutreachPreviewCore(limit = 5): Promise<{
       email: { not: null },
       vsEligible: true,
       vsStatus: null,
-      status: { not: "SIGNED_UP" },
+      status: { notIn: ["SIGNED_UP"] },
       OR: [{ emailSentAt: null }, { emailSentAt: { lt: lpCoolingOffSince } }],
     },
     orderBy: { rating: "desc" },
@@ -539,7 +542,8 @@ async function sendVsOutreachLocked(
         vsStatus: null,
         // Cross-brand suppression: don't cold-email a business LeaguePour already contacted
         // recently, and never cold-email a business that's already a LeaguePour customer.
-        status: { not: "SIGNED_UP" },
+        // notIn, not `not:` - see the matching comment in sendOutreachLocked above.
+        status: { notIn: ["SIGNED_UP"] },
         OR: [{ emailSentAt: null }, { emailSentAt: { lt: lpCoolingOffSince } }],
       },
       orderBy: { rating: "desc" },
