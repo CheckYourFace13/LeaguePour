@@ -471,25 +471,27 @@ export async function getVsOutreachPreviewCore(limit = 5): Promise<{
   const lpCoolingOffSince = new Date(Date.now() - CROSS_BRAND_COOLING_OFF_HOURS * 60 * 60 * 1000);
   const take = Math.min(Math.max(limit, 1), 50);
 
-  const [backfillBacklog, vsEligibleTotal, candidates, killSwitchEnabled] = await Promise.all([
-    prisma.outreachContact.count({
-      where: { website: { not: null }, emailCheckedAt: { not: null }, vsEligibilityNote: null },
-    }),
-    prisma.outreachContact.count({ where: { vsEligible: true } }),
-    prisma.outreachContact.findMany({
-      where: {
-        email: { not: null },
-        vsEligible: true,
-        vsStatus: null,
-        status: { not: "SIGNED_UP" },
-        OR: [{ emailSentAt: null }, { emailSentAt: { lt: lpCoolingOffSince } }],
-      },
-      orderBy: { rating: "desc" },
-      take,
-      select: { email: true },
-    }),
-    getBoolSetting("vs_outreach_enabled", true),
-  ]);
+  // Sequenced rather than Promise.all'd - a serverless function opening several simultaneous
+  // connections against a pool that's already under pressure (e.g. from a slow concurrent
+  // request elsewhere) can starve waiting for more than one free slot at once, when running
+  // one at a time only ever needs one.
+  const backfillBacklog = await prisma.outreachContact.count({
+    where: { website: { not: null }, emailCheckedAt: { not: null }, vsEligibilityNote: null },
+  });
+  const vsEligibleTotal = await prisma.outreachContact.count({ where: { vsEligible: true } });
+  const candidates = await prisma.outreachContact.findMany({
+    where: {
+      email: { not: null },
+      vsEligible: true,
+      vsStatus: null,
+      status: { not: "SIGNED_UP" },
+      OR: [{ emailSentAt: null }, { emailSentAt: { lt: lpCoolingOffSince } }],
+    },
+    orderBy: { rating: "desc" },
+    take,
+    select: { email: true },
+  });
+  const killSwitchEnabled = await getBoolSetting("vs_outreach_enabled", true);
 
   const nextBatchCount = candidates.filter((c) => c.email && isPlausibleEmail(c.email)).length;
   return { backfillBacklog, vsEligibleTotal, nextBatchCount, killSwitchEnabled };
