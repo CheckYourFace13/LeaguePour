@@ -39,11 +39,18 @@ export async function GET(request: Request) {
 
   const lpKey = process.env.RESEND_API_KEY?.trim();
   const vsKey = process.env.RESEND_VS_API_KEY?.trim();
+  // Presence only, never the values - this route is CRON_SECRET-gated so it's safe to report
+  // booleans here, unlike the public webhook endpoint which must never reveal configuration
+  // state to an unauthenticated caller.
+  const webhookSecrets = {
+    lpConfigured: Boolean(process.env.RESEND_WEBHOOK_SECRET?.trim()),
+    vsConfigured: Boolean(process.env.RESEND_VS_WEBHOOK_SECRET?.trim()),
+  };
 
   try {
     const lp = lpKey ? await listDomains(lpKey) : { ok: false as const, error: "RESEND_API_KEY not configured" };
     const vs = vsKey ? await listDomains(vsKey) : { ok: false as const, error: "RESEND_VS_API_KEY not configured" };
-    return NextResponse.json({ ok: true, lp, vs });
+    return NextResponse.json({ ok: true, lp, vs, webhookSecrets });
   } catch (err) {
     return NextResponse.json({ ok: false, error: err instanceof Error ? err.message : "Unknown error" }, { status: 500 });
   }
