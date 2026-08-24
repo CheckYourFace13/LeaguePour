@@ -533,8 +533,8 @@ export async function sendVsOutreachCore(limit: number): Promise<{
   remaining: number;
   error?: string;
 }> {
-  if (!process.env.RESEND_API_KEY?.trim()) {
-    return { sent: 0, failed: 0, remaining: 0, error: "RESEND_API_KEY not configured" };
+  if (!process.env.RESEND_VS_API_KEY?.trim()) {
+    return { sent: 0, failed: 0, remaining: 0, error: "RESEND_VS_API_KEY not configured" };
   }
   // Same headroom as sendOutreachCore above, for the same reason (the Resend call happens
   // inside this transaction).
@@ -603,6 +603,7 @@ async function sendVsOutreachLocked(
       from: "VenueSprocket <hello@venuesprocket.com>",
       replyTo: "hello@venuesprocket.com",
     })),
+    "vs",
   );
 
   if (result.ok && result.sent === vsBatch.length) {

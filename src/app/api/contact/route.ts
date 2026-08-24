@@ -35,15 +35,16 @@ export async function POST(req: Request) {
   }
 
   const product = body.product === "venuesprocket" ? "venuesprocket" : "leaguepour";
-  const brand = product === "venuesprocket" ? "VenueSprocket" : "LeaguePour";
+  const isVs = product === "venuesprocket";
+  const brandLabel = isVs ? "VenueSprocket" : "LeaguePour";
   const topic = body.topic && TOPICS.has(body.topic) ? body.topic : "General question";
 
   await sendEmail({
     to: RECIPIENTS[product],
     replyTo: email,
-    subject: `${brand} ${topic}: ${name}${venue ? ` — ${venue}` : ""}`,
+    subject: `${brandLabel} ${topic}: ${name}${venue ? ` — ${venue}` : ""}`,
     html: `
-      <p><strong>Product:</strong> ${brand}</p>
+      <p><strong>Product:</strong> ${brandLabel}</p>
       <p><strong>Topic:</strong> ${topic}</p>
       <p><strong>Name:</strong> ${name}</p>
       <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
@@ -51,6 +52,10 @@ export async function POST(req: Request) {
       <p><strong>Message:</strong></p>
       <p style="white-space:pre-wrap">${message}</p>
     `,
+    // VS's Resend team key can only send from a domain that team owns - the LP default `from`
+    // (RESEND_FROM / onboarding@resend.dev fallback) belongs to LP's team, not VS's.
+    ...(isVs ? { from: "VenueSprocket <hello@venuesprocket.com>" } : {}),
+    brand: isVs ? "vs" : "lp",
   });
 
   return NextResponse.json({ ok: true });

@@ -1,14 +1,20 @@
 /**
- * Resend email delivery.
- * Env vars required: RESEND_API_KEY, RESEND_FROM (optional, defaults to onboarding@resend.dev).
+ * Resend email delivery. LeaguePour and VenueSprocket are on separate Resend teams (separate
+ * free quotas), each with its own API key and webhook signing secret - see getResendKey below
+ * and src/app/api/webhooks/resend/route.ts. Sender addresses stay brand-specific regardless
+ * (hello@leaguepour.com / hello@venuesprocket.com); only the API key differs.
  *
- * For production: set RESEND_FROM to a verified domain address, e.g. "LeaguePour <hello@leaguepour.com>"
+ * Env vars required: RESEND_API_KEY (LP), RESEND_VS_API_KEY (VS), RESEND_FROM (optional LP
+ * default, falls back to onboarding@resend.dev). VS calls always pass an explicit `from`.
  */
 
 const RESEND_API = "https://api.resend.com";
 
-function getResendKey(): string | null {
-  return process.env.RESEND_API_KEY?.trim() ?? null;
+export type EmailBrand = "lp" | "vs";
+
+function getResendKey(brand: EmailBrand): string | null {
+  const envVar = brand === "vs" ? "RESEND_VS_API_KEY" : "RESEND_API_KEY";
+  return process.env[envVar]?.trim() ?? null;
 }
 
 function getFrom(): string {
@@ -21,13 +27,21 @@ type SendEmailOpts = {
   html: string;
   from?: string;
   replyTo?: string;
+  /** Which Resend team's API key to send with. Defaults to "lp". */
+  brand?: EmailBrand;
 };
 
-/** Send a single email via Resend. Soft-fails (logs) when RESEND_API_KEY is not set. */
+/** Send a single email via Resend. Soft-fails (logs) when the brand's API key is not set. */
 export async function sendEmail(opts: SendEmailOpts): Promise<{ ok: boolean; id?: string }> {
-  const key = getResendKey();
+  const brand = opts.brand ?? "lp";
+  const key = getResendKey(brand);
   if (!key) {
-    console.warn("[email] RESEND_API_KEY not set - skipping email to", opts.to, "Subject:", opts.subject);
+    console.warn(
+      `[email] ${brand === "vs" ? "RESEND_VS_API_KEY" : "RESEND_API_KEY"} not set - skipping email to`,
+      opts.to,
+      "Subject:",
+      opts.subject,
+    );
     return { ok: false };
   }
 
@@ -54,15 +68,20 @@ export async function sendEmail(opts: SendEmailOpts): Promise<{ ok: boolean; id?
 }
 
 /**
- * Send up to 100 emails in a single Resend batch request.
+ * Send up to 100 emails in a single Resend batch request, all under one brand's API key/team.
  * Each recipient gets their own personalised email (not a group send).
  */
 export async function sendEmailBatch(
   emails: SendEmailOpts[],
+  brand: EmailBrand = "lp",
 ): Promise<{ ok: boolean; sent: number; failed: number }> {
-  const key = getResendKey();
+  const key = getResendKey(brand);
   if (!key) {
-    console.warn("[email] RESEND_API_KEY not set - skipping batch of", emails.length, "emails");
+    console.warn(
+      `[email] ${brand === "vs" ? "RESEND_VS_API_KEY" : "RESEND_API_KEY"} not set - skipping batch of`,
+      emails.length,
+      "emails",
+    );
     return { ok: false, sent: 0, failed: emails.length };
   }
   if (emails.length === 0) return { ok: true, sent: 0, failed: 0 };
@@ -209,6 +228,7 @@ export function sendVsLeadNotificationEmail(opts: {
     html: vsBaseHtml(content),
     replyTo: opts.customerEmail,
     from: "VenueSprocket <hello@venuesprocket.com>",
+    brand: "vs",
   });
 }
 
@@ -241,6 +261,7 @@ export function sendVsInquiryConfirmationEmail(opts: {
     subject: `Your inquiry to ${opts.venueName} — we'll be in touch soon`,
     html: vsBaseHtml(content),
     from: "VenueSprocket <hello@venuesprocket.com>",
+    brand: "vs",
   });
 }
 

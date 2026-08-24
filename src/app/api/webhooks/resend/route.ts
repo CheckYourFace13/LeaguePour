@@ -46,18 +46,31 @@ async function suppressContact(email: string, kind: "BOUNCED" | "COMPLAINED") {
 }
 
 export async function POST(request: Request) {
-  const secret = process.env.RESEND_WEBHOOK_SECRET?.trim();
+  // LP and VS are on separate Resend teams (see src/lib/email.ts), each with its own webhook
+  // signing secret - a single endpoint accepts events from either, verifying against whichever
+  // secret is actually configured. If at least one secret is configured, every request MUST
+  // verify against one of the configured secrets; only if NEITHER is configured does it fall
+  // back to accepting unverified (matches the original single-secret behavior for a
+  // not-yet-configured deployment, never silently downgrades a deployment that has configured
+  // at least one).
+  const lpSecret = process.env.RESEND_WEBHOOK_SECRET?.trim();
+  const vsSecret = process.env.RESEND_VS_WEBHOOK_SECRET?.trim();
+  const configuredSecrets = [lpSecret, vsSecret].filter((s): s is string => Boolean(s));
   const body = await request.text();
 
-  if (secret) {
+  if (configuredSecrets.length > 0) {
     const id = request.headers.get("svix-id");
     const timestamp = request.headers.get("svix-timestamp");
     const signature = request.headers.get("svix-signature");
-    if (!id || !timestamp || !signature || !verifySignature(secret, id, timestamp, body, signature)) {
+    const verified =
+      id && timestamp && signature
+        ? configuredSecrets.some((s) => verifySignature(s, id, timestamp, body, signature))
+        : false;
+    if (!verified) {
       return NextResponse.json({ ok: false, error: "Invalid signature" }, { status: 401 });
     }
   } else {
-    console.warn("[resend webhook] RESEND_WEBHOOK_SECRET not set - accepting request unverified");
+    console.warn("[resend webhook] No webhook secret configured (RESEND_WEBHOOK_SECRET / RESEND_VS_WEBHOOK_SECRET) - accepting request unverified");
   }
 
   let event: ResendWebhookEvent;

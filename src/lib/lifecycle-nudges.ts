@@ -88,7 +88,13 @@ export async function sendVsNudge(opts: {
 }): Promise<boolean> {
   if (!(await claimNudge(opts.key))) return false;
   const html = vsEmailShell(opts.title, opts.bodyHtml, `${baseUrl()}${opts.ctaPath}`, opts.ctaLabel);
-  await sendEmail({ to: opts.to, subject: opts.subject, html, from: "VenueSprocket <hello@venuesprocket.com>" });
+  await sendEmail({
+    to: opts.to,
+    subject: opts.subject,
+    html,
+    from: "VenueSprocket <hello@venuesprocket.com>",
+    brand: "vs",
+  });
   return true;
 }
 
