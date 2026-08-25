@@ -1,0 +1,18 @@
+name: Resend webhook selftest (manual)
+
+# Manual-only diagnostic: proves the dual-secret webhook verification in
+# src/app/api/webhooks/resend actually accepts a correctly-signed request from each brand's
+# Resend team, and that neither secret is exposed anywhere in the process (signing happens
+# entirely inside src/app/api/cron/resend-webhook-selftest, server-side).
+on:
+  workflow_dispatch:
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Resend webhook selftest
+        run: |
+          resp=$(curl -sS --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/resend-webhook-selftest")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1
