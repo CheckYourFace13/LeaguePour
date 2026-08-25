@@ -5,17 +5,18 @@ import { getPublicSiteUrl } from "@/lib/site-url";
 import { LP_HOST, VS_HOST, isVsPath } from "@/lib/vs-routing";
 
 const protectedPrefixes = ["/venue", "/player", "/app"];
-// Shared/functional prefixes exempt from host gating below - authenticated app sections, auth
+// Shared/functional prefixes exempt from VS-host gating below - authenticated app sections, auth
 // utility pages (both brands' robots.txt already disallow these from indexing, which only makes
 // sense if they're intentionally reachable on both domains), and API routes must keep working
 // regardless of which domain a request arrives on. Static assets/framework internals were never
-// part of the VS/LP path split in the first place.
+// part of the VS/LP path split in the first place. Deliberately does NOT include "/venuesprocket"
+// - that path is checked separately below (see hostRedirect) and must NOT be exempted from the
+// LP-host redirect-away check, or leaguepour.com/venuesprocket/* would never redirect to VS.
 const hostGateExemptPrefixes = [
   "/venue",
   "/player",
   "/app",
   "/api",
-  "/venuesprocket",
   "/_next",
   "/login",
   "/signup",
@@ -26,6 +27,11 @@ const hostGateExemptPrefixes = [
   "/proposal",
   "/sign",
 ];
+
+/** Segment-aware prefix match - "/venue" must not match "/venuesprocket/pricing". */
+function pathIsUnder(pathname: string, prefix: string): boolean {
+  return pathname === prefix || pathname.startsWith(`${prefix}/`);
+}
 
 /**
  * Enforces the other half of brand/domain separation that next.config.ts's VS host rewrites
@@ -39,14 +45,17 @@ const hostGateExemptPrefixes = [
 function hostRedirect(request: NextRequest): NextResponse | null {
   const host = request.headers.get("host")?.split(":")[0]?.toLowerCase();
   const { pathname, search } = request.nextUrl;
-  if (hostGateExemptPrefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`))) return null;
 
-  if (host === VS_HOST && !isVsPath(pathname)) {
-    return NextResponse.redirect(`https://${LP_HOST}${pathname}${search}`, 301);
-  }
-  if (host === LP_HOST && pathname.startsWith("/venuesprocket")) {
+  if (host === LP_HOST && pathIsUnder(pathname, "/venuesprocket")) {
     const stripped = pathname.replace(/^\/venuesprocket/, "") || "/";
     return NextResponse.redirect(`https://${VS_HOST}${stripped}${search}`, 301);
+  }
+  if (host === VS_HOST) {
+    if (pathIsUnder(pathname, "/venuesprocket")) return null; // direct internal path, let it resolve
+    if (hostGateExemptPrefixes.some((p) => pathIsUnder(pathname, p))) return null;
+    if (!isVsPath(pathname)) {
+      return NextResponse.redirect(`https://${LP_HOST}${pathname}${search}`, 301);
+    }
   }
   return null;
 }
@@ -57,7 +66,7 @@ export async function middleware(request: NextRequest) {
   const redirect = hostRedirect(request);
   if (redirect) return redirect;
 
-  const needsAuth = protectedPrefixes.some((p) => pathname.startsWith(p));
+  const needsAuth = protectedPrefixes.some((p) => pathIsUnder(pathname, p));
   if (!needsAuth) return NextResponse.next();
 
   const secret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
