@@ -11,22 +11,29 @@
  * only Bing and IndexNow-participating engines.
  */
 
-const INDEXNOW_KEY = "adf7eae9c2fc3ef7ff2fdfcd44400559";
+// Fixed key supplied by the project owner - do not regenerate. Must match the contents of
+// public/{INDEXNOW_KEY}.txt exactly.
+const INDEXNOW_KEY = "d38fc2984e4840aaabe393fd2059fe94";
 const INDEXNOW_ENDPOINT = "https://api.indexnow.org/indexnow";
 
 export type IndexNowHost = "leaguepour.com" | "venuesprocket.com";
 
+export type IndexNowSubmitResult =
+  | { ok: true; status: number; submitted: number }
+  | { ok: false; status: number | null; error: string; submitted: 0 };
+
 /**
- * Submit up to 10,000 URLs for one host in a single call. Fire-and-forget by design (callers
- * should not block a user-facing action on this) - failures are logged, never thrown, since a
- * missed IndexNow ping should never break venue/competition publishing.
+ * Submit up to 10,000 URLs for one host in a single call. Never throws - a missed IndexNow ping
+ * should never break venue/competition publishing - but DOES return the real outcome (status
+ * code included) so callers that need to verify/report actual delivery can, rather than only
+ * the fire-and-forget callers that don't care.
  */
-export async function submitToIndexNow(host: IndexNowHost, urls: string[]): Promise<void> {
-  if (urls.length === 0) return;
+export async function submitToIndexNow(host: IndexNowHost, urls: string[]): Promise<IndexNowSubmitResult> {
+  if (urls.length === 0) return { ok: true, status: 0, submitted: 0 };
   const bad = urls.find((u) => !u.startsWith(`https://${host}/`));
   if (bad) {
     console.error("[indexnow] refusing to submit URL that doesn't match host", host, bad);
-    return;
+    return { ok: false, status: null, error: `URL doesn't match host ${host}: ${bad}`, submitted: 0 };
   }
 
   try {
@@ -43,9 +50,13 @@ export async function submitToIndexNow(host: IndexNowHost, urls: string[]): Prom
     if (!res.ok && res.status !== 202) {
       const text = await res.text().catch(() => "");
       console.error("[indexnow] submission rejected", host, res.status, text.slice(0, 300));
+      return { ok: false, status: res.status, error: text.slice(0, 300), submitted: 0 };
     }
+    return { ok: true, status: res.status, submitted: urls.length };
   } catch (err) {
+    const error = err instanceof Error ? err.message : String(err);
     console.error("[indexnow] submission failed", host, err);
+    return { ok: false, status: null, error, submitted: 0 };
   }
 }
 

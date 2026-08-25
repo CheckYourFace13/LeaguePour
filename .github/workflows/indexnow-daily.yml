@@ -7,6 +7,11 @@ on:
   schedule:
     - cron: "0 12 * * *"
   workflow_dispatch:
+    inputs:
+      force:
+        description: "Bypass the 20h throttle (for manual re-verification)"
+        type: boolean
+        default: false
 
 jobs:
   submit:
@@ -14,6 +19,9 @@ jobs:
     steps:
       - name: Trigger IndexNow submission
         run: |
-          resp=$(curl -sS --max-time 60 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/indexnow-submit")
+          FORCE="${{ inputs.force }}"
+          QS=""
+          if [ "$FORCE" = "true" ]; then QS="?force=1"; fi
+          resp=$(curl -sS --max-time 60 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/indexnow-submit$QS")
           echo "$resp"
           echo "$resp" | grep -q '"ok":true' || exit 1

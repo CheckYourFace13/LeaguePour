@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { runJob } from "@/lib/job-runs";
 import { getSetting, setSetting } from "@/lib/app-settings";
-import { submitToIndexNow } from "@/lib/seo/indexnow";
+import { submitToIndexNow, type IndexNowSubmitResult } from "@/lib/seo/indexnow";
 import lpSitemap from "@/app/sitemap";
 import vsSitemap from "@/app/venuesprocket/sitemap";
 
@@ -32,18 +32,27 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 
+  const force = url.searchParams.get("force") === "1";
+
   try {
     const outcome = await runJob("indexnow-submit", async () => {
-      const lastRun = await getSetting("indexnow_last_run", "");
-      if (lastRun) {
-        const hoursSince = (Date.now() - new Date(lastRun).getTime()) / (60 * 60 * 1000);
-        if (hoursSince < THROTTLE_HOURS) {
-          const detail = `Skipped - last run ${hoursSince.toFixed(1)}h ago (throttle ${THROTTLE_HOURS}h)`;
-          return {
-            status: "skipped" as const,
-            detail,
-            result: { ok: true, skipped: detail as string | null, lpCount: 0, vsCount: 0 },
-          };
+      if (!force) {
+        const lastRun = await getSetting("indexnow_last_run", "");
+        if (lastRun) {
+          const hoursSince = (Date.now() - new Date(lastRun).getTime()) / (60 * 60 * 1000);
+          if (hoursSince < THROTTLE_HOURS) {
+            const detail = `Skipped - last run ${hoursSince.toFixed(1)}h ago (throttle ${THROTTLE_HOURS}h)`;
+            return {
+              status: "skipped" as const,
+              detail,
+              result: {
+                ok: true,
+                skipped: detail as string | null,
+                lp: null as IndexNowSubmitResult | null,
+                vs: null as IndexNowSubmitResult | null,
+              },
+            };
+          }
         }
       }
 
@@ -51,14 +60,14 @@ export async function GET(request: Request) {
       const lpUrls = lpEntries.map((e) => e.url);
       const vsUrls = vsEntries.map((e) => e.url);
 
-      await submitToIndexNow("leaguepour.com", lpUrls);
-      await submitToIndexNow("venuesprocket.com", vsUrls);
+      const lp = await submitToIndexNow("leaguepour.com", lpUrls);
+      const vs = await submitToIndexNow("venuesprocket.com", vsUrls);
       await setSetting("indexnow_last_run", new Date().toISOString());
 
       return {
-        status: "success" as const,
-        detail: `Submitted ${lpUrls.length} LP URLs, ${vsUrls.length} VS URLs`,
-        result: { ok: true, skipped: null as string | null, lpCount: lpUrls.length, vsCount: vsUrls.length },
+        status: lp.ok && vs.ok ? ("success" as const) : ("failure" as const),
+        detail: `LP: ${lp.ok ? `submitted ${lp.submitted} (HTTP ${lp.status})` : `failed - ${lp.error}`}; VS: ${vs.ok ? `submitted ${vs.submitted} (HTTP ${vs.status})` : `failed - ${vs.error}`}`,
+        result: { ok: lp.ok && vs.ok, skipped: null as string | null, lp, vs },
       };
     });
     return NextResponse.json(outcome);
