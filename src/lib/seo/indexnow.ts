@@ -30,7 +30,9 @@ export type IndexNowSubmitResult =
  */
 export async function submitToIndexNow(host: IndexNowHost, urls: string[]): Promise<IndexNowSubmitResult> {
   if (urls.length === 0) return { ok: true, status: 0, submitted: 0 };
-  const bad = urls.find((u) => !u.startsWith(`https://${host}/`));
+  // The bare homepage URL (https://host, no trailing slash) is legitimate and must not be
+  // rejected by a check that only accepts "https://host/...".
+  const bad = urls.find((u) => u !== `https://${host}` && !u.startsWith(`https://${host}/`));
   if (bad) {
     console.error("[indexnow] refusing to submit URL that doesn't match host", host, bad);
     return { ok: false, status: null, error: `URL doesn't match host ${host}: ${bad}`, submitted: 0 };
