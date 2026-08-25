@@ -52,9 +52,11 @@ export function CompareDiscoveryPage({ slug }: { slug: string }) {
 
   const jsonLd = [
     buildWebPageJsonLd({ name: page.heroTitle, description: page.description, path }),
+    // No standalone "/compare" hub page exists to be a real intermediate breadcrumb node - a
+    // 2-level Home > page breadcrumb is valid and avoids pointing rich-result consumers at a
+    // sibling compare page instead of a real category page.
     buildBreadcrumbJsonLd([
       { name: "Home", path: "/" },
-      { name: "Compare", path: "/compare/challonge" },
       { name: page.heroTitle, path },
     ]),
     buildFaqPageJsonLd(faqs),

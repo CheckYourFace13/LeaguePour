@@ -7,6 +7,15 @@ import { getAllSoftwareSlugs } from "@/lib/seo/render-software-page";
 import { getAllOutreachCitySlugs } from "@/lib/seo/outreach-city-slugs";
 import { getPublicSiteUrl } from "@/lib/site-url";
 
+// Computed once at module load (i.e. once per deploy/instance start), not per-request - static
+// pages only actually change on a deploy, so their lastmod should reflect that, not report "just
+// modified" to every crawler hit that happens to land on a warm instance.
+const BUILD_TIME = new Date();
+
+// Explicit short revalidate window, same reasoning as src/app/robots.ts - dynamic venue/
+// competition data means this route was never subject to the far-future default anyway, but
+// making it explicit removes any doubt after the CDN-staleness incident.
+export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getPublicSiteUrl();
@@ -87,7 +96,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/legal/privacy",
   ].map((path) => ({
     url: `${base}${path}`,
-    lastModified: new Date(),
+    lastModified: BUILD_TIME,
     changeFrequency: "weekly" as const,
     priority: path === "" ? 1 : path.includes("/compare/") || path.includes("/software/") ? 0.85 : 0.8,
   }));

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { getPublicSiteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
-  title: { absolute: "Dart League Software for Bars | LeaguePour" },
+  title: { absolute: "Bar Dart League Management Software | LeaguePour" },
   description:
     "Run dart leagues at your bar with LeaguePour. Online signup, team registration, entry fees via Stripe, standings, and bracket management - no spreadsheets needed.",
   alternates: { canonical: "/dart-league-software" },
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     "darts league platform",
   ],
   openGraph: {
-    title: "Dart League Software for Bars | LeaguePour",
+    title: "Bar Dart League Management Software | LeaguePour",
     description:
       "Run dart leagues at your bar - online signup, entry fees, standings, and brackets. No spreadsheets.",
     url: "/dart-league-software",

@@ -136,9 +136,11 @@ export async function SoftwareDiscoveryPage({ slug }: { slug: SoftwarePageSlug }
       description: page.description,
       path,
     }),
+    // No standalone "/software" hub page exists to be a real intermediate breadcrumb node - a
+    // 2-level Home > page breadcrumb is valid and avoids pointing rich-result consumers at a
+    // sibling software page instead of a real category page.
     buildBreadcrumbJsonLd([
       { name: "Home", path: "/" },
-      { name: "Software", path: "/software/bar-tournament-software" },
       { name: page.heroTitle, path },
     ]),
     buildFaqPageJsonLd(faqs),

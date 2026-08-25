@@ -1,0 +1,19 @@
+name: Daily IndexNow submission
+
+# Submits the current indexable sitemap for both brands to IndexNow (Bing + IndexNow-participating
+# engines) once a day - src/app/api/cron/indexnow-submit throttles to at most once per 20h itself,
+# so this schedule is just the trigger, not the safety net.
+on:
+  schedule:
+    - cron: "0 12 * * *"
+  workflow_dispatch:
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger IndexNow submission
+        run: |
+          resp=$(curl -sS --max-time 60 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/indexnow-submit")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1

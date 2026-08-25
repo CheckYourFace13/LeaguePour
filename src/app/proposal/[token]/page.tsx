@@ -1,6 +1,10 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { acceptProposal, markProposalViewed } from "@/lib/actions/vs";
+
+// Token-gated customer proposal page - never indexable, regardless of who links to it.
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default async function PublicProposalPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;

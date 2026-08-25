@@ -156,9 +156,11 @@ export async function CityDiscoveryPage({
     },
   ];
 
+  // No standalone /bars, /bar-leagues, or /events hub page exists at the bare prefix - that
+  // intermediate node used to point rich-result consumers at a 404. Dropped rather than
+  // inventing a hub page just to backfill a breadcrumb link.
   const breadcrumbs = buildBreadcrumbJsonLd([
     { name: "Home", path: "/" },
-    { name: copy.kicker, path: `/${prefix}` },
     { name: city.name, path: discoveryPath(prefix, citySlug) },
     ...(game ? [{ name: game.pluralLabel, path }] : []),
   ]);

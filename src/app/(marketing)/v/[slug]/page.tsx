@@ -162,7 +162,7 @@ export default async function PublicVenuePage({ params }: { params: Promise<{ sl
         <p className="lp-kicker text-lp-accent">QR</p>
         <p className="text-sm font-medium text-lp-text">Scan to open this venue page.</p>
         <div className="flex flex-wrap items-center gap-4">
-          <img src={qr} alt="" className="h-28 w-28 rounded-lg border border-lp-border-strong bg-white p-2 shadow-md shadow-black/25" />
+          <img src={qr} alt="Venue page QR code" className="h-28 w-28 rounded-lg border border-lp-border-strong bg-white p-2 shadow-md shadow-black/25" />
           <Button variant="primary" size="lg" asChild>
             <a href={qr} download={`${venue.slug}-leaguepour-qr.png`}>
               Download QR

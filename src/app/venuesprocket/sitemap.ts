@@ -2,6 +2,13 @@ import type { MetadataRoute } from "next";
 
 const BASE = "https://venuesprocket.com";
 
+// Computed once at module load (i.e. once per deploy/instance start), not per-request - see the
+// matching comment in src/app/sitemap.ts.
+const BUILD_TIME = new Date();
+
+// Explicit short revalidate window - see the matching comment in src/app/robots.ts.
+export const revalidate = 3600;
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const pages = [
     { path: "", priority: 1.0 },
@@ -39,7 +46,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return pages.map(({ path, priority }) => ({
     url: `${BASE}${path}`,
-    lastModified: new Date(),
+    lastModified: BUILD_TIME,
     changeFrequency: "weekly" as const,
     priority,
   }));

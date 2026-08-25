@@ -1,9 +1,12 @@
+import type { Metadata } from "next";
 import { getStripe } from "@/lib/stripe/server";
 import { prisma } from "@/lib/db";
 import { VsEventStatus } from "@/generated/prisma/enums";
 import { TrackView } from "@/components/analytics/track-view";
 
 export const dynamic = "force-dynamic";
+// Token-gated customer payment page - never indexable, regardless of who links to it.
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default async function DepositSuccessPage({
   searchParams,

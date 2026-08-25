@@ -11,6 +11,8 @@ import {
 import { prisma } from "@/lib/db";
 import { ACTIVE_COMPETITION_LIMITS_BY_PLAN } from "@/lib/pricing";
 import { resolvePrimaryVenueAccess, venueStaffCanCreateAndPublish } from "@/lib/venue-permissions";
+import { pingIndexNow } from "@/lib/seo/indexnow";
+import { getPublicSiteUrl } from "@/lib/site-url";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -133,5 +135,6 @@ export async function createCompetitionAction(formData: FormData) {
 
   revalidatePath("/venue/dashboard");
   revalidatePath("/venue/competitions");
+  if (publish) pingIndexNow(`${getPublicSiteUrl()}/c/${access.slug}/${comp.slug}`);
   redirect(`/venue/competitions/${comp.id}?created=1${publish ? "&published=1" : ""}`);
 }

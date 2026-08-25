@@ -22,6 +22,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
   },
   // OG/Twitter share image comes from app/venuesprocket/opengraph-image.tsx.
+  // Nested path directly, not a rewritten root path - see manifest.webmanifest/route.ts's comment.
+  manifest: "/venuesprocket/manifest.webmanifest",
 };
 
 export default function VenueSprocketLayout({
