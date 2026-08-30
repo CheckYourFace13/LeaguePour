@@ -4,6 +4,12 @@ import { getSetting } from "@/lib/app-settings";
 
 export const runtime = "nodejs";
 
+// Decisive test for whether this route is served by a persistent process (increments across
+// requests) or a fresh instance per request (always 1) - see this route's registerError field
+// for context on what this is diagnosing.
+let hitCount = 0;
+const processStartedAt = new Date().toISOString();
+
 /**
  * Diagnostic: reports whether the in-process cron scheduler (src/lib/scheduler.ts) is actually
  * alive in the running production process - built to verify the fix for Hostinger's CDN
@@ -24,6 +30,14 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 
+  hitCount += 1;
   const registerError = await getSetting("scheduler_register_error", "");
-  return NextResponse.json({ ok: true, ...getSchedulerStatus(), registerError: registerError || null });
+  return NextResponse.json({
+    ok: true,
+    ...getSchedulerStatus(),
+    registerError: registerError || null,
+    processStartedAt,
+    hitCount,
+    pid: process.pid,
+  });
 }
