@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSchedulerStatus } from "@/lib/scheduler";
+import { getSetting } from "@/lib/app-settings";
 
 export const runtime = "nodejs";
 
@@ -23,5 +24,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 
-  return NextResponse.json({ ok: true, ...getSchedulerStatus() });
+  const registerError = await getSetting("scheduler_register_error", "");
+  return NextResponse.json({ ok: true, ...getSchedulerStatus(), registerError: registerError || null });
 }
