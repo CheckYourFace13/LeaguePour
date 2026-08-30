@@ -1,0 +1,16 @@
+name: Scheduler status check (manual)
+
+# Manual-only diagnostic: reports whether the in-process cron scheduler (src/lib/scheduler.ts)
+# is alive in the running production process, via src/app/api/cron/scheduler-status.
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check scheduler status
+        run: |
+          resp=$(curl -sS --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/scheduler-status")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1
