@@ -31,11 +31,15 @@ export async function GET(request: Request) {
   }
 
   hitCount += 1;
-  const registerError = await getSetting("scheduler_register_error", "");
+  const [registerError, registerEntered] = await Promise.all([
+    getSetting("scheduler_register_error", ""),
+    getSetting("scheduler_register_entered", ""),
+  ]);
   return NextResponse.json({
     ok: true,
     ...getSchedulerStatus(),
     registerError: registerError || null,
+    registerEntered: registerEntered || null,
     processStartedAt,
     hitCount,
     pid: process.pid,
