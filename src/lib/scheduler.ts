@@ -48,6 +48,23 @@ const TICK_MS = 5 * 60 * 1000;
 const WINDOW_MINUTES = 5; // fire if now falls within [target, target + WINDOW_MINUTES)
 const firedToday = new Map<string, string>(); // job path -> UTC date string ("YYYY-MM-DD") last fired
 let started = false;
+let startedAt: string | null = null;
+let lastTickAt: string | null = null;
+
+/** For the diagnostic status route - proves the scheduler is actually alive without waiting
+ * for a real trigger time or needing DB access. */
+export function getSchedulerStatus() {
+  return {
+    started,
+    startedAt,
+    lastTickAt,
+    jobs: JOBS.map((j) => ({
+      path: j.path,
+      scheduledUtc: `${String(j.utcHour).padStart(2, "0")}:${String(j.utcMinute).padStart(2, "0")}`,
+      lastFiredUtcDate: firedToday.get(j.path) ?? null,
+    })),
+  };
+}
 
 function utcDateString(d: Date): string {
   return d.toISOString().slice(0, 10);
@@ -80,6 +97,7 @@ async function runJob(base: string, secret: string, job: ScheduledJob): Promise<
 
 async function tick(base: string, secret: string): Promise<void> {
   const now = new Date();
+  lastTickAt = now.toISOString();
   for (const job of JOBS) {
     if (!isDue(job, now)) continue;
     firedToday.set(job.path, utcDateString(now));
@@ -90,6 +108,7 @@ async function tick(base: string, secret: string): Promise<void> {
 export function startInProcessScheduler(): void {
   if (started) return;
   started = true;
+  startedAt = new Date().toISOString();
 
   const secret = process.env.CRON_SECRET?.trim();
   if (!secret) {
