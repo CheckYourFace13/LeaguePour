@@ -48,22 +48,24 @@ const TICK_MS = 5 * 60 * 1000;
 const WINDOW_MINUTES = 5; // fire if now falls within [target, target + WINDOW_MINUTES)
 const firedToday = new Map<string, string>(); // job path -> UTC date string ("YYYY-MM-DD") last fired
 let started = false;
-let startedAt: string | null = null;
-let lastTickAt: string | null = null;
 
-/** For the diagnostic status route - proves the scheduler is actually alive without waiting
- * for a real trigger time or needing DB access. */
-export function getSchedulerStatus() {
-  return {
-    started,
-    startedAt,
-    lastTickAt,
-    jobs: JOBS.map((j) => ({
-      path: j.path,
-      scheduledUtc: `${String(j.utcHour).padStart(2, "0")}:${String(j.utcMinute).padStart(2, "0")}`,
-      lastFiredUtcDate: firedToday.get(j.path) ?? null,
-    })),
-  };
+// Status is ALSO persisted to AppSetting (not just kept in this module's own memory) - Next's
+// standalone output bundles each route somewhat independently, so a route handler importing
+// this module via a different path (e.g. the "@/" alias vs. instrumentation.ts's relative
+// import) is not guaranteed to share this module's in-memory state even within the same
+// process (confirmed live: register() ran successfully and presumably called
+// startInProcessScheduler(), but a status route reading via a separate import saw started as
+// still false). The scheduler's own tick loop below is unaffected by this - it's a pure
+// observability concern - but external routes need a shared source of truth to report on it,
+// and Postgres already proved reliable for that (see instrumentation.ts's own entered/error
+// markers).
+async function persistStatus(key: string, value: string): Promise<void> {
+  try {
+    const { setSetting } = await import("./app-settings");
+    await setSetting(key, value);
+  } catch (err) {
+    console.error(`[scheduler] failed to persist ${key}`, err);
+  }
 }
 
 function utcDateString(d: Date): string {
@@ -79,25 +81,29 @@ function isDue(job: ScheduledJob, now: Date): boolean {
 }
 
 async function runJob(base: string, secret: string, job: ScheduledJob): Promise<void> {
+  let outcome = "";
   try {
     const res = await fetch(`${base}${job.path}`, {
       headers: { Authorization: `Bearer ${secret}` },
       cache: "no-store",
     });
     const body = await res.json().catch(() => null);
+    outcome = `HTTP ${res.status} ${JSON.stringify(body)}`.slice(0, 500);
     if (!res.ok || body?.ok === false) {
       console.warn(`[scheduler] ${job.path} returned`, res.status, body);
     } else {
       console.log(`[scheduler] ${job.path} ok`, body?.detail ?? body);
     }
   } catch (err) {
+    outcome = `threw: ${err instanceof Error ? err.message : String(err)}`.slice(0, 500);
     console.error(`[scheduler] ${job.path} failed`, err);
   }
+  await persistStatus(`scheduler_last_run${job.path.replace(/\//g, "_")}`, `${new Date().toISOString()} ${outcome}`);
 }
 
 async function tick(base: string, secret: string): Promise<void> {
   const now = new Date();
-  lastTickAt = now.toISOString();
+  await persistStatus("scheduler_last_tick", now.toISOString());
   for (const job of JOBS) {
     if (!isDue(job, now)) continue;
     firedToday.set(job.path, utcDateString(now));
@@ -108,7 +114,7 @@ async function tick(base: string, secret: string): Promise<void> {
 export function startInProcessScheduler(): void {
   if (started) return;
   started = true;
-  startedAt = new Date().toISOString();
+  void persistStatus("scheduler_started_at", new Date().toISOString());
 
   const secret = process.env.CRON_SECRET?.trim();
   if (!secret) {
