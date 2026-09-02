@@ -1,0 +1,21 @@
+name: Billing integrity check (manual)
+
+# Read-only: platform-wide null/inconsistent LP billing metadata scan, plus optional one-venue
+# deep verification against Stripe directly - via src/app/api/cron/billing-integrity-check.
+on:
+  workflow_dispatch:
+    inputs:
+      venue:
+        description: "Exact venue name for deep check (optional)"
+        required: false
+        type: string
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run billing integrity check
+        run: |
+          resp=$(curl -sS -G --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" --data-urlencode "venue=${{ inputs.venue }}" "https://leaguepour.com/api/cron/billing-integrity-check")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1
