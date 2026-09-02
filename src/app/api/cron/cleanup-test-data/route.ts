@@ -15,11 +15,19 @@ export const runtime = "nodejs";
  * separate root entity (VenueStaff cascades away, but the User row itself doesn't), so they're
  * deleted explicitly by exact email.
  */
-const TEST_VENUE_NAMES = ["CLAUDE-TEST-VERIFY2-DELETE-ME", "CLAUDE-TEST-VS-DELETE-ME"];
+const TEST_VENUE_NAMES = [
+  "CLAUDE-TEST-VERIFY2-DELETE-ME",
+  "CLAUDE-TEST-VS-DELETE-ME",
+  "CLAUDE-TEST-MOBILE-DELETE-ME",
+  "CLAUDE-TEST-MOBILE-VS-DELETE-ME",
+];
 const TEST_USER_EMAILS = [
   "claude-test-verify2-delete-me@example.com",
   "claude-test-vs-delete-me@example.com",
   "claude-test-player-delete-me@example.com",
+  "claude-test-mobile-delete-me@example.com",
+  "claude-test-mobile-vs-delete-me@example.com",
+  "claude-test-mobile-player-delete-me@example.com",
 ];
 
 export async function GET(request: Request) {
@@ -44,12 +52,23 @@ export async function GET(request: Request) {
         id: true,
         name: true,
         _count: { select: { staff: true, competitions: true, privateEventLeads: true, privateEvents: true } },
+        competitions: {
+          select: {
+            registrations: { select: { paymentId: true }, where: { paymentId: { not: null } } },
+          },
+        },
       },
     });
     const users = await prisma.user.findMany({
       where: { email: { in: TEST_USER_EMAILS } },
       select: { id: true, email: true },
     });
+    // Payment has no direct venue/competition FK - only CompetitionRegistration.paymentId points
+    // to it (by design, so a Payment row always outlives the registration/venue/competition that
+    // created it - see the Payment model's own schema comment). Cascading a venue/competition
+    // delete removes the Registration row but would silently orphan the Payment it paid for, so
+    // this captures those ids up front and deletes them explicitly after the cascade.
+    const paymentIds = venues.flatMap((v) => v.competitions.flatMap((c) => c.registrations.map((r) => r.paymentId!)));
 
     if (!confirm) {
       return NextResponse.json({
@@ -63,6 +82,7 @@ export async function GET(request: Request) {
           privateEvents: v._count.privateEvents,
         })),
         wouldDeleteUserCount: users.length,
+        wouldDeleteOrphanedPaymentCount: paymentIds.length,
         note: "Dry run only - pass ?confirm=1 to actually delete.",
       });
     }
@@ -76,12 +96,16 @@ export async function GET(request: Request) {
     const deletedUsers = userIds.length
       ? await prisma.user.deleteMany({ where: { id: { in: userIds } } })
       : { count: 0 };
+    const deletedPayments = paymentIds.length
+      ? await prisma.payment.deleteMany({ where: { id: { in: paymentIds } } })
+      : { count: 0 };
 
     return NextResponse.json({
       ok: true,
       dryRun: false,
       deletedVenues: deletedVenues.count,
       deletedUsers: deletedUsers.count,
+      deletedOrphanedPayments: deletedPayments.count,
     });
   } catch (err) {
     console.error("[cleanup-test-data] failed", err);
