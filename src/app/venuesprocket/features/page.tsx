@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: { absolute: "Features | VenueSprocket" },
   description:
-    "VenueSprocket features: inquiry forms, proposal builder, e-signature contracts, Stripe deposits, BEO builder, customer CRM, marketing pages, and LeaguePour game nights.",
+    "VenueSprocket features: inquiry forms, proposal builder, e-signature contracts, Stripe deposits, BEO builder, customer CRM, and LeaguePour game nights.",
   alternates: { canonical: "https://venuesprocket.com/features" },
 };
 
@@ -119,20 +119,17 @@ const modules = [
   },
   {
     id: "marketing",
-    title: "Marketing Pages",
+    title: "Inquiry Page",
     icon: "📣",
     href: "/venue-marketing-software",
     features: [
-      "Birthday party page for your venue",
-      "Corporate event inquiry page",
-      "Holiday party landing page",
-      "Rehearsal dinner page",
-      "City and neighborhood pages",
-      "Seasonal campaign pages",
-      "All pages feed your inquiry form",
-      "SEO-optimized with local targeting",
+      "One public page covering every event type you host",
+      "Birthday parties, corporate events, holiday parties, rehearsal dinners, and more",
+      "Share it on your website, socials, or Google Business Profile",
+      "Every submission feeds straight into your pipeline",
+      "Automated follow-up for new inquiries",
     ],
-    body: "Each venue gets SEO-optimized marketing pages that rank in search for private event searches in their city. Leads come to you.",
+    body: "Every venue gets a public inquiry page covering the event types you host. Share it anywhere - leads come to you.",
   },
   {
     id: "leaguepour",
@@ -165,7 +162,7 @@ export default function VsFeaturesPage() {
           </h1>
           <p className="vs-page-sub mx-auto text-center max-w-2xl">
             One connected workflow. Inquiry form, pipeline, proposal, contract, deposit, BEO,
-            customer CRM, marketing pages, and LeaguePour public events.
+            customer CRM, and LeaguePour public events.
           </p>
         </div>
 

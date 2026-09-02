@@ -18,7 +18,7 @@ const cols = [
       { href: "/beo-software", label: "BEO Builder" },
       { href: "/event-contract-software", label: "Contracts" },
       { href: "/event-deposit-software", label: "Deposits" },
-      { href: "/venue-marketing-software", label: "Marketing Pages" },
+      { href: "/venue-marketing-software", label: "Inquiry Page" },
     ],
   },
   {

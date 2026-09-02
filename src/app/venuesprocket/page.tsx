@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: { absolute: "VenueSprocket — Book More Private Events. Run Them Better." },
     description:
-      "Simple private event software for restaurants, bars, breweries, and taprooms. Inquiries, proposals, contracts, deposits, BEOs, and marketing pages in one place.",
+      "Simple private event software for restaurants, bars, breweries, and taprooms. Inquiries, proposals, contracts, deposits, and BEOs in one place.",
     url: "https://venuesprocket.com",
     images: ["/venuesprocket/opengraph-image"],
   },
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: { absolute: "VenueSprocket — Book More Private Events. Run Them Better." },
     description:
-      "Simple private event software for restaurants, bars, breweries, and taprooms. Inquiries, proposals, contracts, deposits, BEOs, and marketing pages in one place.",
+      "Simple private event software for restaurants, bars, breweries, and taprooms. Inquiries, proposals, contracts, deposits, and BEOs in one place.",
     images: ["/venuesprocket/opengraph-image"],
   },
 };
@@ -50,8 +51,8 @@ const features = [
   },
   {
     icon: "📣",
-    title: "Marketing pages that bring in leads",
-    body: "Every venue gets SEO landing pages for birthday parties, corporate events, holiday parties, and more. Pages that rank in search and feed your inquiry form.",
+    title: "One inquiry page for every event type",
+    body: "Every venue gets a public inquiry page for birthday parties, corporate events, holiday parties, and more — share it anywhere and inquiries feed straight into your pipeline.",
   },
 ];
 
@@ -69,7 +70,7 @@ const pipeline = [
 const whyUs = [
   "Easier to start than Tripleseat, Perfect Venue, or Planning Pod",
   "More affordable for restaurants, bars, breweries, and taprooms",
-  "Marketing pages included — generate your own leads",
+  "One shareable inquiry page — no setup required",
   "BEOs, contracts, deposits, and follow-up in one place",
   "No enterprise complexity or 90-minute onboarding calls",
   "Add LeaguePour to fill slow nights with leagues and game nights",
@@ -105,7 +106,7 @@ export default function VsSprocketHome() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
 
       {/* ── Hero ───────────────────────────────────────────────────────── */}
@@ -262,19 +263,17 @@ export default function VsSprocketHome() {
                 Generate leads, not just manage them
               </h2>
               <p className="text-vs-text-soft leading-relaxed mb-6">
-                Most event platforms start after you have a lead. VenueSprocket also helps you get leads
-                in the first place. Every venue gets SEO-optimized marketing pages for birthday parties,
-                corporate events, holiday parties, rehearsal dinners, and more — pages that rank in
-                search and feed directly into your inquiry form.
+                Most event platforms start after you have a lead. VenueSprocket also gives you a
+                ready-to-share public inquiry page for birthday parties, corporate events, holiday
+                parties, rehearsal dinners, and more — link it from your website, socials, or Google
+                Business Profile and inquiries land straight in your pipeline.
               </p>
               <ul className="space-y-2">
                 {[
-                  "Birthday party booking page for your venue",
-                  "Corporate event inquiry page",
-                  "Holiday party landing page",
-                  "City and neighborhood SEO pages",
-                  "Seasonal campaign pages",
+                  "One public inquiry page for every event type you host",
+                  "Every submission becomes a lead in your pipeline instantly",
                   "Automated follow-up for new inquiries",
+                  "Customer confirmation the moment they submit",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2 text-sm text-vs-text-soft">
                     <span className="mt-0.5 text-vs-accent font-bold">✓</span>
@@ -284,13 +283,13 @@ export default function VsSprocketHome() {
               </ul>
             </div>
             <div className="rounded-2xl border border-vs-border bg-vs-bg p-6 space-y-3">
-              <p className="text-sm font-bold text-vs-text">Your venue gets pages like:</p>
+              <p className="text-sm font-bold text-vs-text">Inquiries come in for events like:</p>
               {[
-                "Birthday parties at Riverside Brewing Co.",
-                "Corporate events in Chicago",
-                "Private dining at The Anchor Room",
-                "Holiday parties in Nashville",
-                "Rehearsal dinners near downtown Denver",
+                "Birthday parties",
+                "Corporate events",
+                "Holiday parties",
+                "Rehearsal dinners",
+                "Private dining",
               ].map((ex) => (
                 <div
                   key={ex}

@@ -305,61 +305,57 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     title: "Venue Marketing Software",
     metaTitle: "Venue Marketing Software — Get More Private Event Inquiries — VenueSprocket",
     metaDescription:
-      "VenueSprocket creates SEO marketing pages for your venue so customers find you when searching for birthday parties, corporate events, and private rooms in your city.",
+      "VenueSprocket gives your venue a public inquiry page so customers can request birthday parties, corporate events, and private rooms in your city - and every inquiry lands straight in your pipeline.",
     kicker: "Venue marketing",
-    hero: "Get more private event inquiries from search",
+    hero: "Turn every inquiry into a lead, automatically",
     heroSub:
-      "VenueSprocket creates SEO-optimized marketing pages for your venue — birthday parties, corporate events, holiday parties, private dining — that rank in search and send inquiries directly to your dashboard.",
+      "VenueSprocket gives your venue a public inquiry page covering every event type you host — birthday parties, corporate events, holiday parties, private dining — so a customer can request their event in minutes, and it lands straight in your dashboard.",
     icon: "📣",
-    why: "Most event management platforms help you manage leads you already have. VenueSprocket also helps you get more leads. SEO marketing pages targeted at the events people actually search for in your city put your venue in front of people actively looking for a place to host — before they call competitors.",
+    why: "Most event management platforms help you manage leads you already have. VenueSprocket makes it effortless to capture the leads you're already getting - one page you can share anywhere (your website, socials, Google Business Profile) instead of a phone tag or a buried contact form, with automated follow-up so nothing falls through the cracks.",
     features: [
       {
-        title: "Event type landing pages",
-        body: "Your venue gets dedicated pages for birthday parties, corporate events, holiday parties, rehearsal dinners, and more — each optimized for the searches your customers actually do.",
+        title: "One inquiry page, every event type",
+        body: "Your venue gets a single public page covering birthday parties, corporate events, holiday parties, rehearsal dinners, and more - customers pick their event type and submit the details.",
       },
       {
-        title: "City and neighborhood targeting",
-        body: "Pages include local signals — your city, neighborhood, and nearby areas — so your venue shows up when someone searches 'private event venue in [city].'",
+        title: "Share it anywhere",
+        body: "Link your inquiry page from your website, socials, or Google Business Profile - no separate page to build or maintain per event type.",
       },
       {
-        title: "All pages feed your inquiry form",
-        body: "Every marketing page has a clear CTA that links to your venue's inquiry form. Visitors become leads, automatically, without any extra setup.",
-      },
-      {
-        title: "Seasonal campaign pages",
-        body: "Holiday party season, summer events, New Year's Eve — seasonal pages let you capture high-intent search traffic when bookings spike.",
+        title: "Every submission becomes a lead instantly",
+        body: "Inquiries land directly in your VenueSprocket dashboard - no email to miss, no message to lose track of.",
       },
       {
         title: "Automated lead follow-up",
-        body: "Inquiries that come through marketing pages get automatic follow-up emails if the lead doesn't hear back. Fewer leads fall through the cracks.",
+        body: "If an inquiry doesn't get a response in time, an automated follow-up goes out so fewer leads fall through the cracks.",
       },
       {
-        title: "LeaguePour cross-promotion",
-        body: "Marketing pages can reference your LeaguePour leagues and events, showing that your venue is active and has an established community.",
+        title: "Instant customer confirmation",
+        body: "The moment someone submits an inquiry, they get a confirmation email so they know their request was received.",
       },
     ],
     useCases: [
       "Restaurants that want birthday party and corporate event inquiries",
       "Breweries and bars adding private event programming",
-      "Event venues competing for local search traffic",
+      "Venues that want one place to send all their private-event traffic",
       "Venues that want leads to come to them, not just manage the ones they already have",
     ],
     faqs: [
       {
-        q: "Do I need to know SEO to use the marketing pages?",
-        a: "No. VenueSprocket creates the pages for you with SEO structure built in. You add your venue details and publish.",
+        q: "Do I need to build a page myself?",
+        a: "No. Every venue gets a public inquiry page automatically - add your venue details and share the link.",
       },
       {
-        q: "What plan includes marketing pages?",
-        a: "SEO marketing pages are included in the Growth plan.",
+        q: "What plan includes the inquiry page?",
+        a: "The public inquiry page and lead pipeline are included on every VenueSprocket plan.",
       },
       {
-        q: "Can I create pages for multiple event types?",
-        a: "Yes. Growth plan venues can create pages for each event type they accept — birthday parties, corporate events, holiday parties, rehearsal dinners, and more.",
+        q: "Can customers request different types of events on the same page?",
+        a: "Yes. One inquiry page covers every event type you accept - birthday parties, corporate events, holiday parties, rehearsal dinners, and more.",
       },
     ],
-    cta: "Start generating leads from search",
-    ctaSub: "Marketing pages publish on the Growth plan.",
+    cta: "Start capturing inquiries",
+    ctaSub: "Your inquiry page is included on every plan.",
     relatedLinks: [
       { slug: "private-event-booking-software", label: "Private event booking software" },
       { slug: "restaurant-event-management-software", label: "Restaurant event management" },
@@ -463,10 +459,6 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
       {
         title: "BEO for taproom staff",
         body: "Your taproom staff get a BEO with the full event plan — guest count, beer selections, food, setup, timeline, and special notes — on their phone or printed.",
-      },
-      {
-        title: "Marketing pages",
-        body: "Get found when people search for 'brewery birthday party [city]' or 'taproom private event [city]' with SEO marketing pages for your location.",
       },
       {
         title: "LeaguePour for leagues and trivia",
@@ -603,10 +595,6 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
         title: "LeaguePour recurring events",
         body: "Add dart leagues, trivia nights, cornhole tournaments, and bar game competitions to bring the same customers back every week.",
       },
-      {
-        title: "Marketing pages for local search",
-        body: "Get found when people search for 'taproom event space [city]' or 'private beer tasting [city].'",
-      },
     ],
     useCases: [
       "Taprooms with private spaces for buyouts and tastings",
@@ -646,7 +634,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     kicker: "For banquet halls & event spaces",
     hero: "Run your banquet hall without enterprise software prices",
     heroSub:
-      "VenueSprocket gives banquet halls and event spaces a complete private event workflow — inquiry page, proposal, contract, deposit, BEO, and marketing pages — at a price that works for independently owned venues.",
+      "VenueSprocket gives banquet halls and event spaces a complete private event workflow — inquiry page, proposal, contract, deposit, and BEO — at a price that works for independently owned venues.",
     icon: "🏛️",
     why: "Most banquet hall software is priced for hotel chains and large catering companies. Independent banquet halls and event spaces need the same core tools — inquiry management, proposals, signed contracts, deposits, and BEOs — without paying enterprise prices or dealing with enterprise complexity.",
     features: [

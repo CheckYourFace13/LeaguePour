@@ -18,7 +18,7 @@ const steps = [
 const plans = [
   { key: "free", name: "Free", price: "$0", highlight: false, features: ["Inquiry form", "Up to 10 leads/mo", "Lead dashboard", "Email notifications"] },
   { key: "pro", name: "Pro", price: "$79/mo", highlight: true, features: ["Everything in Free", "Unlimited inquiries", "Proposals", "Contracts + e-signature", "Stripe deposits", "BEO builder", "Customer CRM"] },
-  { key: "growth", name: "Growth", price: "$149/mo", highlight: false, features: ["Everything in Pro", "SEO marketing pages", "LeaguePour module", "Advanced automations", "Multi-room support"] },
+  { key: "growth", name: "Growth", price: "$149/mo", highlight: false, features: ["Everything in Pro", "LeaguePour module", "Reporting & revenue tracking", "Multi-room support", "Up to 5 staff users"] },
 ];
 
 export default async function VsStartPage({

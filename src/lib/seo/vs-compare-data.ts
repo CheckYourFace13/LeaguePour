@@ -44,7 +44,7 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
     competitorSummary:
       "Tripleseat is a comprehensive event management platform with a large feature set covering leads, proposals, BEOs, contracts, and event calendar management. It's well-suited for venues with dedicated event sales staff who need a robust system.",
     vsSummary:
-      "VenueSprocket is designed to get a small restaurant, brewery, bar, taproom, or event space up and running with private event management in one afternoon — not one week. It focuses on the core workflow: inquiry, proposal, contract, deposit, BEO, and marketing pages that help generate leads.",
+      "VenueSprocket is designed to get a small restaurant, brewery, bar, taproom, or event space up and running with private event management in one afternoon — not one week. It focuses on the core workflow: inquiry, proposal, contract, deposit, and BEO.",
     featureRows: [
       { feature: "Public inquiry form", vs: YES, competitor: YES },
       { feature: "Lead pipeline", vs: YES, competitor: YES },
@@ -54,7 +54,6 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       { feature: "BEO builder", vs: YES, competitor: YES },
       { feature: "PDF export (BEO/proposal/contract)", vs: YES, competitor: YES },
       { feature: "Customer CRM", vs: YES, competitor: YES },
-      { feature: "SEO marketing pages for your venue", vs: YES, competitor: NO },
       { feature: "Public event & game-night tools (LeaguePour)", vs: YES, competitor: NO },
       { feature: "Automated follow-up emails", vs: YES, competitor: YES },
       { feature: "Free starting plan", vs: YES, competitor: NO },
@@ -65,7 +64,7 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       "Restaurants, breweries, bars, taprooms, and small event spaces",
       "Venues that need to start quickly without a long onboarding",
       "Venues that also want public event tools to fill slow nights",
-      "Small venues that want marketing pages to generate leads",
+      "Venues that want a free starting plan",
       "Venues where the owner or one staff member runs events",
     ],
     competitorBestFor2: [
@@ -84,11 +83,11 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
     competitorBestFor:
       "Restaurants and bars with active private dining programs that want a purpose-built event management system.",
     summary:
-      "Perfect Venue is a solid private event management tool focused on restaurants and bars. VenueSprocket covers a similar workflow and adds built-in SEO marketing pages and the LeaguePour public events module, which help venues generate leads and fill slow nights.",
+      "Perfect Venue is a solid private event management tool focused on restaurants and bars. VenueSprocket covers a similar workflow and adds the LeaguePour public events module, which helps venues fill slow nights with leagues and game nights.",
     competitorSummary:
       "Perfect Venue is built specifically for restaurant and bar event management. It covers the core workflow from inquiry to BEO and is well-regarded by restaurants that need a clean, focused private event tool.",
     vsSummary:
-      "VenueSprocket covers the same core private event workflow and adds marketing pages that help venues rank in search for birthday parties, corporate events, and holiday parties in their city — generating leads rather than just managing them.",
+      "VenueSprocket covers the same core private event workflow and adds the LeaguePour public events module, so the same venue can also run leagues and game nights to fill slow nights.",
     featureRows: [
       { feature: "Public inquiry form", vs: YES, competitor: YES },
       { feature: "Lead pipeline", vs: YES, competitor: YES },
@@ -97,13 +96,11 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       { feature: "Deposit collection", vs: YES, competitor: YES },
       { feature: "BEO builder", vs: YES, competitor: YES },
       { feature: "Customer CRM", vs: YES, competitor: YES },
-      { feature: "SEO marketing pages", vs: YES, competitor: PARTIAL },
       { feature: "Public event & league tools (LeaguePour)", vs: YES, competitor: NO },
       { feature: "Free starting plan", vs: YES, competitor: NO },
     ],
     vsBestFor: [
       "Restaurants, bars, breweries, and taprooms needing private event management",
-      "Venues that want marketing pages to rank for event searches in their city",
       "Venues that also need public event tools like leagues and trivia nights",
       "Venues that want a simple free plan to start immediately",
     ],
@@ -121,11 +118,11 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
     competitorBestFor:
       "Event planners, venues, and caterers that manage many moving parts across multiple clients and need a comprehensive planning toolkit.",
     summary:
-      "Planning Pod is a broad event planning platform with extensive features for planners and venues. VenueSprocket is more focused on the venue side — specifically private event booking, BEOs, contracts, deposits, and the marketing tools that help venues get leads in the first place.",
+      "Planning Pod is a broad event planning platform with extensive features for planners and venues. VenueSprocket is more focused on the venue side — specifically private event booking, BEOs, contracts, and deposits.",
     competitorSummary:
       "Planning Pod covers a wide range of event management needs, including seating charts, floor plans, budgeting, and vendor management. It's a comprehensive tool for venues and event planners managing complex events.",
     vsSummary:
-      "VenueSprocket is narrower and faster to start. It focuses on the private event booking workflow that most restaurants, bars, and breweries actually need: inquiry form, pipeline, proposal, contract, deposit, BEO, and marketing pages — without the full event-planning toolkit that's often overkill for a local venue.",
+      "VenueSprocket is narrower and faster to start. It focuses on the private event booking workflow that most restaurants, bars, and breweries actually need: inquiry form, pipeline, proposal, contract, deposit, and BEO — without the full event-planning toolkit that's often overkill for a local venue.",
     featureRows: [
       { feature: "Public inquiry form", vs: YES, competitor: YES },
       { feature: "Lead pipeline", vs: YES, competitor: YES },
@@ -135,7 +132,6 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       { feature: "BEO builder", vs: YES, competitor: YES },
       { feature: "Customer CRM", vs: YES, competitor: YES },
       { feature: "Seating charts / floor plans", vs: NO, competitor: YES },
-      { feature: "SEO marketing pages", vs: YES, competitor: NO },
       { feature: "Public event & league tools (LeaguePour)", vs: YES, competitor: NO },
       { feature: "Free starting plan", vs: YES, competitor: PARTIAL },
       { feature: "Setup in one afternoon (small venues)", vs: YES, competitor: PARTIAL },
@@ -143,7 +139,7 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
     vsBestFor: [
       "Restaurants, bars, and breweries that want simple private event management",
       "Venues that don't need seating charts or full event planning tools",
-      "Venues that want marketing pages to generate their own leads",
+      "Venues that want a free plan to start immediately",
       "Venues that need public event tools alongside private events",
     ],
     competitorBestFor2: [
@@ -165,7 +161,7 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
     competitorSummary:
       "Caterease is a feature-rich catering and event management platform with decades of history. It covers catering-specific needs like production sheets, dietary tracking, and kitchen workflow alongside event management.",
     vsSummary:
-      "VenueSprocket skips catering-specific complexity and focuses on what local venues need: capturing private event inquiries, sending proposals, signing contracts, collecting deposits, and generating BEOs — plus SEO marketing pages to get more leads.",
+      "VenueSprocket skips catering-specific complexity and focuses on what local venues need: capturing private event inquiries, sending proposals, signing contracts, collecting deposits, and generating BEOs.",
     featureRows: [
       { feature: "Public inquiry form", vs: YES, competitor: YES },
       { feature: "Lead pipeline", vs: YES, competitor: YES },
@@ -175,7 +171,6 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       { feature: "BEO builder", vs: YES, competitor: YES },
       { feature: "Catering production sheets", vs: NO, competitor: YES },
       { feature: "Kitchen workflow tools", vs: NO, competitor: YES },
-      { feature: "SEO marketing pages", vs: YES, competitor: NO },
       { feature: "Public event & league tools (LeaguePour)", vs: YES, competitor: NO },
       { feature: "Free starting plan", vs: YES, competitor: NO },
       { feature: "Modern web-first interface", vs: YES, competitor: PARTIAL },
@@ -183,7 +178,7 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
     vsBestFor: [
       "Restaurants, bars, breweries, taprooms, and local event spaces",
       "Venues that want a fast setup without catering-specific workflows",
-      "Venues that need marketing pages and lead generation built in",
+      "Venues that want a free plan to start immediately",
       "Smaller operations where one person manages events",
     ],
     competitorBestFor2: [
@@ -205,7 +200,7 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
     competitorSummary:
       "Event Temple provides venue management tools with a strong focus on hotel and property management integration. It covers group sales, event management, and CRM for the hotel and venue industry.",
     vsSummary:
-      "VenueSprocket is built for local independent venues, not hotel property teams. It gets a small venue's private event booking page live quickly, manages the inquiry-to-BEO workflow, and includes marketing pages to generate leads — without hotel-specific complexity.",
+      "VenueSprocket is built for local independent venues, not hotel property teams. It gets a small venue's private event booking page live quickly and manages the inquiry-to-BEO workflow — without hotel-specific complexity.",
     featureRows: [
       { feature: "Public inquiry form", vs: YES, competitor: YES },
       { feature: "Lead pipeline / CRM", vs: YES, competitor: YES },
@@ -214,7 +209,6 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       { feature: "Deposit collection", vs: YES, competitor: YES },
       { feature: "BEO builder", vs: YES, competitor: YES },
       { feature: "Hotel property management integration", vs: NO, competitor: YES },
-      { feature: "SEO marketing pages", vs: YES, competitor: PARTIAL },
       { feature: "Public event & league tools (LeaguePour)", vs: YES, competitor: NO },
       { feature: "Free starting plan", vs: YES, competitor: NO },
       { feature: "Designed for independent local venues", vs: YES, competitor: PARTIAL },
@@ -223,7 +217,7 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       "Independent restaurants, bars, breweries, taprooms, and event spaces",
       "Venues that need simple, fast private event management",
       "Small venues where the owner manages their own events",
-      "Venues that want marketing pages and public event tools in one system",
+      "Venues that want a free plan to start immediately",
     ],
     competitorBestFor2: [
       "Hotels and branded hospitality properties",
@@ -240,11 +234,11 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
     competitorBestFor:
       "Freelancers, photographers, wedding planners, and independent creative service businesses that need client management and invoicing.",
     summary:
-      "HoneyBook is a client management and invoicing tool popular with creative service businesses — photographers, wedding planners, designers. VenueSprocket is purpose-built for hospitality venues — restaurants, bars, breweries — with venue-specific tools like BEOs, event type marketing pages, and the LeaguePour public events module.",
+      "HoneyBook is a client management and invoicing tool popular with creative service businesses — photographers, wedding planners, designers. VenueSprocket is purpose-built for hospitality venues — restaurants, bars, breweries — with venue-specific tools like BEOs, room management, and the LeaguePour public events module.",
     competitorSummary:
       "HoneyBook is a well-designed platform for independent service businesses. It handles proposals, contracts, invoices, and client communication in a clean interface. It's widely used by creative professionals.",
     vsSummary:
-      "VenueSprocket is purpose-built for the venue and hospitality market. It understands the specific language of private event booking — BEOs, event spaces, room minimums, banquet menus, deposits — and includes tools specific to venues like SEO marketing pages for birthday parties and corporate events, staff day-of views, and LeaguePour for public events.",
+      "VenueSprocket is purpose-built for the venue and hospitality market. It understands the specific language of private event booking — BEOs, event spaces, room minimums, banquet menus, deposits — and includes tools specific to venues like staff day-of views and LeaguePour for public events.",
     featureRows: [
       { feature: "Proposals and contracts", vs: YES, competitor: YES },
       { feature: "Online payment collection", vs: YES, competitor: YES },
@@ -253,7 +247,6 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       { feature: "BEO builder", vs: YES, competitor: NO },
       { feature: "Venue-specific inquiry form", vs: YES, competitor: PARTIAL },
       { feature: "Event space / room management", vs: YES, competitor: NO },
-      { feature: "SEO marketing pages for venues", vs: YES, competitor: NO },
       { feature: "Public event & league tools (LeaguePour)", vs: YES, competitor: NO },
       { feature: "Staff day-of-event mobile view", vs: YES, competitor: NO },
       { feature: "Purpose-built for hospitality venues", vs: YES, competitor: NO },
@@ -262,7 +255,7 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
     vsBestFor: [
       "Restaurants, breweries, bars, taprooms, banquet halls, and event spaces",
       "Venues that need BEOs, room management, and venue-specific workflows",
-      "Venues that want marketing pages for birthday parties and corporate events",
+      "Venues that want a free plan to start immediately",
       "Hospitality businesses that also want public event programming",
     ],
     competitorBestFor2: [
@@ -294,7 +287,6 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       { feature: "BEO builder", vs: YES, competitor: NO },
       { feature: "Customer CRM", vs: YES, competitor: NO },
       { feature: "Automated follow-up", vs: YES, competitor: NO },
-      { feature: "SEO marketing pages", vs: YES, competitor: NO },
       { feature: "LeaguePour public event tools", vs: YES, competitor: NO },
       { feature: "Mobile-friendly staff view", vs: YES, competitor: PARTIAL },
       { feature: "Cost to start", vs: "Free plan", competitor: "Free (manual labor cost)" },
@@ -334,7 +326,6 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       { feature: "BEO generation", vs: YES, competitor: "Manual Word doc" },
       { feature: "Customer records", vs: YES, competitor: "Email thread" },
       { feature: "Automated follow-up", vs: YES, competitor: NO },
-      { feature: "SEO marketing pages", vs: YES, competitor: NO },
       { feature: "LeaguePour public event tools", vs: YES, competitor: NO },
       { feature: "Mobile-friendly customer experience", vs: YES, competitor: NO },
     ],

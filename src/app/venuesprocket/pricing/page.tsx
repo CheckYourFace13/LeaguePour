@@ -27,7 +27,7 @@ const plans = [
       "Simple customer records",
       "Email notifications",
     ],
-    notIncluded: ["Proposals", "Contracts", "Stripe deposits", "BEO builder", "Marketing pages"],
+    notIncluded: ["Proposals", "Contracts", "Stripe deposits", "BEO builder"],
   },
   {
     name: "Starter",
@@ -46,7 +46,7 @@ const plans = [
       "Basic proposal builder",
       "Customer records",
     ],
-    notIncluded: ["Contracts", "Stripe deposits", "BEO builder", "Marketing pages"],
+    notIncluded: ["Contracts", "Stripe deposits", "BEO builder"],
   },
   {
     name: "Pro",
@@ -68,21 +68,17 @@ const plans = [
       "Mobile BEO day-of view",
       "Payment tracking",
     ],
-    notIncluded: ["SEO marketing pages", "Advanced automations"],
   },
   {
     name: "Growth",
     price: "$149",
     period: "/mo",
-    tagline: "For venues that want leads AND management",
+    tagline: "For venues that want reporting AND multi-room management",
     cta: "Start Growth",
     ctaHref: "/start?plan=growth",
     highlight: false,
     features: [
       "Everything in Pro",
-      "SEO marketing pages (birthday, corporate, holiday, etc.)",
-      "Seasonal campaign pages",
-      "Advanced follow-up automations",
       "LeaguePour module connection",
       "Reporting and revenue tracking",
       "Multi-room support",
@@ -145,7 +141,7 @@ export default function VsPricingPage() {
           </h1>
           <p className="vs-page-sub mx-auto text-center max-w-2xl">
             The free plan gets your inquiry form live immediately. Upgrade to Pro for contracts,
-            deposits, and BEOs. Growth adds marketing pages that help you generate leads.
+            deposits, and BEOs. Growth adds reporting and multi-room support.
           </p>
         </div>
 
