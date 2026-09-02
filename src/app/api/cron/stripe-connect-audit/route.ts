@@ -57,6 +57,25 @@ export async function GET(request: Request) {
       webhookListError = err instanceof Error ? err.message : String(err);
     }
 
+    // Recent account.updated events, straight from Stripe's own event log - proves whether
+    // Stripe actually generated the event for a connected-account change (always true once a
+    // connected account exists/changes, regardless of webhook config) and gives a timestamp to
+    // cross-check against whether our webhook processed it (see the account row's own
+    // stripeChargesEnabled/etc - if those reflect a state that only the webhook or a live
+    // refresh could have set, that's a real signal of delivery, not just event generation).
+    let recentAccountEvents: unknown[] = [];
+    try {
+      const events = await stripe.events.list({ type: "account.updated", limit: 5 });
+      recentAccountEvents = events.data.map((e) => ({
+        id: e.id,
+        created: new Date(e.created * 1000).toISOString(),
+        account: (e as unknown as { account?: string }).account ?? null,
+        pending_webhooks: e.pending_webhooks,
+      }));
+    } catch (err) {
+      recentAccountEvents = [{ error: err instanceof Error ? err.message : String(err) }];
+    }
+
     const totalVenues = await prisma.venue.count();
     const withConnectAccountId = await prisma.venue.count({ where: { stripeAccountId: { not: null } } });
     const chargesEnabled = await prisma.venue.count({ where: { stripeChargesEnabled: true } });
@@ -80,6 +99,7 @@ export async function GET(request: Request) {
       platformCapabilities: platformAccount.capabilities ?? null,
       webhookEndpoints,
       webhookListError,
+      recentAccountEvents,
       venueCounts: {
         totalVenues,
         withConnectAccountId,
