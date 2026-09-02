@@ -1,0 +1,17 @@
+name: Connect fee model check (manual)
+
+# One-time diagnostic: reads the platform's actual configured Connect fee-payer/risk-liability
+# settings via a temporary account's controller object (created and deleted in the same
+# request, no onboarding link ever generated) - via src/app/api/cron/connect-fee-model-check.
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Connect fee model check
+        run: |
+          resp=$(curl -sS --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/connect-fee-model-check")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1
