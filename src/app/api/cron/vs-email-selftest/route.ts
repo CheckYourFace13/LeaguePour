@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 import { sendVsLeadNotificationEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
+// Forces this route to always execute on request rather than being statically
+// prerendered/cached - observed in production returning a stale, cached 404 (Next's own
+// x-nextjs-cache/x-nextjs-prerender headers) despite the file existing and deploying
+// correctly, while sibling cron routes without this line rendered dynamically on their own.
+export const dynamic = "force-dynamic";
 
 /**
  * Proves the VS transactional email path (sendVsLeadNotificationEmail, the same function the
