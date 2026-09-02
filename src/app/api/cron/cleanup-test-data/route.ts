@@ -25,6 +25,7 @@ const TEST_VENUE_NAMES = [
   "CLAUDE-TEST-CONNECT-E2E-DELETE-ME",
   "CLAUDE-TEST-CONNECT-LIVE-DELETE-ME",
   "CLAUDE-TEST-CONNECT-DUP-DELETE-ME",
+  "CLAUDE-TEST-VS-MOBILE-DELETE-ME",
 ];
 const TEST_USER_EMAILS = [
   "claude-test-verify2-delete-me@example.com",
@@ -38,6 +39,7 @@ const TEST_USER_EMAILS = [
   "claude-test-connect-player-delete-me@example.com",
   "claude-test-connect-live-delete-me@example.com",
   "claude-test-connect-dup-delete-me@example.com",
+  "claude-test-vs-mobile-delete-me@example.com",
 ];
 
 export async function GET(request: Request) {
