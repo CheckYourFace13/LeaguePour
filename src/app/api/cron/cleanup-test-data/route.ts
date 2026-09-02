@@ -32,6 +32,7 @@ const TEST_USER_EMAILS = [
   "claude-test-mobile-player-delete-me@example.com",
   "claude-test-connect-retest-delete-me@example.com",
   "claude-test-connect-e2e-delete-me@example.com",
+  "claude-test-connect-player-delete-me@example.com",
 ];
 
 export async function GET(request: Request) {
