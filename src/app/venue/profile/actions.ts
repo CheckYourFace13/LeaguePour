@@ -67,47 +67,82 @@ export async function saveVenueProfileAction(formData: FormData) {
   redirect("/venue/profile?notice=saved");
 }
 
+// Fixed namespace for the per-venue Stripe Connect setup advisory lock (paired with
+// hashtext(venueId) as the second key - see the lock acquisition below). Arbitrary constant,
+// just needs to not collide with the other lock namespaces in src/lib/outreach-email.ts
+// (729_312_400_1xx) - this one is unrelated to those, so any distinct value works.
+const CONNECT_SETUP_LOCK_NAMESPACE = 842_910_100;
+
+class ConnectSetupInProgressError extends Error {}
+class VenueNotFoundError extends Error {}
+
 export async function createStripeConnectOnboardingAction() {
   const session = await auth();
   const access = await resolvePrimaryVenueAccess(session);
   if (!access) redirect("/signup/venue");
   if (!venueStaffCanCreateAndPublish(access.role)) redirect("/venue/profile?notice=forbidden");
 
-  const venue = await prisma.venue.findUnique({ where: { id: access.venueId } });
-  if (!venue) redirect("/signup/venue");
-
   const stripe = getStripe();
-  let accountId = venue.stripeAccountId;
+  const base = getAppBaseUrl();
   let link: { url: string };
 
   try {
-    if (!accountId) {
-      const account = await stripe.accounts.create({
-        type: "express",
-        business_type: "company",
-        metadata: { venueId: venue.id },
-        company: { name: venue.name },
-      });
-      accountId = account.id;
-      await prisma.venue.update({
-        where: { id: venue.id },
-        data: { stripeAccountId: account.id },
-      });
-    }
+    link = await prisma.$transaction(
+      async (tx) => {
+        // Transaction-scoped advisory lock, keyed per-venue (hashtext(venueId) as the second
+        // int4 key) - always releases when the transaction ends, so it can't leak stuck.
+        // Without this, a double-click, a second browser tab, or a slow first request plus a
+        // retry could all read stripeAccountId as null before any of them had written it back,
+        // each creating its own separate (orphaned, unused) Stripe Express account for the same
+        // venue.
+        const [{ locked }] = await tx.$queryRaw<{ locked: boolean }[]>`
+          SELECT pg_try_advisory_xact_lock(${CONNECT_SETUP_LOCK_NAMESPACE}, hashtext(${access.venueId})) AS locked
+        `;
+        if (!locked) throw new ConnectSetupInProgressError();
 
-    const base = getAppBaseUrl();
-    link = await stripe.accountLinks.create({
-      account: accountId,
-      refresh_url: `${base}/venue/profile?notice=connect-refresh`,
-      return_url: `${base}/venue/profile?notice=connect-return`,
-      type: "account_onboarding",
-    });
+        const venue = await tx.venue.findUnique({ where: { id: access.venueId } });
+        if (!venue) throw new VenueNotFoundError();
+
+        let accountId = venue.stripeAccountId;
+        if (!accountId) {
+          // business_type is deliberately omitted - LeaguePour venues span LLCs, corporations,
+          // sole proprietors, and individual operators. Forcing "company" here made Stripe's
+          // hosted onboarding ask every venue for company-specific paperwork even when that's
+          // wrong for them; leaving it unset lets Stripe's own onboarding flow ask the venue to
+          // self-select the correct type and collect the right fields for it.
+          const account = await stripe.accounts.create({
+            type: "express",
+            metadata: { venueId: venue.id },
+          });
+          accountId = account.id;
+          await tx.venue.update({
+            where: { id: venue.id },
+            data: { stripeAccountId: account.id },
+          });
+        }
+
+        return stripe.accountLinks.create({
+          account: accountId,
+          refresh_url: `${base}/venue/profile?notice=connect-refresh`,
+          return_url: `${base}/venue/profile?notice=connect-return`,
+          type: "account_onboarding",
+        });
+      },
+      { timeout: 30_000 },
+    );
   } catch (err) {
+    if (err instanceof ConnectSetupInProgressError) {
+      redirect("/venue/profile?notice=connect-in-progress");
+    }
+    if (err instanceof VenueNotFoundError) {
+      redirect("/signup/venue");
+    }
     // Was a raw, unhandled 500 (opaque Next.js digest, no detail) until this pass caught it live
-    // against a fresh test venue - root cause is platform-level (Stripe Connect isn't activated
-    // on this Stripe account: "You can only create new accounts if you've signed up for
-    // Connect..."), not something this action can fix, but a venue owner should never see a bare
-    // crash for it - see the connect-error notice on the profile page for the friendly message.
+    // against a fresh test venue - root cause was platform-level (Stripe Connect wasn't
+    // activated on this Stripe account: "You can only create new accounts if you've signed up
+    // for Connect..."), now resolved. A venue owner should still never see a bare crash for
+    // whatever future failure reaches here - see the connect-error notice for the friendly
+    // message.
     console.error("[stripe-connect] onboarding link creation failed", err);
     redirect("/venue/profile?notice=connect-error");
   }

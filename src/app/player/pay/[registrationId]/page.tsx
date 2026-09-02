@@ -25,7 +25,7 @@ const notices: Record<string, string> = {
   paid: "This registration is already paid and confirmed.",
   session_mismatch: "That Stripe session does not match this registration.",
   venue_connect_required:
-    "This venue has not finished Stripe Connect (charges + payouts). Entry fees cannot be collected until they do - ask the venue to open Venue profile and complete Connect.",
+    "This venue hasn't finished setting up payments yet, so entry fees can't be collected here right now. Ask the venue to finish Stripe setup in their LeaguePour dashboard.",
 };
 
 export default async function PayRegistrationPage({

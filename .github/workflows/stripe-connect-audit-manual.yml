@@ -1,0 +1,16 @@
+name: Stripe Connect audit (manual)
+
+# Manual-only, read-only diagnostic for the Q's Wine Bar P0 platform-wide closeout - via
+# src/app/api/cron/stripe-connect-audit. Never creates/modifies/deletes anything.
+on:
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Stripe Connect audit
+        run: |
+          resp=$(curl -sS --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/stripe-connect-audit")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1

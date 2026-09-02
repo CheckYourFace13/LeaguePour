@@ -5,16 +5,15 @@ import {
   PLAYER_SERVICE_FEE_CENTS,
   playerTotalCents,
 } from "@/lib/stripe/connect-fees";
+import { CONNECT_STATUS_COPY, type ConnectStatus } from "@/lib/stripe/connect-status";
 
 type Props = {
-  stripeChargesEnabled: boolean;
-  stripePayoutsEnabled: boolean;
-  stripeAccountId: string | null;
+  connectStatus: ConnectStatus;
 };
 
 const EXAMPLE_ENTRY_CENTS = 1000; // $10 example
 
-export function VenueEntryFeeFlowCard({ stripeChargesEnabled, stripePayoutsEnabled, stripeAccountId }: Props) {
+export function VenueEntryFeeFlowCard({ connectStatus }: Props) {
   const entry = EXAMPLE_ENTRY_CENTS;
   const serviceFee = PLAYER_SERVICE_FEE_CENTS;
   const platformPct = PLATFORM_FEE_BPS / 100;
@@ -22,7 +21,8 @@ export function VenueEntryFeeFlowCard({ stripeChargesEnabled, stripePayoutsEnabl
   const appFee = connectApplicationFeeCents(entry, true);
   const venueFeeOnly = appFee - serviceFee; // the 5% portion from venue's share
   const venueReceives = playerTotal - appFee;
-  const connectLive = Boolean(stripeAccountId) && stripeChargesEnabled && stripePayoutsEnabled;
+  const connectLive = connectStatus === "ready";
+  const statusCopy = CONNECT_STATUS_COPY[connectStatus];
 
   return (
     <div className="space-y-5">
@@ -33,7 +33,7 @@ export function VenueEntryFeeFlowCard({ stripeChargesEnabled, stripePayoutsEnabl
           account, we never hold your money. Two small fees apply: a{" "}
           <strong className="text-lp-text">{platformPct}% venue fee</strong> deducted from your payout, plus a{" "}
           <strong className="text-lp-text">{formatUsdCents(serviceFee)} service fee</strong> added on top for the
-          player. Stripe's processing costs come out of the service fee - you don't pay them.
+          player. Stripe&apos;s processing costs come out of the service fee - you don&apos;t pay them.
         </p>
       </div>
 
@@ -70,14 +70,8 @@ export function VenueEntryFeeFlowCard({ stripeChargesEnabled, stripePayoutsEnabl
       </div>
 
       <p className="text-sm">
-        Connect status:{" "}
-        <span className={connectLive ? "font-semibold text-lp-accent" : "font-semibold text-amber-500"}>
-          {connectLive
-            ? "Ready - players can pay entry fees"
-            : stripeAccountId
-              ? "Stripe account exists but setup is incomplete - click Continue Stripe setup"
-              : "Not connected - complete Stripe setup so players can pay"}
-        </span>
+        Connect status: <span className="font-semibold text-lp-accent">{statusCopy.label}</span>
+        <span className="text-lp-muted"> - {connectLive ? "players can pay entry fees" : statusCopy.message}</span>
       </p>
     </div>
   );

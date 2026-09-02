@@ -9,6 +9,8 @@ import { buildQrDataUrl } from "@/lib/qr";
 import { getPublicSiteUrl } from "@/lib/site-url";
 import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import { redirect } from "next/navigation";
+import { getStripe } from "@/lib/stripe/server";
+import { CONNECT_STATUS_COPY, deriveConnectStatus } from "@/lib/stripe/connect-status";
 import {
   createStripeConnectOnboardingAction,
   refreshStripeConnectStatusAction,
@@ -31,6 +33,27 @@ export default async function VenueProfilePage({
   const publicUrl = `${getPublicSiteUrl()}${publicPath}`;
   const qr = await buildQrDataUrl(publicUrl);
 
+  // Fetched live rather than trusting only the cached charges/payouts/detailsSubmitted booleans
+  // (which depend on a webhook actually reaching us - see the Connect webhook audit) - this way
+  // the venue owner always sees Stripe's real, current state on every profile page load, with
+  // no dependency on webhook delivery.
+  let connectStatus = deriveConnectStatus(null);
+  if (venue.stripeAccountId) {
+    try {
+      const acct = await getStripe().accounts.retrieve(venue.stripeAccountId);
+      connectStatus = deriveConnectStatus(acct);
+    } catch (err) {
+      console.error("[venue-profile] failed to fetch live Connect status", err);
+      // Fall back to the cached booleans rather than showing nothing.
+      connectStatus = deriveConnectStatus({
+        charges_enabled: venue.stripeChargesEnabled,
+        payouts_enabled: venue.stripePayoutsEnabled,
+        details_submitted: venue.stripeDetailsSubmitted,
+      });
+    }
+  }
+  const statusCopy = CONNECT_STATUS_COPY[connectStatus];
+
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
@@ -42,13 +65,30 @@ export default async function VenueProfilePage({
           Profile saved.
         </div>
       ) : null}
-      {notice === "connect-return" && venue.stripeChargesEnabled ? (
-        <TrackView event="stripe_connect_completed" params={{ product: "lp" }} />
+      {notice === "connect-return" ? (
+        <>
+          {connectStatus === "ready" ? <TrackView event="stripe_connect_completed" params={{ product: "lp" }} /> : null}
+          <div className="rounded-[10px] border border-lp-border bg-lp-surface/60 px-4 py-3 text-sm text-lp-text">
+            Back from Stripe. Current status: <strong>{statusCopy.label}</strong> - {statusCopy.message}
+          </div>
+        </>
       ) : null}
       {notice === "connect-error" ? (
         <div className="rounded-[10px] border border-red-500/35 bg-red-500/10 px-4 py-3 text-sm font-medium text-lp-text">
-          Couldn&apos;t start Stripe setup right now. Nothing was charged or changed - try again in a
-          minute, or contact support if this keeps happening.
+          We couldn&apos;t open Stripe setup right now. Your LeaguePour account is safe - please try
+          again shortly or contact support if this keeps happening.
+        </div>
+      ) : null}
+      {notice === "connect-in-progress" ? (
+        <div className="rounded-[10px] border border-amber-500/35 bg-amber-500/10 px-4 py-3 text-sm font-medium text-lp-text">
+          Stripe setup is already being started (another tab or a fast double-click) - wait a
+          second and try again.
+        </div>
+      ) : null}
+      {notice === "connect-refresh" ? (
+        <div className="rounded-[10px] border border-lp-border bg-lp-surface/60 px-4 py-3 text-sm text-lp-text">
+          Your Stripe setup link expired. Click Continue Stripe setup below to get a new secure
+          link.
         </div>
       ) : null}
       <Card className="space-y-5">
@@ -81,31 +121,44 @@ export default async function VenueProfilePage({
 
       <Card className="space-y-5 p-5">
         <p className="lp-kicker">Stripe Connect</p>
-        <p className="text-sm text-lp-muted">
-          Charges {venue.stripeChargesEnabled ? "on" : "off"} | Payouts {venue.stripePayoutsEnabled ? "on" : "off"}
+        <p className="text-sm">
+          <span
+            className={
+              statusCopy.tone === "success"
+                ? "font-semibold text-lp-accent"
+                : statusCopy.tone === "danger"
+                  ? "font-semibold text-red-500"
+                  : statusCopy.tone === "warning"
+                    ? "font-semibold text-amber-500"
+                    : "font-semibold text-lp-text"
+            }
+          >
+            {statusCopy.label}
+          </span>
+          <span className="text-lp-muted"> - {statusCopy.message}</span>
         </p>
         <div className="flex flex-col gap-2 sm:flex-row">
-          <form action={createStripeConnectOnboardingAction}>
-            <TrackClick event="stripe_connect_started" params={{ product: "lp" }}>
-              <Button type="submit" size="lg">
-                {venue.stripeAccountId ? "Continue Stripe setup" : "Connect Stripe"}
+          {statusCopy.cta ? (
+            <form action={createStripeConnectOnboardingAction}>
+              <TrackClick event="stripe_connect_started" params={{ product: "lp" }}>
+                <Button type="submit" size="lg">
+                  {statusCopy.cta}
+                </Button>
+              </TrackClick>
+            </form>
+          ) : null}
+          {venue.stripeAccountId ? (
+            <form action={refreshStripeConnectStatusAction}>
+              <Button type="submit" size="lg" variant="secondary">
+                Sync status
               </Button>
-            </TrackClick>
-          </form>
-          <form action={refreshStripeConnectStatusAction}>
-            <Button type="submit" size="lg" variant="secondary">
-              Sync status
-            </Button>
-          </form>
+            </form>
+          ) : null}
         </div>
       </Card>
 
       <Card className="space-y-4 p-5">
-        <VenueEntryFeeFlowCard
-          stripeChargesEnabled={venue.stripeChargesEnabled}
-          stripePayoutsEnabled={venue.stripePayoutsEnabled}
-          stripeAccountId={venue.stripeAccountId}
-        />
+        <VenueEntryFeeFlowCard connectStatus={connectStatus} />
       </Card>
 
       <Card className="space-y-4 p-5">

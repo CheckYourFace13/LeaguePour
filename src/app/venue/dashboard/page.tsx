@@ -15,6 +15,7 @@ import {
 import { venueAppRoutes } from "@/lib/routes";
 import { redirect } from "next/navigation";
 import { EmbedCopyButton } from "./embed-copy-button";
+import { CONNECT_STATUS_COPY, deriveConnectStatus } from "@/lib/stripe/connect-status";
 
 export default async function VenueDashboardPage({
   searchParams,
@@ -30,13 +31,29 @@ export default async function VenueDashboardPage({
 
   const venueRow = await prisma.venue.findUnique({
     where: { id: access.venueId },
-    select: { name: true, slug: true, stripeAccountId: true, stripeChargesEnabled: true, stripePayoutsEnabled: true },
+    select: {
+      name: true,
+      slug: true,
+      stripeAccountId: true,
+      stripeChargesEnabled: true,
+      stripePayoutsEnabled: true,
+      stripeDetailsSubmitted: true,
+    },
   });
   const venueSlug = venueRow?.slug ?? "";
-  const stripeConnectReady =
-    Boolean(venueRow?.stripeAccountId) &&
-    venueRow?.stripeChargesEnabled === true &&
-    venueRow?.stripePayoutsEnabled === true;
+  // Cached booleans, not a live Stripe fetch, on purpose - the dashboard is a high-traffic page.
+  // The venue profile page fetches live status on every load; this banner nudges the owner
+  // there when something needs attention, using whatever we last synced (webhook or manual
+  // "Sync status").
+  const connectDashboardStatus = venueRow?.stripeAccountId
+    ? deriveConnectStatus({
+        charges_enabled: venueRow.stripeChargesEnabled,
+        payouts_enabled: venueRow.stripePayoutsEnabled,
+        details_submitted: venueRow.stripeDetailsSubmitted,
+      })
+    : deriveConnectStatus(null);
+  const stripeConnectReady = connectDashboardStatus === "ready";
+  const connectBannerCopy = CONNECT_STATUS_COPY[connectDashboardStatus];
 
   const [openCount, regCount, campaignDrafts, pendingPayments, upcoming] = await Promise.all([
     prisma.competition.count({
@@ -64,16 +81,25 @@ export default async function VenueDashboardPage({
 
   return (
     <div className="space-y-10 md:space-y-12">
-      {!stripeConnectReady ? (
+      {!stripeConnectReady && connectDashboardStatus !== "restricted" ? (
         <div className="flex flex-col gap-3 rounded-[10px] border border-amber-500/40 bg-amber-500/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="font-semibold text-lp-text">Stripe account not set up</p>
-            <p className="mt-0.5 text-sm text-lp-muted">
-              Players can't pay entry fees until you connect your Stripe account. It only takes a few minutes.
-            </p>
+            <p className="font-semibold text-lp-text">{connectBannerCopy.label}: entry fee payments aren&apos;t live yet</p>
+            <p className="mt-0.5 text-sm text-lp-muted">{connectBannerCopy.message}</p>
           </div>
           <Button asChild size="lg" className="shrink-0 w-full sm:w-auto">
-            <Link href={venueAppRoutes.profile}>Set up payments</Link>
+            <Link href={venueAppRoutes.profile}>{connectDashboardStatus === "not_connected" ? "Set up payments" : "Manage Stripe setup"}</Link>
+          </Button>
+        </div>
+      ) : null}
+      {connectDashboardStatus === "restricted" ? (
+        <div className="flex flex-col gap-3 rounded-[10px] border border-red-500/40 bg-red-500/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-semibold text-lp-text">Stripe restricted this account</p>
+            <p className="mt-0.5 text-sm text-lp-muted">{connectBannerCopy.message}</p>
+          </div>
+          <Button asChild size="lg" variant="secondary" className="shrink-0 w-full sm:w-auto">
+            <Link href={venueAppRoutes.profile}>View details</Link>
           </Button>
         </div>
       ) : null}
