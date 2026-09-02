@@ -7,9 +7,13 @@ name: Daily outreach batch
 # scheduling jitter both could land in the valid window on the same
 # morning and race each other for the same DB connection, which is what
 # caused a same-day failed run. One schedule removes that race entirely.)
+# Manual-only as of 2026-09: the in-process scheduler (src/lib/scheduler.ts) now fires this job
+# automatically every day (proven live - see scheduler-status). This workflow's own daily
+# schedule was removed because Hostinger's CDN blocks/times out connections specifically from
+# GitHub Actions runner IPs (a real, already-diagnosed, unrelated infra quirk), which made it
+# fail on a real cadence and generate noisy, non-actionable "Run failed" emails even when the
+# job itself succeeded via the internal scheduler moments earlier. Kept as a manual fallback.
 on:
-  schedule:
-    - cron: "0 15 * * *"
   workflow_dispatch:
 
 jobs:

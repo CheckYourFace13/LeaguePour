@@ -3,9 +3,13 @@ name: Daily IndexNow submission
 # Submits the current indexable sitemap for both brands to IndexNow (Bing + IndexNow-participating
 # engines) once a day - src/app/api/cron/indexnow-submit throttles to at most once per 20h itself,
 # so this schedule is just the trigger, not the safety net.
+# Manual-only as of 2026-09: the in-process scheduler (src/lib/scheduler.ts) now fires this job
+# automatically every day (proven live - see scheduler-status). This workflow's own daily
+# schedule was removed because Hostinger's CDN blocks/times out connections specifically from
+# GitHub Actions runner IPs (a real, already-diagnosed, unrelated infra quirk), which made it
+# fail on a real cadence and generate noisy, non-actionable "Run failed" emails even when the
+# job itself succeeded via the internal scheduler moments earlier. Kept as a manual fallback.
 on:
-  schedule:
-    - cron: "0 12 * * *"
   workflow_dispatch:
     inputs:
       force:

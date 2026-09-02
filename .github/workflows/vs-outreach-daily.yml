@@ -9,9 +9,13 @@ name: Daily VenueSprocket outreach batch
 # Real off switch: flip "vs_outreach_enabled" to false on /internal/outreach (an AppSetting row,
 # no deploy needed) rather than disabling this workflow - the route checks that flag itself, so
 # a manual admin-triggered send would otherwise still be able to fire even with this workflow off.
+# Manual-only as of 2026-09: the in-process scheduler (src/lib/scheduler.ts) now fires this job
+# automatically every day (proven live - see scheduler-status). This workflow's own daily
+# schedule was removed because Hostinger's CDN blocks/times out connections specifically from
+# GitHub Actions runner IPs (a real, already-diagnosed, unrelated infra quirk), which made it
+# fail on a real cadence and generate noisy, non-actionable "Run failed" emails even when the
+# job itself succeeded via the internal scheduler moments earlier. Kept as a manual fallback.
 on:
-  schedule:
-    - cron: "0 16 * * *"
   workflow_dispatch:
 
 jobs:

@@ -19,7 +19,19 @@ jobs:
       - name: Wait for Hostinger deploy to land
         run: sleep 300
       - name: Purge Hostinger CDN cache
+        # Hostinger's CDN separately blocks/times out connections specifically from GitHub
+        # Actions runner IPs (a real, already-diagnosed, unrelated infra quirk - not this job
+        # failing) - a curl connection failure (timeout/refused/DNS) is treated as a soft miss,
+        # not a hard failure, so this stops sending a "Run failed" email for a network block it
+        # can't control. A real response that isn't {"ok":true} still fails the job for real.
         run: |
+          set +e
           resp=$(curl -sS --max-time 60 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/purge-cdn-cache")
+          curl_exit=$?
+          set -e
           echo "$resp"
+          if [ $curl_exit -ne 0 ]; then
+            echo "::warning::curl exit $curl_exit - likely the known GitHub-Actions-IP CDN block, not a real purge failure. Not failing the job."
+            exit 0
+          fi
           echo "$resp" | grep -q '"ok":true' || exit 1

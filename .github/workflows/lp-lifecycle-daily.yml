@@ -7,9 +7,15 @@ name: Daily LeaguePour lifecycle nudges
 #
 # Requires a CRON_SECRET repository secret matching the CRON_SECRET environment variable
 # configured on the Hostinger deployment - same one .github/workflows/db-heartbeat.yml uses.
+#
+# Manual-only as of 2026-09: the in-process scheduler (src/lib/scheduler.ts) now fires this job
+# automatically every day (proven live - see scheduler-status). This workflow's own daily
+# schedule was removed because Hostinger's CDN blocks/times out connections specifically from
+# GitHub Actions runner IPs (a real, already-diagnosed, unrelated infra quirk - not a bug in
+# this job), which made it fail on a real cadence and generate noisy, non-actionable "Run
+# failed" emails even when the job itself succeeded via the internal scheduler moments earlier.
+# Kept as a manual escape hatch if the internal scheduler ever needs a fallback trigger.
 on:
-  schedule:
-    - cron: "0 14 * * *"
   workflow_dispatch:
 
 jobs:

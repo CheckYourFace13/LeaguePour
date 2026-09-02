@@ -12,9 +12,13 @@ name: Database heartbeat
 # Requires a CRON_SECRET repository secret (Settings -> Secrets and variables -> Actions) that
 # matches the CRON_SECRET environment variable configured on the Hostinger deployment - without
 # it this route returns 401.
+# Manual-only as of 2026-09: the in-process scheduler (src/lib/scheduler.ts) now fires this job
+# DAILY (proven live - see scheduler-status), more frequently than this workflow's own 3-day
+# schedule, so it's strictly redundant, not a regression. Removed because Hostinger's CDN
+# blocks/times out connections specifically from GitHub Actions runner IPs (a real,
+# already-diagnosed, unrelated infra quirk), which made it fail on a real cadence and generate
+# noisy, non-actionable "Run failed" emails. Kept as a manual fallback.
 on:
-  schedule:
-    - cron: "0 6 */3 * *"
   workflow_dispatch:
 
 jobs:
