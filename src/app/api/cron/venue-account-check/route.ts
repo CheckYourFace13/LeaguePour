@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { getStripe } from "@/lib/stripe/server";
 
 export const runtime = "nodejs";
 
@@ -56,6 +57,27 @@ export async function GET(request: Request) {
       ? await prisma.venue.count({ where: { subscriptionId: venue.subscriptionId } })
       : 1;
 
+    // Read-only: compares our stored subscriptionPeriodEnd against what Stripe reports live
+    // right now, to catch a stale/incorrect local copy - never writes anything.
+    let liveSubscriptionCheck: unknown = null;
+    if (venue.subscriptionId) {
+      try {
+        const sub = await getStripe().subscriptions.retrieve(venue.subscriptionId);
+        const rawTopLevel = (sub as unknown as { current_period_end?: number }).current_period_end;
+        const itemPeriodEnd = (sub.items?.data?.[0] as unknown as { current_period_end?: number })
+          ?.current_period_end;
+        liveSubscriptionCheck = {
+          status: sub.status,
+          topLevelCurrentPeriodEndPresent: rawTopLevel !== undefined && rawTopLevel !== null,
+          topLevelCurrentPeriodEnd: rawTopLevel ? new Date(rawTopLevel * 1000).toISOString() : null,
+          itemLevelCurrentPeriodEndPresent: itemPeriodEnd !== undefined && itemPeriodEnd !== null,
+          itemLevelCurrentPeriodEnd: itemPeriodEnd ? new Date(itemPeriodEnd * 1000).toISOString() : null,
+        };
+      } catch (err) {
+        liveSubscriptionCheck = { error: err instanceof Error ? err.message : String(err) };
+      }
+    }
+
     return NextResponse.json({
       ok: true,
       found: true,
@@ -67,6 +89,7 @@ export async function GET(request: Request) {
         periodEndInFuture: venue.subscriptionPeriodEnd ? venue.subscriptionPeriodEnd > new Date() : null,
         hasStripeSubscriptionId: venue.subscriptionId !== null,
         duplicateSubscriptionIdRowCount: duplicateCount,
+        liveStripeCheck: liveSubscriptionCheck,
       },
       ownership: {
         staffRowCount: venue.staff.length,
