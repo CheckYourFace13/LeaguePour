@@ -1,0 +1,25 @@
+name: Purge CDN cache on deploy
+
+# Hostinger's CDN has repeatedly served stale HTML referencing deleted build-hash JS chunks
+# after a deploy (the homepage failed to render entirely for real visitors hitting stale
+# cache - confirmed live via browser testing). Hostinger auto-deploys on every push to master
+# in ~3-9 minutes; this waits for that to land, then purges via
+# src/app/api/cron/purge-cdn-cache (Hostinger's own cache-clear API - see
+# src/lib/hostinger-cache.ts). Requires HOSTINGER_API_TOKEN/HOSTINGER_USERNAME configured on
+# the Hostinger deployment itself - if unset, the route safely no-ops rather than failing.
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Hostinger deploy to land
+        run: sleep 300
+      - name: Purge Hostinger CDN cache
+        run: |
+          resp=$(curl -sS --max-time 60 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/purge-cdn-cache")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1
