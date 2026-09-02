@@ -1,0 +1,17 @@
+name: VS email selftest (manual)
+
+# Manual-only diagnostic: proves the real VS transactional email function (the one the live
+# inquiry flow calls) gets accepted by Resend under the correct team/sender, via Resend's own
+# API response - see src/app/api/cron/vs-email-selftest.
+on:
+  workflow_dispatch:
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run VS email selftest
+        run: |
+          resp=$(curl -sS --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/vs-email-selftest")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1
