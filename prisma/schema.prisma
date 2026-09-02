@@ -133,7 +133,15 @@ model OutreachContact {
    */
   vsEligible         Boolean         @default(false)
   vsEligibilityNote  String?
-  vsStatus           OutreachStatus?
+  /// Deliberately String, not OutreachStatus, even though it holds the same value set as
+  /// `status` above - the live column has always been TEXT (added via migration
+  /// 20260821144433_vs_outreach_and_job_runs as `ADD COLUMN "vsStatus" TEXT`, never converted
+  /// to the enum type). Every Prisma-built comparison against an enum-typed column here failed
+  /// against Postgres ("operator does not exist") until this was declared to match reality -
+  /// see the equivalent migration note for the full history. Application code still only ever
+  /// writes/reads the same OutreachStatus string values (e.g. "SIGNED_UP") for consistency with
+  /// `status`; this is a Prisma-representation fix, not a behavior change.
+  vsStatus           String?
   vsEmailSentAt      DateTime?
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt

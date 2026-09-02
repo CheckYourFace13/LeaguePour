@@ -65,17 +65,13 @@ export async function GET(request: Request) {
     // outreach prospect list at all (they may have signed up organically). This doesn't identify
     // WHICH contacts, just proves the suppression mechanism has live rows in the state that
     // would exclude them from cold outreach (both send queries structurally exclude non-eligible
-    // statuses - see src/lib/outreach-email.ts). Raw query, not a Prisma-level comparison against
-    // vsStatus - that column is declared as the OutreachStatus enum in schema.prisma but is
-    // actually TEXT in the live DB (same root cause behind the outreach-send query rewrite
-    // earlier this session), and any Prisma-built comparison against it throws "operator does
-    // not exist". Raw SQL with a fixed literal (no interpolated input) sidesteps Prisma's typed
-    // client entirely.
-    const outreachSignedUpRows = await prisma.$queryRaw<{ count: bigint }[]>`
-      SELECT count(*) AS count FROM "leaguepour_lp"."OutreachContact"
-      WHERE status = 'SIGNED_UP' OR "vsStatus" = 'SIGNED_UP'
-    `;
-    const outreachSignedUpCount = Number(outreachSignedUpRows[0]?.count ?? 0);
+    // statuses - see src/lib/outreach-email.ts). Plain Prisma filter now that vsStatus is
+    // correctly declared as String in schema.prisma (it was previously mistyped as the
+    // OutreachStatus enum, which doesn't match the live TEXT column and threw on any comparison
+    // - see the vsStatus field comment in schema.prisma for the full history).
+    const outreachSignedUpCount = await prisma.outreachContact.count({
+      where: { OR: [{ status: "SIGNED_UP" }, { vsStatus: "SIGNED_UP" }] },
+    });
 
     return NextResponse.json({
       ok: true,

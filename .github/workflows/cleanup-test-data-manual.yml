@@ -1,0 +1,24 @@
+name: Cleanup test data (manual)
+
+# Manual-only, dry-run by default: deletes ONLY the exact test records created during live
+# verification passes (exact venue name / exact email match), via
+# src/app/api/cron/cleanup-test-data. Pass confirm=true to actually delete.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Actually delete (default: dry run only)"
+        type: boolean
+        default: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run cleanup
+        run: |
+          QS=""
+          if [ "${{ inputs.confirm }}" = "true" ]; then QS="?confirm=1"; fi
+          resp=$(curl -sS --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/cleanup-test-data$QS")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1

@@ -1,0 +1,11 @@
+-- No-op by design: reconciles migration history/schema.prisma with the live database, not the
+-- other way around. OutreachContact.vsStatus has always been TEXT (added by migration
+-- 20260821144433_vs_outreach_and_job_runs as `ADD COLUMN "vsStatus" TEXT`) and was never
+-- actually converted to the OutreachStatus enum type, even though schema.prisma declared it as
+-- one - every Prisma-built comparison against it as an enum threw "operator does not exist"
+-- against Postgres, worked around in application code until now. schema.prisma now declares
+-- vsStatus as String to match what the live column has always actually been. Deliberately does
+-- NOT alter the live column - a real ALTER COLUMN ... TYPE on a table under constant automated
+-- read/write load, now with a real paying customer live, is unnecessary risk for zero behavior
+-- change (application code already only ever reads/writes the same string values either way).
+SELECT 1;
