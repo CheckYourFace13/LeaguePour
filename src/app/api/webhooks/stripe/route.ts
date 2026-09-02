@@ -36,6 +36,24 @@ function parseVsPlan(raw: string | null | undefined): VsPlan | null {
  * Venue.subscriptionId) is what prevents one product's webhook from overwriting the other's
  * tracked subscription state for venues that hold both.
  */
+/**
+ * Stripe's Subscription object has moved current_period_end between the top level and
+ * subscription-item level across API versions (this webhook endpoint's events render under a
+ * pinned api_version - see getStripeWebhookSecret's caller - which can differ from whatever
+ * version a direct API call defaults to). Observed live: a real subscription's period end
+ * silently got wiped to null in our DB despite Stripe's own /v1/subscriptions/{id} showing a
+ * perfectly valid value at both levels - the webhook payload's pinned version evidently didn't
+ * carry the top-level field for that event. Falls back to the first subscription item's
+ * current_period_end so this can't happen again regardless of which shape a given event uses.
+ */
+function extractCurrentPeriodEnd(sub: Stripe.Subscription): number | null {
+  const topLevel = (sub as unknown as { current_period_end?: number | null }).current_period_end;
+  if (typeof topLevel === "number") return topLevel;
+  const itemLevel = (sub.items?.data?.[0] as unknown as { current_period_end?: number | null } | undefined)
+    ?.current_period_end;
+  return typeof itemLevel === "number" ? itemLevel : null;
+}
+
 async function handleSubscriptionUpsert(sub: Stripe.Subscription) {
   const venueId = sub.metadata?.venueId;
   if (!venueId) {
@@ -45,9 +63,13 @@ async function handleSubscriptionUpsert(sub: Stripe.Subscription) {
 
   const product = sub.metadata?.product === "vs" ? "vs" : "lp";
   const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer?.id ?? null;
-  const periodEnd = sub.current_period_end
-    ? new Date(sub.current_period_end * 1000)
-    : null;
+  const rawPeriodEnd = extractCurrentPeriodEnd(sub);
+  const periodEnd = rawPeriodEnd ? new Date(rawPeriodEnd * 1000) : null;
+  if (!periodEnd) {
+    // Never silently null out a previously-good period end just because this particular event's
+    // payload didn't carry it - only write periodEnd fields below when we actually have one.
+    console.warn("[stripe webhook] subscription event carried no current_period_end at all", sub.id);
+  }
   // Recorded so MRR can divide annual prices by 12 instead of assuming every subscriber pays
   // the monthly rate (see the comment on Venue.subscriptionInterval). Falls back to reading the
   // actual Stripe price if metadata.interval is missing (subscriptions created before this was
@@ -76,7 +98,9 @@ async function handleSubscriptionUpsert(sub: Stripe.Subscription) {
       update: {
         vsSubscriptionId: sub.id,
         vsSubscriptionStatus: sub.status,
-        vsSubscriptionPeriodEnd: periodEnd,
+        // Only overwrite a previously-recorded period end when this event actually carried one -
+        // see extractCurrentPeriodEnd's comment for why some events don't.
+        ...(periodEnd ? { vsSubscriptionPeriodEnd: periodEnd } : {}),
         ...(interval ? { vsSubscriptionInterval: interval } : {}),
         ...(vsPlan ? { vsPlan } : {}),
       },
@@ -96,7 +120,9 @@ async function handleSubscriptionUpsert(sub: Stripe.Subscription) {
     data: {
       subscriptionId: sub.id,
       subscriptionStatus: sub.status,
-      subscriptionPeriodEnd: periodEnd,
+      // Only overwrite a previously-recorded period end when this event actually carried one -
+      // see extractCurrentPeriodEnd's comment for why some events don't.
+      ...(periodEnd ? { subscriptionPeriodEnd: periodEnd } : {}),
       ...(interval ? { subscriptionInterval: interval } : {}),
       ...(customerId ? { stripeBillingCustomerId: customerId } : {}),
       ...(plan ? { billingPlan: plan } : {}),
