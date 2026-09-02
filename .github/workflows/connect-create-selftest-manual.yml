@@ -1,0 +1,21 @@
+name: Connect create selftest (manual)
+
+# Temporary diagnostic for the Q's Wine Bar P0 closeout - via src/app/api/cron/connect-create-selftest.
+# Only accepts CLAUDE-TEST- venue names. Delete once the P0 is closed.
+on:
+  workflow_dispatch:
+    inputs:
+      venue:
+        description: "Exact CLAUDE-TEST- venue name"
+        required: true
+        type: string
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Connect create selftest
+        run: |
+          resp=$(curl -sS -G --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" --data-urlencode "venue=${{ inputs.venue }}" "https://leaguepour.com/api/cron/connect-create-selftest")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1
