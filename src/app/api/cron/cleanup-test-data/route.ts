@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { getStripe } from "@/lib/stripe/server";
 
 export const runtime = "nodejs";
 
@@ -22,6 +23,8 @@ const TEST_VENUE_NAMES = [
   "CLAUDE-TEST-MOBILE-VS-DELETE-ME",
   "CLAUDE-TEST-CONNECT-RETEST-DELETE-ME",
   "CLAUDE-TEST-CONNECT-E2E-DELETE-ME",
+  "CLAUDE-TEST-CONNECT-LIVE-DELETE-ME",
+  "CLAUDE-TEST-CONNECT-DUP-DELETE-ME",
 ];
 const TEST_USER_EMAILS = [
   "claude-test-verify2-delete-me@example.com",
@@ -33,6 +36,8 @@ const TEST_USER_EMAILS = [
   "claude-test-connect-retest-delete-me@example.com",
   "claude-test-connect-e2e-delete-me@example.com",
   "claude-test-connect-player-delete-me@example.com",
+  "claude-test-connect-live-delete-me@example.com",
+  "claude-test-connect-dup-delete-me@example.com",
 ];
 
 export async function GET(request: Request) {
@@ -56,6 +61,7 @@ export async function GET(request: Request) {
       select: {
         id: true,
         name: true,
+        stripeAccountId: true,
         _count: { select: { staff: true, competitions: true, privateEventLeads: true, privateEvents: true } },
         competitions: {
           select: {
@@ -64,6 +70,7 @@ export async function GET(request: Request) {
         },
       },
     });
+    const stripeAccountIds = venues.map((v) => v.stripeAccountId).filter((id): id is string => id !== null);
     const users = await prisma.user.findMany({
       where: { email: { in: TEST_USER_EMAILS } },
       select: { id: true, email: true },
@@ -88,8 +95,25 @@ export async function GET(request: Request) {
         })),
         wouldDeleteUserCount: users.length,
         wouldDeleteOrphanedPaymentCount: paymentIds.length,
+        wouldDeleteStripeConnectAccounts: stripeAccountIds,
         note: "Dry run only - pass ?confirm=1 to actually delete.",
       });
+    }
+
+    // Stripe accounts first, while we still have the ids - a barely-started test Express
+    // account (no charges/payouts, never went "active") is deletable via the API. Best-effort:
+    // logs and continues on failure rather than blocking the DB cleanup over it.
+    const stripeDeleteResults: { id: string; ok: boolean; error?: string }[] = [];
+    if (stripeAccountIds.length) {
+      const stripe = getStripe();
+      for (const id of stripeAccountIds) {
+        try {
+          await stripe.accounts.del(id);
+          stripeDeleteResults.push({ id, ok: true });
+        } catch (err) {
+          stripeDeleteResults.push({ id, ok: false, error: err instanceof Error ? err.message : String(err) });
+        }
+      }
     }
 
     const venueIds = venues.map((v) => v.id);
@@ -111,6 +135,7 @@ export async function GET(request: Request) {
       deletedVenues: deletedVenues.count,
       deletedUsers: deletedUsers.count,
       deletedOrphanedPayments: deletedPayments.count,
+      stripeConnectAccountsDeleted: stripeDeleteResults,
     });
   } catch (err) {
     console.error("[cleanup-test-data] failed", err);
