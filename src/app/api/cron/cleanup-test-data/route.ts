@@ -139,6 +139,9 @@ export async function GET(request: Request) {
     });
   } catch (err) {
     console.error("[cleanup-test-data] failed", err);
-    return NextResponse.json({ ok: false, error: "Cleanup failed." }, { status: 500 });
+    return NextResponse.json(
+      { ok: false, error: "Cleanup failed.", detail: err instanceof Error ? err.message : String(err) },
+      { status: 500 },
+    );
   }
 }
