@@ -3,6 +3,10 @@ import { prisma } from "@/lib/db";
 import { getStripe } from "@/lib/stripe/server";
 
 export const runtime = "nodejs";
+// See vs-email-selftest's history: a brand-new route can get statically prerendered and cached
+// as a 404 by Next's own ISR layer before it's ever hit live - force dynamic rendering so this
+// never serves a stale response.
+export const dynamic = "force-dynamic";
 
 /**
  * Read-only, platform-wide Stripe Connect audit for the Q's Wine Bar P0. Never creates,
