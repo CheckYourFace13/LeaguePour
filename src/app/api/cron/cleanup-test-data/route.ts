@@ -20,6 +20,7 @@ const TEST_VENUE_NAMES = [
   "CLAUDE-TEST-VS-DELETE-ME",
   "CLAUDE-TEST-MOBILE-DELETE-ME",
   "CLAUDE-TEST-MOBILE-VS-DELETE-ME",
+  "CLAUDE-TEST-CONNECT-RETEST-DELETE-ME",
 ];
 const TEST_USER_EMAILS = [
   "claude-test-verify2-delete-me@example.com",
@@ -28,6 +29,7 @@ const TEST_USER_EMAILS = [
   "claude-test-mobile-delete-me@example.com",
   "claude-test-mobile-vs-delete-me@example.com",
   "claude-test-mobile-player-delete-me@example.com",
+  "claude-test-connect-retest-delete-me@example.com",
 ];
 
 export async function GET(request: Request) {
