@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { sendEmail } from "@/lib/email";
+import { sendEmail, escHtml } from "@/lib/email";
 
 const RECIPIENTS: Record<string, string> = {
   leaguepour: "hello@leaguepour.com",
@@ -46,11 +46,11 @@ export async function POST(req: Request) {
     html: `
       <p><strong>Product:</strong> ${brandLabel}</p>
       <p><strong>Topic:</strong> ${topic}</p>
-      <p><strong>Name:</strong> ${name}</p>
-      <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
-      ${venue ? `<p><strong>Venue:</strong> ${venue}</p>` : ""}
+      <p><strong>Name:</strong> ${escHtml(name)}</p>
+      <p><strong>Email:</strong> <a href="mailto:${encodeURIComponent(email)}">${escHtml(email)}</a></p>
+      ${venue ? `<p><strong>Venue:</strong> ${escHtml(venue)}</p>` : ""}
       <p><strong>Message:</strong></p>
-      <p style="white-space:pre-wrap">${message}</p>
+      <p style="white-space:pre-wrap">${escHtml(message)}</p>
     `,
     // VS's Resend team key can only send from a domain that team owns - the LP default `from`
     // (RESEND_FROM / onboarding@resend.dev fallback) belongs to LP's team, not VS's.

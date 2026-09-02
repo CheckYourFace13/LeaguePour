@@ -190,16 +190,14 @@ export function VenueProfileForm({ initial }: { initial: VenueProfileInput }) {
 
       <div>
         <Label>Plan</Label>
-        <select
-          name="billingPlan"
-          defaultValue={initial.billingPlan}
-          className="mt-1.5 flex min-h-12 w-full rounded-[10px] border border-lp-border bg-lp-bg/80 px-4"
-        >
-          <option value={BillingPlan.STARTER}>Starter</option>
-          <option value={BillingPlan.GROWTH}>Growth</option>
-          <option value={BillingPlan.PRO}>Pro</option>
-          <option value={BillingPlan.ELITE}>Elite</option>
-        </select>
+        {/* Read-only - the plan reflects what's actually subscribed to in Stripe, not something
+            this form can change. Manage it from Settings. */}
+        <div className="mt-1.5 flex min-h-12 w-full items-center justify-between rounded-[10px] border border-lp-border bg-lp-bg/50 px-4 text-sm text-lp-text">
+          <span className="capitalize">{initial.billingPlan.toLowerCase()}</span>
+          <a href="/venue/settings" className="text-lp-accent hover:underline">
+            Manage plan
+          </a>
+        </div>
       </div>
 
       <input type="hidden" name="googlePlaceId" value={initial.googlePlaceId} />

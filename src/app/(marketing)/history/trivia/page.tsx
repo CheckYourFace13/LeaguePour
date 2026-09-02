@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -48,7 +49,7 @@ export default function TriviaHistoryPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
       <div className="mx-auto max-w-3xl px-4 py-16 md:px-6 md:py-20">
         <Link href="/history" className="text-sm text-lp-muted hover:text-lp-accent">

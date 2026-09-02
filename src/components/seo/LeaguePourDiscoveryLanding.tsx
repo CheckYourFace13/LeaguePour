@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import Link from "next/link";
 import { Check, Minus } from "lucide-react";
 import { MarketingImage } from "@/components/marketing/marketing-image";
@@ -127,7 +128,7 @@ export function LeaguePourDiscoveryLanding({
         <script
           key={i}
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(graph) }}
         />
       ))}
       <div className="mx-auto max-w-5xl px-4 pt-16 md:px-6 md:pt-20 pb-8">

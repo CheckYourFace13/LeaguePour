@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -84,7 +85,7 @@ const jsonLd = {
 export default function FaqPage() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
       <div className="mx-auto max-w-3xl px-4 py-16 md:px-6 md:py-20">
         <h1 className="font-display text-4xl font-bold">FAQ</h1>
         <p className="mt-4 text-lp-muted">Short answers about LeaguePour venue competition software.</p>

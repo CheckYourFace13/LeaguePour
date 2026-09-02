@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Check, Minus } from "lucide-react";
@@ -384,7 +385,7 @@ function NativePromoCard({
 export default function TournamentsFeaturePage() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
       <div className="mx-auto max-w-5xl px-4 py-16 md:px-6 md:py-20">
         {/* Hero */}
         <p className="lp-kicker text-lp-accent">Tournament & league software</p>

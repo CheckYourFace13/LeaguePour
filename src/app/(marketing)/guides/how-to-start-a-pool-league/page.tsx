@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { buildBreadcrumbJsonLd } from "@/lib/seo/json-ld-builders";
+import { buildBreadcrumbJsonLd, safeJsonLd } from "@/lib/seo/json-ld-builders";
 
 export const metadata: Metadata = {
   title: { absolute: "How to Start a Pool League at Your Bar | LeaguePour" },
@@ -82,7 +82,7 @@ const jsonLd = {
 export default function HowToStartAPoolLeagueGuide() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
       <div className="mx-auto max-w-3xl px-4 py-16 md:px-6 md:py-20">
         <p className="lp-kicker text-lp-accent">
           <Link href="/guides" className="hover:underline">Guides</Link> / Pool

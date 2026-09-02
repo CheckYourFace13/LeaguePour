@@ -20,6 +20,12 @@ export function BillingCard({ currentPlan, subscriptionStatus, subscriptionPerio
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const isActive = subscriptionIsActive(subscriptionStatus);
+  // A past_due/unpaid subscription still has a real Stripe customer and a card Stripe is
+  // actively retrying - the billing portal (which only requires a customer id, not an active
+  // subscription - see /api/venue/stripe/billing-portal) is where they fix it. Previously these
+  // venues fell through to the "choose a plan" signup grid below, which reads as "you have no
+  // subscription" even though they do and just need to update a card.
+  const needsPaymentFix = (subscriptionStatus === "past_due" || subscriptionStatus === "unpaid") && hasBillingCustomer;
 
   async function subscribe(plan: BillingPlan) {
     setLoading(plan);
@@ -80,6 +86,15 @@ export function BillingCard({ currentPlan, subscriptionStatus, subscriptionPerio
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button size="lg" variant="secondary" onClick={openPortal} disabled={loading === "portal"}>
             {loading === "portal" ? "Opening…" : "Manage subscription"}
+          </Button>
+        </div>
+      ) : needsPaymentFix ? (
+        <div className="space-y-3">
+          <p className="text-sm text-lp-muted">
+            Your last payment didn&apos;t go through. Update your payment method to keep your plan active.
+          </p>
+          <Button size="lg" variant="primary" onClick={openPortal} disabled={loading === "portal"}>
+            {loading === "portal" ? "Opening…" : "Update payment method"}
           </Button>
         </div>
       ) : (

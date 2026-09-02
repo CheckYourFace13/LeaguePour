@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -92,7 +93,7 @@ const jsonLd = {
 export default function BarTriviaNightGuide() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
       <div className="mx-auto max-w-3xl px-4 py-16 md:px-6 md:py-20">
         <p className="lp-kicker text-lp-accent">
           <Link href="/guides" className="hover:underline">Guides</Link> / Trivia

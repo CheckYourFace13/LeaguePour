@@ -112,6 +112,17 @@ export async function sendEmailBatch(
   return { ok: true, sent, failed: emails.length - sent };
 }
 
+/**
+ * Escapes user-supplied text before interpolating it into an HTML email. Every email template
+ * in this file that includes visitor/customer-supplied text (name, message, notes, etc.) must
+ * run it through this first - unescaped interpolation lets a form submitter inject arbitrary
+ * HTML into an email your team reads (found via security audit: src/app/api/contact/route.ts
+ * and the VS lead-notification emails below were missing this).
+ */
+export function escHtml(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
 // ------------------------------
 // Transactional email templates
 // ------------------------------
@@ -207,20 +218,20 @@ export function sendVsLeadNotificationEmail(opts: {
 
   const content = `
     <h2>New private event inquiry</h2>
-    <p>Someone submitted an inquiry for a private event at <strong>${opts.venueName}</strong>. Here are the details:</p>
+    <p>Someone submitted an inquiry for a private event at <strong>${escHtml(opts.venueName)}</strong>. Here are the details:</p>
     <div class="detail-box">
-      <p><strong>Name:</strong> ${opts.customerName}</p>
-      <p><strong>Email:</strong> <a href="mailto:${opts.customerEmail}" style="color:#b87333;">${opts.customerEmail}</a></p>
-      ${opts.customerPhone ? `<p><strong>Phone:</strong> ${opts.customerPhone}</p>` : ""}
-      <p><strong>Event type:</strong> ${opts.eventType.replace(/_/g, " ")}</p>
-      <p><strong>Preferred date:</strong> ${dateStr}</p>
+      <p><strong>Name:</strong> ${escHtml(opts.customerName)}</p>
+      <p><strong>Email:</strong> <a href="mailto:${encodeURIComponent(opts.customerEmail)}" style="color:#b87333;">${escHtml(opts.customerEmail)}</a></p>
+      ${opts.customerPhone ? `<p><strong>Phone:</strong> ${escHtml(opts.customerPhone)}</p>` : ""}
+      <p><strong>Event type:</strong> ${escHtml(opts.eventType.replace(/_/g, " "))}</p>
+      <p><strong>Preferred date:</strong> ${escHtml(dateStr)}</p>
       ${opts.guestCount ? `<p><strong>Est. guests:</strong> ${opts.guestCount}</p>` : ""}
-      ${opts.budgetRange ? `<p><strong>Budget:</strong> ${opts.budgetRange}</p>` : ""}
-      ${opts.notes ? `<p><strong>Notes:</strong> ${opts.notes}</p>` : ""}
+      ${opts.budgetRange ? `<p><strong>Budget:</strong> ${escHtml(opts.budgetRange)}</p>` : ""}
+      ${opts.notes ? `<p><strong>Notes:</strong> ${escHtml(opts.notes)}</p>` : ""}
     </div>
     <p>Reply quickly — leads that hear back within an hour are much more likely to book.</p>
     <a class="cta" href="${opts.dashboardUrl}">View lead in dashboard</a>
-    <p style="font-size:13px;color:#6b6560;">You can also reply directly to this email to reach ${opts.customerName}.</p>
+    <p style="font-size:13px;color:#6b6560;">You can also reply directly to this email to reach ${escHtml(opts.customerName)}.</p>
   `;
   return sendEmail({
     to: opts.to,
@@ -246,12 +257,12 @@ export function sendVsInquiryConfirmationEmail(opts: {
 
   const content = `
     <h2>We got your inquiry!</h2>
-    <p>Hi ${opts.customerName},</p>
-    <p>Thanks for reaching out to <strong>${opts.venueName}</strong> about your private event. The venue team will be in touch shortly to discuss the details.</p>
+    <p>Hi ${escHtml(opts.customerName)},</p>
+    <p>Thanks for reaching out to <strong>${escHtml(opts.venueName)}</strong> about your private event. The venue team will be in touch shortly to discuss the details.</p>
     <div class="detail-box">
-      <p><strong>Venue:</strong> ${opts.venueName}</p>
-      <p><strong>Event type:</strong> ${opts.eventType.replace(/_/g, " ")}</p>
-      ${dateStr ? `<p><strong>Preferred date:</strong> ${dateStr}</p>` : ""}
+      <p><strong>Venue:</strong> ${escHtml(opts.venueName)}</p>
+      <p><strong>Event type:</strong> ${escHtml(opts.eventType.replace(/_/g, " "))}</p>
+      ${dateStr ? `<p><strong>Preferred date:</strong> ${escHtml(dateStr)}</p>` : ""}
     </div>
     <p>While you wait, feel free to reply to this email with any additional questions.</p>
     <p>We look forward to helping you host a great event!</p>

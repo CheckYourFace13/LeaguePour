@@ -2,10 +2,8 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import { BillingPlan } from "@/generated/prisma/enums";
 import { getAppBaseUrl } from "@/lib/stripe/env";
 import { getStripe } from "@/lib/stripe/server";
-import { PLATFORM_FEE_BPS } from "@/lib/stripe/connect-fees";
 import {
   resolvePrimaryVenueAccess,
   venueStaffCanCreateAndPublish,
@@ -28,13 +26,6 @@ export async function saveVenueProfileAction(formData: FormData) {
   const session = await auth();
   const access = await resolvePrimaryVenueAccess(session);
   if (!access) redirect("/signup/venue");
-
-  const plan = String(formData.get("billingPlan") ?? BillingPlan.STARTER);
-  const billingPlan = Object.values(BillingPlan).includes(plan as BillingPlan)
-    ? (plan as BillingPlan)
-    : BillingPlan.STARTER;
-  // Platform fee is set by LeaguePour, not editable by venues.
-  const platformFeeBps = PLATFORM_FEE_BPS;
 
   const existing = await prisma.venue.findUnique({ where: { id: access.venueId } });
   if (!existing) redirect("/signup/venue");
@@ -61,8 +52,13 @@ export async function saveVenueProfileAction(formData: FormData) {
       googlePlaceId: lockedPlaceId,
       latitude: Number(String(formData.get("latitude") ?? "")) || null,
       longitude: Number(String(formData.get("longitude") ?? "")) || null,
-      billingPlan,
-      platformFeeBps,
+      // billingPlan/platformFeeBps are deliberately NOT written here - they were previously
+      // read from this same client-submitted formData, meaning any venue staff member (any
+      // role, not just owner) could set their own billingPlan directly, bypassing Stripe
+      // entirely and unlocking paid-tier competition limits for free. Real, confirmed exploit
+      // found via independent security audit. billingPlan/platformFeeBps must only ever be
+      // written by the Stripe webhook handler (src/app/api/webhooks/stripe/route.ts), which is
+      // the only place that reflects what was actually paid for.
     },
   });
 

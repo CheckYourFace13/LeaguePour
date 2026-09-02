@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import { getPublicSiteUrl } from "@/lib/site-url";
 
 /** Site-wide Organization + WebSite + SoftwareApplication for search engines. */
@@ -41,6 +42,6 @@ export function SiteJsonLd() {
   };
 
   return (
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }} />
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(graph) }} />
   );
 }

@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -71,7 +72,7 @@ const jsonLd = {
 export default function BeoVsContractGuide() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
       <div className="vs-section px-4 md:px-6">
         <div className="mx-auto max-w-3xl">
           <nav className="mb-8 text-sm text-vs-muted">

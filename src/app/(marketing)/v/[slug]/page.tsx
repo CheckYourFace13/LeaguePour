@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -93,7 +94,7 @@ export default async function PublicVenuePage({ params }: { params: Promise<{ sl
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 md:px-6 md:py-16">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJson) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(localBusinessJson) }} />
       <p className="lp-kicker">Venue</p>
       <h1 className="lp-page-title mt-3 text-4xl md:text-5xl">{venue.name}</h1>
       <p className="mt-4 text-lg leading-relaxed text-lp-muted md:text-xl">{venue.description}</p>

@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 const BASE = "https://venuesprocket.com";
 
 /** Site-wide Organization + WebSite for search engines. */
@@ -24,6 +25,6 @@ export function VsSiteJsonLd() {
   };
 
   return (
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }} />
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(graph) }} />
   );
 }

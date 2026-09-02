@@ -10,6 +10,20 @@ export function absoluteUrl(path: string, baseUrl?: string): string {
   return path.startsWith("http") ? path : `${base}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
+/**
+ * Use in place of a bare `JSON.stringify(x)` wherever the result goes into
+ * `dangerouslySetInnerHTML` for a `<script type="application/ld+json">` block.
+ * `JSON.stringify` does not escape "</", so a string field containing
+ * "</script><script>...` breaks out of the JSON-LD block and executes as real script on the
+ * page. Most JSON-LD on this site is static/hardcoded, but several pages embed venue- or
+ * competition-controlled fields (name, description) that a compromised/malicious venue account
+ * could set - found via security audit. < is the standard mitigation and is valid inside a
+ * JSON string, so this doesn't change what any JSON-LD consumer/crawler sees.
+ */
+export function safeJsonLd(value: unknown): string {
+  return JSON.stringify(value).replace(/</g, "\\u003c");
+}
+
 export function buildBreadcrumbJsonLd(
   items: { name: string; path: string }[],
 ): Record<string, unknown> {
