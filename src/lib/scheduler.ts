@@ -13,15 +13,24 @@
  *
  * The fix: don't rely on an external service reaching these routes over the public internet at
  * all. This server (Next.js `output: "standalone"`, run as a persistent `node server.js`
- * process - not per-request serverless) can trigger its own cron routes via a loopback fetch to
- * 127.0.0.1. A loopback request never leaves the machine, so it never reaches the CDN edge and
- * can never be challenged. Each route's own auth (CRON_SECRET) and business logic (throttles,
- * time windows, JobRun records) run completely unchanged - this only replaces how the request
- * arrives, not what happens once it does.
+ * process - not per-request serverless) triggers its own cron routes via a loopback fetch to
+ * 127.0.0.1 first - a loopback request never leaves the machine, so it never reaches the CDN
+ * edge and can never be challenged. Each route's own auth (CRON_SECRET) and business logic
+ * (throttles, time windows, JobRun records) run completely unchanged - this only replaces how
+ * the request arrives, not what happens once it does.
  *
- * The GitHub Actions workflows are left in place as manual-dispatch/observability tools (and as
- * a second attempt path, in case the CDN block is later lifted or is IP-range-specific rather
- * than permanent) - they are simply no longer the only way these jobs fire.
+ * Live evidence (scheduler-status, 2026-09-02) showed the scheduler DOES fire correctly on
+ * schedule - all 6 jobs' lastRun timestamps matched their configured times exactly - but every
+ * single loopback attempt threw "fetch failed": this hosting environment's actual internal
+ * networking doesn't work the way a bare 127.0.0.1:$PORT guess assumes (unknown exact reason
+ * without shell/console access - possibly a proxy layer even for intra-container traffic, or a
+ * different bound interface/port than assumed). So this falls back to the public HTTPS domain
+ * when loopback fails. That's a real, working path in practice: every request this session that
+ * hit the CDN's bot-challenge was GitHub-Actions-runner-originated; this server's own outbound
+ * call to its own public domain (from the origin's own IP, not an external datacenter range)
+ * has never once been challenged in any test this pass.
+ *
+ * The GitHub Actions workflows are left in place as manual-dispatch/observability tools.
  */
 
 type ScheduledJob = {
@@ -80,34 +89,54 @@ function isDue(job: ScheduledJob, now: Date): boolean {
   return minutesNow >= minutesTarget && minutesNow < minutesTarget + WINDOW_MINUTES;
 }
 
-async function runJob(base: string, secret: string, job: ScheduledJob): Promise<void> {
-  let outcome = "";
-  try {
-    const res = await fetch(`${base}${job.path}`, {
-      headers: { Authorization: `Bearer ${secret}` },
-      cache: "no-store",
-    });
-    const body = await res.json().catch(() => null);
-    outcome = `HTTP ${res.status} ${JSON.stringify(body)}`.slice(0, 500);
-    if (!res.ok || body?.ok === false) {
-      console.warn(`[scheduler] ${job.path} returned`, res.status, body);
-    } else {
-      console.log(`[scheduler] ${job.path} ok`, body?.detail ?? body);
-    }
-  } catch (err) {
-    outcome = `threw: ${err instanceof Error ? err.message : String(err)}`.slice(0, 500);
-    console.error(`[scheduler] ${job.path} failed`, err);
-  }
-  await persistStatus(`scheduler_last_run${job.path.replace(/\//g, "_")}`, `${new Date().toISOString()} ${outcome}`);
+async function attemptFetch(url: string, secret: string): Promise<{ ok: boolean; summary: string }> {
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${secret}` },
+    cache: "no-store",
+  });
+  const body = await res.json().catch(() => null);
+  const ok = res.ok && body?.ok !== false;
+  return { ok, summary: `HTTP ${res.status} ${JSON.stringify(body)}`.slice(0, 500) };
 }
 
-async function tick(base: string, secret: string): Promise<void> {
+async function runJob(loopbackBase: string, publicBase: string, secret: string, job: ScheduledJob): Promise<void> {
+  let outcome = "";
+  try {
+    const { ok, summary } = await attemptFetch(`${loopbackBase}${job.path}`, secret);
+    outcome = `loopback: ${summary}`;
+    if (ok) {
+      console.log(`[scheduler] ${job.path} ok via loopback`, summary);
+      await persistStatus(`scheduler_last_run${job.path.replace(/\//g, "_")}`, `${new Date().toISOString()} ${outcome}`);
+      return;
+    }
+    console.warn(`[scheduler] ${job.path} loopback returned non-ok, trying public domain`, summary);
+  } catch (err) {
+    outcome = `loopback threw: ${err instanceof Error ? err.message : String(err)}`.slice(0, 500);
+    console.warn(`[scheduler] ${job.path} loopback failed, trying public domain`, err);
+  }
+
+  try {
+    const { ok, summary } = await attemptFetch(`${publicBase}${job.path}`, secret);
+    outcome += ` | public: ${summary}`;
+    if (ok) {
+      console.log(`[scheduler] ${job.path} ok via public domain`, summary);
+    } else {
+      console.warn(`[scheduler] ${job.path} public domain also returned non-ok`, summary);
+    }
+  } catch (err) {
+    outcome += ` | public threw: ${err instanceof Error ? err.message : String(err)}`;
+    console.error(`[scheduler] ${job.path} failed on both loopback and public domain`, err);
+  }
+  await persistStatus(`scheduler_last_run${job.path.replace(/\//g, "_")}`, `${new Date().toISOString()} ${outcome}`.slice(0, 900));
+}
+
+async function tick(loopbackBase: string, publicBase: string, secret: string): Promise<void> {
   const now = new Date();
   await persistStatus("scheduler_last_tick", now.toISOString());
   for (const job of JOBS) {
     if (!isDue(job, now)) continue;
     firedToday.set(job.path, utcDateString(now));
-    await runJob(base, secret, job);
+    await runJob(loopbackBase, publicBase, secret, job);
   }
 }
 
@@ -122,10 +151,11 @@ export function startInProcessScheduler(): void {
     return;
   }
   const port = process.env.PORT?.trim() || "3000";
-  const base = `http://127.0.0.1:${port}`;
+  const loopbackBase = `http://127.0.0.1:${port}`;
+  const publicBase = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/$/, "") || "https://leaguepour.com";
 
   // Staggered first tick so this never competes with the server's own startup work.
-  setTimeout(() => void tick(base, secret), 30_000);
-  setInterval(() => void tick(base, secret), TICK_MS);
+  setTimeout(() => void tick(loopbackBase, publicBase, secret), 30_000);
+  setInterval(() => void tick(loopbackBase, publicBase, secret), TICK_MS);
   console.log(`[scheduler] in-process cron scheduler started (${JOBS.length} jobs, ${TICK_MS / 60000}min tick)`);
 }
