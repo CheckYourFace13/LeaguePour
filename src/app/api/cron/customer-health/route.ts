@@ -36,6 +36,10 @@ export async function GET(request: Request) {
         isDisabled: true,
         staff: { select: { id: true }, take: 1 },
         vsConfig: { select: { vsSubscriptionId: true, vsSubscriptionStatus: true } },
+        stripeAccountId: true,
+        stripeChargesEnabled: true,
+        stripePayoutsEnabled: true,
+        stripeDetailsSubmitted: true,
       },
     });
 
@@ -87,6 +91,10 @@ export async function GET(request: Request) {
           hasVenueOwnerStaffRow: v.staff.length > 0,
           isDisabled: v.isDisabled,
           vsCollision: Boolean(v.vsConfig?.vsSubscriptionId) && v.vsConfig?.vsSubscriptionStatus === "active",
+          hasStripeConnectAccountId: v.stripeAccountId !== null,
+          stripeConnectChargesEnabled: v.stripeChargesEnabled,
+          stripeConnectPayoutsEnabled: v.stripePayoutsEnabled,
+          stripeConnectDetailsSubmitted: v.stripeDetailsSubmitted,
         })),
       },
       activeVsSubscriptionCount: activeVs.length,
