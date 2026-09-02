@@ -1,0 +1,17 @@
+name: Customer health check (manual)
+
+# Manual-only diagnostic: reports anonymized health signals for real paid subscriptions
+# (status/plan/interval sanity, cross-brand collision, duplicate subscription IDs) via
+# src/app/api/cron/customer-health. Never exposes PII. Read-only.
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check customer health
+        run: |
+          resp=$(curl -sS --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/customer-health")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1
