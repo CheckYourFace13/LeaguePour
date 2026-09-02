@@ -17,9 +17,10 @@ import {
 } from "./actions";
 import {
   getLeaguePourMetrics,
+  getSystemHealthMetrics,
   getVenueSprocketMetrics,
 } from "@/lib/admin-metrics";
-import { BusinessHealthDashboard } from "./business-health-dashboard";
+import { BusinessHealthDashboard, SystemHealthPanel } from "./business-health-dashboard";
 
 export const dynamic = "force-dynamic";
 
@@ -55,9 +56,10 @@ export default async function InternalAdminPage({ searchParams }: AdminPageProps
       }
     : undefined;
 
-  const [lpMetrics, vsMetrics] = await Promise.all([
+  const [lpMetrics, vsMetrics, systemHealth] = await Promise.all([
     getLeaguePourMetrics(),
     getVenueSprocketMetrics(),
+    getSystemHealthMetrics(),
   ]);
 
   const [venues, users, competitions, registrations, payments, promoCodes] = await Promise.all([
@@ -151,6 +153,7 @@ export default async function InternalAdminPage({ searchParams }: AdminPageProps
         </form>
       </Card>
 
+      <SystemHealthPanel health={systemHealth} />
       <BusinessHealthDashboard lp={lpMetrics} vs={vsMetrics} />
 
       <Card className="space-y-4">

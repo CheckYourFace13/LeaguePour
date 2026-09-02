@@ -15,6 +15,7 @@ import { prisma } from "@/lib/db";
 import { BillingPlan } from "@/generated/prisma/enums";
 import { PLAN_DEFINITIONS } from "@/lib/pricing";
 import { getLatestJobRuns } from "@/lib/job-runs";
+import { getSetting } from "@/lib/app-settings";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -205,12 +206,63 @@ export async function getVenueSprocketMetrics() {
   };
 }
 
+/**
+ * Owner-facing system health, built entirely from data this app already records - no new
+ * tracking added. JobRun rows cover the jobs that call runJob() (see src/lib/job-runs.ts);
+ * scheduler_* AppSetting keys are written by the in-process scheduler on every tick
+ * (src/lib/scheduler.ts); the rest are direct counts against production state. Exists so a
+ * customer-blocking issue (a subscription stuck non-active, a Connect account restricted, the
+ * scheduler having gone quiet) is visible here without waiting for a support email or a GitHub
+ * Actions failure notification.
+ */
 export async function getSystemHealthMetrics() {
-  const jobs = await getLatestJobRuns([
-    "lp-outreach-send",
-    "vs-outreach-send",
-    "lp-lifecycle-nudges",
-    "vs-lifecycle-nudges",
-  ]);
-  return { jobs };
+  const [jobs, schedulerLastTick, schedulerStartedAt, subscriptionIssues, connectRestricted, dbHeartbeat] =
+    await Promise.all([
+      getLatestJobRuns([
+        "lp-outreach-send",
+        "vs-outreach-send",
+        "vs-eligibility-backfill",
+        "lp-lifecycle-nudges",
+        "vs-lifecycle-nudges",
+        "indexnow-submit",
+        "resend-webhook-suppress",
+      ]),
+      getSetting("scheduler_last_tick", ""),
+      getSetting("scheduler_started_at", ""),
+      // Active-looking subscriptions whose status Stripe last reported as something other than
+      // "active" - past_due/unpaid/incomplete are all customer-blocking states worth a look,
+      // not necessarily a crisis, but the kind of thing that should be visible proactively.
+      prisma.venue.count({
+        where: { subscriptionId: { not: null }, subscriptionStatus: { notIn: ["active", "canceled"] } },
+      }),
+      // hasAccountId + detailsSubmitted but charges still off for a while is the closest signal
+      // available to "Stripe flagged this account" without persisting Stripe's own
+      // requirements/disabled_reason fields (which the live-fetch on the profile page already
+      // surfaces accurately per-venue - this is just the platform-wide count for the dashboard).
+      prisma.venue.count({
+        where: { stripeAccountId: { not: null }, stripeDetailsSubmitted: true, stripeChargesEnabled: false },
+      }),
+      // Key format matches scheduler.ts's own `scheduler_last_run${job.path.replace(/\//g,"_")}`.
+      getSetting("scheduler_last_run_api_cron_supabase-heartbeat", ""),
+    ]);
+
+  const schedulerStale =
+    !schedulerLastTick || Date.now() - new Date(schedulerLastTick).getTime() > 20 * 60 * 1000;
+  // dbHeartbeat's stored value is "<ISO timestamp> <outcome text>" (see scheduler.ts's
+  // persistStatus calls) - the leading ISO segment is what's compared here.
+  const dbHeartbeatStale =
+    !dbHeartbeat || Date.now() - new Date(dbHeartbeat.split(" ")[0]).getTime() > 36 * 60 * 60 * 1000;
+
+  return {
+    jobs,
+    scheduler: {
+      lastTick: schedulerLastTick || null,
+      startedAt: schedulerStartedAt || null,
+      stale: schedulerStale,
+    },
+    subscriptionIssues,
+    connectRestricted,
+    dbHeartbeat: dbHeartbeat || null,
+    dbHeartbeatStale,
+  };
 }
