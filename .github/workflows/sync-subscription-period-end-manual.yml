@@ -1,0 +1,28 @@
+name: Sync subscription period end (manual)
+
+# One-purpose repair tool for the subscriptionPeriodEnd-nulling webhook bug - via
+# src/app/api/cron/sync-subscription-period-end. Dry-run by default; pass confirm=true to write.
+# Writes ONLY Venue.subscriptionPeriodEnd, read live from Stripe. No other field touched.
+on:
+  workflow_dispatch:
+    inputs:
+      venue:
+        description: "Exact venue name"
+        required: true
+        type: string
+      confirm:
+        description: "Actually write (default: dry run only)"
+        type: boolean
+        default: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync subscription period end
+        run: |
+          CONFIRM="0"
+          if [ "${{ inputs.confirm }}" = "true" ]; then CONFIRM="1"; fi
+          resp=$(curl -sS -G --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" --data-urlencode "venue=${{ inputs.venue }}" --data-urlencode "confirm=$CONFIRM" "https://leaguepour.com/api/cron/sync-subscription-period-end")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1
