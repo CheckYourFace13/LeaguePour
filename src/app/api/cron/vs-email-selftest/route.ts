@@ -32,8 +32,11 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 
+  // Resend rejects arbitrary example.com-style addresses in `to` with a 422 validation error
+  // (confirmed live) - delivered@resend.dev is Resend's own official sandbox address for
+  // exactly this purpose (simulates a full successful send/delivery without a real inbox).
   const result = await sendVsLeadNotificationEmail({
-    to: "claude-email-selftest-delete-me@example.com",
+    to: "delivered@resend.dev",
     venueName: "Selftest Venue (diagnostic, not a real venue)",
     customerName: "Selftest Customer",
     customerEmail: "claude-email-selftest-customer@example.com",
