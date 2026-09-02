@@ -80,13 +80,19 @@ export async function POST(req: Request) {
           slug,
           venueType: data.venueType,
           description: `${data.venueName} on LeaguePour`,
-          city: data.city ?? null,
-          formattedAddress: data.formattedAddress ?? null,
+          city: data.city || null,
+          formattedAddress: data.formattedAddress || null,
           latitude: data.latitude ?? null,
           longitude: data.longitude ?? null,
-          googlePlaceId: data.googlePlaceId ?? null,
+          // Real production bug, caught live: googlePlaceId is @unique in schema.prisma. `??`
+          // only coalesces null/undefined, not "" - a venue signup that skips the "Find your
+          // venue" search (the form explicitly invites this: "Skip only if you will add it
+          // later") sends googlePlaceId: "", and ANY second such signup then hits a unique
+          // constraint violation and 500s. `||` normalizes "" to null so multiple skips don't
+          // collide (Postgres does not treat NULL as equal to NULL in a unique constraint).
+          googlePlaceId: data.googlePlaceId || null,
           websiteUrl: data.websiteUrl || null,
-          phone: data.phone ?? null,
+          phone: data.phone || null,
           collectSms: false,
           teamEventsDefault: true,
           importAudienceLater: false,
