@@ -45,6 +45,12 @@ export default async function VenueProfilePage({
       {notice === "connect-return" && venue.stripeChargesEnabled ? (
         <TrackView event="stripe_connect_completed" params={{ product: "lp" }} />
       ) : null}
+      {notice === "connect-error" ? (
+        <div className="rounded-[10px] border border-red-500/35 bg-red-500/10 px-4 py-3 text-sm font-medium text-lp-text">
+          Couldn&apos;t start Stripe setup right now. Nothing was charged or changed - try again in a
+          minute, or contact support if this keeps happening.
+        </div>
+      ) : null}
       <Card className="space-y-5">
         <div>
           <p className="lp-kicker text-lp-accent">QR code</p>

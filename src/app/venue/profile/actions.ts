@@ -78,28 +78,39 @@ export async function createStripeConnectOnboardingAction() {
 
   const stripe = getStripe();
   let accountId = venue.stripeAccountId;
+  let link: { url: string };
 
-  if (!accountId) {
-    const account = await stripe.accounts.create({
-      type: "express",
-      business_type: "company",
-      metadata: { venueId: venue.id },
-      company: { name: venue.name },
+  try {
+    if (!accountId) {
+      const account = await stripe.accounts.create({
+        type: "express",
+        business_type: "company",
+        metadata: { venueId: venue.id },
+        company: { name: venue.name },
+      });
+      accountId = account.id;
+      await prisma.venue.update({
+        where: { id: venue.id },
+        data: { stripeAccountId: account.id },
+      });
+    }
+
+    const base = getAppBaseUrl();
+    link = await stripe.accountLinks.create({
+      account: accountId,
+      refresh_url: `${base}/venue/profile?notice=connect-refresh`,
+      return_url: `${base}/venue/profile?notice=connect-return`,
+      type: "account_onboarding",
     });
-    accountId = account.id;
-    await prisma.venue.update({
-      where: { id: venue.id },
-      data: { stripeAccountId: account.id },
-    });
+  } catch (err) {
+    // Was a raw, unhandled 500 (opaque Next.js digest, no detail) until this pass caught it live
+    // against a fresh test venue - root cause is platform-level (Stripe Connect isn't activated
+    // on this Stripe account: "You can only create new accounts if you've signed up for
+    // Connect..."), not something this action can fix, but a venue owner should never see a bare
+    // crash for it - see the connect-error notice on the profile page for the friendly message.
+    console.error("[stripe-connect] onboarding link creation failed", err);
+    redirect("/venue/profile?notice=connect-error");
   }
-
-  const base = getAppBaseUrl();
-  const link = await stripe.accountLinks.create({
-    account: accountId,
-    refresh_url: `${base}/venue/profile?notice=connect-refresh`,
-    return_url: `${base}/venue/profile?notice=connect-return`,
-    type: "account_onboarding",
-  });
 
   redirect(link.url);
 }
