@@ -42,6 +42,27 @@ export default async function VenueProfilePage({
     try {
       const acct = await getStripe().accounts.retrieve(venue.stripeAccountId);
       connectStatus = deriveConnectStatus(acct);
+      // Opportunistically keep the cached booleans (used by the dashboard banner and the
+      // paid-registration gate) in sync with what we just read from Stripe directly - this way
+      // an owner returning from onboarding doesn't need the Connect webhook to actually reach
+      // us, or a manual "Sync status" click, for the rest of the app to reflect reality.
+      const chargesEnabled = Boolean(acct.charges_enabled);
+      const payoutsEnabled = Boolean(acct.payouts_enabled);
+      const detailsSubmitted = Boolean(acct.details_submitted);
+      if (
+        chargesEnabled !== venue.stripeChargesEnabled ||
+        payoutsEnabled !== venue.stripePayoutsEnabled ||
+        detailsSubmitted !== venue.stripeDetailsSubmitted
+      ) {
+        await prisma.venue.update({
+          where: { id: venue.id },
+          data: {
+            stripeChargesEnabled: chargesEnabled,
+            stripePayoutsEnabled: payoutsEnabled,
+            stripeDetailsSubmitted: detailsSubmitted,
+          },
+        });
+      }
     } catch (err) {
       console.error("[venue-profile] failed to fetch live Connect status", err);
       // Fall back to the cached booleans rather than showing nothing.
