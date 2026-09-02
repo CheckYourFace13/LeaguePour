@@ -1,0 +1,17 @@
+name: Apply outreach indexes (manual)
+
+# One-time, additive-only: applies the 3 pending OutreachContact indexes directly via the app's
+# live DB connection - via src/app/api/cron/apply-outreach-indexes. Idempotent (CREATE INDEX IF
+# NOT EXISTS), safe to run more than once.
+on:
+  workflow_dispatch:
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply outreach indexes
+        run: |
+          resp=$(curl -sS --max-time 60 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/apply-outreach-indexes")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1
