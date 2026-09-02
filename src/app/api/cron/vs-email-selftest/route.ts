@@ -45,5 +45,6 @@ export async function GET(request: Request) {
     ok: result.ok,
     note: "result.ok=true means Resend's API accepted the send under RESEND_VS_API_KEY - it does not confirm inbox delivery, which cannot be observed without inbox access.",
     sendAccepted: result.ok,
+    error: result.error,
   });
 }

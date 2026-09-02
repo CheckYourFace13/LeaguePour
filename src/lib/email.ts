@@ -32,17 +32,13 @@ type SendEmailOpts = {
 };
 
 /** Send a single email via Resend. Soft-fails (logs) when the brand's API key is not set. */
-export async function sendEmail(opts: SendEmailOpts): Promise<{ ok: boolean; id?: string }> {
+export async function sendEmail(opts: SendEmailOpts): Promise<{ ok: boolean; id?: string; error?: string }> {
   const brand = opts.brand ?? "lp";
   const key = getResendKey(brand);
   if (!key) {
-    console.warn(
-      `[email] ${brand === "vs" ? "RESEND_VS_API_KEY" : "RESEND_API_KEY"} not set - skipping email to`,
-      opts.to,
-      "Subject:",
-      opts.subject,
-    );
-    return { ok: false };
+    const error = `${brand === "vs" ? "RESEND_VS_API_KEY" : "RESEND_API_KEY"} not set`;
+    console.warn(`[email] ${error} - skipping email to`, opts.to, "Subject:", opts.subject);
+    return { ok: false, error };
   }
 
   const res = await fetch(`${RESEND_API}/emails`, {
@@ -60,7 +56,7 @@ export async function sendEmail(opts: SendEmailOpts): Promise<{ ok: boolean; id?
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     console.error("[email] Resend error", res.status, text);
-    return { ok: false };
+    return { ok: false, error: `Resend HTTP ${res.status}: ${text}`.slice(0, 500) };
   }
 
   const data = await res.json().catch(() => ({})) as { id?: string };
@@ -211,7 +207,7 @@ export function sendVsLeadNotificationEmail(opts: {
   budgetRange?: string | null;
   notes?: string | null;
   dashboardUrl: string;
-}): Promise<{ ok: boolean }> {
+}): Promise<{ ok: boolean; error?: string }> {
   const dateStr = opts.preferredDate
     ? opts.preferredDate.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })
     : "Not specified";
