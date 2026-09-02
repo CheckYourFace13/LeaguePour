@@ -1,0 +1,22 @@
+name: Venue account check (manual)
+
+# Manual-only, read-only diagnostic for a specific support case - looks up one venue by exact
+# name and reports subscription/ownership/Stripe Connect state (no PII), via
+# src/app/api/cron/venue-account-check. Never writes anything.
+on:
+  workflow_dispatch:
+    inputs:
+      venue:
+        description: "Exact venue name"
+        required: true
+        type: string
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check venue account state
+        run: |
+          resp=$(curl -sS -G --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" --data-urlencode "venue=${{ inputs.venue }}" "https://leaguepour.com/api/cron/venue-account-check")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1
