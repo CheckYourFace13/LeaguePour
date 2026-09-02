@@ -138,6 +138,9 @@ model OutreachContact {
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 
+  @@index([status, email, emailCheckedAt])
+  @@index([vsEligible, vsStatus])
+  @@index([website, emailCheckedAt, vsEligibilityNote])
   @@schema("leaguepour_lp")
 }
 
