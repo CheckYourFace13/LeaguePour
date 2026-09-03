@@ -68,10 +68,16 @@ export async function startStripeCheckoutForRegistrationFormAction(formData: For
 
   const stripe = getStripe();
   const base = getAppBaseUrl();
+  // Direct charge (see connect-controller.ts) - the Checkout Session, PaymentIntent, and Charge
+  // all belong to the connected venue's account, not the platform, so every Stripe API call
+  // touching this session must be authenticated as that account via the stripeAccount option.
+  const destinationId = reg.competition.venue.stripeAccountId!;
 
   if (reg.payment.providerCheckoutSessionId) {
     try {
-      const existing = await stripe.checkout.sessions.retrieve(reg.payment.providerCheckoutSessionId);
+      const existing = await stripe.checkout.sessions.retrieve(reg.payment.providerCheckoutSessionId, {
+        stripeAccount: destinationId,
+      });
       if (existing.status === "open" && existing.url) {
         redirect(existing.url);
       }
@@ -82,60 +88,63 @@ export async function startStripeCheckoutForRegistrationFormAction(formData: For
 
   const successUrl = `${base}/player/pay/${registrationId}?session_id={CHECKOUT_SESSION_ID}`;
   const cancelUrl = `${base}/player/pay/${registrationId}?stripe_cancel=1`;
-
-  const destinationId = reg.competition.venue.stripeAccountId!;
   // application_fee = 5% of entry (venue side) + $1.50 service fee (player side)
   const applicationFeeAmount = connectApplicationFeeCents(entryFeeCents, true);
   // Total charged to the player: entry fee + $1.50 service fee
   const totalCents = playerTotalCents(entryFeeCents);
 
-  const checkoutSession = await stripe.checkout.sessions.create({
-    mode: "payment",
-    line_items: [
-      {
-        price_data: {
-          currency: reg.payment.currency.toLowerCase(),
-          unit_amount: entryFeeCents,
-          product_data: {
-            name: `${reg.competition.venue.name}: ${reg.competition.title}`,
-            description: "Competition entry fee",
+  const checkoutSession = await stripe.checkout.sessions.create(
+    {
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: reg.payment.currency.toLowerCase(),
+            unit_amount: entryFeeCents,
+            product_data: {
+              name: `${reg.competition.venue.name}: ${reg.competition.title}`,
+              description: "Competition entry fee",
+            },
           },
+          quantity: 1,
         },
-        quantity: 1,
-      },
-      {
-        price_data: {
-          currency: reg.payment.currency.toLowerCase(),
-          unit_amount: 150,
-          product_data: {
-            name: "LeaguePour service fee",
-            description: "Platform booking fee",
+        {
+          price_data: {
+            currency: reg.payment.currency.toLowerCase(),
+            unit_amount: 150,
+            product_data: {
+              name: "LeaguePour service fee",
+              description: "Platform booking fee",
+            },
           },
+          quantity: 1,
         },
-        quantity: 1,
-      },
-    ],
-    metadata: {
-      registrationId: reg.id,
-      competitionId: reg.competitionId,
-      venueId: reg.competition.venue.id,
-      playerUserId: reg.userId,
-    },
-    payment_intent_data: {
+      ],
       metadata: {
         registrationId: reg.id,
         competitionId: reg.competitionId,
         venueId: reg.competition.venue.id,
         playerUserId: reg.userId,
       },
-      transfer_data: { destination: destinationId },
-      on_behalf_of: destinationId,
-      application_fee_amount: applicationFeeAmount,
+      // Direct charge: no transfer_data/on_behalf_of - the Stripe-Account option below already
+      // creates this Checkout Session (and its PaymentIntent/Charge) directly on the venue's
+      // own account. The venue receives the charge minus its own Stripe processing fee minus
+      // this application fee; the application fee alone transfers to the platform.
+      payment_intent_data: {
+        metadata: {
+          registrationId: reg.id,
+          competitionId: reg.competitionId,
+          venueId: reg.competition.venue.id,
+          playerUserId: reg.userId,
+        },
+        application_fee_amount: applicationFeeAmount,
+      },
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      client_reference_id: reg.id,
     },
-    success_url: successUrl,
-    cancel_url: cancelUrl,
-    client_reference_id: reg.id,
-  });
+    { stripeAccount: destinationId },
+  );
 
   if (!checkoutSession.url) {
     redirect(`/player/pay/${registrationId}?notice=stripe_session_failed`);

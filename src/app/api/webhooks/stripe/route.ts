@@ -196,10 +196,16 @@ export async function POST(request: Request) {
             await handleSubscriptionUpsert(sub);
           }
         } else if (session.metadata?.type === "vs_deposit") {
-          // VenueSprocket private event deposit
+          // VenueSprocket private event deposit - no Stripe API call needed here, everything
+          // comes straight from the event's own already-rendered session object regardless of
+          // Connect scope, so no stripeAccount param needed.
           await fulfillVsDeposit(session);
         } else if (session.id) {
-          const res = await fulfillStripeCheckoutSessionId(session.id, event.id);
+          // LP entry-fee sessions are direct charges (connect-controller.ts) - they live on the
+          // connected venue's account, so this event arrives Connect-scoped with event.account
+          // set to that account. Never fall back to metadata.venueId here - only Stripe's own
+          // signed event.account is trustworthy for which account to authenticate as.
+          const res = await fulfillStripeCheckoutSessionId(session.id, event.id, event.account);
           if (res.ok && session.metadata?.registrationId) {
             await revalidateRegistrationPaymentPaths(session.metadata.registrationId);
           }
@@ -209,7 +215,7 @@ export async function POST(request: Request) {
       case "checkout.session.async_payment_succeeded": {
         const session = event.data.object as Stripe.Checkout.Session;
         if (session.id && session.mode !== "subscription") {
-          const res = await fulfillStripeCheckoutSessionId(session.id, event.id);
+          const res = await fulfillStripeCheckoutSessionId(session.id, event.id, event.account);
           if (res.ok && session.metadata?.registrationId) {
             await revalidateRegistrationPaymentPaths(session.metadata.registrationId);
           }
@@ -219,7 +225,7 @@ export async function POST(request: Request) {
       case "checkout.session.async_payment_failed": {
         const session = event.data.object as Stripe.Checkout.Session;
         if (session.mode !== "subscription") {
-          if (session.id) await markCheckoutSessionAsyncFailed(session.id, event.id);
+          if (session.id) await markCheckoutSessionAsyncFailed(session.id, event.id, event.account);
           if (session.metadata?.registrationId) {
             await revalidateRegistrationPaymentPaths(session.metadata.registrationId);
           }

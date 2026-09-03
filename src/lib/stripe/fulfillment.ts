@@ -36,14 +36,22 @@ function connectSnapshotFromPaymentIntent(pi: Stripe.PaymentIntent | null): {
 /**
  * Fulfill a paid Checkout Session (writes Payment + Registration).
  * Stripe best practice: call **only** from verified webhooks - idempotent per session / event.
+ *
+ * stripeAccount: LP entry-fee Checkout Sessions are direct charges (see connect-controller.ts) -
+ * the session/PaymentIntent/Charge all live on the connected venue's account, not the
+ * platform's, so retrieving it requires authenticating as that account. Pass the webhook
+ * event's own `account` field (present on every Connect-scoped event) straight through here -
+ * never re-derive it from anywhere else.
  */
 export async function fulfillStripeCheckoutSessionId(
   sessionId: string,
   eventId?: string,
+  stripeAccount?: string | null,
 ): Promise<{ ok: boolean; reason?: string }> {
   const stripe = getStripe();
   const session = await stripe.checkout.sessions.retrieve(sessionId, {
     expand: ["payment_intent", "customer"],
+    ...(stripeAccount ? { stripeAccount } : {}),
   });
 
   if (session.mode !== "payment") {
@@ -67,7 +75,11 @@ export async function fulfillStripeCheckoutSessionId(
     piExpanded && typeof piExpanded === "object" && "id" in piExpanded
       ? (piExpanded as Stripe.PaymentIntent)
       : null;
-  const { applicationFeeCents: piAppFee, destinationId: piDest } = connectSnapshotFromPaymentIntent(piObj);
+  const { applicationFeeCents: piAppFee, destinationId: transferDest } = connectSnapshotFromPaymentIntent(piObj);
+  // Direct charges (see connect-controller.ts) have no transfer_data - the connected account is
+  // simply whichever account this PaymentIntent already lives on, i.e. the same one this
+  // function was told to authenticate as.
+  const piDest = transferDest ?? stripeAccount ?? null;
 
   const out = await prisma.$transaction(async (tx) => {
     const reg = await tx.competitionRegistration.findFirst({
@@ -169,9 +181,13 @@ export async function fulfillStripeCheckoutSessionId(
   return { ok: out.ok, reason: "reason" in out ? (out as { reason?: string }).reason : undefined };
 }
 
-export async function markCheckoutSessionAsyncFailed(sessionId: string, eventId?: string): Promise<void> {
+export async function markCheckoutSessionAsyncFailed(
+  sessionId: string,
+  eventId?: string,
+  stripeAccount?: string | null,
+): Promise<void> {
   const stripe = getStripe();
-  const session = await stripe.checkout.sessions.retrieve(sessionId);
+  const session = await stripe.checkout.sessions.retrieve(sessionId, stripeAccount ? { stripeAccount } : undefined);
   const registrationId = session.metadata?.registrationId;
   if (!registrationId) return;
 

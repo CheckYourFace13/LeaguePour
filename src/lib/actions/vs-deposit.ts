@@ -61,7 +61,8 @@ export async function startDepositCheckout(formData: FormData) {
     try {
       const stripe = getStripe();
       const existing = await stripe.checkout.sessions.retrieve(
-        pendingPayment.stripeCheckoutSessionId
+        pendingPayment.stripeCheckoutSessionId,
+        { stripeAccount: venue.stripeAccountId },
       );
       if (existing.status === "open" && existing.url) redirect(existing.url);
     } catch {
@@ -83,39 +84,45 @@ export async function startDepositCheckout(formData: FormData) {
     },
   });
 
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    line_items: [
-      {
-        price_data: {
-          currency: "usd",
-          unit_amount: depositAmountCents,
-          product_data: {
-            name: `Event deposit — ${contract.privateEvent.eventName}`,
-            description: `Non-refundable deposit for your private event at ${venue.name}`,
+  // Direct charge (see connect-controller.ts) - no transfer_data/on_behalf_of. No
+  // application_fee_amount either: VenueSprocket deliberately takes $0 platform fee on
+  // deposits today, and this pass isn't the place to add one - the venue now pays its own
+  // Stripe processing fee under Managed Risk, so the platform no longer loses money on these
+  // either way.
+  const session = await stripe.checkout.sessions.create(
+    {
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            unit_amount: depositAmountCents,
+            product_data: {
+              name: `Event deposit — ${contract.privateEvent.eventName}`,
+              description: `Non-refundable deposit for your private event at ${venue.name}`,
+            },
           },
+          quantity: 1,
         },
-        quantity: 1,
+      ],
+      payment_intent_data: {
+        metadata: {
+          vsPaymentId: payment.id,
+          contractToken: token,
+          type: "vs_deposit",
+        },
       },
-    ],
-    payment_intent_data: {
-      transfer_data: { destination: venue.stripeAccountId },
-      on_behalf_of: venue.stripeAccountId,
       metadata: {
         vsPaymentId: payment.id,
         contractToken: token,
         type: "vs_deposit",
       },
+      success_url: `${base}/deposit/success?session_id={CHECKOUT_SESSION_ID}&token=${token}`,
+      cancel_url: `${base}/deposit/pay?token=${token}&stripe_cancel=1`,
+      client_reference_id: payment.id,
     },
-    metadata: {
-      vsPaymentId: payment.id,
-      contractToken: token,
-      type: "vs_deposit",
-    },
-    success_url: `${base}/deposit/success?session_id={CHECKOUT_SESSION_ID}&token=${token}`,
-    cancel_url: `${base}/deposit/pay?token=${token}&stripe_cancel=1`,
-    client_reference_id: payment.id,
-  });
+    { stripeAccount: venue.stripeAccountId },
+  );
 
   if (!session.url) redirect(`/deposit/pay?token=${token}&notice=session_failed`);
 
