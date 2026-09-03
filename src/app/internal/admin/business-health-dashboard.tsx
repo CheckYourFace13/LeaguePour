@@ -16,6 +16,13 @@ function Stat({ label, value, sub }: { label: string; value: string | number; su
   );
 }
 
+// Some job details legitimately mention a contact's email (e.g. a bounce/complaint
+// suppression) - this is an internal-only, owner-authenticated page, but the redaction happens
+// anyway so this panel never becomes a place that displays a real person's address.
+function redactEmails(text: string): string {
+  return text.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, "[redacted]");
+}
+
 function jobLine(
   job: { status: string; startedAt: Date; finishedAt: Date | null; detail: string | null } | null,
 ) {
@@ -29,7 +36,8 @@ function jobLine(
         : job.status === "running"
           ? "… running"
           : "✗ failure";
-  return `${badge} · ${when}${job.detail ? ` · ${job.detail}` : ""}`;
+  const detail = job.detail ? redactEmails(job.detail) : null;
+  return `${badge} · ${when}${detail ? ` · ${detail}` : ""}`;
 }
 
 function jobColor(job: { status: string } | null) {
