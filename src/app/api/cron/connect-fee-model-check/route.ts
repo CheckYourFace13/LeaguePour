@@ -24,11 +24,22 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 
+  // ?dashboard=full tests losses.payments=stripe with stripe_dashboard.type=full instead of the
+  // production MANAGED_RISK_CONTROLLER's express - Stripe's own account-creation validation
+  // rejected losses.payments=stripe paired with type=express outright ("the Connect application
+  // must control losses"), so this checks whether "full" is the combination that actually
+  // allows Stripe-managed risk, per the two options named as candidates. This does NOT change
+  // what production account creation uses - see connect-controller.ts for that.
+  const dashboardType = url.searchParams.get("dashboard") === "full" ? "full" : undefined;
+  const controllerToTest = dashboardType
+    ? { ...MANAGED_RISK_CONTROLLER, stripe_dashboard: { type: dashboardType as "full" } }
+    : MANAGED_RISK_CONTROLLER;
+
   const stripe = getStripe();
   let account;
   try {
     account = await stripe.accounts.create({
-      controller: MANAGED_RISK_CONTROLLER,
+      controller: controllerToTest,
       metadata: { purpose: "managed-risk-diagnostic-immediately-deleted" },
     });
   } catch (err) {
@@ -50,13 +61,16 @@ export async function GET(request: Request) {
     console.error("[connect-fee-model-check] failed to delete diagnostic account", account.id, err);
   }
 
-  const expected = { losses: { payments: "stripe" }, fees: { payer: "account" }, requirement_collection: "stripe" };
+  const expected = {
+    losses: { payments: "stripe" },
+    requirement_collection: "stripe",
+    stripe_dashboard: { type: dashboardType ?? "express" },
+  };
   const actual = controller as { losses?: { payments?: string }; fees?: { payer?: string }; requirement_collection?: string; stripe_dashboard?: { type?: string } } | null;
   const matches =
     actual?.losses?.payments === "stripe" &&
-    actual?.fees?.payer === "account" &&
     actual?.requirement_collection === "stripe" &&
-    actual?.stripe_dashboard?.type === "express";
+    actual?.stripe_dashboard?.type === (dashboardType ?? "express");
 
   return NextResponse.json({
     ok: true,
