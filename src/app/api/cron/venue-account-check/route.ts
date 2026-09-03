@@ -78,6 +78,20 @@ export async function GET(request: Request) {
       }
     }
 
+    // Read-only: the live Connect account's actual controller object - the only way to verify
+    // Managed Risk (connect-controller.ts) actually took effect on this specific account,
+    // created through the real production path (createStripeConnectOnboardingAction), not a
+    // separate diagnostic reimplementation.
+    let liveConnectController: unknown = null;
+    if (venue.stripeAccountId) {
+      try {
+        const acct = await getStripe().accounts.retrieve(venue.stripeAccountId);
+        liveConnectController = (acct as unknown as { controller?: unknown }).controller ?? null;
+      } catch (err) {
+        liveConnectController = { error: err instanceof Error ? err.message : String(err) };
+      }
+    }
+
     return NextResponse.json({
       ok: true,
       found: true,
@@ -106,6 +120,7 @@ export async function GET(request: Request) {
         // onboarding. If hasAccountId is false, no Connect account was ever created for this
         // venue at all (consistent with account creation failing before the DB write that
         // records the id - see createStripeConnectOnboardingAction).
+        liveController: liveConnectController,
       },
     });
   } catch (err) {
