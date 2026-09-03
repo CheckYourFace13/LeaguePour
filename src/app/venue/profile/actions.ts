@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { getAppBaseUrl } from "@/lib/stripe/env";
 import { getStripe } from "@/lib/stripe/server";
-import { MANAGED_RISK_CONTROLLER } from "@/lib/stripe/connect-controller";
+import { CONNECT_ACCOUNT_CONTROLLER } from "@/lib/stripe/connect-controller";
 import {
   resolvePrimaryVenueAccess,
   venueStaffCanCreateAndPublish,
@@ -112,7 +112,7 @@ export async function createStripeConnectOnboardingAction() {
           // wrong for them; leaving it unset lets Stripe's own onboarding flow ask the venue to
           // self-select the correct type and collect the right fields for it.
           const account = await stripe.accounts.create({
-            controller: MANAGED_RISK_CONTROLLER,
+            controller: CONNECT_ACCOUNT_CONTROLLER,
             metadata: { venueId: venue.id },
           });
           accountId = account.id;

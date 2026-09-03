@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe/server";
-import { MANAGED_RISK_CONTROLLER } from "@/lib/stripe/connect-controller";
+import { CONNECT_ACCOUNT_CONTROLLER } from "@/lib/stripe/connect-controller";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
  * One-time diagnostic verifying the Managed Risk controller correction (connect-controller.ts)
- * actually takes effect on a real account, using the exact same MANAGED_RISK_CONTROLLER
+ * actually takes effect on a real account, using the exact same CONNECT_ACCOUNT_CONTROLLER
  * production account creation now uses - not a hand-rolled reimplementation. Creates one
  * minimal account (no onboarding link ever generated, nothing sent to any browser), reads its
  * controller settings immediately, then deletes it in the same request. Always requires
@@ -25,7 +25,7 @@ export async function GET(request: Request) {
   }
 
   // ?dashboard=full tests losses.payments=stripe with stripe_dashboard.type=full instead of the
-  // production MANAGED_RISK_CONTROLLER's express - Stripe's own account-creation validation
+  // production CONNECT_ACCOUNT_CONTROLLER's express - Stripe's own account-creation validation
   // rejected losses.payments=stripe paired with type=express outright ("the Connect application
   // must control losses"), so this checks whether "full" is the combination that actually
   // allows Stripe-managed risk, per the two options named as candidates. This does NOT change
@@ -35,8 +35,8 @@ export async function GET(request: Request) {
   // creating an account with the full dashboard") - full-dashboard accounts require the account
   // itself to pay fees, closer to Standard-account behavior.
   const controllerToTest = dashboardType
-    ? { ...MANAGED_RISK_CONTROLLER, fees: { payer: "account" as const }, stripe_dashboard: { type: dashboardType as "full" } }
-    : MANAGED_RISK_CONTROLLER;
+    ? { ...CONNECT_ACCOUNT_CONTROLLER, fees: { payer: "account" as const }, stripe_dashboard: { type: dashboardType as "full" } }
+    : CONNECT_ACCOUNT_CONTROLLER;
 
   const stripe = getStripe();
   let account;
