@@ -1,0 +1,16 @@
+name: System health check (manual)
+
+# Proves getSystemHealthMetrics() (the data behind /internal/admin's System health panel)
+# computes without error in production - via src/app/api/cron/system-health-check. Read-only.
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run system health check
+        run: |
+          resp=$(curl -sS --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/system-health-check")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1
