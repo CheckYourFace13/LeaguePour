@@ -226,6 +226,7 @@ export async function getSystemHealthMetrics() {
         "vs-lifecycle-nudges",
         "indexnow-submit",
         "resend-webhook-suppress",
+        "stripe-dispute-created",
       ]),
       getSetting("scheduler_last_tick", ""),
       getSetting("scheduler_started_at", ""),

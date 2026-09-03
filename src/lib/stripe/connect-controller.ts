@@ -1,28 +1,29 @@
 import type Stripe from "stripe";
 
 /**
- * PENDING A BUSINESS DECISION - see the P0 Connect economics report. Stripe's own live
- * account-creation validation conclusively proved:
- *   - losses.payments="stripe" + stripe_dashboard.type="express" => REJECTED ("the Connect
- *     application must control losses").
- *   - losses.payments="stripe" is only achievable with stripe_dashboard.type="full" (confirmed
- *     live: {fees:{payer:"account"}, losses:{payments:"stripe"}, requirement_collection:
- *     "stripe", stripe_dashboard:{type:"full"}} - managedRiskConfirmed:true).
- * Switching every venue from Express to the full Stripe Dashboard is a real product/UX change
- * (a materially different, heavier interface than the streamlined Express flow venues get
- * today) and Stripe treats stripe_dashboard.type as PERMANENT per account - not something to
- * silently roll out. Reverted here to the explicit-controller equivalent of the original,
- * known-working `type: "express"` shorthand (platform bears losses, Express dashboard) so
- * production account creation keeps working while that decision is made - not the Managed Risk
- * end state, but not broken either. Update this the moment the dashboard-type decision is made.
+ * Managed Risk - business decision confirmed 2026-09-03, deployed while zero real connected
+ * accounts existed (verified live immediately before this change; Q's Wine Bar/Rachel had not
+ * yet clicked Connect Stripe). Stripe's own live account-creation validation conclusively
+ * proved this is the ONLY combination that gives Stripe-managed negative-balance liability:
+ *   - losses.payments="stripe" + stripe_dashboard.type="express" is REJECTED outright by
+ *     Stripe ("the Connect application must control losses") - Managed Risk is categorically
+ *     impossible with the Express dashboard.
+ *   - losses.payments="stripe" + stripe_dashboard.type="full" requires fees.payer="account"
+ *     (Stripe also rejects fees.payer="application" there) - confirmed live,
+ *     managedRiskConfirmed:true, before this was trusted for production use.
+ * This is the standard GA `controller` parameter on POST /v1/accounts - no preview/beta API.
+ * requirement_collection stays "stripe" (Stripe-hosted onboarding, unchanged).
+ *
+ * - losses.payments: "stripe" - Stripe, not LeaguePour, is liable for negative balances.
+ * - fees.payer: "account" - the connected venue pays its own Stripe processing fees.
+ * - stripe_dashboard.type: "full" - venues get the full Stripe Dashboard (not Express) -
+ *   PERMANENT per account per Stripe (changing it requires creating a new Account object), and
+ *   a materially different interface than the streamlined Express flow. LeaguePour's own UI
+ *   never surfaces this distinction to venues - see venue/profile's Connect Stripe copy.
  */
 export const CONNECT_ACCOUNT_CONTROLLER: Stripe.AccountCreateParams.Controller = {
-  // "application_express"/"application_custom" are read-only values Stripe reports back once
-  // set - not valid inputs. "application" + stripe_dashboard.type: "express" produces the same
-  // resulting fees.payer=application_express on the created account (this is what the legacy
-  // `type: "express"` shorthand always set internally).
-  fees: { payer: "application" },
-  losses: { payments: "application" },
+  fees: { payer: "account" },
+  losses: { payments: "stripe" },
   requirement_collection: "stripe",
-  stripe_dashboard: { type: "express" },
+  stripe_dashboard: { type: "full" },
 };

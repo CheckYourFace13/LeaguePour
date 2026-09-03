@@ -10,6 +10,7 @@ import {
 } from "@/lib/stripe/fulfillment";
 import { revalidateRegistrationPaymentPaths } from "@/lib/stripe/revalidate-payment-paths";
 import { getStripe } from "@/lib/stripe/server";
+import { runJob } from "@/lib/job-runs";
 
 export const runtime = "nodejs";
 
@@ -245,6 +246,20 @@ export async function POST(request: Request) {
           const res = await applyStripeChargeRefunded(intentId, event.id);
           if (res.registrationId) await revalidateRegistrationPaymentPaths(res.registrationId);
         }
+        break;
+      }
+      // Direct charges (connect-controller.ts) mean disputes happen on the connected account -
+      // the venue sees and manages them in their own Stripe Dashboard (full access, per Managed
+      // Risk). This just makes the event visible on the owner health panel (via the same JobRun
+      // table every other job already uses - see lib/job-runs.ts) rather than only in server
+      // logs, without building dispute-management UI: no PII, just a count/timestamp.
+      case "charge.dispute.created": {
+        const dispute = event.data.object as Stripe.Dispute;
+        await runJob("stripe-dispute-created", async () => ({
+          status: "success" as const,
+          detail: `${dispute.id} on connected account ${event.account ?? "unknown"} - amount ${dispute.amount} ${dispute.currency}`,
+          result: null,
+        }));
         break;
       }
 

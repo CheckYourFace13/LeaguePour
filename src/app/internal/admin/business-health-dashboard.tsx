@@ -143,6 +143,7 @@ const JOB_LABELS: Record<string, string> = {
   "vs-lifecycle-nudges": "VS lifecycle nudges",
   "indexnow-submit": "IndexNow submission",
   "resend-webhook-suppress": "Resend webhook (bounce/complaint handling)",
+  "stripe-dispute-created": "Stripe disputes (Connect)",
 };
 
 /**
