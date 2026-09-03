@@ -1,0 +1,17 @@
+name: Add dispute webhook event (manual)
+
+# One-time: adds charge.dispute.created to the existing production webhook endpoint's
+# enabled_events - via src/app/api/cron/add-dispute-webhook-event. Does not create a new
+# endpoint or touch the signing secret.
+on:
+  workflow_dispatch:
+
+jobs:
+  add:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add dispute event to webhook endpoint
+        run: |
+          resp=$(curl -sS --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/add-dispute-webhook-event")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1
