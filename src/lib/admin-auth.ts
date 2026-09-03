@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 
-function ownerEmails(): string[] {
+export function ownerEmails(): string[] {
   const raw = process.env.INTERNAL_OWNER_EMAILS ?? process.env.OWNER_EMAIL ?? "";
   return raw
     .split(",")

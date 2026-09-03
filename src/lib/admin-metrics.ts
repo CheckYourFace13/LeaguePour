@@ -216,8 +216,16 @@ export async function getVenueSprocketMetrics() {
  * Actions failure notification.
  */
 export async function getSystemHealthMetrics() {
-  const [jobs, schedulerLastTick, schedulerStartedAt, subscriptionIssues, connectRestricted, dbHeartbeat] =
-    await Promise.all([
+  const [
+    jobs,
+    schedulerLastTick,
+    schedulerStartedAt,
+    subscriptionIssues,
+    connectRestricted,
+    dbHeartbeat,
+    connectReady,
+    connectStartedNotReady,
+  ] = await Promise.all([
       getLatestJobRuns([
         "lp-outreach-send",
         "vs-outreach-send",
@@ -245,6 +253,20 @@ export async function getSystemHealthMetrics() {
       }),
       // Key format matches scheduler.ts's own `scheduler_last_run${job.path.replace(/\//g,"_")}`.
       getSetting("scheduler_last_run_api_cron_supabase-heartbeat", ""),
+      // "Stripe setup completed" - fully payment-ready, same condition that triggers the
+      // one-time owner email in the webhook handler.
+      prisma.venue.count({
+        where: { stripeAccountId: { not: null }, stripeChargesEnabled: true, stripePayoutsEnabled: true },
+      }),
+      // "Stripe setup incomplete" - has a Connect account but isn't fully ready yet (started,
+      // still in progress, or genuinely stuck - this dashboard doesn't distinguish "just
+      // started 5 minutes ago" from "stuck for a week", only that no email has fired for it).
+      prisma.venue.count({
+        where: {
+          stripeAccountId: { not: null },
+          OR: [{ stripeChargesEnabled: false }, { stripePayoutsEnabled: false }],
+        },
+      }),
     ]);
 
   const schedulerStale =
@@ -263,6 +285,8 @@ export async function getSystemHealthMetrics() {
     },
     subscriptionIssues,
     connectRestricted,
+    connectReady,
+    connectStartedNotReady,
     dbHeartbeat: dbHeartbeat || null,
     dbHeartbeatStale,
   };

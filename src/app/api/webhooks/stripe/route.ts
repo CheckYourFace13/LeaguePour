@@ -11,6 +11,8 @@ import {
 import { revalidateRegistrationPaymentPaths } from "@/lib/stripe/revalidate-payment-paths";
 import { getStripe } from "@/lib/stripe/server";
 import { runJob } from "@/lib/job-runs";
+import { ownerEmails } from "@/lib/admin-auth";
+import { sendConnectReadyEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -266,14 +268,47 @@ export async function POST(request: Request) {
       // --- Connect account status ---
       case "account.updated": {
         const account = event.data.object as Stripe.Account;
+        const chargesEnabled = Boolean(account.charges_enabled);
+        const payoutsEnabled = Boolean(account.payouts_enabled);
+        const detailsSubmitted = Boolean(account.details_submitted);
+
         await prisma.venue.updateMany({
           where: { stripeAccountId: account.id },
           data: {
-            stripeChargesEnabled: Boolean(account.charges_enabled),
-            stripePayoutsEnabled: Boolean(account.payouts_enabled),
-            stripeDetailsSubmitted: Boolean(account.details_submitted),
+            stripeChargesEnabled: chargesEnabled,
+            stripePayoutsEnabled: payoutsEnabled,
+            stripeDetailsSubmitted: detailsSubmitted,
           },
         });
+
+        // Owner notification, sent once ever per venue on the transition INTO fully
+        // payment-ready - never on every account.updated. Idempotent by construction: this
+        // updateMany's WHERE clause only matches a row that hasn't been claimed yet
+        // (stripeConnectReadyNotifiedAt IS NULL), and Postgres serializes concurrent UPDATEs
+        // against the same row, so a retried/duplicate webhook delivery - or two account.updated
+        // events racing each other - can never both see count > 0. No bank/identity/Stripe-
+        // sensitive data in the email; see sendConnectReadyEmail's own fixed field list.
+        if (chargesEnabled && payoutsEnabled && detailsSubmitted) {
+          const claimed = await prisma.venue.updateMany({
+            where: { stripeAccountId: account.id, stripeConnectReadyNotifiedAt: null },
+            data: { stripeConnectReadyNotifiedAt: new Date() },
+          });
+          if (claimed.count > 0) {
+            const venue = await prisma.venue.findFirst({
+              where: { stripeAccountId: account.id },
+              select: { name: true },
+            });
+            const owners = ownerEmails();
+            if (venue && owners.length > 0) {
+              await sendConnectReadyEmail({
+                to: owners,
+                venueName: venue.name,
+                chargesEnabled,
+                payoutsEnabled,
+              }).catch((err) => console.error("[stripe webhook] connect-ready email failed", err));
+            }
+          }
+        }
         break;
       }
 

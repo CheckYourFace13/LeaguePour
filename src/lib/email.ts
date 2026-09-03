@@ -328,3 +328,30 @@ export function sendPaymentConfirmationEmail(opts: {
     html: baseHtml(content),
   });
 }
+
+/**
+ * Owner notification: a venue's Stripe Connect account just became fully payment-ready
+ * (charges + payouts + details all true for the first time). Deliberately minimal - no bank,
+ * identity, or other Stripe-sensitive data, ever.
+ */
+export function sendConnectReadyEmail(opts: {
+  to: string | string[];
+  venueName: string;
+  chargesEnabled: boolean;
+  payoutsEnabled: boolean;
+}): Promise<{ ok: boolean }> {
+  const content = `
+    <h2>Stripe setup completed</h2>
+    <div class="detail-box">
+      <p><strong>Venue:</strong> ${escHtml(opts.venueName)}</p>
+      <p><strong>Charges enabled:</strong> ${opts.chargesEnabled ? "Yes" : "No"}</p>
+      <p><strong>Payouts enabled:</strong> ${opts.payoutsEnabled ? "Yes" : "No"}</p>
+      <p><strong>Timestamp:</strong> ${new Date().toISOString()}</p>
+    </div>
+  `;
+  return sendEmail({
+    to: opts.to,
+    subject: `Stripe setup completed - ${opts.venueName}`,
+    html: baseHtml(content),
+  });
+}

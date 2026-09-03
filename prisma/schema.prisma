@@ -250,6 +250,11 @@ model Venue {
   stripeChargesEnabled Boolean @default(false)
   stripePayoutsEnabled Boolean @default(false)
   stripeDetailsSubmitted Boolean @default(false)
+  /// Set (once, atomically - see the webhook's account.updated handler) the first time this
+  /// venue's Connect account transitions into fully payment-ready (charges + payouts + details
+  /// all true). Doubles as the owner-notification dedup key: a duplicate/retried webhook
+  /// delivery can never send a second "Stripe setup completed" email once this is non-null.
+  stripeConnectReadyNotifiedAt DateTime?
   /// Stripe Customer id used for platform SaaS billing (distinct from stripeAccountId / Connect)
   stripeBillingCustomerId String?  @unique
   /// Active Stripe Subscription id

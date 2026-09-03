@@ -1,0 +1,16 @@
+name: Apply Connect ready column (manual)
+
+# One-time, additive-only: applies Venue.stripeConnectReadyNotifiedAt directly via the app's
+# live DB connection - via src/app/api/cron/apply-connect-ready-column. Idempotent.
+on:
+  workflow_dispatch:
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply column
+        run: |
+          resp=$(curl -sS --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/apply-connect-ready-column")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1

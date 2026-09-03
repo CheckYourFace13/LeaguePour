@@ -166,7 +166,7 @@ export function SystemHealthPanel({ health }: { health: SystemHealth }) {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className={`rounded-lg border px-4 py-3 ${schedulerStale ? "border-red-500/40 bg-red-500/5" : "border-lp-border bg-lp-bg/60"}`}>
           <p className="text-xs font-bold uppercase tracking-wide text-lp-muted">Internal scheduler</p>
           <p className={`mt-1 text-sm font-semibold ${schedulerStale ? "text-red-600" : "text-green-600"}`}>
@@ -199,6 +199,20 @@ export function SystemHealthPanel({ health }: { health: SystemHealth }) {
           <p className="mt-0.5 text-xs text-lp-muted">
             {health.connectRestricted} venue{health.connectRestricted === 1 ? "" : "s"} submitted to Stripe but still
             charges-off
+          </p>
+        </div>
+        <div
+          className={`rounded-lg border px-4 py-3 ${
+            health.connectStartedNotReady > 0 ? "border-amber-500/40 bg-amber-500/5" : "border-lp-border bg-lp-bg/60"
+          }`}
+        >
+          <p className="text-xs font-bold uppercase tracking-wide text-lp-muted">Stripe Connect readiness</p>
+          <p className="mt-1 text-sm font-semibold text-green-600">
+            {health.connectReady} venue{health.connectReady === 1 ? "" : "s"} - Stripe setup completed
+          </p>
+          <p className="mt-0.5 text-xs text-lp-muted">
+            {health.connectStartedNotReady} venue{health.connectStartedNotReady === 1 ? "" : "s"} - Stripe setup
+            incomplete
           </p>
         </div>
       </div>
