@@ -31,8 +31,11 @@ export async function GET(request: Request) {
   // allows Stripe-managed risk, per the two options named as candidates. This does NOT change
   // what production account creation uses - see connect-controller.ts for that.
   const dashboardType = url.searchParams.get("dashboard") === "full" ? "full" : undefined;
+  // Stripe rejected fees.payer=application with stripe_dashboard.type=full ("not supported when
+  // creating an account with the full dashboard") - full-dashboard accounts require the account
+  // itself to pay fees, closer to Standard-account behavior.
   const controllerToTest = dashboardType
-    ? { ...MANAGED_RISK_CONTROLLER, stripe_dashboard: { type: dashboardType as "full" } }
+    ? { ...MANAGED_RISK_CONTROLLER, fees: { payer: "account" as const }, stripe_dashboard: { type: dashboardType as "full" } }
     : MANAGED_RISK_CONTROLLER;
 
   const stripe = getStripe();
