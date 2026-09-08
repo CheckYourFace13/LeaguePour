@@ -52,14 +52,15 @@ const formats = [
   ["TEAM_MEMBERS", "Team members + invites"],
 ] as const;
 
+// Only bracket kinds LeaguePour can actually generate matches/standings for automatically
+// (src/lib/tournament.ts) are offered here - plus Custom, which is intentionally manual by
+// design. Double elimination / ladder / season / points have no generation logic behind them yet,
+// so they're withheld from new setups rather than left selectable but non-functional. See
+// src/app/venue/competitions/[id]/edit/page.tsx for the same list.
 const brackets = [
   ["ROUND_ROBIN", "Round robin"],
   ["SINGLE_ELIMINATION", "Single elimination"],
-  ["DOUBLE_ELIMINATION", "Double elimination"],
-  ["LADDER", "Ladder"],
-  ["SEASON", "Season standings"],
-  ["POINTS", "Points leaderboard"],
-  ["CUSTOM", "Custom / hybrid"],
+  ["CUSTOM", "Custom / hybrid (you run it manually)"],
 ] as const;
 
 const schedules = [

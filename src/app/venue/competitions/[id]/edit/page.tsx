@@ -45,15 +45,22 @@ const formats = [
   ["TEAM_MEMBERS", "Team members + invites"],
 ] as const;
 
+// Only bracket kinds LeaguePour can actually generate matches/standings for automatically
+// (src/lib/tournament.ts) are offered for new selections here - plus Custom, which is
+// intentionally manual by design. A competition already set to an unsupported kind (from before
+// this changed) still shows that value below so the form doesn't silently rewrite it - but
+// switching to Single elimination or Round robin is the only way to get automatic generation.
 const brackets = [
   ["ROUND_ROBIN", "Round robin"],
   ["SINGLE_ELIMINATION", "Single elimination"],
-  ["DOUBLE_ELIMINATION", "Double elimination"],
-  ["LADDER", "Ladder"],
-  ["SEASON", "Season standings"],
-  ["POINTS", "Points leaderboard"],
-  ["CUSTOM", "Custom / hybrid"],
+  ["CUSTOM", "Custom / hybrid (you run it manually)"],
 ] as const;
+const legacyBracketLabels: Record<string, string> = {
+  DOUBLE_ELIMINATION: "Double elimination (not supported for auto-generation - switch to save)",
+  LADDER: "Ladder (not supported for auto-generation - switch to save)",
+  SEASON: "Season standings (not supported for auto-generation - switch to save)",
+  POINTS: "Points leaderboard (not supported for auto-generation - switch to save)",
+};
 
 const schedules = [
   ["ONE_TIME", "One night / one weekend"],
@@ -309,6 +316,9 @@ export default async function EditCompetitionPage({
                 className="mt-1.5 flex w-full min-h-12 rounded-[10px] border border-lp-border bg-lp-bg/80 px-4 text-base text-lp-text outline-none focus:border-lp-accent/60 focus:ring-2 focus:ring-lp-accent/25"
                 defaultValue={comp.bracketKind}
               >
+                {legacyBracketLabels[comp.bracketKind] ? (
+                  <option value={comp.bracketKind}>{legacyBracketLabels[comp.bracketKind]}</option>
+                ) : null}
                 {brackets.map(([v, l]) => (
                   <option key={v} value={v}>
                     {l}

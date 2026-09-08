@@ -1,0 +1,55 @@
+name: Seed tournament test data (manual)
+
+# Test-only scaffolding for the tournament-engine P0 - creates/reuses one disposable venue +
+# owner + N disposable player accounts, CONFIRMED-registered into one disposable competition, via
+# src/app/api/cron/seed-tournament-test. Every venue/user this can create is on
+# cleanup-test-data's exact-match allowlist.
+on:
+  workflow_dispatch:
+    inputs:
+      venue:
+        description: "Disposable venue name (must end DELETE-ME)"
+        required: true
+        type: string
+      players:
+        description: "Number of player accounts/registrations"
+        required: true
+        type: string
+        default: "8"
+      bracketKind:
+        description: "SINGLE_ELIMINATION or ROUND_ROBIN"
+        required: true
+        type: string
+        default: "SINGLE_ELIMINATION"
+      teamFormat:
+        description: "SOLO or CAPTAIN_TEAM"
+        required: true
+        type: string
+        default: "SOLO"
+      kind:
+        description: "Competition kind, e.g. TRIVIA, EUCHRE"
+        required: true
+        type: string
+        default: "TRIVIA"
+      title:
+        description: "Competition title"
+        required: true
+        type: string
+        default: "Test tournament"
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Seed tournament test data
+        run: |
+          resp=$(curl -sS -G --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            --data-urlencode "venue=${{ inputs.venue }}" \
+            --data-urlencode "players=${{ inputs.players }}" \
+            --data-urlencode "bracketKind=${{ inputs.bracketKind }}" \
+            --data-urlencode "teamFormat=${{ inputs.teamFormat }}" \
+            --data-urlencode "kind=${{ inputs.kind }}" \
+            --data-urlencode "title=${{ inputs.title }}" \
+            "https://leaguepour.com/api/cron/seed-tournament-test")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1

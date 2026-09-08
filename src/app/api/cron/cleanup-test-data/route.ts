@@ -29,6 +29,11 @@ const TEST_VENUE_NAMES = [
   "CLAUDE-TEST-VS-CONTRACT-DELETE-ME",
   "CLAUDE-TEST-MANAGEDRISK-DELETE-ME",
   "CLAUDE-TEST-GRIDLOCK-DELETE-ME",
+  "CLAUDE-TEST-ELIM8-DELETE-ME",
+  "CLAUDE-TEST-ELIM7-DELETE-ME",
+  "CLAUDE-TEST-RR4-DELETE-ME",
+  "CLAUDE-TEST-EUCHRE-DELETE-ME",
+  "CLAUDE-TEST-FIRSTTIME-DELETE-ME",
 ];
 const TEST_USER_EMAILS = [
   "claude-test-verify2-delete-me@example.com",
@@ -46,6 +51,17 @@ const TEST_USER_EMAILS = [
   "claude-test-vs-contract-delete-me@example.com",
   "claude-test-managedrisk-delete-me@example.com",
   "claude-test-gridlock-delete-me@example.com",
+  // Tournament engine P0 - seeded via /api/cron/seed-tournament-test (owner + player accounts).
+  "claude-test-elim8-delete-me-owner@example.com",
+  ...Array.from({ length: 8 }, (_, i) => `claude-test-elim8-delete-me-player${i + 1}@example.com`),
+  "claude-test-elim7-delete-me-owner@example.com",
+  ...Array.from({ length: 7 }, (_, i) => `claude-test-elim7-delete-me-player${i + 1}@example.com`),
+  "claude-test-rr4-delete-me-owner@example.com",
+  ...Array.from({ length: 4 }, (_, i) => `claude-test-rr4-delete-me-player${i + 1}@example.com`),
+  "claude-test-euchre-delete-me-owner@example.com",
+  ...Array.from({ length: 4 }, (_, i) => `claude-test-euchre-delete-me-player${i + 1}@example.com`),
+  "claude-test-firsttime-delete-me@example.com",
+  ...Array.from({ length: 4 }, (_, i) => `claude-test-firsttime-delete-me-player${i + 1}@example.com`),
 ];
 
 export async function GET(request: Request) {

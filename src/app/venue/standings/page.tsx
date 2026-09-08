@@ -30,7 +30,7 @@ export default async function StandingsPage() {
     orderBy: { startAt: "desc" },
   });
 
-  const elimKinds = ["SINGLE_ELIMINATION", "DOUBLE_ELIMINATION"];
+  const bracketViewKinds = ["SINGLE_ELIMINATION", "DOUBLE_ELIMINATION", "ROUND_ROBIN"];
 
   return (
     <div className="space-y-8">
@@ -71,12 +71,13 @@ export default async function StandingsPage() {
         <div className="space-y-10">
           {competitions.map((c) => {
             const bracketMatches = c.matches
-              .filter((m) => m.homeTeam && m.awayTeam)
+              .filter((m) => m.homeTeam)
               .map((m) => ({
                 id: m.id,
+                round: m.round,
                 label: m.label,
                 homeName: m.homeTeam!.name,
-                awayName: m.awayTeam!.name,
+                awayName: m.awayTeam?.name ?? null,
                 homeScore: m.homeScore,
                 awayScore: m.awayScore,
                 completed: Boolean(m.completedAt),
@@ -99,8 +100,11 @@ export default async function StandingsPage() {
                   </Link>
                 </div>
 
-                {elimKinds.includes(c.bracketKind) && bracketMatches.length > 0 ? (
-                  <BracketPreview title="Bracket (from matches)" matches={bracketMatches} />
+                {bracketViewKinds.includes(c.bracketKind) && bracketMatches.length > 0 ? (
+                  <BracketPreview
+                    title={c.bracketKind === "ROUND_ROBIN" ? "Schedule (from matches)" : "Bracket (from matches)"}
+                    matches={bracketMatches}
+                  />
                 ) : null}
 
                 {c.standings.length > 0 ? (
