@@ -88,15 +88,30 @@ export async function createCompetitionAction(formData: FormData) {
   });
   if (!venueForPlan) redirect("/signup/venue");
 
+  // The plan limit is a concurrent-active-events cap ("Starter: 1-2 events" means 1-2 running
+  // at once, not 2 ever) - counting DRAFT or COMPLETED competitions against it was a real bug
+  // that could permanently gridlock a venue the moment they experimented with 3 drafts, or
+  // simply ran their 3rd tournament ever. Only competitions that are actually live/using
+  // capacity right now count: published-but-not-yet-open, open for signup, closed-but-not-
+  // started, and in progress. Drafts never count; completed/archived history never counts.
   const activeCompetitionCount = await prisma.competition.count({
     where: {
       venueId: access.venueId,
-      status: { not: CompetitionStatus.ARCHIVED },
+      status: {
+        in: [
+          CompetitionStatus.PUBLISHED,
+          CompetitionStatus.SIGNUP_OPEN,
+          CompetitionStatus.SIGNUP_CLOSED,
+          CompetitionStatus.IN_PROGRESS,
+        ],
+      },
     },
   });
 
   const planLimit = ACTIVE_COMPETITION_LIMITS_BY_PLAN[venueForPlan.billingPlan];
-  if (Number.isFinite(planLimit) && activeCompetitionCount >= planLimit) {
+  // The limit only ever blocks PUBLISHING - a venue can always draft freely regardless of plan,
+  // so setup/experimentation is never what gridlocks them.
+  if (publish && Number.isFinite(planLimit) && activeCompetitionCount >= planLimit) {
     redirect("/venue/competitions/new?error=upgrade-plan");
   }
 
