@@ -22,18 +22,25 @@ import {
 } from "@/lib/venue-permissions";
 import { refundRegistrationPaymentFormAction } from "@/app/venue/registrations/actions";
 import {
+  addMatchFormAction,
   duplicateCompetitionFormAction,
   updateMatchScoreFormAction,
   updateStandingRowFormAction,
 } from "./actions";
+import { FormatGuide } from "@/components/app/format-guide";
 
 const notices: Record<string, string> = {
   duplicated: "Duplicate created as a draft with fresh signup dates - review and publish when ready.",
+  saved: "Competition saved.",
   "match-saved": "Match scores saved. Bracket view on Standings updates from these rows.",
+  "match-added": "Match added - enter the score once it's played.",
+  "match-label-required": "Add a short matchup label (e.g. \"Team A vs Team B\") before saving.",
   "standing-saved": "Standings row updated.",
   "invalid-scores": "Scores must be whole numbers between 0 and 999.",
   "invalid-standing": "Check wins, losses, ties, and points.",
   "read-only": "That action is not available for your venue role. Ask an owner or manager if you need it done.",
+  "not-editable": "This competition is already running or finished, so its core setup can no longer be edited.",
+  "not-deletable": "Only draft competitions with zero registrations can be deleted.",
 };
 
 export default async function CompetitionDetailPage({
@@ -183,6 +190,8 @@ export default async function CompetitionDetailPage({
         </Card>
       </div>
 
+      <FormatGuide bracketKind={comp.bracketKind} />
+
       <FieldHelp title="Results entry (venue)">
         <p>
           Match rows drive bracket cards on Standings. Standings table edits are for round robin / season boards. This
@@ -195,6 +204,32 @@ export default async function CompetitionDetailPage({
           Your venue role can view results here; score entry is limited when staff permissions are missing. Ask an owner
           or manager to confirm your role in venue staff.
         </div>
+      ) : null}
+
+      {canEditResults ? (
+        <Card className="space-y-4 p-5 md:p-6">
+          <CardHeader className="p-0">
+            <CardTitle>Add a match</CardTitle>
+            <CardDescription>
+              LeaguePour doesn&apos;t auto-generate brackets yet - add each round&apos;s matches here as you
+              set them, then enter scores below once they&apos;re played.
+            </CardDescription>
+          </CardHeader>
+          <form action={addMatchFormAction} className="grid gap-3 sm:grid-cols-[100px_1fr_auto] sm:items-end">
+            <input type="hidden" name="competitionId" value={comp.id} />
+            <div>
+              <Label htmlFor="round">Round</Label>
+              <Input id="round" name="round" type="number" min={1} defaultValue={1} className="mt-1.5 min-h-12" required />
+            </div>
+            <div>
+              <Label htmlFor="label">Matchup</Label>
+              <Input id="label" name="label" placeholder="Rachel's Team vs The Regulars" className="mt-1.5 min-h-12" required />
+            </div>
+            <Button type="submit" size="lg" className="min-h-12">
+              Add match
+            </Button>
+          </form>
+        </Card>
       ) : null}
 
       {comp.matches.length > 0 ? (

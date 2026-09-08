@@ -357,6 +357,40 @@ export async function updateCompetitionAction(formData: FormData) {
   redirect(`/venue/competitions/${competitionId}?notice=saved`);
 }
 
+/**
+ * Minimal, safe way for an organizer to actually create the first round of a bracket - nothing
+ * in this app auto-generates matches, and there was previously no UI anywhere to create one at
+ * all (only to score an existing one). Uses Match.label (free text) rather than requiring real
+ * Team rows, since teams are otherwise only created as a side effect of a captain-led
+ * registration - an organizer running a solo blind-draw night has no teams to pick from.
+ */
+export async function addMatchFormAction(formData: FormData) {
+  const competitionId = String(formData.get("competitionId") ?? "");
+  if (!competitionId) redirect("/venue/competitions");
+
+  const session = await auth();
+  const access = await resolvePrimaryVenueAccess(session);
+  if (!access) redirect("/signup/venue");
+  if (!venueStaffCanEditCompetitionResults(access.role)) {
+    redirect(`/venue/competitions/${competitionId}?notice=read-only`);
+  }
+
+  const ok = await assertVenueCompetition(competitionId, access.venueId);
+  if (!ok) redirect("/venue/competitions");
+
+  const round = Math.max(1, Number(String(formData.get("round") ?? "1")) || 1);
+  const label = String(formData.get("label") ?? "").trim();
+  if (!label) redirect(`/venue/competitions/${competitionId}?notice=match-label-required`);
+
+  await prisma.match.create({
+    data: { competitionId, round, label },
+  });
+
+  revalidatePath(`/venue/competitions/${competitionId}`);
+  revalidatePath("/venue/standings");
+  redirect(`/venue/competitions/${competitionId}?notice=match-added`);
+}
+
 export async function deleteCompetitionAction(formData: FormData) {
   const competitionId = String(formData.get("competitionId") ?? "");
   if (!competitionId) redirect("/venue/competitions");
