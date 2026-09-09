@@ -1,25 +1,37 @@
 "use server";
 
-import { signOut } from "@/auth";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 /**
- * Server Action wrapper around NextAuth's server-side signOut(). Deliberately NOT using the
- * next-auth/react client signOut() helper (or a plain link to /api/auth/signout) here - both of
- * those build their request URL from a module-level `apiBaseUrl`/AUTH_URL constant baked in at
- * build/render time, which resolves to a single fixed origin (leaguepour.com) regardless of which
- * brand host the page is actually being viewed from. On venuesprocket.com that sent the sign-out
- * POST cross-origin to leaguepour.com instead: the CSRF cookie check failed (different domain's
- * CSRF cookie, since cookies never cross registrable domains), stranding the user on
- * leaguepour.com/login?error=MissingCSRF while their venuesprocket.com session remained silently
- * live. Found via whole-business audit, confirmed live with a disposable account (checked
- * /api/auth/session on venuesprocket.com directly after clicking Sign out).
+ * Server Action that clears the NextAuth session directly, WITHOUT calling NextAuth's own
+ * signOut() (from @auth/core, re-exported by src/auth.ts) at all.
  *
- * This server Action runs inside the real incoming request, so NextAuth's server signOut() reads
- * the actual Host header (respecting trustHost - see src/auth.ts), builds a same-origin action
- * URL, skips the CSRF round-trip entirely (it already has an authenticated server-side context),
- * and sets the cleared session cookie directly on this response - no cross-origin request, no
- * CSRF mismatch, no branded/unbranded interstitial page.
+ * Traced all the way down: @auth/core's createActionURL() (used internally by every NextAuth
+ * action - signin, signout, csrf, session, callback) resolves its base URL from
+ * `process.env.AUTH_URL ?? process.env.NEXTAUTH_URL` FIRST, unconditionally, before ever
+ * consulting the request's own Host header - `trustHost: true` (src/auth.ts) only enables the
+ * header-based fallback for when AUTH_URL/NEXTAUTH_URL is unset, which it isn't here. So every
+ * internal NextAuth action always targets a single fixed origin (leaguepour.com) no matter which
+ * brand's domain actually received the request. That's true for the next-auth/react client
+ * signOut() helper, NextAuth's own built-in /api/auth/signout confirmation page, AND the
+ * server-side signOut() re-exported from src/auth.ts (confirmed live, in that order, each time
+ * tracing one level deeper into the actual mechanism) - there is no per-call-site fix for this;
+ * it's unconditional library behavior gated on an env var this sandbox cannot safely change
+ * (Hostinger panel access - see the final report's OWNER ACTIONS).
+ *
+ * So: skip NextAuth's action machinery for sign-out entirely. Delete the session cookie
+ * (both the secure and non-secure name variants - Hostinger's proxy can present either, same
+ * reason middleware.ts probes both) directly, then redirect("/") - a plain Next.js relative
+ * redirect, unrelated to NextAuth/AUTH_URL, which correctly resolves against whichever host
+ * actually received this request.
  */
 export async function signOutAction() {
-  await signOut({ redirectTo: "/" });
+  const cookieStore = await cookies();
+  // Explicit path: "/" because the original cookies (@auth/core's defaultCookies()) were set with
+  // path: "/" - a deletion must match that attribute or the browser won't actually clear it.
+  for (const name of ["authjs.session-token", "__Secure-authjs.session-token"]) {
+    cookieStore.delete({ name, path: "/" });
+  }
+  redirect("/");
 }
