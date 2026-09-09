@@ -45,6 +45,12 @@ const TEST_VENUE_NAMES = [
   "CLAUDE-TEST-POOL-DELETE-ME",
   "CLAUDE-TEST-SHUFFLEBOARD-DELETE-ME",
   "CLAUDE-TEST-CUSTOM-DELETE-ME",
+  // Owner-admin visual certification test account (its own venue, created via normal signup).
+  "CLAUDE-OWNER-ADMIN-TEST-DELETE-ME",
+  // Literal game x format matrix (desktop: 15 competitions covering every automatic game's SE
+  // and RR cell; mobile: 8 more at 375px) - all under one venue, all 4 players reused across
+  // every competition.
+  "CLAUDE-MATRIX-DELETE-ME",
 ];
 const TEST_USER_EMAILS = [
   "claude-test-verify2-delete-me@example.com",
@@ -82,6 +88,12 @@ const TEST_USER_EMAILS = [
     `claude-test-${slug}-delete-me-owner@example.com`,
     ...Array.from({ length: 4 }, (_, i) => `claude-test-${slug}-delete-me-player${i + 1}@example.com`),
   ]),
+  "claude-owner-admin-test-delete-me@example.com",
+  "claude-matrix-delete-me-owner@example.com",
+  "claude-matrix-delete-me-player1@example.com",
+  "claude-matrix-delete-me-player2@example.com",
+  "claude-matrix-delete-me-player3@example.com",
+  "claude-matrix-delete-me-player4@example.com",
 ];
 
 export async function GET(request: Request) {
