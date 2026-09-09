@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
+import { VS_HOST } from "@/lib/vs-routing";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
@@ -46,7 +47,12 @@ export default async function VsSettingsPage() {
     prisma.venueVsConfig.findUnique({ where: { venueId: access.venueId } }),
   ]);
 
-  const inquiryUrl = `${process.env.NEXTAUTH_URL ?? "https://leaguepour.com"}/v/${venue?.slug ?? ""}/inquire`;
+  // This is the link a VenueSprocket venue is told to share with their customers - it must be on
+  // the venuesprocket.com domain (the page itself is host-exempt and renders fine on either
+  // domain, but showing a leaguepour.com URL here would be confusing/wrong-branded for a VS
+  // venue to hand out). Found via whole-business audit: this previously always used
+  // NEXTAUTH_URL, which resolves to the unified leaguepour.com app origin.
+  const inquiryUrl = `https://${VS_HOST}/v/${venue?.slug ?? ""}/inquire`;
 
   return (
     <div className="space-y-8 max-w-2xl">

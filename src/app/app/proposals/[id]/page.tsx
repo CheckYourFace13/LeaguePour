@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import { sendProposal } from "@/lib/actions/vs";
 import { TrackClick } from "@/components/analytics/track-click";
+import { VS_HOST } from "@/lib/vs-routing";
 
 export default async function VsProposalPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -26,7 +27,7 @@ export default async function VsProposalPage({ params }: { params: Promise<{ id:
   const customerName = event.lead?.customerName ?? event.vsCustomer?.name ?? "Customer";
   const customerEmail = event.lead?.customerEmail ?? event.vsCustomer?.email ?? "";
   const lineItems = (proposal.lineItems as { description: string; qty: number; unitCents: number }[]) ?? [];
-  const publicUrl = `${process.env.NEXTAUTH_URL ?? "https://leaguepour.com"}/proposal/${proposal.publicToken}`;
+  const publicUrl = `https://${VS_HOST}/proposal/${proposal.publicToken}`;
 
   return (
     <div className="space-y-6 max-w-2xl">

@@ -6,6 +6,12 @@ import { VsAppShell } from "@/components/venuesprocket/vs-app-shell";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
+  // Absolute, not a plain string: without this every /app/* page (this whole VS dashboard)
+  // inherited the root layout's default title verbatim ("LeaguePour | Venue Competitions & Entry
+  // Fees") since none of these pages set their own - found via whole-business audit, live on
+  // /app/dashboard, /app/settings, etc. A page under here can still set a more specific title via
+  // its own generateMetadata/metadata export; this is just the non-LP-branded fallback.
+  title: { absolute: "VenueSprocket" },
   robots: { index: false, follow: false },
 };
 

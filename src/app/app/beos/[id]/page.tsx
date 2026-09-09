@@ -142,7 +142,7 @@ export default async function VsBeoPage({
       {/* Print / share */}
       <div className="flex flex-wrap gap-3">
         <a
-          href={`/app/beos/${beo.id}/print`}
+          href={`/beo-print/${beo.id}`}
           target="_blank"
           className="rounded-lg border border-[var(--vs-border)] px-4 py-2 text-sm font-semibold text-[var(--vs-muted)] hover:border-[var(--vs-accent)] hover:text-[var(--vs-accent)]"
         >

@@ -26,6 +26,13 @@ const hostGateExemptPrefixes = [
   "/deposit",
   "/proposal",
   "/sign",
+  "/beo-print",
+  // /v/[slug] and /v/[slug]/inquire are a single shared route serving both a LeaguePour public
+  // venue hub AND a VenueSprocket public inquiry page depending on the venue, not on which domain
+  // reached it - found via whole-business audit: this was missing, so a VS venue's own inquiry
+  // link (venuesprocket.com/v/<slug>/inquire, the exact URL /app/settings tells them to hand to
+  // customers) silently 301'd every customer to leaguepour.com instead of rendering on VS.
+  "/v",
 ];
 
 /** Segment-aware prefix match - "/venue" must not match "/venuesprocket/pricing". */

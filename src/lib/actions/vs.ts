@@ -11,7 +11,7 @@ import {
   sendVsProposalReadyEmail,
   sendVsContractReadyEmail,
 } from "@/lib/email";
-import { getAppBaseUrl } from "@/lib/stripe/env";
+import { VS_HOST } from "@/lib/vs-routing";
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -238,7 +238,7 @@ export async function sendProposal(proposalId: string) {
       ? { name: proposal.privateEvent.lead.customerName, email: proposal.privateEvent.lead.customerEmail }
       : null;
   if (customer) {
-    const proposalUrl = `${getAppBaseUrl()}/proposal/${proposal.publicToken}`;
+    const proposalUrl = `https://${VS_HOST}/proposal/${proposal.publicToken}`;
     void sendVsProposalReadyEmail({
       to: customer.email,
       customerName: customer.name,
@@ -366,7 +366,7 @@ export async function sendContract(contractId: string) {
       ? { name: contract.privateEvent.lead.customerName, email: contract.privateEvent.lead.customerEmail }
       : null;
   if (customer) {
-    const contractUrl = `${getAppBaseUrl()}/sign/${contract.publicToken}`;
+    const contractUrl = `https://${VS_HOST}/sign/${contract.publicToken}`;
     void sendVsContractReadyEmail({
       to: customer.email,
       customerName: customer.name,
