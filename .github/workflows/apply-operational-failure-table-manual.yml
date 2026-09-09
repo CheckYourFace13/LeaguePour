@@ -1,0 +1,17 @@
+name: Apply OperationalFailure table (manual)
+
+# One-time, additive-only application of the OperationalFailure table (see
+# prisma/migrations/20260909213000_operational_failure_log) directly through the app's own live
+# DB connection - via src/app/api/cron/apply-operational-failure-table. Idempotent.
+on:
+  workflow_dispatch:
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply OperationalFailure table
+        run: |
+          resp=$(curl -sS --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/apply-operational-failure-table")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1
