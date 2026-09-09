@@ -5,8 +5,12 @@ import { VsEventStatus } from "@/generated/prisma/enums";
 import { TrackView } from "@/components/analytics/track-view";
 
 export const dynamic = "force-dynamic";
-// Token-gated customer payment page - never indexable, regardless of who links to it.
-export const metadata: Metadata = { robots: { index: false, follow: false } };
+// Token-gated customer payment page - never indexable, regardless of who links to it. See
+// src/app/proposal/[token]/page.tsx for why title needs to be {absolute:...} here too.
+export const metadata: Metadata = {
+  title: { absolute: "Deposit received | VenueSprocket" },
+  robots: { index: false, follow: false },
+};
 
 export default async function DepositSuccessPage({
   searchParams,

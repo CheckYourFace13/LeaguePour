@@ -3,8 +3,16 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { acceptProposal, markProposalViewed } from "@/lib/actions/vs";
 
-// Token-gated customer proposal page - never indexable, regardless of who links to it.
-export const metadata: Metadata = { robots: { index: false, follow: false } };
+// Token-gated customer proposal page - never indexable, regardless of who links to it. title is
+// {absolute:...} (not a plain string, which the root layout's "%s | LeaguePour" template would
+// still append to) because this page has no host check of its own but is only ever reached via a
+// VenueSprocket link - found via whole-business audit: without this the browser tab showed
+// "LeaguePour | Venue Competitions & Entry Fees" for a customer reviewing a VenueSprocket
+// proposal, even though the page content itself was already correctly VS-branded.
+export const metadata: Metadata = {
+  title: { absolute: "Your event proposal | VenueSprocket" },
+  robots: { index: false, follow: false },
+};
 
 export default async function PublicProposalPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;

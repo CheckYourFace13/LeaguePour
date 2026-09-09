@@ -4,8 +4,12 @@ import { prisma } from "@/lib/db";
 import { DepositCheckoutForm } from "./deposit-checkout-form";
 
 export const dynamic = "force-dynamic";
-// Token-gated customer payment page - never indexable, regardless of who links to it.
-export const metadata: Metadata = { robots: { index: false, follow: false } };
+// Token-gated customer payment page - never indexable, regardless of who links to it. See
+// src/app/proposal/[token]/page.tsx for why title needs to be {absolute:...} here too.
+export const metadata: Metadata = {
+  title: { absolute: "Pay your deposit | VenueSprocket" },
+  robots: { index: false, follow: false },
+};
 
 const notices: Record<string, string> = {
   stripe_not_configured: "Online payments are not configured yet. The venue will contact you about your deposit.",

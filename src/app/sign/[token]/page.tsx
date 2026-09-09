@@ -3,8 +3,12 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import SignContractForm from "./sign-form";
 
-// Token-gated contract-signing page - never indexable, regardless of who links to it.
-export const metadata: Metadata = { robots: { index: false, follow: false } };
+// Token-gated contract-signing page - never indexable, regardless of who links to it. See
+// src/app/proposal/[token]/page.tsx for why title needs to be {absolute:...} here too.
+export const metadata: Metadata = {
+  title: { absolute: "Sign your contract | VenueSprocket" },
+  robots: { index: false, follow: false },
+};
 
 export default async function PublicSignPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
