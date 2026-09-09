@@ -6,6 +6,7 @@ import { useState } from "react";
 import {
   BarChart3,
   LayoutGrid,
+  LifeBuoy,
   Mail,
   Megaphone,
   Menu,
@@ -34,6 +35,13 @@ const navItems = [
   { href: venueAppRoutes.staff, label: "Staff", icon: UserCog, requiresStaffAdmin: true },
   { href: venueAppRoutes.profile, label: "Venue profile", icon: Settings },
   { href: venueAppRoutes.settings, label: "Settings", icon: Settings },
+  // Found via whole-business audit: there was no path from inside the authenticated venue
+  // dashboard to report a problem - a stuck venue owner had to already know the public
+  // leaguepour.com/contact page exists and navigate away from their own dashboard to find it.
+  // The contact form itself already works (src/components/marketing/contact-form.tsx ->
+  // /api/contact); this just makes it discoverable from where an owner would actually be
+  // looking when something breaks.
+  { href: "/contact", label: "Support", icon: LifeBuoy },
 ] as const;
 
 export function VenueAppShell({

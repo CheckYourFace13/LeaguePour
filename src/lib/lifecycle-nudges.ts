@@ -20,6 +20,19 @@ export async function claimNudge(key: string): Promise<boolean> {
   }
 }
 
+/**
+ * Claiming has to happen before the send attempt (it's the mutex against two concurrent runs
+ * double-sending the same nudge) - but that previously meant a failed Resend call left the key
+ * permanently claimed, so that nudge would never be retried on a later run. Found via
+ * whole-business audit. This releases the claim on failure so the next scheduled run sees the key
+ * as unclaimed again and retries it, while still preventing a genuine double-send.
+ */
+async function releaseNudgeClaim(key: string): Promise<void> {
+  await prisma.lifecycleNudgeSent.deleteMany({ where: { key } }).catch((err) => {
+    console.error("[lifecycle nudge] failed to release claim after send failure", key, err);
+  });
+}
+
 function baseUrl(): string {
   return process.env.NEXTAUTH_URL ?? "https://leaguepour.com";
 }
@@ -73,7 +86,11 @@ export async function sendLpNudge(opts: {
 }): Promise<boolean> {
   if (!(await claimNudge(opts.key))) return false;
   const html = lpEmailShell(opts.title, opts.bodyHtml, `${baseUrl()}${opts.ctaPath}`, opts.ctaLabel);
-  await sendEmail({ to: opts.to, subject: opts.subject, html });
+  const result = await sendEmail({ to: opts.to, subject: opts.subject, html });
+  if (!result.ok) {
+    await releaseNudgeClaim(opts.key);
+    return false;
+  }
   return true;
 }
 
@@ -88,13 +105,17 @@ export async function sendVsNudge(opts: {
 }): Promise<boolean> {
   if (!(await claimNudge(opts.key))) return false;
   const html = vsEmailShell(opts.title, opts.bodyHtml, `${baseUrl()}${opts.ctaPath}`, opts.ctaLabel);
-  await sendEmail({
+  const result = await sendEmail({
     to: opts.to,
     subject: opts.subject,
     html,
     from: "VenueSprocket <hello@venuesprocket.com>",
     brand: "vs",
   });
+  if (!result.ok) {
+    await releaseNudgeClaim(opts.key);
+    return false;
+  }
   return true;
 }
 

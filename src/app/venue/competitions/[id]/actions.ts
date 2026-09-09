@@ -170,8 +170,24 @@ export async function updateMatchScoreFormAction(formData: FormData) {
 
   const match = await prisma.match.findFirst({
     where: { id: matchId, competitionId, competition: { venueId: access.venueId } },
+    include: { competition: { select: { bracketKind: true } } },
   });
   if (!match) redirect(`/venue/competitions/${competitionId}`);
+
+  // A single-elimination match has to produce a winner - advanceRoundFormAction breaks a tie by
+  // silently crediting the away side (homeScore > awayScore is false on a tie), with no signal to
+  // the organizer that's what happened. Found live: the form has no client- or server-side
+  // objection to saving a 5-5 match today. Reject it here instead, before it's ever saved, so the
+  // organizer is prompted to resolve the tie (overtime, sudden death, whatever the house rule is)
+  // the same moment they'd notice it in real life, rather than discovering an unexplained
+  // "wrong" winner after advancing.
+  if (
+    match.competition.bracketKind === BracketKind.SINGLE_ELIMINATION &&
+    match.awayTeamId !== null &&
+    parsed.data.homeScore === parsed.data.awayScore
+  ) {
+    redirect(`/venue/competitions/${competitionId}?notice=elimination-tie`);
+  }
 
   await prisma.match.update({
     where: { id: matchId },

@@ -13,6 +13,10 @@ const NAV = [
   { href: "/app/payments", label: "Payments", icon: "💳" },
   { href: "/app/customers", label: "Customers", icon: "👥" },
   { href: "/app/settings", label: "Settings", icon: "⚙️" },
+  // Found via whole-business audit: no path from inside the authenticated VS dashboard to report
+  // a problem. /contact already works (routes to venuesprocket.com/contact's real ContactForm) -
+  // this just makes it discoverable from the dashboard itself.
+  { href: "/contact", label: "Support", icon: "🆘" },
 ];
 
 export function VsAppShell({

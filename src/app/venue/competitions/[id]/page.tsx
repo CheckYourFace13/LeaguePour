@@ -45,6 +45,7 @@ const notices: Record<string, string> = {
   "match-label-required": "Add a short matchup label (e.g. \"Team A vs Team B\") before saving.",
   "standing-saved": "Standings row updated.",
   "invalid-scores": "Scores must be whole numbers between 0 and 999.",
+  "elimination-tie": "Single-elimination matches can't end in a tie - settle it (overtime, sudden death, whatever your house rule is) and enter the final score.",
   "invalid-standing": "Check wins, losses, ties, and points.",
   "read-only": "That action is not available for your venue role. Ask an owner or manager if you need it done.",
   "not-editable": "This competition is already running or finished, so its core setup can no longer be edited.",
