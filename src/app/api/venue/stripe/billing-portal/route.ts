@@ -27,8 +27,7 @@ export async function POST() {
     const url = await createBillingPortalUrl(venue.stripeBillingCustomerId);
     return NextResponse.json({ url });
   } catch (err) {
-    const msg = err instanceof Error ? err.message : "Unknown error";
-    console.error("[billing portal]", msg);
-    return NextResponse.json({ error: msg }, { status: 500 });
+    console.error("[billing portal]", err);
+    return NextResponse.json({ error: "Could not open the billing portal. Please try again." }, { status: 500 });
   }
 }

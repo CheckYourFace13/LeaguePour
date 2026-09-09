@@ -45,7 +45,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
       },
       {
         title: "Online contract signing",
-        body: "Customers sign from their phone — no DocuSign required. Typed signature, checkbox, timestamp, and IP recorded. PDF sent automatically.",
+        body: "Customers sign from their phone — no DocuSign required. Typed signature, checkbox, timestamp, and IP recorded.",
       },
       {
         title: "Stripe deposit collection",
@@ -95,17 +95,17 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     title: "BEO Software for Venues",
     metaTitle: "BEO Software for Restaurants, Bars & Event Venues — VenueSprocket",
     metaDescription:
-      "Create Banquet Event Orders (BEOs) without starting from scratch. VenueSprocket generates BEOs from your event details with PDF export and a mobile day-of-event view for staff.",
+      "Create Banquet Event Orders (BEOs) without starting from scratch. VenueSprocket starts each BEO from your event record and gives staff a mobile day-of-event view.",
     kicker: "BEO builder",
     hero: "Build BEOs in minutes, not hours",
     heroSub:
-      "VenueSprocket generates a Banquet Event Order from the details already in your event record. No starting from a blank Word document. Staff see what they need on event day, on their phone.",
+      "VenueSprocket starts a Banquet Event Order from the event details you already have on file - name, date, time, guest count, room, and contact info carry over automatically. No starting from a blank Word document. Staff see what they need on event day, on their phone.",
     icon: "📑",
-    why: "Most venues build BEOs from scratch for every event — a Word document with copy-pasted details, printed and left in the kitchen, then lost or wrong when something changes. VenueSprocket builds the BEO from the same event record used for the inquiry, proposal, and contract. Change something once — the BEO updates everywhere.",
+    why: "Most venues build BEOs from scratch for every event — a Word document with copy-pasted details, printed and left in the kitchen, then lost or wrong when something changes. VenueSprocket starts the BEO from the same event record used for the inquiry, proposal, and contract, so the basics are already filled in.",
     features: [
       {
-        title: "Auto-generated from your event record",
-        body: "The BEO pulls event name, date, time, guest count, room, contact info, packages, and notes from the details you already entered. No re-keying data.",
+        title: "Starts from your event record",
+        body: "The BEO carries over event name, date, time, guest count, room, and contact info from the details you already entered when the event was created. No re-keying the basics.",
       },
       {
         title: "Food, beverage, staffing, AV sections",
@@ -120,8 +120,8 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
         body: "Internal staff notes on the BEO stay internal. Customers never see them. Great for manager alerts, VIP notes, or reminders about specific setup details.",
       },
       {
-        title: "PDF export",
-        body: "Export and print any BEO as a clean PDF. Attach it to a folder, email it to your kitchen, or share it with your event team.",
+        title: "Print-ready view",
+        body: "Open any BEO in a clean, print-ready layout - print it or save it as a PDF from your browser to hand to the kitchen or your event team.",
       },
       {
         title: "Mobile day-of-event staff view",
@@ -142,7 +142,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
       },
       {
         q: "Can I edit the BEO after generating it?",
-        a: "Yes. Any field on the BEO can be edited, and you can re-export a PDF with updated details at any time.",
+        a: "Yes. Any field on the BEO can be edited, and you can reprint the updated version at any time.",
       },
       {
         q: "Does BEO creation require a paid plan?",
@@ -326,8 +326,8 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
         body: "Inquiries land directly in your VenueSprocket dashboard - no email to miss, no message to lose track of.",
       },
       {
-        title: "Automated lead follow-up",
-        body: "If an inquiry doesn't get a response in time, an automated follow-up goes out so fewer leads fall through the cracks.",
+        title: "Untouched-lead reminders",
+        body: "If an inquiry doesn't get a response in time, we automatically remind your staff so fewer leads fall through the cracks.",
       },
       {
         title: "Instant customer confirmation",
@@ -652,7 +652,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
       },
       {
         title: "Contract signing",
-        body: "Customers sign your banquet contract online from their phone. Timestamp, IP, and typed signature recorded. PDF sent automatically.",
+        body: "Customers sign your banquet contract online from their phone. Timestamp, IP, and typed signature recorded.",
       },
       {
         title: "Deposit collection through Stripe",

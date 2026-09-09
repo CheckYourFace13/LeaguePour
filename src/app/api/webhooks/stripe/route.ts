@@ -12,7 +12,7 @@ import { revalidateRegistrationPaymentPaths } from "@/lib/stripe/revalidate-paym
 import { getStripe } from "@/lib/stripe/server";
 import { runJob } from "@/lib/job-runs";
 import { ownerEmails } from "@/lib/admin-auth";
-import { sendConnectReadyEmail } from "@/lib/email";
+import { sendConnectReadyEmail, sendVsDepositReceiptEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -366,4 +366,30 @@ async function fulfillVsDeposit(session: Stripe.Checkout.Session) {
     where: { id: payment.privateEventId },
     data: { status: VsEventStatus.CONFIRMED },
   });
+
+  // Without this, a customer who just paid a real deposit gets no receipt at all - the only
+  // confirmation is a page they might have already closed.
+  const event = await prisma.privateEvent.findUnique({
+    where: { id: payment.privateEventId },
+    select: {
+      eventName: true,
+      venue: { select: { name: true } },
+      lead: { select: { customerName: true, customerEmail: true } },
+      vsCustomer: { select: { name: true, email: true } },
+    },
+  });
+  const customer = event?.vsCustomer
+    ? { name: event.vsCustomer.name, email: event.vsCustomer.email }
+    : event?.lead
+      ? { name: event.lead.customerName, email: event.lead.customerEmail }
+      : null;
+  if (event && customer) {
+    sendVsDepositReceiptEmail({
+      to: customer.email,
+      customerName: customer.name,
+      venueName: event.venue.name,
+      eventName: event.eventName,
+      amountCents: payment.amountCents,
+    }).catch((err) => console.error("[vs deposit receipt email]", err));
+  }
 }

@@ -16,9 +16,10 @@ import { getBoolSetting } from "@/lib/app-settings";
  *  - Throttle: refuses if a VS batch already went out in the past 20 hours, so at most one
  *    batch per day no matter who calls it (matches the LP lane's throttle).
  *  - Time window: only runs 10am-12pm America/Chicago - offset an hour from LP's 9-11am window
- *    so the two lanes' scheduled runs don't land in the same GitHub Actions minute.
- *  - manual=1 skips the time window (still throttled and still respects the kill switch);
- *    requires CRON_SECRET when one is configured.
+ *    so the two lanes' scheduled runs don't land in the same GitHub Actions minute. manual=1
+ *    skips the window (still throttled, still respects the kill switch).
+ *  - CRON_SECRET always required (the in-process scheduler in src/lib/scheduler.ts sends it on
+ *    every call, scheduled or manual - there is no legitimate caller that doesn't have it).
  *  - Does NOT touch LeaguePour's send rate or throttle in any way.
  */
 const VS_SEND_PER_RUN = 5;
@@ -35,18 +36,18 @@ function chicagoHour(): number {
 }
 
 export async function GET(request: Request) {
+  const secret = process.env.CRON_SECRET?.trim();
+  if (!secret) {
+    return NextResponse.json({ ok: false, error: "CRON_SECRET is not configured." }, { status: 500 });
+  }
   const url = new URL(request.url);
-  const manual = url.searchParams.get("manual") === "1";
+  const given = url.searchParams.get("secret") ?? request.headers.get("authorization")?.replace("Bearer ", "");
+  if (given !== secret) {
+    return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  }
 
-  if (manual) {
-    const secret = process.env.CRON_SECRET?.trim();
-    if (secret) {
-      const given = url.searchParams.get("secret") ?? request.headers.get("authorization")?.replace("Bearer ", "");
-      if (given !== secret) {
-        return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
-      }
-    }
-  } else {
+  const manual = url.searchParams.get("manual") === "1";
+  if (!manual) {
     const hour = chicagoHour();
     if (hour < 10 || hour > 11) {
       return NextResponse.json({

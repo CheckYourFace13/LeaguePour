@@ -13,6 +13,7 @@ import { registrationsTowardCap } from "@/lib/registration-cap";
 import { buildQrDataUrl } from "@/lib/qr";
 import { formatDateTime, formatMoney } from "@/lib/utils";
 import { cta } from "@/lib/brand";
+import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import { RegistrationPanel } from "./registration-panel";
 
 export const dynamic = "force-dynamic";
@@ -128,7 +129,7 @@ export default async function PublicCompetitionPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonLd({
             "@context": "https://schema.org",
             "@type": "Event",
             "@id": publicUrl,

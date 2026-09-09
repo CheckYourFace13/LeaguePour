@@ -235,9 +235,10 @@ shots for the host if bar hits minimum before 10 PM.`}
               Skip the manual template
             </h2>
             <p className="text-vs-text-soft mb-5">
-              VenueSprocket's BEO builder generates a BEO like the one above automatically from the
-              event details you've already entered - food, beverage, staffing, AV, and timeline
-              sections included, with PDF export and a mobile view your staff can pull up on event day.
+              VenueSprocket's BEO builder starts a BEO like the one above from the event details
+              you've already entered, with food, beverage, staffing, AV, and timeline sections
+              built into the editor, a print-ready view, and a mobile view your staff can pull up
+              on event day.
             </p>
             <Link
               href="/beo-software"

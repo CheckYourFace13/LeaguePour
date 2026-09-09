@@ -37,7 +37,7 @@ const features = [
   {
     icon: "✍️",
     title: "Contracts signed online",
-    body: "Customers sign on their phone with a typed signature. Timestamp, IP, and user agent recorded. PDF copy sent automatically. No DocuSign required.",
+    body: "Customers sign on their phone with a typed signature. Timestamp, IP, and user agent recorded. No DocuSign required.",
   },
   {
     icon: "💳",
@@ -47,7 +47,7 @@ const features = [
   {
     icon: "📑",
     title: "BEOs from the same data",
-    body: "Generate a BEO from your event details automatically. Food, beverage, setup, timeline, staffing, AV — all populated from what you already entered.",
+    body: "Start a BEO from your event details - name, date, time, guest count, room, and contact info carry over automatically. Add food, beverage, staffing, AV, and timeline details right in the builder.",
   },
   {
     icon: "📣",

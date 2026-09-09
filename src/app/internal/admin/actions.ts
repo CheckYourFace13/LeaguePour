@@ -9,6 +9,7 @@ import {
 import { prisma } from "@/lib/db";
 import { requireOwnerSession } from "@/lib/admin-auth";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 function toInt(value: FormDataEntryValue | null): number | null {
   if (typeof value !== "string" || value.trim() === "") return null;
@@ -31,10 +32,46 @@ export async function disableVenueAction(formData: FormData) {
   revalidatePath("/internal/admin");
 }
 
+/**
+ * Hard-deletes a venue and, via the schema's onDelete: Cascade, everything under it - LeaguePour
+ * competitions/registrations/matches/standings AND every VenueSprocket lead/proposal/contract/
+ * BEO/payment record - permanently, with no recovery. That's fine for a genuinely blank test
+ * venue but not for one with any real financial history, so this refuses to run against a venue
+ * that has ever touched money: any registration payment, any VenueSprocket payment, a live
+ * Stripe Connect account, or a Stripe subscription (deleting the DB row would also silently
+ * orphan that Connect account and leave a subscription billing a venue the app can no longer
+ * reach). Use "Disable" for those instead - it's fully reversible and doesn't touch Stripe or
+ * any financial record.
+ */
 export async function deleteVenueAction(formData: FormData) {
   await requireOwnerSession();
   const venueId = String(formData.get("venueId") ?? "");
   if (!venueId) return;
+
+  const venue = await prisma.venue.findUnique({
+    where: { id: venueId },
+    select: {
+      stripeAccountId: true,
+      subscriptionId: true,
+      competitions: {
+        select: { registrations: { where: { paymentId: { not: null } }, select: { id: true }, take: 1 } },
+      },
+      vsPayments: { select: { id: true }, take: 1 },
+    },
+  });
+  if (!venue) return;
+
+  const hasRegistrationPayment = venue.competitions.some((c) => c.registrations.length > 0);
+  const hasFinancialHistory =
+    venue.stripeAccountId !== null ||
+    venue.subscriptionId !== null ||
+    hasRegistrationPayment ||
+    venue.vsPayments.length > 0;
+
+  if (hasFinancialHistory) {
+    redirect("/internal/admin?venueErr=has-financial-history");
+  }
+
   await prisma.venue.delete({ where: { id: venueId } });
   revalidatePath("/internal/admin");
 }
@@ -57,6 +94,15 @@ export async function deleteCompetitionAction(formData: FormData) {
   await requireOwnerSession();
   const competitionId = String(formData.get("competitionId") ?? "");
   if (!competitionId) return;
+
+  const hasPayment = await prisma.competitionRegistration.findFirst({
+    where: { competitionId, paymentId: { not: null } },
+    select: { id: true },
+  });
+  if (hasPayment) {
+    redirect("/internal/admin?venueErr=competition-has-payments");
+  }
+
   await prisma.competition.delete({ where: { id: competitionId } });
   revalidatePath("/internal/admin");
 }

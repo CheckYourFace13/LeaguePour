@@ -22,6 +22,6 @@ jobs:
     steps:
       - name: Trigger outreach send
         run: |
-          resp=$(curl -sS --max-time 600 "https://leaguepour.com/api/cron/outreach-send")
+          resp=$(curl -sS --max-time 600 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/outreach-send?manual=1")
           echo "$resp"
           echo "$resp" | grep -q '"ok":true' || exit 1

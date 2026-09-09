@@ -272,6 +272,86 @@ export function sendVsInquiryConfirmationEmail(opts: {
   });
 }
 
+/**
+ * The customer-facing side of sendProposal()/sendContract()/a paid deposit - without these, a
+ * venue can flip a proposal/contract to "SENT" or collect a deposit and the customer never
+ * learns anything happened unless the venue separately messages them the link out of band. Found
+ * via whole-business audit: these three DB-status transitions had no email at all behind them.
+ */
+export function sendVsProposalReadyEmail(opts: {
+  to: string;
+  customerName: string;
+  venueName: string;
+  eventName: string;
+  totalAmountCents: number;
+  proposalUrl: string;
+}): Promise<{ ok: boolean }> {
+  const total = (opts.totalAmountCents / 100).toLocaleString("en-US", { style: "currency", currency: "USD" });
+  const content = `
+    <h2>Your event proposal is ready</h2>
+    <p>Hi ${escHtml(opts.customerName)},</p>
+    <p><strong>${escHtml(opts.venueName)}</strong> has put together a proposal for <strong>${escHtml(opts.eventName)}</strong>.</p>
+    <div class="detail-box">
+      <p><strong>Estimated total:</strong> ${total}</p>
+    </div>
+    <a class="cta" href="${opts.proposalUrl}">Review your proposal</a>
+    <p style="font-size:13px;color:#6b6560;">Have questions? Just reply to this email or reach out to ${escHtml(opts.venueName)} directly.</p>
+  `;
+  return sendEmail({
+    to: opts.to,
+    subject: `Your proposal from ${opts.venueName} is ready to review`,
+    html: vsBaseHtml(content),
+    from: "VenueSprocket <hello@venuesprocket.com>",
+    brand: "vs",
+  });
+}
+
+export function sendVsContractReadyEmail(opts: {
+  to: string;
+  customerName: string;
+  venueName: string;
+  eventName: string;
+  contractUrl: string;
+}): Promise<{ ok: boolean }> {
+  const content = `
+    <h2>Your event contract is ready to sign</h2>
+    <p>Hi ${escHtml(opts.customerName)},</p>
+    <p><strong>${escHtml(opts.venueName)}</strong> has sent over the contract for <strong>${escHtml(opts.eventName)}</strong>. Review and sign online - no printing or scanning needed.</p>
+    <a class="cta" href="${opts.contractUrl}">Review & sign contract</a>
+    <p style="font-size:13px;color:#6b6560;">Have questions? Just reply to this email or reach out to ${escHtml(opts.venueName)} directly.</p>
+  `;
+  return sendEmail({
+    to: opts.to,
+    subject: `Please sign your contract with ${opts.venueName}`,
+    html: vsBaseHtml(content),
+    from: "VenueSprocket <hello@venuesprocket.com>",
+    brand: "vs",
+  });
+}
+
+export function sendVsDepositReceiptEmail(opts: {
+  to: string;
+  customerName: string;
+  venueName: string;
+  eventName: string;
+  amountCents: number;
+}): Promise<{ ok: boolean }> {
+  const amount = (opts.amountCents / 100).toLocaleString("en-US", { style: "currency", currency: "USD" });
+  const content = `
+    <h2>Deposit received</h2>
+    <p>Hi ${escHtml(opts.customerName)},</p>
+    <p>This confirms your deposit of <strong>${amount}</strong> for <strong>${escHtml(opts.eventName)}</strong> at <strong>${escHtml(opts.venueName)}</strong> was received.</p>
+    <p>${escHtml(opts.venueName)} will follow up with next steps. Keep this email as your receipt.</p>
+  `;
+  return sendEmail({
+    to: opts.to,
+    subject: `Receipt: deposit received for ${opts.eventName}`,
+    html: vsBaseHtml(content),
+    from: "VenueSprocket <hello@venuesprocket.com>",
+    brand: "vs",
+  });
+}
+
 export function sendRegistrationConfirmationEmail(opts: {
   to: string;
   playerName: string;

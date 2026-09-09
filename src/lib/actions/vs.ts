@@ -5,7 +5,13 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
-import { sendVsLeadNotificationEmail, sendVsInquiryConfirmationEmail } from "@/lib/email";
+import {
+  sendVsLeadNotificationEmail,
+  sendVsInquiryConfirmationEmail,
+  sendVsProposalReadyEmail,
+  sendVsContractReadyEmail,
+} from "@/lib/email";
+import { getAppBaseUrl } from "@/lib/stripe/env";
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -207,7 +213,15 @@ export async function sendProposal(proposalId: string) {
   const access = await requireVenueAccess();
   const proposal = await prisma.vsProposal.findFirst({
     where: { id: proposalId, privateEvent: { venueId: access.venueId } },
-    include: { privateEvent: true },
+    include: {
+      privateEvent: {
+        include: {
+          lead: { select: { customerName: true, customerEmail: true } },
+          vsCustomer: { select: { name: true, email: true } },
+          venue: { select: { name: true } },
+        },
+      },
+    },
   });
   if (!proposal) throw new Error("Not found");
 
@@ -215,6 +229,25 @@ export async function sendProposal(proposalId: string) {
     where: { id: proposalId },
     data: { status: "SENT" },
   });
+
+  // Without this, the proposal sits at status "SENT" with nothing telling the customer it
+  // exists - they'd only find out if the venue separately messaged them the link.
+  const customer = proposal.privateEvent.vsCustomer
+    ? { name: proposal.privateEvent.vsCustomer.name, email: proposal.privateEvent.vsCustomer.email }
+    : proposal.privateEvent.lead
+      ? { name: proposal.privateEvent.lead.customerName, email: proposal.privateEvent.lead.customerEmail }
+      : null;
+  if (customer) {
+    const proposalUrl = `${getAppBaseUrl()}/proposal/${proposal.publicToken}`;
+    void sendVsProposalReadyEmail({
+      to: customer.email,
+      customerName: customer.name,
+      venueName: proposal.privateEvent.venue.name,
+      eventName: proposal.privateEvent.eventName,
+      totalAmountCents: proposal.totalAmount,
+      proposalUrl,
+    }).catch((err) => console.error("[vs proposal ready email]", err));
+  }
 
   revalidatePath(`/app/proposals/${proposalId}`);
   revalidatePath(`/app/events/${proposal.privateEventId}`);
@@ -310,6 +343,15 @@ export async function sendContract(contractId: string) {
   const access = await requireVenueAccess();
   const contract = await prisma.vsContract.findFirst({
     where: { id: contractId, privateEvent: { venueId: access.venueId } },
+    include: {
+      privateEvent: {
+        include: {
+          lead: { select: { customerName: true, customerEmail: true } },
+          vsCustomer: { select: { name: true, email: true } },
+          venue: { select: { name: true } },
+        },
+      },
+    },
   });
   if (!contract) throw new Error("Not found");
 
@@ -317,6 +359,22 @@ export async function sendContract(contractId: string) {
     where: { id: contractId },
     data: { status: "SENT" },
   });
+
+  const customer = contract.privateEvent.vsCustomer
+    ? { name: contract.privateEvent.vsCustomer.name, email: contract.privateEvent.vsCustomer.email }
+    : contract.privateEvent.lead
+      ? { name: contract.privateEvent.lead.customerName, email: contract.privateEvent.lead.customerEmail }
+      : null;
+  if (customer) {
+    const contractUrl = `${getAppBaseUrl()}/sign/${contract.publicToken}`;
+    void sendVsContractReadyEmail({
+      to: customer.email,
+      customerName: customer.name,
+      venueName: contract.privateEvent.venue.name,
+      eventName: contract.privateEvent.eventName,
+      contractUrl,
+    }).catch((err) => console.error("[vs contract ready email]", err));
+  }
 
   revalidatePath(`/app/contracts/${contractId}`);
 }

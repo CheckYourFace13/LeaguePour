@@ -73,8 +73,7 @@ export async function POST(req: Request) {
     });
     return NextResponse.json({ url, bundleDiscount });
   } catch (err) {
-    const msg = err instanceof Error ? err.message : "Unknown error";
-    console.error("[billing subscribe]", msg);
-    return NextResponse.json({ error: msg }, { status: 500 });
+    console.error("[billing subscribe]", err);
+    return NextResponse.json({ error: "Could not start checkout. Please try again." }, { status: 500 });
   }
 }

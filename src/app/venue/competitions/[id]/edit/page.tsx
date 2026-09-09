@@ -288,8 +288,10 @@ export default async function EditCompetitionPage({
           <h2 className="lp-page-title text-xl">Format & schedule</h2>
           <FieldHelp title="Round robin vs elimination">
             <p>
-              Round robin spreads losses across weeks, great for loyalty. Single elimination is
-              fast drama on one stage. Double elimination keeps top teams alive longer.
+              Round robin spreads losses across weeks, great for loyalty - LeaguePour generates the
+              full schedule automatically. Single elimination is fast drama on one stage -
+              LeaguePour generates Round 1 and each round after it automatically too. Custom is for
+              anything else, tracked manually.
             </p>
           </FieldHelp>
           <div className="grid gap-4 sm:grid-cols-2">

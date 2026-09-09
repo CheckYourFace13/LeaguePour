@@ -40,9 +40,20 @@ export async function refundRegistrationPaymentFormAction(formData: FormData) {
   if (reg.payment.provider === "stripe" && reg.payment.providerPaymentIntentId) {
     const stripe = getStripe();
     try {
-      await stripe.refunds.create({
-        payment_intent: reg.payment.providerPaymentIntentId,
-      });
+      // LP entry-fee Checkout Sessions are direct charges created ON the connected venue's own
+      // Stripe account (see connect-controller.ts) - the PaymentIntent lives in that account's
+      // namespace, so every call touching it (like fulfillment.ts and player/pay/actions.ts
+      // already do) must be authenticated as that account via stripeAccount, or Stripe returns
+      // "No such payment_intent". refund_application_fee returns LeaguePour's platform-fee cut
+      // to the customer too, so refunding a registration in full doesn't leave the venue short
+      // the app fee on money they no longer have from the player.
+      await stripe.refunds.create(
+        {
+          payment_intent: reg.payment.providerPaymentIntentId,
+          refund_application_fee: true,
+        },
+        reg.payment.stripeConnectDestinationId ? { stripeAccount: reg.payment.stripeConnectDestinationId } : undefined,
+      );
     } catch (e) {
       console.error("[stripe refund] API error", e);
       const fresh = await prisma.payment.findUnique({ where: { id: reg.paymentId } });

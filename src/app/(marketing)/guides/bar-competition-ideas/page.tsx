@@ -286,8 +286,9 @@ export default function BarCompetitionIdeas() {
         <div className="mt-14 rounded-2xl bg-lp-accent/10 border border-lp-accent/20 p-8 text-center">
           <h2 className="font-display text-2xl font-bold">Ready to run your first competition?</h2>
           <p className="mt-2 text-lp-muted">
-            LeaguePour handles online signup, entry fees, standings, and player communications for
-            any of these formats - so you can focus on the event itself.
+            LeaguePour handles online signup, entry fees, and player communications for any of
+            these formats - with automatic bracket/schedule generation and standings for single
+            elimination and round robin, and manual Custom tracking for anything else.
           </p>
           <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Button asChild size="lg">
