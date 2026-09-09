@@ -94,7 +94,13 @@ export async function middleware(request: NextRequest) {
 
   if (!token) {
     const callbackPath = `${pathname}${request.nextUrl.search}`;
-    const loginUrl = new URL("/login", getPublicSiteUrl());
+    // getPublicSiteUrl() always resolves to leaguepour.com - without this check, an
+    // unauthenticated VenueSprocket visitor hitting a protected /app/* route (their whole
+    // dashboard) was bounced to leaguepour.com/login instead of staying on venuesprocket.com.
+    // Found via whole-business audit, confirmed live with a real disposable login attempt.
+    const requestHost = request.headers.get("host")?.split(":")[0]?.toLowerCase();
+    const loginOrigin = requestHost === VS_HOST ? `https://${VS_HOST}` : getPublicSiteUrl();
+    const loginUrl = new URL("/login", loginOrigin);
     const response = NextResponse.redirect(loginUrl);
     response.cookies.set("lp_callback", callbackPath, {
       path: "/",

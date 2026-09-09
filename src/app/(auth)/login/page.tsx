@@ -12,10 +12,13 @@ export const revalidate = 0;
 // correct on a direct visit/bookmark too, not only when arriving via a link that set ?from=vs.
 export async function generateMetadata(): Promise<Metadata> {
   const host = (await headers()).get("host")?.split(":")[0]?.toLowerCase();
+  // Absolute, not a plain string: the root layout's title template ("%s | LeaguePour") would
+  // otherwise still apply on top of this, producing "Log in | VenueSprocket | LeaguePour" -
+  // confirmed live.
   if (host === VS_HOST) {
-    return { title: "Log in | VenueSprocket", description: "Log in to your VenueSprocket account." };
+    return { title: { absolute: "Log in | VenueSprocket" }, description: "Log in to your VenueSprocket account." };
   }
-  return { title: "Log in | LeaguePour", description: "Log in to your LeaguePour account." };
+  return { title: { absolute: "Log in | LeaguePour" }, description: "Log in to your LeaguePour account." };
 }
 
 type LoginPageProps = {
