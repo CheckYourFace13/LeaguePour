@@ -728,6 +728,34 @@ model Notification {
   @@schema("leaguepour_lp")
 }
 
+/**
+ * Owner-facing operational failure log, surfaced on /internal/admin - not customer-facing, not a
+ * retry queue. Found via whole-business audit: every failure in this app (email send, tournament
+ * generation, Checkout creation, refund, Connect onboarding, contract signing) previously only
+ * reached a server-side console.error, invisible to the owner without direct log access. Written
+ * to on failure only (not on every success - this is an incident feed, not an audit trail).
+ * Deliberately separate from Notification (that model is per-user and unused elsewhere in this
+ * codebase; this one has no required userId since several categories - a failed VS proposal
+ * email, a failed anonymous Checkout attempt - have no User row to attach to, only a venueId).
+ */
+model OperationalFailure {
+  id        String   @id @default(cuid())
+  /** Stable machine category, e.g. "email-send", "tournament-start", "lp-checkout", "lp-refund",
+   * "connect-onboarding", "vs-deposit-checkout", "vs-contract-sign". */
+  category  String
+  /** Short human-readable summary shown directly in the admin panel - never a raw stack trace,
+   * never a secret/token/card number. */
+  summary   String
+  venueId   String?
+  /** Free-form additional context (error message, ids) - same no-secrets/no-stack-trace rule. */
+  detail    String?  @db.Text
+  retryable Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([category, createdAt])
+  @@schema("leaguepour_lp")
+}
+
 // ═══════════════════════════════════════════════════════════════
 // VenueSprocket — private event management
 // ═══════════════════════════════════════════════════════════════

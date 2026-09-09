@@ -15,6 +15,7 @@ import {
   pairNextRound,
   type Participant,
 } from "@/lib/tournament";
+import { logOperationalFailure } from "@/lib/operational-failure";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -600,45 +601,60 @@ export async function startTournamentFormAction(formData: FormData) {
     redirect(`/venue/competitions/${competitionId}?notice=not-enough-participants`);
   }
 
-  if (existing.bracketKind === BracketKind.SINGLE_ELIMINATION) {
-    const { pairings } = buildSingleEliminationRound1(participants);
-    // Created one at a time (not Promise.all) so insertion order - and therefore bracket slot
-    // order recovered later by sorting on id (cuids are chronologically sortable) - is preserved.
-    for (const pairing of pairings) {
-      const isBye = pairing.away === null;
-      await prisma.match.create({
-        data: {
-          competitionId,
-          round: 1,
-          homeTeamId: pairing.home.id,
-          awayTeamId: pairing.away?.id ?? null,
-          label: isBye ? `${pairing.home.name} - first-round bye, advances automatically` : null,
-          homeScore: isBye ? 1 : null,
-          awayScore: isBye ? 0 : null,
-          completedAt: isBye ? new Date() : null,
-        },
-      });
-    }
-  } else {
-    const { rounds } = buildRoundRobinSchedule(participants);
-    for (let r = 0; r < rounds.length; r++) {
-      for (const m of rounds[r]) {
+  // Wrapped separately from every redirect() call above/below - redirect() throws a special
+  // Next.js signal error that must propagate uncaught, so it must never sit inside this try.
+  // Found via whole-business audit: a DB failure partway through generating matches previously
+  // had no owner-visible signal at all, just an unhandled exception.
+  try {
+    if (existing.bracketKind === BracketKind.SINGLE_ELIMINATION) {
+      const { pairings } = buildSingleEliminationRound1(participants);
+      // Created one at a time (not Promise.all) so insertion order - and therefore bracket slot
+      // order recovered later by sorting on id (cuids are chronologically sortable) - is preserved.
+      for (const pairing of pairings) {
+        const isBye = pairing.away === null;
         await prisma.match.create({
-          data: { competitionId, round: r + 1, homeTeamId: m.home.id, awayTeamId: m.away.id },
+          data: {
+            competitionId,
+            round: 1,
+            homeTeamId: pairing.home.id,
+            awayTeamId: pairing.away?.id ?? null,
+            label: isBye ? `${pairing.home.name} - first-round bye, advances automatically` : null,
+            homeScore: isBye ? 1 : null,
+            awayScore: isBye ? 0 : null,
+            completedAt: isBye ? new Date() : null,
+          },
         });
       }
-    }
-    // Seed every entrant onto the standings board at 0-0-0 immediately, so the board isn't empty
-    // before the first result comes in.
-    for (const p of participants) {
-      const already = await prisma.standing.findFirst({ where: { competitionId, teamId: p.id } });
-      if (!already) {
-        await prisma.standing.create({ data: { competitionId, teamId: p.id, wins: 0, losses: 0, ties: 0, points: 0 } });
+    } else {
+      const { rounds } = buildRoundRobinSchedule(participants);
+      for (let r = 0; r < rounds.length; r++) {
+        for (const m of rounds[r]) {
+          await prisma.match.create({
+            data: { competitionId, round: r + 1, homeTeamId: m.home.id, awayTeamId: m.away.id },
+          });
+        }
+      }
+      // Seed every entrant onto the standings board at 0-0-0 immediately, so the board isn't empty
+      // before the first result comes in.
+      for (const p of participants) {
+        const already = await prisma.standing.findFirst({ where: { competitionId, teamId: p.id } });
+        if (!already) {
+          await prisma.standing.create({ data: { competitionId, teamId: p.id, wins: 0, losses: 0, ties: 0, points: 0 } });
+        }
       }
     }
+    await prisma.competition.update({ where: { id: competitionId }, data: { status: CompetitionStatus.IN_PROGRESS } });
+  } catch (err) {
+    console.error("[start tournament] failed", competitionId, err);
+    await logOperationalFailure({
+      category: "tournament-start",
+      summary: `Tournament failed to start/generate for competition ${competitionId}`,
+      venueId: access.venueId,
+      detail: err instanceof Error ? err.message : String(err),
+      retryable: true,
+    });
+    redirect(`/venue/competitions/${competitionId}?notice=start-failed`);
   }
-
-  await prisma.competition.update({ where: { id: competitionId }, data: { status: CompetitionStatus.IN_PROGRESS } });
 
   revalidatePath(`/venue/competitions/${competitionId}`);
   revalidatePath("/venue/competitions");

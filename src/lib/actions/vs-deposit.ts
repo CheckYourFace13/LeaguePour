@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getAppBaseUrl, isStripePaymentsConfigured } from "@/lib/stripe/env";
 import { getStripe } from "@/lib/stripe/server";
+import { logOperationalFailure } from "@/lib/operational-failure";
 
 export async function startDepositCheckout(formData: FormData) {
   const token = String(formData.get("token") ?? "").trim();
@@ -89,40 +90,55 @@ export async function startDepositCheckout(formData: FormData) {
   // deposits today, and this pass isn't the place to add one - the venue now pays its own
   // Stripe processing fee under Managed Risk, so the platform no longer loses money on these
   // either way.
-  const session = await stripe.checkout.sessions.create(
-    {
-      mode: "payment",
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            unit_amount: depositAmountCents,
-            product_data: {
-              name: `Event deposit — ${contract.privateEvent.eventName}`,
-              description: `Non-refundable deposit for your private event at ${venue.name}`,
+  // Wrapped so a Stripe API failure is logged for the owner instead of only surfacing as an
+  // unhandled exception - found via whole-business audit. redirect() calls stay outside this try.
+  let session: Awaited<ReturnType<typeof stripe.checkout.sessions.create>>;
+  try {
+    session = await stripe.checkout.sessions.create(
+      {
+        mode: "payment",
+        line_items: [
+          {
+            price_data: {
+              currency: "usd",
+              unit_amount: depositAmountCents,
+              product_data: {
+                name: `Event deposit — ${contract.privateEvent.eventName}`,
+                description: `Non-refundable deposit for your private event at ${venue.name}`,
+              },
             },
+            quantity: 1,
           },
-          quantity: 1,
+        ],
+        payment_intent_data: {
+          metadata: {
+            vsPaymentId: payment.id,
+            contractToken: token,
+            type: "vs_deposit",
+          },
         },
-      ],
-      payment_intent_data: {
         metadata: {
           vsPaymentId: payment.id,
           contractToken: token,
           type: "vs_deposit",
         },
+        success_url: `${base}/deposit/success?session_id={CHECKOUT_SESSION_ID}&token=${token}`,
+        cancel_url: `${base}/deposit/pay?token=${token}&stripe_cancel=1`,
+        client_reference_id: payment.id,
       },
-      metadata: {
-        vsPaymentId: payment.id,
-        contractToken: token,
-        type: "vs_deposit",
-      },
-      success_url: `${base}/deposit/success?session_id={CHECKOUT_SESSION_ID}&token=${token}`,
-      cancel_url: `${base}/deposit/pay?token=${token}&stripe_cancel=1`,
-      client_reference_id: payment.id,
-    },
-    { stripeAccount: venue.stripeAccountId },
-  );
+      { stripeAccount: venue.stripeAccountId },
+    );
+  } catch (e) {
+    console.error("[vs deposit checkout] session creation failed", e);
+    await logOperationalFailure({
+      category: "vs-deposit-checkout",
+      summary: `Deposit Checkout session failed to create for event ${contract.privateEvent.id}`,
+      venueId: contract.privateEvent.venueId,
+      detail: e instanceof Error ? e.message : String(e),
+      retryable: true,
+    });
+    redirect(`/deposit/pay?token=${token}&notice=session_failed`);
+  }
 
   if (!session.url) redirect(`/deposit/pay?token=${token}&notice=session_failed`);
 

@@ -135,6 +135,16 @@ function timeAgo(iso: string | null): string {
   return `${Math.floor(hrs / 24)}d ago`;
 }
 
+const FAILURE_CATEGORY_LABELS: Record<string, string> = {
+  "email-send": "Email failed to send",
+  "tournament-start": "Tournament failed to start",
+  "lp-checkout": "Entry-fee checkout failed",
+  "lp-refund": "Refund failed",
+  "connect-onboarding": "Stripe Connect onboarding failed",
+  "vs-deposit-checkout": "VS deposit checkout failed",
+  "vs-contract-sign": "VS contract signing failed",
+};
+
 const JOB_LABELS: Record<string, string> = {
   "lp-outreach-send": "LP outreach send",
   "vs-outreach-send": "VS outreach send",
@@ -224,6 +234,31 @@ export function SystemHealthPanel({ health }: { health: SystemHealth }) {
             {label}: {jobLine(health.jobs[key] ?? null)}
           </p>
         ))}
+      </div>
+
+      <div className="space-y-1.5">
+        <p className="text-xs font-bold uppercase tracking-wide text-lp-muted">
+          Recent failures ({health.recentFailures.length})
+        </p>
+        {health.recentFailures.length === 0 ? (
+          <p className="text-sm text-green-600">None recorded.</p>
+        ) : (
+          <div className="space-y-1.5">
+            {health.recentFailures.map((f) => (
+              <div key={f.id} className="rounded-lg border border-red-500/30 bg-red-500/5 px-3 py-2 text-sm">
+                <p className="font-semibold text-red-700">
+                  {FAILURE_CATEGORY_LABELS[f.category] ?? f.category}
+                  {f.venueName ? ` — ${f.venueName}` : ""}
+                </p>
+                <p className="text-lp-text-soft">{redactEmails(f.summary)}</p>
+                <p className="mt-0.5 text-xs text-lp-muted">
+                  {f.createdAt.toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" })}
+                  {f.retryable ? " · retryable - the venue/customer can just try the action again" : ""}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </Card>
   );

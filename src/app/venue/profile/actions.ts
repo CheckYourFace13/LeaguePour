@@ -9,6 +9,7 @@ import {
   resolvePrimaryVenueAccess,
   venueStaffCanCreateAndPublish,
 } from "@/lib/venue-permissions";
+import { logOperationalFailure } from "@/lib/operational-failure";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -145,6 +146,13 @@ export async function createStripeConnectOnboardingAction() {
     // whatever future failure reaches here - see the connect-error notice for the friendly
     // message.
     console.error("[stripe-connect] onboarding link creation failed", err);
+    await logOperationalFailure({
+      category: "connect-onboarding",
+      summary: `Stripe Connect onboarding link failed for venue ${access.venueId}`,
+      venueId: access.venueId,
+      detail: err instanceof Error ? err.message : String(err),
+      retryable: true,
+    });
     redirect("/venue/profile?notice=connect-error");
   }
 

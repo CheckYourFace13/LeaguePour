@@ -12,6 +12,7 @@ import {
   sendVsContractReadyEmail,
 } from "@/lib/email";
 import { VS_HOST } from "@/lib/vs-routing";
+import { logOperationalFailure } from "@/lib/operational-failure";
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -395,21 +396,33 @@ export async function signContract(token: string, formData: FormData) {
     return { error: "All fields are required and you must agree to the terms." };
   }
 
-  await prisma.vsContract.update({
-    where: { id: contract.id },
-    data: {
-      status: "SIGNED",
-      signerName,
-      signerEmail,
-      typedSignature,
-      signedAt: new Date(),
-    },
-  });
+  try {
+    await prisma.vsContract.update({
+      where: { id: contract.id },
+      data: {
+        status: "SIGNED",
+        signerName,
+        signerEmail,
+        typedSignature,
+        signedAt: new Date(),
+      },
+    });
 
-  await prisma.privateEvent.update({
-    where: { id: contract.privateEventId },
-    data: { status: "DEPOSIT_DUE" },
-  });
+    await prisma.privateEvent.update({
+      where: { id: contract.privateEventId },
+      data: { status: "DEPOSIT_DUE" },
+    });
+  } catch (e) {
+    console.error("[vs contract sign] failed", contract.id, e);
+    await logOperationalFailure({
+      category: "vs-contract-sign",
+      summary: `Contract signing failed to save for contract ${contract.id}`,
+      venueId: contract.privateEvent.venueId,
+      detail: e instanceof Error ? e.message : String(e),
+      retryable: true,
+    });
+    return { error: "Something went wrong saving your signature. Please try again." };
+  }
 
   return { ok: true, eventId: contract.privateEventId };
 }

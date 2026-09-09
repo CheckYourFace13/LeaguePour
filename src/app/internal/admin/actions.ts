@@ -9,6 +9,7 @@ import {
 import { prisma } from "@/lib/db";
 import { requireOwnerSession } from "@/lib/admin-auth";
 import { getStripe } from "@/lib/stripe/server";
+import { logOperationalFailure } from "@/lib/operational-failure";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -183,6 +184,12 @@ export async function refundPaymentAction(formData: FormData) {
       const fresh = await prisma.payment.findUnique({ where: { id: paymentId } });
       if (fresh?.status !== PaymentStatus.REFUNDED) {
         const message = e instanceof Error ? e.message : "Stripe refund failed.";
+        await logOperationalFailure({
+          category: "lp-refund",
+          summary: `Admin refund failed for payment ${paymentId}`,
+          detail: message,
+          retryable: true,
+        });
         redirect(`/internal/admin?refundErr=${encodeURIComponent(message)}`);
       }
       revalidatePath("/internal/admin");

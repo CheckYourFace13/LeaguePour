@@ -269,6 +269,27 @@ export async function getSystemHealthMetrics() {
       }),
     ]);
 
+  // Most recent operational failures (email sends, tournament start, Checkout, refunds, Connect
+  // onboarding, contract signing) - see OperationalFailure's doc comment in schema.prisma.
+  // venueId is a loose id (no formal relation - several categories have no venue at all), so the
+  // display name is resolved with a small separate lookup rather than a Prisma include.
+  const recentFailuresRaw = await prisma.operationalFailure
+    .findMany({ orderBy: { createdAt: "desc" }, take: 25 })
+    .catch(() => []);
+  const failureVenueIds = [...new Set(recentFailuresRaw.map((f) => f.venueId).filter((id): id is string => !!id))];
+  const failureVenues = failureVenueIds.length
+    ? await prisma.venue.findMany({ where: { id: { in: failureVenueIds } }, select: { id: true, name: true } })
+    : [];
+  const failureVenueNameById = new Map(failureVenues.map((v) => [v.id, v.name]));
+  const recentFailures = recentFailuresRaw.map((f) => ({
+    id: f.id,
+    category: f.category,
+    summary: f.summary,
+    venueName: f.venueId ? (failureVenueNameById.get(f.venueId) ?? null) : null,
+    retryable: f.retryable,
+    createdAt: f.createdAt,
+  }));
+
   const schedulerStale =
     !schedulerLastTick || Date.now() - new Date(schedulerLastTick).getTime() > 20 * 60 * 1000;
   // dbHeartbeat's stored value is "<ISO timestamp> <outcome text>" (see scheduler.ts's
@@ -289,5 +310,6 @@ export async function getSystemHealthMetrics() {
     connectStartedNotReady,
     dbHeartbeat: dbHeartbeat || null,
     dbHeartbeatStale,
+    recentFailures,
   };
 }

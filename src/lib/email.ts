@@ -8,6 +8,8 @@
  * default, falls back to onboarding@resend.dev). VS calls always pass an explicit `from`.
  */
 
+import { logOperationalFailure } from "@/lib/operational-failure";
+
 const RESEND_API = "https://api.resend.com";
 
 export type EmailBrand = "lp" | "vs";
@@ -38,6 +40,12 @@ export async function sendEmail(opts: SendEmailOpts): Promise<{ ok: boolean; id?
   if (!key) {
     const error = `${brand === "vs" ? "RESEND_VS_API_KEY" : "RESEND_API_KEY"} not set`;
     console.warn(`[email] ${error} - skipping email to`, opts.to, "Subject:", opts.subject);
+    await logOperationalFailure({
+      category: "email-send",
+      summary: `Email not sent: ${error}`,
+      detail: `subject: ${opts.subject}`,
+      retryable: true,
+    });
     return { ok: false, error };
   }
 
@@ -56,6 +64,12 @@ export async function sendEmail(opts: SendEmailOpts): Promise<{ ok: boolean; id?
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     console.error("[email] Resend error", res.status, text);
+    await logOperationalFailure({
+      category: "email-send",
+      summary: `Email failed to send (Resend HTTP ${res.status}): ${opts.subject}`,
+      detail: text.slice(0, 500),
+      retryable: true,
+    });
     return { ok: false, error: `Resend HTTP ${res.status}: ${text}`.slice(0, 500) };
   }
 

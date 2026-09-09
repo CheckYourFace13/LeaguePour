@@ -58,6 +58,7 @@ const notices: Record<string, string> = {
     "This bracket style isn't supported for automatic generation yet - edit the competition and switch to Single elimination or Round robin.",
   "already-started": "This tournament has already been started - its matches already exist below.",
   "not-enough-participants": "Need at least 2 confirmed registrations before you can start.",
+  "start-failed": "Something went wrong generating the tournament - nothing was started. Try again, or contact support if it keeps happening.",
   "round-advanced": "Next round generated from this round's winners.",
   "tournament-completed": "Tournament complete - the winner is set below.",
   "cannot-advance": "Rounds can only be advanced for an in-progress single-elimination tournament.",

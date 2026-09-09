@@ -6,6 +6,7 @@ import { PaymentStatus, RegistrationStatus } from "@/generated/prisma/enums";
 import { revalidateRegistrationPaymentPaths } from "@/lib/stripe/revalidate-payment-paths";
 import { getStripe } from "@/lib/stripe/server";
 import { resolvePrimaryVenueAccess, venueStaffCanCreateAndPublish } from "@/lib/venue-permissions";
+import { logOperationalFailure } from "@/lib/operational-failure";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -61,6 +62,13 @@ export async function refundRegistrationPaymentFormAction(formData: FormData) {
         await revalidateRegistrationPaymentPaths(reg.id);
         redirect("/venue/registrations?notice=refunded");
       }
+      await logOperationalFailure({
+        category: "lp-refund",
+        summary: `Refund failed for registration ${reg.id}`,
+        venueId: access.venueId,
+        detail: e instanceof Error ? e.message : String(e),
+        retryable: true,
+      });
       redirect("/venue/registrations?notice=stripe_refund_failed");
     }
     await prisma.$transaction([
