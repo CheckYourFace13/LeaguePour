@@ -35,6 +35,7 @@ const TEST_VENUE_NAMES = [
   "CLAUDE-TEST-EUCHRE-DELETE-ME",
   "CLAUDE-TEST-FIRSTTIME-DELETE-ME",
   "CLAUDE-TEST-VS-CERT-DELETE-ME",
+  "CLAUDE-TEST-IDOR-DELETE-ME",
 ];
 const TEST_USER_EMAILS = [
   "claude-test-verify2-delete-me@example.com",
@@ -65,6 +66,7 @@ const TEST_USER_EMAILS = [
   ...Array.from({ length: 4 }, (_, i) => `claude-test-firsttime-delete-me-player${i + 1}@example.com`),
   "claude-test-vs-cert-delete-me@example.com",
   "claude-test-vs-cert-customer-delete-me@example.com",
+  "claude-test-idor-delete-me@example.com",
 ];
 
 export async function GET(request: Request) {
