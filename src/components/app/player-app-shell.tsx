@@ -4,10 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { CreditCard, Heart, LayoutGrid, Menu, Search, Settings, Shield, Trophy, X } from "lucide-react";
-import { signOut } from "next-auth/react";
 import { playerAppRoutes } from "@/lib/routes";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+// Not next-auth/react's client signOut() - see src/lib/actions/sign-out.ts for why: it builds its
+// request URL from a fixed AUTH_URL-derived origin regardless of actual page host. Players are
+// LeaguePour-only today so this "worked" by coincidence, but the server-action form is correct by
+// construction on any host.
+import { signOutAction } from "@/lib/actions/sign-out";
 
 const nav = [
   { href: playerAppRoutes.dashboard, label: "Dashboard", icon: LayoutGrid },
@@ -63,13 +67,15 @@ export function PlayerAppShell({
             })}
           </nav>
           <div className="border-t border-lp-border-strong p-3">
-            <Button
-              variant="ghost"
-              className="h-12 w-full justify-start text-base text-lp-text-soft"
-              onClick={() => signOut({ callbackUrl: "/" })}
-            >
-              Log out
-            </Button>
+            <form action={signOutAction}>
+              <Button
+                type="submit"
+                variant="ghost"
+                className="h-12 w-full justify-start text-base text-lp-text-soft"
+              >
+                Log out
+              </Button>
+            </form>
           </div>
         </aside>
 
@@ -109,13 +115,14 @@ export function PlayerAppShell({
                     {item.label}
                   </Link>
                 ))}
-                <button
-                  type="button"
-                  className="rounded-[10px] px-3 py-3.5 text-left text-[1.0625rem] font-bold text-lp-text-soft"
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                >
-                  Log out
-                </button>
+                <form action={signOutAction}>
+                  <button
+                    type="submit"
+                    className="w-full rounded-[10px] px-3 py-3.5 text-left text-[1.0625rem] font-bold text-lp-text-soft"
+                  >
+                    Log out
+                  </button>
+                </form>
               </nav>
             </div>
           ) : null}

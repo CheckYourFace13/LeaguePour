@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOutAction } from "@/lib/actions/sign-out";
 
 const NAV = [
   { href: "/app/dashboard", label: "Dashboard", icon: "⬛" },
@@ -77,15 +77,20 @@ export function VsAppShell({
             ← Public site
           </Link>
           {/* Was a plain <Link href="/api/auth/signout"> to NextAuth's built-in (unbranded)
-              confirmation page. Switched to the client signOut() helper - same fix pattern as
-              VenueAppShell - which also sidesteps needing that unbranded interstitial page at all. */}
-          <button
-            type="button"
-            onClick={() => signOut({ callbackUrl: "/" })}
-            className="mt-1 block text-left text-xs text-[var(--vs-muted)] hover:text-[var(--vs-accent)]"
-          >
-            Sign out
-          </button>
+              confirmation page, then briefly the next-auth/react client signOut() helper - both
+              build their request URL from a fixed AUTH_URL-derived origin (leaguepour.com)
+              regardless of the actual page host, which broke sign-out entirely on
+              venuesprocket.com (CSRF cookie mismatch cross-origin; session never cleared - see
+              src/lib/actions/sign-out.ts for the full story). A real <form action={{...}}> Server
+              Action runs inside the actual request, so it's host-correct by construction. */}
+          <form action={signOutAction}>
+            <button
+              type="submit"
+              className="mt-1 block text-left text-xs text-[var(--vs-muted)] hover:text-[var(--vs-accent)]"
+            >
+              Sign out
+            </button>
+          </form>
         </div>
       </aside>
 
