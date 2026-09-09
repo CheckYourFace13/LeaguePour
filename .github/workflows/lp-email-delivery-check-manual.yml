@@ -1,0 +1,18 @@
+name: LP email delivery check (manual)
+
+# Manual-only diagnostic: sends the LP registration-confirmation and Connect-ready owner emails,
+# plus a throwaway lifecycle nudge via sendLpNudge, to Resend's official sandbox address and polls
+# Resend's own API for each message's delivery-pipeline status - see
+# src/app/api/cron/lp-email-delivery-check.
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run LP email delivery check
+        run: |
+          resp=$(curl -sS --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/lp-email-delivery-check")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1
