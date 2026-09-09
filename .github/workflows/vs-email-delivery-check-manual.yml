@@ -1,0 +1,18 @@
+name: VS email delivery check (manual)
+
+# Manual-only diagnostic: sends the three VS customer emails (proposal-ready, contract-ready,
+# deposit-receipt) to Resend's official sandbox address and polls Resend's own API for each
+# message's delivery-pipeline status, to prove real delivery beyond a local sendEmail() ok:true -
+# see src/app/api/cron/vs-email-delivery-check.
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run VS email delivery check
+        run: |
+          resp=$(curl -sS --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/vs-email-delivery-check")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1

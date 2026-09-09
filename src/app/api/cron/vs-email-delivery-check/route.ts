@@ -4,12 +4,16 @@ import { sendVsProposalReadyEmail, sendVsContractReadyEmail, sendVsDepositReceip
 export const runtime = "nodejs";
 
 /**
- * Read-only-ish (sends to a fixed, non-routable, reserved test address only - see below) proof
- * that the three VS customer emails added this session actually reach Resend correctly: right
- * sender/brand, right subject, and Resend's own API accepts and reports a real delivery-pipeline
- * status for each - not just that the local sendEmail() call returned ok:true. Always requires
- * CRON_SECRET. `to` is hardcoded to an @example.com address (RFC 2606 reserved, never routes to a
- * real mailbox) so this can never reach a real third party regardless of how it's called.
+ * Proof that the three VS customer emails added this session (proposal-ready, contract-ready,
+ * deposit-receipt) actually reach Resend correctly: right sender/brand, right subject, and a real
+ * delivery-pipeline status via Resend's own API - not just that the local sendEmail() call
+ * returned ok:true. Always requires CRON_SECRET.
+ *
+ * `to` is delivered@resend.dev - Resend's own official sandbox address, which simulates a full
+ * successful send AND delivery without a real inbox. vs-email-selftest (an earlier diagnostic)
+ * already confirmed live that Resend rejects arbitrary @example.com-style addresses with a 422
+ * validation error, so this uses the sandbox address instead - it is not a real mailbox and never
+ * reaches a real third party.
  */
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET?.trim();
@@ -18,7 +22,7 @@ export async function GET(request: Request) {
   const given = url.searchParams.get("secret") ?? request.headers.get("authorization")?.replace("Bearer ", "");
   if (given !== secret) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
 
-  const to = "claude-test-email-delivery-check-delete-me@example.com";
+  const to = "delivered@resend.dev";
   const common = {
     to,
     customerName: "Email Delivery Check",
@@ -46,8 +50,8 @@ export async function GET(request: Request) {
     // sendEmail() doesn't currently surface the Resend id to these wrapper functions' return
     // values (they return {ok: boolean} only) - so to get real per-message Resend status, resend
     // the same three directly against Resend's API here and capture their ids for a live status
-    // check. This duplicates the three sends (6 total, all to the same non-routable address) but
-    // is the only way to get an id to query without changing the wrapper functions' signatures.
+    // check. This duplicates the three sends (6 total, all to the same Resend sandbox address)
+    // but is the only way to get an id to query without changing the wrapper functions' signatures.
     const key = process.env.RESEND_VS_API_KEY?.trim() || null;
     if (!key) {
       return NextResponse.json({ ok: true, wrapperSendResults: { proposalRes, contractRes, depositRes }, resendStatus: "RESEND_VS_API_KEY not set" });
