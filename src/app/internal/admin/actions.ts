@@ -8,8 +8,13 @@ import {
 } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { requireOwnerSession } from "@/lib/admin-auth";
+import { getStripe } from "@/lib/stripe/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+
+function isLegacyPlaceholderProvider(provider: string | null | undefined) {
+  return provider === "leaguepour_placeholder" || provider === "placeholder";
+}
 
 function toInt(value: FormDataEntryValue | null): number | null {
   if (typeof value !== "string" || value.trim() === "") return null;
@@ -136,18 +141,93 @@ export async function markRegistrationCompAction(formData: FormData) {
   revalidatePath("/internal/admin");
 }
 
-export async function refundPaymentPlaceholderAction(formData: FormData) {
+/**
+ * Owner: refund a payment from the admin panel.
+ *
+ * Found via whole-business audit: this used to be named refundPaymentPlaceholderAction and only
+ * ever flipped Payment.status to REFUNDED in the DB - it never called Stripe at all. An owner
+ * clicking "Refund" on a real Stripe-paid registration would see it marked refunded in the admin
+ * panel while the customer's card was never actually credited - a dangerous, misleading
+ * false-positive. Fixed to mirror the real refund logic already used by the venue-side refund
+ * action (src/app/venue/registrations/actions.ts): a real Stripe refund (with the correct
+ * Connect stripeAccount context and refund_application_fee) for a real stripe-provider payment,
+ * and the DB-only path only for the legacy/placeholder test provider it was actually meant for.
+ */
+export async function refundPaymentAction(formData: FormData) {
   await requireOwnerSession();
   const paymentId = String(formData.get("paymentId") ?? "");
   if (!paymentId) return;
-  await prisma.payment.update({
+
+  const payment = await prisma.payment.findUnique({
     where: { id: paymentId },
-    data: {
-      status: PaymentStatus.REFUNDED,
-      refundedAt: new Date(),
-      provider: "admin_refund_placeholder",
-    },
+    include: { registration: true },
   });
+  if (!payment) return;
+  if (payment.status === PaymentStatus.REFUNDED) return;
+  if (payment.status !== PaymentStatus.SUCCEEDED) {
+    redirect(`/internal/admin?refundErr=${encodeURIComponent(`Payment ${paymentId} is not in a refundable (SUCCEEDED) state.`)}`);
+  }
+
+  if (payment.provider === "stripe" && payment.providerPaymentIntentId) {
+    const stripe = getStripe();
+    try {
+      await stripe.refunds.create(
+        {
+          payment_intent: payment.providerPaymentIntentId,
+          refund_application_fee: true,
+        },
+        payment.stripeConnectDestinationId ? { stripeAccount: payment.stripeConnectDestinationId } : undefined,
+      );
+    } catch (e) {
+      console.error("[admin refund] Stripe API error", e);
+      const fresh = await prisma.payment.findUnique({ where: { id: paymentId } });
+      if (fresh?.status !== PaymentStatus.REFUNDED) {
+        const message = e instanceof Error ? e.message : "Stripe refund failed.";
+        redirect(`/internal/admin?refundErr=${encodeURIComponent(message)}`);
+      }
+      revalidatePath("/internal/admin");
+      return;
+    }
+    await prisma.$transaction([
+      prisma.payment.update({
+        where: { id: paymentId },
+        data: {
+          status: PaymentStatus.REFUNDED,
+          refundedAt: new Date(),
+          externalRef: `stripe_refund:${payment.providerPaymentIntentId}`,
+        },
+      }),
+      ...(payment.registration
+        ? [
+            prisma.competitionRegistration.update({
+              where: { id: payment.registration.id },
+              data: { status: RegistrationStatus.CANCELLED },
+            }),
+          ]
+        : []),
+    ]);
+  } else if (isLegacyPlaceholderProvider(payment.provider)) {
+    await prisma.$transaction([
+      prisma.payment.update({
+        where: { id: paymentId },
+        data: {
+          status: PaymentStatus.REFUNDED,
+          refundedAt: new Date(),
+          externalRef: `placeholder_refund:${paymentId}`,
+        },
+      }),
+      ...(payment.registration
+        ? [
+            prisma.competitionRegistration.update({
+              where: { id: payment.registration.id },
+              data: { status: RegistrationStatus.CANCELLED },
+            }),
+          ]
+        : []),
+    ]);
+  } else {
+    redirect(`/internal/admin?refundErr=${encodeURIComponent(`Payment ${paymentId} has an unsupported provider (${payment.provider}) for refund.`)}`);
+  }
   revalidatePath("/internal/admin");
 }
 

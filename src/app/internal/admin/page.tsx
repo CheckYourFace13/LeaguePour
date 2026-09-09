@@ -11,7 +11,7 @@ import {
   deleteVenueAction,
   disableVenueAction,
   markRegistrationCompAction,
-  refundPaymentPlaceholderAction,
+  refundPaymentAction,
   togglePromoCodeAction,
   unpublishCompetitionAction,
 } from "./actions";
@@ -49,6 +49,7 @@ export default async function InternalAdminPage({ searchParams }: AdminPageProps
   const params = searchParams ? await searchParams : {};
   const q = paramValue(params.q).trim();
   const promoErr = paramValue(params.promoErr).trim();
+  const refundErr = paramValue(params.refundErr).trim();
   const whereText = q
     ? {
         contains: q,
@@ -324,7 +325,7 @@ export default async function InternalAdminPage({ searchParams }: AdminPageProps
               <form action={markRegistrationCompAction}>
                 <input type="hidden" name="registrationId" value={reg.id} />
                 <Button type="submit" variant="secondary">
-                  Comp (placeholder)
+                  Comp (free entry)
                 </Button>
               </form>
             </div>
@@ -335,6 +336,7 @@ export default async function InternalAdminPage({ searchParams }: AdminPageProps
 
       <Card className="space-y-4">
         {sectionTitle("Payments", payments.length)}
+        {refundErr ? <p className="text-sm text-red-700">{refundErr}</p> : null}
         <div className="space-y-2">
           {payments.map((payment) => (
             <div key={payment.id} className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-lp-border p-3">
@@ -347,11 +349,11 @@ export default async function InternalAdminPage({ searchParams }: AdminPageProps
                   {payment.registration?.user.email ?? "unknown user"} | {payment.id}
                 </p>
               </div>
-              <form action={refundPaymentPlaceholderAction}>
+              <form action={refundPaymentAction}>
                 <input type="hidden" name="paymentId" value={payment.id} />
                 <ConfirmActionButton
-                  label="Refund (placeholder)"
-                  prompt={`Mark payment ${payment.id} as refunded?`}
+                  label="Refund"
+                  prompt={`Refund payment ${payment.id}? For a real Stripe payment this issues an actual refund to the customer's card.`}
                   className="inline-flex min-h-[3.25rem] items-center rounded-[10px] border border-lp-border-strong bg-lp-surface px-4 text-base font-bold text-lp-text-soft hover:bg-lp-surface-2"
                   disabled={payment.status === "REFUNDED"}
                 />
