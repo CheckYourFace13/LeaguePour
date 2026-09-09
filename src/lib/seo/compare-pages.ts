@@ -13,8 +13,8 @@ export type ComparePageConfig = {
 };
 
 const VENUE_ROWS: DiscoveryComparisonRow[] = [
-  { feature: "Auto-generated brackets", generic: true, leaguepour: "Roadmap" },
-  { feature: "Manual match & standings", generic: "Sometimes", leaguepour: true },
+  { feature: "Auto-generated brackets/schedules", generic: true, leaguepour: "Single elim & round robin" },
+  { feature: "Automatic standings", generic: "Sometimes", leaguepour: true },
   { feature: "Paid signup to venue Stripe", generic: "Sometimes", leaguepour: true },
   { feature: "Public venue event hub", generic: false, leaguepour: true },
   { feature: "QR code signup", generic: "Limited", leaguepour: true },
@@ -37,7 +37,7 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
     theirStrength:
       "Challonge is a mature bracket platform with deep tournament formats, seeding tools, and a large community of organizers.",
     leaguePourFocus:
-      "LeaguePour focuses on paid signups, QR codes, venue hubs, local event discovery, repeat-player campaigns, sponsor/prize promotion, food/drink specials, and venue revenue - while improving bracket automation for venue-first operations.",
+      "LeaguePour focuses on paid signups, QR codes, venue hubs, local event discovery, repeat-player campaigns, sponsor/prize promotion, food/drink specials, and venue revenue - with automatic bracket generation for single elimination and round robin, and more bracket depth on the roadmap.",
     rows: [
       ...VENUE_ROWS,
       { feature: "Bulk import & drag-drop seeding", generic: true, leaguepour: "Roadmap" },
@@ -50,7 +50,7 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
       },
       {
         q: "Does LeaguePour replace Challonge's bracket depth?",
-        a: "Challonge leads on auto-generated brackets and deep seeding today. LeaguePour supports established formats with manual match rows and standings now, and is building auto-bracket generation, pool play, and Swiss on the roadmap - while signups, payments, venue hubs, and player discovery are live.",
+        a: "Challonge leads on seeding depth and exotic formats today. LeaguePour auto-generates Single elimination brackets and Round robin schedules from your registrations, with Custom for manual formats and double elimination, pool play, and Swiss on the roadmap - while signups, payments, venue hubs, and player discovery are live.",
       },
     ],
   },
@@ -69,7 +69,7 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
     faqs: [
       {
         q: "Can I still run a bracket on LeaguePour?",
-        a: "Yes - match rows drive bracket cards on Standings. Staff enter scores from the venue dashboard.",
+        a: "Yes - Single elimination and Round robin generate the bracket or schedule automatically from your registrations. Staff enter scores from the venue dashboard, and bracket cards update on Standings.",
       },
     ],
   },

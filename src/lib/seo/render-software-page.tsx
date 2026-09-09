@@ -126,7 +126,7 @@ export async function SoftwareDiscoveryPage({ slug }: { slug: SoftwarePageSlug }
     },
     {
       q: "Does LeaguePour auto-generate brackets?",
-      a: "You can select established formats (single/double elimination, round robin, ladder, season, points) and enter matches and scores today. Auto-generated bracket trees and advanced seeding are on the roadmap.",
+      a: "Yes, for Single elimination and Round robin: press Start Tournament and LeaguePour generates the bracket or full schedule from your registrations automatically, then advances rounds and standings as scores come in. Custom is available for manual control. Double elimination, ladder, and season/points formats aren't in the builder yet.",
     },
   ];
 

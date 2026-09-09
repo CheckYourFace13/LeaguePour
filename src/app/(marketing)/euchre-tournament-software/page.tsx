@@ -52,7 +52,7 @@ const jsonLd = {
           name: "What euchre format works best for a bar tournament?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Progressive euchre (also called 'traveling euchre') is the most popular bar format. Partners rotate after each hand based on win/loss, so players interact with everyone in the room over the course of the night. Fixed-partner tournaments are better for more competitive events where established teams want to stay together throughout.",
+            text: "Progressive euchre (also called 'traveling euchre'), where partners rotate after each hand, is the most popular social bar format. Fixed-partner tournaments are better for competitive events where established teams want to stay together throughout. LeaguePour's automatic bracket engine runs fixed-partner nights today (Single elimination or Round robin, generated and advanced for you); a progressive/rotating-partner night is tracked with the manual Custom format.",
           },
         },
         {
@@ -68,7 +68,7 @@ const jsonLd = {
           name: "Can LeaguePour track euchre season standings?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes. You can run a euchre league where players accumulate points across weekly nights toward a season championship. LeaguePour tracks standings, updates them after each event, and displays them publicly so players can follow the season race.",
+            text: "Yes. Set up your euchre league as one ongoing Round robin competition and standings accrue automatically as you enter each week's results, all the way to the season total - published on a public page so players can follow the race.",
           },
         },
         {
@@ -98,8 +98,8 @@ const features = [
     body: "Run a euchre league with weekly points accumulation. Publish a standings page that keeps the season race competitive all the way to the final night.",
   },
   {
-    title: "Bracket management",
-    body: "Fixed-partner elimination brackets for competitive events. Round-robin for social leagues. Set the format when you create the event.",
+    title: "Automatic bracket & schedule generation",
+    body: "Fixed-partner Single elimination brackets or Round robin schedules generate automatically from your registrations - no matchup typing. Running a progressive/rotating-partner night instead? Use Custom to track it your way.",
   },
   {
     title: "Player notifications",
@@ -154,7 +154,7 @@ export default function EuchreTournamentSoftwarePage() {
               {
                 n: 1,
                 title: "Create your euchre event",
-                body: "Set the format (progressive euchre night, fixed-partner tournament, or season league), max players, entry fee, and date. Table count sets automatically based on registrations.",
+                body: "Pick Single elimination or Round robin for a fixed-partner tournament with automatic bracket/schedule generation, or Custom if you're running a progressive/rotating-partner night. Set max players, entry fee, and date.",
               },
               {
                 n: 2,
@@ -164,7 +164,7 @@ export default function EuchreTournamentSoftwarePage() {
               {
                 n: 3,
                 title: "Run the event",
-                body: "Check in registered players, seat them by your format's table assignments, and enter results round by round. Season standings update automatically.",
+                body: "Check in registered players, then press Start Tournament to generate the bracket or schedule automatically. Enter scores each round - standings and advancement update automatically.",
               },
               {
                 n: 4,
@@ -222,7 +222,7 @@ export default function EuchreTournamentSoftwarePage() {
             {[
               {
                 q: "What euchre format works best for a bar tournament?",
-                a: "Progressive euchre is the most popular bar format - partners rotate after each hand, so players interact with everyone over the night. Fixed-partner tournaments are better for competitive events where established teams want to stay together.",
+                a: "Progressive euchre (partners rotate after each hand) is the most popular social bar format; fixed-partner tournaments suit competitive events better. LeaguePour's automatic bracket engine runs fixed-partner nights today (Single elimination or Round robin); track a progressive/rotating-partner night with the manual Custom format.",
               },
               {
                 q: "How many players do I need to run a euchre tournament?",
@@ -230,7 +230,7 @@ export default function EuchreTournamentSoftwarePage() {
               },
               {
                 q: "Can LeaguePour track euchre season standings?",
-                a: "Yes. Run a euchre league with weekly points accumulation toward a season championship. LeaguePour tracks standings, updates them after each event, and displays them publicly.",
+                a: "Yes. Set your euchre league up as one ongoing Round robin competition - standings update automatically as you enter each week's results, all the way to the season total.",
               },
               {
                 q: "How do players sign up for a bar euchre tournament?",

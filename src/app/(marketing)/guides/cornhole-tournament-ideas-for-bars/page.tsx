@@ -50,7 +50,7 @@ const jsonLd = {
           name: "What is the best cornhole format for a bar tournament?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Double-elimination is the most popular format for bar cornhole tournaments. It gives every team a second chance before elimination, which keeps people around longer and drinking more. Single elimination works for smaller events (8 teams or fewer) where speed matters. Round-robin is best for weekly leagues where social atmosphere beats competition stakes.",
+            text: "Double-elimination is the most popular format for bar cornhole tournaments - it gives every team a second chance before elimination, which keeps people around longer and drinking more. Single elimination works for smaller events (8 teams or fewer) where speed matters. Round-robin is best for weekly leagues where social atmosphere beats competition stakes. LeaguePour's automatic bracket engine runs Single elimination and Round robin today; double-elimination nights are tracked with the manual Custom format until dedicated double-elim generation ships.",
           },
         },
         {
@@ -112,18 +112,22 @@ export default function CornholeTournamentIdeas() {
               gets at least two games before they're out - which means a 7:00 PM arrival doesn't turn
               into a 7:45 PM departure after a first-round loss. Teams that lose early drop to the loser's
               bracket, and the whole event creates more matches, more play time, and more bar spend per
-              team. If you only run one format, make it double-elimination.
+              team. It's the format to reach for once it's available - LeaguePour's automatic bracket
+              engine covers Single elimination and Round robin today, so run double elimination manually
+              with Custom in the meantime.
             </p>
             <p className="mt-4">
-              <strong>Single elimination</strong> is faster and easier to manage. Good for smaller events
-              (8 teams or fewer) or for championship rounds at the end of a season. The downside is that
-              losing teams leave early, which takes paying customers out of your venue.
+              <strong>Single elimination</strong> is faster and easier to manage, and LeaguePour generates
+              the bracket for you automatically from your registrations. Good for smaller events (8 teams
+              or fewer) or for championship rounds at the end of a season. The downside is that losing
+              teams leave early, which takes paying customers out of your venue.
             </p>
             <p className="mt-4">
-              <strong>Round-robin leagues</strong> work best for recurring weekly events. Every team plays
-              every other team over the course of a season. No one gets eliminated, which creates a
-              consistently full venue each night. This is the format to use if you want to build a
-              regular cornhole league rather than a one-time event.
+              <strong>Round-robin leagues</strong> work best for recurring weekly events, and LeaguePour
+              generates the full schedule automatically too. Every team plays every other team over the
+              course of a season. No one gets eliminated, which creates a consistently full venue each
+              night. This is the format to use if you want to build a regular cornhole league rather than
+              a one-time event.
             </p>
             <p className="mt-4">
               <strong>Pool play into bracket</strong> is a hybrid that works well for 12–24 team events.
@@ -264,8 +268,9 @@ export default function CornholeTournamentIdeas() {
         <div className="mt-14 rounded-2xl bg-lp-accent/10 border border-lp-accent/20 p-8">
           <h2 className="font-display text-2xl font-bold">Manage your cornhole tournament with LeaguePour</h2>
           <p className="mt-2 text-lp-muted">
-            Online team signup, entry fees collected automatically, bracket management, and player
-            notifications - all in one place so you focus on the event, not the spreadsheet.
+            Online team signup, entry fees collected automatically, automatic bracket/schedule
+            generation for single elimination and round robin, and player notifications - all in one
+            place so you focus on the event, not the spreadsheet.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg">
@@ -283,7 +288,7 @@ export default function CornholeTournamentIdeas() {
             {[
               {
                 q: "What is the best cornhole format for a bar tournament?",
-                a: "Double-elimination is the most popular format. It gives every team a second chance before elimination, keeps people around longer, and creates more bar spend per team. Single elimination works for smaller events; round-robin is best for ongoing weekly leagues.",
+                a: "Double-elimination is the most popular format - it gives every team a second chance, keeps people around longer, and creates more bar spend per team. Single elimination works for smaller events; round-robin is best for ongoing weekly leagues. LeaguePour auto-generates Single elimination and Round robin today; run double-elimination manually with Custom until it's supported.",
               },
               {
                 q: "How many boards do I need to run a cornhole tournament?",

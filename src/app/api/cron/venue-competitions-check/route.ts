@@ -33,8 +33,12 @@ export async function GET(request: Request) {
       id: true,
       title: true,
       status: true,
+      kind: true,
+      bracketKind: true,
+      teamFormat: true,
       createdAt: true,
-      _count: { select: { registrations: true } },
+      _count: { select: { registrations: true, matches: true } },
+      registrations: { where: { status: "CONFIRMED" }, select: { id: true } },
     },
     orderBy: { createdAt: "asc" },
   });
@@ -43,16 +47,38 @@ export async function GET(request: Request) {
     ["PUBLISHED", "SIGNUP_OPEN", "SIGNUP_CLOSED", "IN_PROGRESS"].includes(c.status),
   ).length;
 
+  // Read-only assessment only - never writes. A competition is ready for the automatic
+  // tournament engine (src/lib/tournament.ts) the moment it's on a runnable bracket kind; whether
+  // it can be *started right now* additionally needs a startable status and >=2 confirmed regs.
+  const RUNNABLE_BRACKET_KINDS = ["SINGLE_ELIMINATION", "ROUND_ROBIN"];
+  const STARTABLE_STATUSES = ["SIGNUP_OPEN", "SIGNUP_CLOSED"];
+
   return NextResponse.json({
     ok: true,
     found: true,
     billingPlan: venue.billingPlan,
     activeCountUnderNewLogic: activeCount,
-    competitions: competitions.map((c) => ({
-      title: c.title,
-      status: c.status,
-      registrations: c._count.registrations,
-      createdAt: c.createdAt,
-    })),
+    competitions: competitions.map((c) => {
+      const bracketSupported = RUNNABLE_BRACKET_KINDS.includes(c.bracketKind);
+      const confirmedCount = c.registrations.length;
+      const readyToStartNow =
+        bracketSupported &&
+        STARTABLE_STATUSES.includes(c.status) &&
+        confirmedCount >= 2 &&
+        c._count.matches === 0;
+      return {
+        title: c.title,
+        status: c.status,
+        kind: c.kind,
+        bracketKind: c.bracketKind,
+        teamFormat: c.teamFormat,
+        registrations: c._count.registrations,
+        confirmedRegistrations: confirmedCount,
+        matchesAlreadyGenerated: c._count.matches > 0,
+        bracketKindSupportsAutoGeneration: bracketSupported,
+        readyToStartTournamentNow: readyToStartNow,
+        createdAt: c.createdAt,
+      };
+    }),
   });
 }

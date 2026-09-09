@@ -155,15 +155,15 @@ const growth = [
 const featureCards: { title: string; body: string }[] = [
   {
     title: "Single elimination tournaments",
-    body: "Designed for today: pick the format, assign matches, enter scores - bracket cards on Standings. Auto-bracket generation is on the roadmap.",
+    body: "Live today: press Start Tournament and LeaguePour generates Round 1 automatically from your registrations (byes handled), then advances each round as scores come in until a champion is declared.",
   },
   {
     title: "Double elimination tournaments",
-    body: "Designed for today: track winners and losers bracket matches with labels and scores. Full auto double-elim trees are on the roadmap.",
+    body: "Not yet available in the builder - pick Single elimination or Round robin for automatic generation today, or Custom to track a double-elim night manually. Full auto double-elim trees are on the roadmap.",
   },
   {
     title: "Round robin leagues",
-    body: "Designed for today: standings with wins, losses, ties, and points. Auto round-robin scheduling is on the roadmap.",
+    body: "Live today: press Start Tournament and LeaguePour generates the full round-robin schedule automatically. Standings (wins, losses, ties, points) update automatically as scores are entered.",
   },
   {
     title: "Pool play into playoffs",
@@ -240,7 +240,7 @@ const comparisonRows: {
   generic: string | boolean;
   leaguepour: string | boolean;
 }[] = [
-  { feature: "Auto-generated brackets", generic: true, leaguepour: "Roadmap" },
+  { feature: "Auto-generated brackets/schedules", generic: true, leaguepour: "Single elim & round robin" },
   { feature: "Manual match + score tracking", generic: "Sometimes", leaguepour: true },
   { feature: "League standings", generic: "Sometimes", leaguepour: true },
   { feature: "Paid team signup", generic: "Sometimes", leaguepour: true },
@@ -274,7 +274,7 @@ const roadmapItems = [...BRACKET_ENGINE_ROADMAP];
 const faqs = [
   {
     q: "What bracket formats does LeaguePour support today?",
-    a: "The competition builder includes single elimination, double elimination, round robin, ladder, season standings, and points leaderboard types. Venues enter matches and scores today; automatic bracket generation, Swiss, pool play, best-of series, and consolation brackets are on the roadmap. See the format guide on this page for Live vs Planned labels.",
+    a: "The competition builder offers Single elimination and Round robin, both with automatic bracket/schedule generation and automatic standings, plus Custom for manual control of any other format. Double elimination, ladder, season, points, Swiss, pool play, best-of series, and consolation brackets are on the roadmap. See the format guide on this page for Live vs Roadmap labels.",
   },
   {
     q: "Will LeaguePour match Challonge-style bracket depth?",

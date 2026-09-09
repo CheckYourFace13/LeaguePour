@@ -26,41 +26,50 @@ export const TOURNAMENT_FORMATS: TournamentFormatDef[] = [
   {
     id: "single-elimination",
     name: "Single elimination",
-    status: "Designed for",
+    status: "Live",
     pickerLabel: "Fastest night: Single elimination",
     bestFor: "Fast one-night events - one loss and out. Good when speed matters.",
     summary: "Classic knockout bracket. Winner advances; loser is done.",
     liveToday:
-      "Select Single elimination when creating a competition. Enter match rows and scores in the venue dashboard; bracket cards appear on Standings when teams are assigned to matches.",
-    engineNext:
-      "Auto-generate seeds and bracket tree from registrations, advance winners automatically, and support printable bracket layouts.",
+      "Select Single elimination when creating a competition. Once registrations are in, press Start Tournament and LeaguePour generates Round 1 automatically (byes handled for odd counts). Enter scores and press Advance to generate each next round - the champion is declared automatically when the final is scored.",
+    engineNext: "Printable bracket layouts and seeding by ranking rather than signup order.",
     bracketKind: "SINGLE_ELIMINATION",
   },
   {
     id: "double-elimination",
     name: "Double elimination",
-    status: "Designed for",
-    pickerLabel: "Most fair for competitive events: Double elimination",
+    status: "Roadmap",
+    pickerLabel: "Roadmap: Double elimination",
     bestFor: "Competitive bar tournaments - common for darts, pool, cornhole, and esports-style nights.",
     summary: "Winners bracket and losers bracket; optional grand final reset when the losers-bracket champion beats the winners-bracket champion.",
     liveToday:
-      "Select Double elimination as the competition format. Track matches and scores manually; use match labels for winners vs losers bracket rounds.",
-    engineNext:
-      "Auto-build winners/losers trees, route losers correctly, and handle grand final reset rules.",
+      "Not available in the competition builder yet - double elimination isn't a selectable format today. Use Single elimination or Round robin for automatic bracket/schedule generation, or Custom to track a double-elim night manually with match labels.",
+    engineNext: "Auto-build winners/losers trees, route losers correctly, and handle grand final reset rules.",
     bracketKind: "DOUBLE_ELIMINATION",
   },
   {
     id: "round-robin",
     name: "Round robin",
-    status: "Designed for",
+    status: "Live",
     pickerLabel: "Everyone plays more: Round robin",
     bestFor: "Small leagues or groups where everyone should play everyone.",
     summary: "Balanced schedule - supports points, wins/losses, ties, and standings-based tiebreakers.",
     liveToday:
-      "Select Round robin and maintain standings (wins, losses, ties, points, rank) from the venue dashboard. Ideal when you schedule rounds yourself.",
-    engineNext:
-      "Auto-generate round-robin schedules, apply point differential and head-to-head tiebreakers, and surface standings on public pages.",
+      "Select Round robin when creating a competition. Press Start Tournament and LeaguePour generates the complete schedule automatically (every entrant plays every other entrant once). Standings recompute automatically as scores are entered, and the competition completes itself once every match has a result.",
+    engineNext: "Point-differential and head-to-head tiebreakers for standings ties.",
     bracketKind: "ROUND_ROBIN",
+  },
+  {
+    id: "custom",
+    name: "Custom / manual",
+    status: "Live",
+    pickerLabel: "Run it your way: Custom",
+    bestFor: "Any format LeaguePour doesn't auto-generate yet - progressive/rotating-partner euchre nights, double elimination, ladders, or a house format.",
+    summary: "You add each round's matchups yourself and enter scores as they're played - no bracket logic assumed.",
+    liveToday:
+      "Select Custom when creating a competition. Add each match manually from the competition page and enter scores as they happen; describe your format in House rules so players and staff know what to expect.",
+    engineNext: "N/A - manual control is this format's intended behavior, not a gap.",
+    bracketKind: "CUSTOM",
   },
   {
     id: "pool-play-playoffs",
@@ -70,7 +79,7 @@ export const TOURNAMENT_FORMATS: TournamentFormatDef[] = [
     bestFor: "Medium/large tournaments - teams split into pools, round robin within each pool, top teams advance to elimination playoffs.",
     summary: "Group stage → single or double elimination playoff.",
     liveToday:
-      "Run pool stages using Season or Custom format plus standings tables today; playoff bracket is managed manually.",
+      "Run pool stages as a Custom or Round robin competition today; move top teams into a separate Single elimination competition for playoffs. No automatic pool-to-playoff hand-off yet.",
     engineNext:
       "Pool assignment, per-pool standings, advancement rules, and one-click playoff bracket generation.",
   },
@@ -87,23 +96,24 @@ export const TOURNAMENT_FORMATS: TournamentFormatDef[] = [
   {
     id: "ladder",
     name: "Ladder / challenge ladder",
-    status: "Designed for",
+    status: "Roadmap",
     bestFor: "Ongoing venue rankings - players or teams challenge nearby ranked opponents (darts, pool, bags, chess).",
     summary: "Ranked ladder with challenge rules instead of a fixed bracket night.",
-    liveToday: "Select Ladder as the format and maintain standings over time. Challenge flow and rank swaps are manual today.",
+    liveToday:
+      "Not available in the competition builder today - Ladder isn't a selectable format. Use Custom to run a challenge ladder manually until dedicated ladder logic ships.",
     engineNext: "Challenge requests, rank swap rules, inactivity drops, and public ladder boards.",
     bracketKind: "LADDER",
   },
   {
     id: "points-race",
     name: "Points race / leaderboard season",
-    status: "Designed for",
-    pickerLabel: "Best for recurring nights: Points race / leaderboard season",
+    status: "Roadmap",
+    pickerLabel: "Roadmap: Points race / leaderboard season",
     bestFor: "Trivia, music bingo, recurring league nights, and long-running venue competitions.",
     summary: "Accumulate points across multiple dates; weekly results, season totals, prizes, and optional playoffs.",
     liveToday:
-      "Select Points leaderboard or Season standings. Update standings rows across weeks; describe prizes in rules and prize structure.",
-    engineNext: "Weekly score import, season splits, automatic playoff seeding from season totals.",
+      "Points leaderboard and Season standings aren't selectable formats today. For a season-long series, set up one Round robin competition with a recurring schedule - standings accrue automatically across every night's results.",
+    engineNext: "A dedicated points/season bracket kind, weekly score import, and automatic playoff seeding from season totals.",
     bracketKind: "POINTS",
   },
   {
@@ -155,9 +165,9 @@ export const FORMAT_WIZARD_EXAMPLES: WizardRecommendation[] = [
   {
     scenario: "16 teams, competitive cornhole",
     inputs: "16 teams | competitive | cornhole",
-    recommends: "Double elimination",
-    formatId: "double-elimination",
-    status: "Designed for",
+    recommends: "Single elimination today (Double elimination is on the roadmap)",
+    formatId: "single-elimination",
+    status: "Live",
   },
   {
     scenario: "12 teams, patio tournament",
@@ -178,25 +188,26 @@ export const FORMAT_WIZARD_EXAMPLES: WizardRecommendation[] = [
     inputs: "6 teams | weekly | recurring",
     recommends: "Round robin season",
     formatId: "round-robin",
-    status: "Designed for",
+    status: "Live",
   },
   {
     scenario: "Weekly trivia",
     inputs: "Weekly | recurring | points",
-    recommends: "Points race / leaderboard season",
+    recommends: "Round robin today (dedicated points/season format is on the roadmap)",
     formatId: "points-race",
-    status: "Designed for",
+    status: "Roadmap",
   },
 ];
 
 export const BRACKET_ENGINE_ROADMAP = [
-  "Auto-generate brackets from confirmed registrations (single, double, round robin)",
+  "Auto-generate and advance double-elimination brackets (winners + losers trees, grand final reset)",
+  "Dedicated ladder format with challenge requests and rank swaps",
+  "Dedicated points/season format with weekly rollups and automatic playoff seeding",
   "Drag-and-drop seeding and bulk participant import",
   "Pool play groups with advancement into elimination playoffs",
   "Swiss pairing with rematch limits and optional top cut",
   "Best-of-3 / best-of-5 series matches",
   "Consolation bracket and third-place match options",
-  "Grand final reset for double elimination",
   "Station/board assignment and public queue display",
   "Smart format wizard in the competition builder",
 ] as const;

@@ -68,7 +68,7 @@ const jsonLd = {
           name: "What shuffleboard formats does LeaguePour support?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "LeaguePour supports singles, doubles, and captain-led team formats. You set the team size and max participants when you create the league. Round-robin, single elimination, and double elimination bracket types are all available.",
+            text: "LeaguePour supports singles, doubles, and captain-led team formats. You set the team size and max participants when you create the league. Single elimination and Round robin generate the bracket or schedule automatically; Custom is available for any other format, including double elimination, tracked manually.",
           },
         },
         {
@@ -98,8 +98,8 @@ const features = [
     body: "Update scores after each round. Standings refresh automatically and display on your venue's public page.",
   },
   {
-    title: "Bracket management",
-    body: "Round-robin, single elimination, or double elimination - set it once when you create the league.",
+    title: "Automatic bracket & schedule generation",
+    body: "Single elimination brackets and Round robin schedules generate automatically from your registrations. Custom is available for any other format.",
   },
   {
     title: "Player notifications",
@@ -228,7 +228,7 @@ export default function ShuffleboardLeagueSoftwarePage() {
               },
               {
                 q: "What shuffleboard formats does LeaguePour support?",
-                a: "Singles, doubles, and captain-led team formats. Round-robin, single elimination, and double elimination bracket types are all available.",
+                a: "Singles, doubles, and captain-led team formats. Single elimination and Round robin generate automatically; Custom covers any other format, including double elimination, tracked manually.",
               },
               {
                 q: "What entry fees can I charge?",

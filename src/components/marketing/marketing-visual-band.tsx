@@ -65,13 +65,14 @@ export function MarketingVisualBand({
 }
 
 export const tournamentVisualBadges = [
-  { label: "signups, payments, QR codes, staff score entry, standings, venue hubs", variant: "live" as const },
   {
-    label: "single elimination, double elimination, round robin, ladder, season, points",
-    variant: "designed" as const,
+    label:
+      "signups, payments, QR codes, staff score entry, standings, venue hubs, automatic single-elimination and round-robin generation",
+    variant: "live" as const,
   },
+  { label: "custom / manual formats", variant: "designed" as const },
   {
-    label: "auto-generated brackets, Swiss, pool play into playoffs, drag-and-drop seeding, auto station assignment",
+    label: "double elimination, ladder, season/points, Swiss, pool play into playoffs, drag-and-drop seeding, auto station assignment",
     variant: "roadmap" as const,
   },
 ];
