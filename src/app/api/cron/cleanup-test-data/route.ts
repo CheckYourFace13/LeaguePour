@@ -36,6 +36,15 @@ const TEST_VENUE_NAMES = [
   "CLAUDE-TEST-FIRSTTIME-DELETE-ME",
   "CLAUDE-TEST-VS-CERT-DELETE-ME",
   "CLAUDE-TEST-IDOR-DELETE-ME",
+  // Final gap-closure pass - literal per-game click-test venues (4 players each, seeded via
+  // seed-tournament-test). Cornhole's PrivateEventLead/PrivateEvent/Proposal/Contract/Beo rows
+  // from the VS mobile pass cascade away with the venue - no separate tracking needed.
+  "CLAUDE-TEST-DARTS-DELETE-ME",
+  "CLAUDE-TEST-CORNHOLE-DELETE-ME",
+  "CLAUDE-TEST-POKER-DELETE-ME",
+  "CLAUDE-TEST-POOL-DELETE-ME",
+  "CLAUDE-TEST-SHUFFLEBOARD-DELETE-ME",
+  "CLAUDE-TEST-CUSTOM-DELETE-ME",
 ];
 const TEST_USER_EMAILS = [
   "claude-test-verify2-delete-me@example.com",
@@ -67,6 +76,12 @@ const TEST_USER_EMAILS = [
   "claude-test-vs-cert-delete-me@example.com",
   "claude-test-vs-cert-customer-delete-me@example.com",
   "claude-test-idor-delete-me@example.com",
+  // Final gap-closure pass - one owner + 4 players per game (owner + player emails, all seeded
+  // via seed-tournament-test with players=4).
+  ...["darts", "cornhole", "poker", "pool", "shuffleboard", "custom"].flatMap((slug) => [
+    `claude-test-${slug}-delete-me-owner@example.com`,
+    ...Array.from({ length: 4 }, (_, i) => `claude-test-${slug}-delete-me-player${i + 1}@example.com`),
+  ]),
 ];
 
 export async function GET(request: Request) {
