@@ -1,7 +1,6 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { getPublicSiteUrl } from "@/lib/site-url";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
@@ -42,16 +41,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     async redirect({ url, baseUrl }) {
-      const siteOrigin = getPublicSiteUrl();
-      if (url.startsWith("/")) return `${siteOrigin}${url}`;
+      // baseUrl is trustHost-derived from the actual incoming request's Host header (LP or VS -
+      // see src/lib/vs-routing.ts for the only two production hosts this ever resolves to), not a
+      // fixed constant. Previously this forced every relative NextAuth redirect (including the
+      // one that runs right after sign-out completes) to a hardcoded LP origin via
+      // getPublicSiteUrl() - so a VenueSprocket user who clicked "Sign out" got bounced onto
+      // leaguepour.com's login page instead of staying on venuesprocket.com, and the actual
+      // signout POST that NextAuth's own confirmation-page form submitted went to leaguepour.com
+      // too, never touching the venuesprocket.com session cookie at all - so VS sign-out silently
+      // failed to end the session. Found via whole-business audit, confirmed live: the VS session
+      // remained fully valid (checked via /api/auth/session on venuesprocket.com) after clicking
+      // Sign out. Trusting baseUrl here (same trust boundary already used app-wide for host-based
+      // brand routing) fixes both the wrong-domain landing page and the actual logout failure.
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
       try {
         const parsed = new URL(url);
-        if (parsed.origin === siteOrigin) return url;
-        if (parsed.origin === baseUrl) return `${siteOrigin}${parsed.pathname}${parsed.search}${parsed.hash}`;
+        if (parsed.origin === baseUrl) return url;
       } catch {
         // ignore parse failures
       }
-      return siteOrigin;
+      return baseUrl;
     },
     async jwt({ token, user }) {
       if (user?.id) {

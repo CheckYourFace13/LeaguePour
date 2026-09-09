@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 const NAV = [
   { href: "/app/dashboard", label: "Dashboard", icon: "⬛" },
@@ -75,12 +76,16 @@ export function VsAppShell({
           >
             ← Public site
           </Link>
-          <Link
-            href="/api/auth/signout"
-            className="mt-1 block text-xs text-[var(--vs-muted)] hover:text-[var(--vs-accent)]"
+          {/* Was a plain <Link href="/api/auth/signout"> to NextAuth's built-in (unbranded)
+              confirmation page. Switched to the client signOut() helper - same fix pattern as
+              VenueAppShell - which also sidesteps needing that unbranded interstitial page at all. */}
+          <button
+            type="button"
+            onClick={() => signOut({ callbackUrl: "/" })}
+            className="mt-1 block text-left text-xs text-[var(--vs-muted)] hover:text-[var(--vs-accent)]"
           >
             Sign out
-          </Link>
+          </button>
         </div>
       </aside>
 
