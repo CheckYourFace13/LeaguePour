@@ -366,6 +366,41 @@ export function sendVsDepositReceiptEmail(opts: {
   });
 }
 
+/** Sent to the customer only after Stripe confirms a real refund - see
+ * src/lib/actions/vs-deposit-refund.ts. Deliberately says nothing about when the money posts to
+ * their card ("a few business days" is the only Stripe-safe generic statement). */
+export function sendVsDepositRefundEmail(opts: {
+  to: string;
+  customerName: string;
+  venueName: string;
+  eventName: string;
+  eventDate?: Date | null;
+  amountCents: number;
+}): Promise<{ ok: boolean }> {
+  const amount = (opts.amountCents / 100).toLocaleString("en-US", { style: "currency", currency: "USD" });
+  const dateLine = opts.eventDate
+    ? `<p><strong>Event:</strong> ${escHtml(opts.eventName)} — ${opts.eventDate.toLocaleDateString("en-US", { dateStyle: "long" })}</p>`
+    : `<p><strong>Event:</strong> ${escHtml(opts.eventName)}</p>`;
+  const content = `
+    <h2>Deposit refunded</h2>
+    <p>Hi ${escHtml(opts.customerName)},</p>
+    <p>This confirms that <strong>${escHtml(opts.venueName)}</strong> has issued a refund of <strong>${amount}</strong> for your event deposit.</p>
+    <div class="detail-box">
+      ${dateLine}
+      <p><strong>Refund amount:</strong> ${amount}</p>
+    </div>
+    <p>Refunds are returned to your original payment method and typically take a few business days to appear.</p>
+    <p style="font-size:13px;color:#6b6560;">Questions? Just reply to this email or reach out to ${escHtml(opts.venueName)} directly.</p>
+  `;
+  return sendEmail({
+    to: opts.to,
+    subject: `Deposit refunded for ${opts.eventName}`,
+    html: vsBaseHtml(content),
+    from: "VenueSprocket <hello@venuesprocket.com>",
+    brand: "vs",
+  });
+}
+
 export function sendRegistrationConfirmationEmail(opts: {
   to: string;
   playerName: string;

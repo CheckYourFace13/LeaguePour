@@ -142,6 +142,7 @@ const FAILURE_CATEGORY_LABELS: Record<string, string> = {
   "lp-refund": "Refund failed",
   "connect-onboarding": "Stripe Connect onboarding failed",
   "vs-deposit-checkout": "VS deposit checkout failed",
+  "vs-deposit-refund": "VS deposit refund failed",
   "vs-contract-sign": "VS contract signing failed",
 };
 

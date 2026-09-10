@@ -1,0 +1,17 @@
+name: Apply VsPayment.refundedAt (manual)
+
+# One-time, additive-only application of VsPayment.refundedAt (see
+# prisma/migrations/20260910000000_vspayment_refunded_at) via
+# src/app/api/cron/apply-vspayment-refunded-at. Idempotent.
+on:
+  workflow_dispatch:
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply VsPayment.refundedAt column
+        run: |
+          resp=$(curl -sS --max-time 30 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/apply-vspayment-refunded-at")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1

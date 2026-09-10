@@ -13,6 +13,7 @@ export type OperationalFailureCategory =
   | "lp-refund"
   | "connect-onboarding"
   | "vs-deposit-checkout"
+  | "vs-deposit-refund"
   | "vs-contract-sign";
 
 export async function logOperationalFailure(opts: {

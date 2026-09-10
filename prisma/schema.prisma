@@ -1106,6 +1106,9 @@ model VsPayment {
   status                 VsPaymentStatus @default(PENDING)
   dueDate                DateTime?
   paidAt                 DateTime?
+  /// Set only after Stripe confirms a real refund of stripePaymentIntentId - see
+  /// src/lib/actions/vs-deposit-refund.ts. Additive; never written before Stripe success.
+  refundedAt             DateTime?
   createdAt              DateTime        @default(now())
   updatedAt              DateTime        @updatedAt
 
