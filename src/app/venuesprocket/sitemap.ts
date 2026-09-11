@@ -12,6 +12,7 @@ export const revalidate = 3600;
 export default function sitemap(): MetadataRoute.Sitemap {
   const pages = [
     { path: "", priority: 1.0 },
+    { path: "/about", priority: 0.8 },
     { path: "/features", priority: 0.9 },
     { path: "/pricing", priority: 0.9 },
     { path: "/start", priority: 0.9 },

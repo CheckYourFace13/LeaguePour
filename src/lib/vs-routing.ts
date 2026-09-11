@@ -17,6 +17,7 @@ type VsPathRule = { source: string; destination: string };
 const exactRules: VsPathRule[] = [
   { source: "/", destination: "/venuesprocket" },
   { source: "/favicon.ico", destination: "/venuesprocket/icon.png" },
+  { source: "/about", destination: "/venuesprocket/about" },
   { source: "/features", destination: "/venuesprocket/features" },
   { source: "/pricing", destination: "/venuesprocket/pricing" },
   { source: "/start", destination: "/venuesprocket/start" },

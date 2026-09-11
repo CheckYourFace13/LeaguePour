@@ -1,8 +1,38 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { VS_HOST } from "@/lib/vs-routing";
 
-export default function SignupHubPage() {
+export const metadata: Metadata = {
+  title: { absolute: "Sign up | LeaguePour" },
+};
+
+export default async function SignupHubPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  // Found via the /about cross-brand audit: this venue-or-player picker is LP-only content
+  // ("player" isn't a VenueSprocket concept at all) with no host check, so
+  // venuesprocket.com/signup - reachable from the shared (auth) login page's own "Create
+  // account" link - rendered 100% LeaguePour-branded content (lp-* tokens, LP title, the
+  // player option) at a VS URL. VS has exactly one real signup path (venue), so redirecting
+  // straight there on the VS host is the correct product behavior here, not a content-gap
+  // workaround - there is no VS-meaningful choice this page could otherwise offer.
+  const host = (await headers()).get("host")?.split(":")[0]?.toLowerCase();
+  if (host === VS_HOST) {
+    const params = searchParams ? await searchParams : {};
+    const qs = new URLSearchParams();
+    for (const [key, value] of Object.entries(params)) {
+      if (typeof value === "string") qs.set(key, value);
+    }
+    if (!qs.has("from")) qs.set("from", "vs");
+    redirect(`/signup/venue?${qs.toString()}`);
+  }
+
   return (
     <div className="w-full max-w-lg space-y-8">
       <div className="text-center">
