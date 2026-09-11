@@ -111,6 +111,29 @@ export default function GuidesIndexPage() {
           ))}
         </div>
 
+        <div className="mt-16">
+          <h2 className="font-display text-xl font-bold text-lp-text">Explore by game</h2>
+          <div className="mt-5 flex flex-wrap gap-3">
+            {[
+              { href: "/dart-league-software", label: "Dart league software" },
+              { href: "/bar-trivia-software", label: "Bar trivia software" },
+              { href: "/bar-league-standings", label: "Bar league standings" },
+              { href: "/pool-league-management", label: "Pool league management" },
+              { href: "/cornhole-tournament-software", label: "Cornhole tournament software" },
+              { href: "/euchre-tournament-software", label: "Euchre tournament software" },
+              { href: "/shuffleboard-league-software", label: "Shuffleboard league software" },
+            ].map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="rounded-full border border-lp-border bg-lp-surface/40 px-4 py-2 text-sm font-semibold text-lp-text-soft hover:border-lp-accent/40 hover:text-lp-accent transition-colors"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+
         <div className="mt-16 rounded-2xl bg-lp-accent/10 border border-lp-accent/20 p-8 text-center">
           <h2 className="font-display text-2xl font-bold">Ready to run your first competition?</h2>
           <p className="mt-2 text-lp-muted">

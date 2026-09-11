@@ -1,10 +1,28 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { formatUsdCents, PLAN_DEFINITIONS } from "@/lib/pricing";
 import { TrackView } from "@/components/analytics/track-view";
 import { PlanSelectLink } from "@/components/analytics/plan-select-link";
+
+// Every row here is a real, verified feature: either available to every plan today (no
+// BillingPlan-based gate exists in code for it) or the one row that IS actually plan-limited
+// (active competition count, enforced by ACTIVE_COMPETITION_LIMITS_BY_PLAN). Do not add SMS or
+// multi-location here - SMS campaign sending is not functional (campaign-send.ts hard-errors on
+// any non-EMAIL channel) and multi-location is a schema-only stub (Venue.parentVenueId has no
+// functional code anywhere) - neither is a real, usable feature on any plan.
+const FEATURE_ROWS: { label: string; values: string[] }[] = [
+  { label: "Active competitions", values: PLAN_DEFINITIONS.map((t) => t.eventLimitLabel) },
+  { label: "Stripe Connect entry fees", values: ["✓", "✓", "✓", "✓"] },
+  { label: "QR code registration", values: ["✓", "✓", "✓", "✓"] },
+  { label: "Live standings & TV scoreboard", values: ["✓", "✓", "✓", "✓"] },
+  { label: "Website embed widget", values: ["✓", "✓", "✓", "✓"] },
+  { label: "Email campaigns & audience", values: ["✓", "✓", "✓", "✓"] },
+  { label: "Bracket & round-robin generation", values: ["✓", "✓", "✓", "✓"] },
+  { label: "Unlimited staff accounts", values: ["✓", "✓", "✓", "✓"] },
+];
 
 export const metadata: Metadata = {
   title: { absolute: "LeaguePour Pricing | Bar Event Registration Software Plans" },
@@ -28,7 +46,7 @@ export default function PricingPage() {
       <TrackView event="pricing_view" params={{ product: "lp" }} />
       <h1 className="lp-page-title text-5xl md:text-6xl">Pricing</h1>
       <p className="lp-page-sub mt-5 max-w-xl text-xl text-lp-text-soft">
-        Simple tiers. Annual saves 10%.
+        Simple tiers. Pay annually and get 2 months free (~17% off).
       </p>
       <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-4 md:gap-6">
         {PLAN_DEFINITIONS.map((t) => (
@@ -45,7 +63,7 @@ export default function PricingPage() {
               <span className="text-[1.02rem] font-bold text-lp-text-soft"> /mo</span>
             </p>
             <p className="mt-1.5 text-base text-lp-text-soft">
-              {formatUsdCents(t.annualCents)} /yr <span className="font-semibold text-lp-accent">−10%</span>
+              {formatUsdCents(t.annualCents)} /yr <span className="font-semibold text-lp-accent">2 months free</span>
             </p>
             <ul className="mt-8 space-y-2.5 text-[1.02rem] leading-snug text-lp-text-soft">
               <li className="flex gap-2">
@@ -73,6 +91,45 @@ export default function PricingPage() {
           </Card>
         ))}
       </div>
+      {/* Full feature comparison */}
+      <div className="mt-16">
+        <h2 className="font-display text-2xl font-bold text-lp-text text-center">Compare plans</h2>
+        <p className="mt-2 text-center text-sm text-lp-text-soft">
+          The only difference between plans is how many active competitions you can run at once.
+          Every other feature is included on every plan.
+        </p>
+        <div className="mt-8 overflow-x-auto rounded-2xl border border-lp-border">
+          <table className="w-full min-w-[640px] border-collapse text-left text-sm">
+            <thead>
+              <tr className="border-b border-lp-border bg-lp-surface/60">
+                <th className="px-5 py-4 font-semibold text-lp-text-soft">Feature</th>
+                {PLAN_DEFINITIONS.map((t) => (
+                  <th key={t.plan} className="px-5 py-4 text-center font-display font-bold text-lp-text">
+                    {t.name}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {FEATURE_ROWS.map((row, i) => (
+                <tr key={row.label} className={i % 2 === 1 ? "bg-lp-surface/30" : ""}>
+                  <td className="px-5 py-3.5 font-medium text-lp-text">{row.label}</td>
+                  {row.values.map((v, j) => (
+                    <td key={j} className="px-5 py-3.5 text-center text-lp-text-soft">
+                      {v === "✓" ? (
+                        <Check className="mx-auto size-4 text-lp-accent" aria-label="Included" />
+                      ) : (
+                        v
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <p className="mt-10 text-center text-sm text-lp-text-soft">
         Platform fee on paid registrations - set in Venue profile.
       </p>
@@ -82,6 +139,9 @@ export default function PricingPage() {
         </Link>
         <Link href="/for-venues" className="font-semibold text-lp-accent hover:underline">
           Compare venue use cases
+        </Link>
+        <Link href="/demo" className="font-semibold text-lp-accent hover:underline">
+          See a live demo
         </Link>
       </div>
 

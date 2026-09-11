@@ -16,6 +16,16 @@ const nextConfig: NextConfig = {
       beforeFiles: vsDomainRewrites,
     };
   },
+  async redirects() {
+    return [
+      // Both brands already have a real content hub at /guides - no separate blog exists, so
+      // /blog should land there instead of 404ing for anyone expecting content. Path-based (no
+      // host condition needed): each host's own /guides already resolves to that host's own
+      // content via the existing rewrite/route setup, so this can't cross brands.
+      { source: "/blog", destination: "/guides", permanent: true },
+      { source: "/blog/:path*", destination: "/guides", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

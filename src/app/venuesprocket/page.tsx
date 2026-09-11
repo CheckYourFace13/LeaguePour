@@ -315,9 +315,10 @@ export default function VsSprocketHome() {
                 </h2>
                 <p className="text-vs-text-soft leading-relaxed mb-4">
                   Private events bring bigger bookings. LeaguePour brings repeat weekly traffic.
-                  Add the LeaguePour module to run dart leagues, cornhole tournaments, trivia nights,
-                  pool leagues, and bar game competitions — with QR signups, standings, and player
-                  payments built in.
+                  It&apos;s a separate product with its own subscription — run dart leagues,
+                  cornhole tournaments, trivia nights, pool leagues, and bar game competitions,
+                  with QR signups, standings, and player payments built in. Active VenueSprocket
+                  subscribers get 50% off.
                 </p>
                 <ul className="space-y-1 mb-6">
                   {[

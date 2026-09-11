@@ -60,10 +60,11 @@ export default function VsContactPage() {
             <div className="vs-card p-5">
               <p className="font-semibold text-[var(--vs-text)] mb-2">Already have a LeaguePour account?</p>
               <p className="text-sm text-[var(--vs-muted)] mb-3">
-                VenueSprocket is built into your venue dashboard. Just go to <strong>Private Events</strong> to activate it.
+                VenueSprocket is a separate subscription from LeaguePour. If your venue has an active
+                LeaguePour subscription, the 50% bundle discount applies automatically when you start one.
               </p>
-              <Link href="/app/dashboard" className="inline-flex rounded-lg border border-[var(--vs-accent)] px-4 py-2 text-sm font-semibold text-[var(--vs-accent)] hover:bg-[var(--vs-surface-2)]">
-                Open dashboard →
+              <Link href="/start" className="inline-flex rounded-lg border border-[var(--vs-accent)] px-4 py-2 text-sm font-semibold text-[var(--vs-accent)] hover:bg-[var(--vs-surface-2)]">
+                Start VenueSprocket →
               </Link>
             </div>
 

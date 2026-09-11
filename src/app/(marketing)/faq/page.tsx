@@ -29,11 +29,11 @@ const faqs = [
   },
   {
     q: "What about compliance and spam?",
-    a: "Built around consent and preferences. Venues choose email-only or email + SMS; players control what they receive.",
+    a: "Built around consent and preferences. Venues send campaigns by email; players opt in and control what they receive.",
   },
   {
-    q: "Does it handle multi-location groups?",
-    a: "Venues can be linked in a parent/child structure for groups that grow past one room.",
+    q: "Does it handle multiple locations?",
+    a: "Each venue runs as its own LeaguePour account today. If you're managing more than one location, contact us and we'll help you get set up.",
   },
   {
     q: "What sports and games does LeaguePour support?",

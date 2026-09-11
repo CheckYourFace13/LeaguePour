@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: { absolute: "LeaguePour by VenueSprocket — Fill Slow Nights with Leagues and Game Nights" },
   description:
-    "LeaguePour is the public event module inside VenueSprocket. Run dart leagues, cornhole tournaments, trivia nights, pool leagues, and bar game competitions with QR signups, standings, and Stripe entry fees.",
+    "LeaguePour is VenueSprocket's companion product for recurring public events. Run dart leagues, cornhole tournaments, trivia nights, pool leagues, and bar game competitions with QR signups, standings, and Stripe entry fees.",
   alternates: { canonical: "https://venuesprocket.com/leaguepour" },
 };
 
@@ -141,8 +141,8 @@ export default function VsLeaguePourPage() {
             Ready to fill slow nights?
           </h2>
           <p className="text-vs-text-soft mb-8 max-w-xl mx-auto">
-            Start with VenueSprocket and add LeaguePour on the Growth plan. Or try LeaguePour
-            directly at leaguepour.com.
+            LeaguePour is a separate subscription at leaguepour.com. Active VenueSprocket
+            subscribers get 50% off.
           </p>
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link

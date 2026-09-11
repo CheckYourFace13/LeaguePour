@@ -185,10 +185,11 @@ export default async function VsComparePage({
               LeaguePour for public events
             </h2>
             <p className="text-vs-text-soft leading-relaxed mb-4">
-              VenueSprocket includes access to LeaguePour — the platform for running dart leagues,
-              cornhole tournaments, trivia nights, pool leagues, and bar game competitions. Private
-              events bring bigger single bookings. LeaguePour brings repeat weekly traffic.
-              Together, they help venues make more money from the same space.
+              VenueSprocket pairs with LeaguePour — a separate companion product for running dart
+              leagues, cornhole tournaments, trivia nights, pool leagues, and bar game
+              competitions, at 50% off for active VenueSprocket subscribers. Private events bring
+              bigger single bookings. LeaguePour brings repeat weekly traffic. Together, they help
+              venues make more money from the same space.
             </p>
             <Link
               href="/leaguepour"

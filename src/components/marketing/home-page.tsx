@@ -8,6 +8,56 @@ import { marketingImages } from "@/lib/marketing-images";
 import { marketingRoutes } from "@/lib/routes";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { safeJsonLd } from "@/lib/seo/json-ld-builders";
+
+// Every answer here must match visible copy exactly - the FAQPage schema below is generated
+// straight from this array, so editing an answer here also changes what's marked up as
+// structured data. Keep this list distinct from src/app/(marketing)/faq/page.tsx's own FAQ -
+// this is a shorter homepage subset, not a duplicate.
+const homeFaqs = [
+  {
+    q: "What games does LeaguePour support?",
+    a: "Any participation game night: trivia, dart leagues, cornhole, pool, euchre, poker where legal, shuffleboard, and music bingo. You pick the format when you create the competition.",
+  },
+  {
+    q: "How do players sign up?",
+    a: "Players register from their phone on your venue's public page - solo, with a captain-led team, or by roster invite. No app download required.",
+  },
+  {
+    q: "Can LeaguePour generate brackets and schedules automatically?",
+    a: "Yes. Single elimination and round-robin formats are generated automatically when you publish a competition.",
+  },
+  {
+    q: "How do entry fees work?",
+    a: "Venues connect Stripe and set an entry fee per event. Players pay through Stripe Checkout, and funds go directly to the venue's bank account.",
+  },
+  {
+    q: "Do players need an account?",
+    a: "Yes - one free LeaguePour account works at any venue, so players can register, track history, and manage alerts across events.",
+  },
+  {
+    q: "Are standings and results public?",
+    a: "Yes. Every competition has a public page with live standings and results that anyone can view from a link or QR code, no login required.",
+  },
+  {
+    q: "Is LeaguePour only for bars?",
+    a: "Bars are the most common venue, but breweries, taprooms, and restaurants running trivia, leagues, and tournaments use LeaguePour too.",
+  },
+  {
+    q: "How does VenueSprocket relate to LeaguePour?",
+    a: "VenueSprocket is a separate, companion product for private-event bookings - inquiries, proposals, contracts, and deposits. LeaguePour is for recurring public game nights and leagues.",
+  },
+];
+
+const homeFaqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: homeFaqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
 
 const useCases = [
   "Trivia",
@@ -233,6 +283,33 @@ export function HomePage() {
         </Card>
       </section>
 
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(homeFaqJsonLd) }} />
+      <section className="mx-auto max-w-4xl px-4 py-14 md:px-6 md:py-18">
+        <p className="lp-kicker text-lp-accent">Questions</p>
+        <h2 className="mt-2 font-display text-3xl font-bold md:text-4xl">Frequently asked questions</h2>
+        <div className="mt-8 space-y-4">
+          {homeFaqs.map((f) => (
+            <details key={f.q} className="rounded-xl border border-lp-border bg-lp-surface/40 px-5 py-4">
+              <summary className="cursor-pointer list-none font-semibold text-lp-text [&::-webkit-details-marker]:hidden">
+                {f.q}
+              </summary>
+              <p className="mt-3 text-sm text-lp-muted leading-relaxed">{f.a}</p>
+            </details>
+          ))}
+        </div>
+        <p className="mt-6 text-sm text-lp-muted">
+          More questions?{" "}
+          <Link href={marketingRoutes.faq} className="font-semibold text-lp-accent hover:underline">
+            See the full FAQ
+          </Link>
+          {" "}or{" "}
+          <Link href="/demo" className="font-semibold text-lp-accent hover:underline">
+            see a live demo
+          </Link>
+          .
+        </p>
+      </section>
+
       <section className="mx-auto max-w-6xl px-4 pb-14 text-center md:px-6 md:pb-20">
         <h2 className="lp-page-title text-4xl md:text-5xl">Go live tonight</h2>
         <p className="mx-auto mt-3 max-w-xl text-lg text-lp-text-soft">Self-serve. No call.</p>
@@ -268,6 +345,18 @@ export function HomePage() {
             className="rounded-[10px] border border-lp-border bg-lp-surface/40 px-4 py-3 hover:text-lp-text"
           >
             Bar tournament software
+          </Link>
+          <Link
+            href="/guides"
+            className="rounded-[10px] border border-lp-border bg-lp-surface/40 px-4 py-3 hover:text-lp-text"
+          >
+            Free guides for bar owners
+          </Link>
+          <Link
+            href="/demo"
+            className="rounded-[10px] border border-lp-border bg-lp-surface/40 px-4 py-3 hover:text-lp-text"
+          >
+            See a live demo
           </Link>
         </div>
       </section>

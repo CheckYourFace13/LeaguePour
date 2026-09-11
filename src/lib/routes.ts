@@ -5,6 +5,7 @@ export const marketingRoutes = {
   forVenues: "/for-venues",
   forPlayers: "/for-players",
   pricing: "/pricing",
+  demo: "/demo",
   faq: "/faq",
   contact: "/contact",
   terms: "/legal/terms",

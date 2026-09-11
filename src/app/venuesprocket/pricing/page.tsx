@@ -79,7 +79,6 @@ const plans = [
     highlight: false,
     features: [
       "Everything in Pro",
-      "LeaguePour module connection",
       "Reporting and revenue tracking",
       "Multi-room support",
       "Up to 5 staff users",
@@ -119,7 +118,7 @@ const faqs = [
   },
   {
     q: "Is LeaguePour included?",
-    a: "LeaguePour module access is included in the Growth plan. You can also use LeaguePour separately at leaguepour.com — it has its own pricing for bar league and competition management.",
+    a: "No — LeaguePour is a separate product with its own subscription at leaguepour.com, for recurring bar leagues and tournaments. If your venue runs an active LeaguePour subscription, you get 50% off VenueSprocket (and the reverse is true too).",
   },
   {
     q: "What if I just want to try it?",

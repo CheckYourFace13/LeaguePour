@@ -102,15 +102,28 @@ export default function AboutPage() {
       <div className="mt-16 space-y-4 text-lp-muted leading-relaxed">
         <h2 className="font-display text-2xl font-bold text-lp-text">How we operate</h2>
         <p>
-          LeaguePour is a bootstrapped, independently operated platform. We don&apos;t take a cut
-          of entry fees — venues keep everything they collect through Stripe, minus standard
-          Stripe processing fees. Our revenue comes from venue subscriptions for advanced
-          features.
+          LeaguePour is a bootstrapped, independently operated platform. Venues keep the full
+          entry fee minus a 5% platform fee; players pay a small service fee on top. Funds are
+          deposited directly to the venue&apos;s connected bank account through Stripe.
         </p>
         <p>
           We focus on one thing: making it as easy as possible for a bar owner to run a great
           organized competition that players want to come back to. No bloat, no enterprise
           complexity — just the tools a neighborhood bar actually needs.
+        </p>
+        <p>
+          If your venue also books private events — birthday parties, buyouts, corporate
+          happy hours — check out{" "}
+          <a
+            href="https://venuesprocket.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-lp-accent hover:underline"
+          >
+            VenueSprocket
+          </a>
+          , our separate, companion product for inquiries, proposals, contracts, and deposits.
+          Active LeaguePour venues get 50% off VenueSprocket.
         </p>
       </div>
 

@@ -131,7 +131,7 @@ const modules = [
   },
   {
     id: "leaguepour",
-    title: "LeaguePour Module",
+    title: "LeaguePour (companion product)",
     icon: "🎯",
     href: "/leaguepour",
     features: [
@@ -143,7 +143,7 @@ const modules = [
       "Recurring weekly or monthly events",
       "Player registration management",
     ],
-    body: "Fill slow nights with organized public events. LeaguePour is the public event engine inside VenueSprocket — players sign up, pay entry fees, compete, and come back every week.",
+    body: "Fill slow nights with organized public events. LeaguePour is VenueSprocket's separate companion product for recurring public events — players sign up, pay entry fees, compete, and come back every week. Active VenueSprocket subscribers get 50% off LeaguePour.",
   },
 ];
 
@@ -159,8 +159,9 @@ export default function VsFeaturesPage() {
             Everything from inquiry to BEO
           </h1>
           <p className="vs-page-sub mx-auto text-center max-w-2xl">
-            One connected workflow. Inquiry form, pipeline, proposal, contract, deposit, BEO,
-            customer CRM, and LeaguePour public events.
+            One connected workflow: inquiry form, pipeline, proposal, contract, deposit, BEO,
+            and customer CRM. Pair it with LeaguePour, our separate companion product for
+            recurring public events.
           </p>
         </div>
 
