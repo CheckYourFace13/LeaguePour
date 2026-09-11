@@ -51,6 +51,10 @@ const TEST_VENUE_NAMES = [
   // and RR cell; mobile: 8 more at 375px) - all under one venue, all 4 players reused across
   // every competition.
   "CLAUDE-MATRIX-DELETE-ME",
+  // VS deposit-refund flow selftest (fake Stripe fields, no real charge) - seeded via
+  // /api/cron/vs-refund-selftest.
+  "CLAUDE-VS-REFUND-TEST-A-DELETE-ME",
+  "CLAUDE-VS-REFUND-TEST-B-DELETE-ME",
 ];
 const TEST_USER_EMAILS = [
   "claude-test-verify2-delete-me@example.com",
@@ -94,6 +98,8 @@ const TEST_USER_EMAILS = [
   "claude-matrix-delete-me-player2@example.com",
   "claude-matrix-delete-me-player3@example.com",
   "claude-matrix-delete-me-player4@example.com",
+  "claude-vs-refund-test-a-delete-me-owner@example.com",
+  "claude-vs-refund-test-b-delete-me-owner@example.com",
 ];
 
 export async function GET(request: Request) {
