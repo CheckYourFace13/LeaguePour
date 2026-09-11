@@ -3,9 +3,20 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { VS_HOST } from "@/lib/vs-routing";
 
-export const metadata: Metadata = {
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  // /signup/venue, /forgot-password, and /reset-password are all plain client components with
+  // no metadata export of their own (client components can't export one), so the server-rendered
+  // <title> for all three fell through to the root layout's default LP title on every request -
+  // found via the cross-brand audit checking venuesprocket.com/signup?from=vs's actual HTML
+  // (not just its post-hydration tab title, which a separate useEffect already corrects). Fixing
+  // it once here covers every page under this layout instead of adding metadata per page.
+  const host = (await headers()).get("host")?.split(":")[0]?.toLowerCase();
+  const isVs = host === VS_HOST;
+  return {
+    title: { absolute: isVs ? "VenueSprocket" : "LeaguePour" },
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function AuthLayout({ children }: { children: React.ReactNode }) {
   // /login, /signup/venue, /signup/player, /forgot-password, /reset-password are all
