@@ -3,6 +3,7 @@ import { Barlow_Condensed, Inter } from "next/font/google";
 import { AppProviders } from "@/components/providers/app-providers";
 import { getPublicSiteUrl } from "@/lib/site-url";
 import { LeaguePourGoogleTags } from "@/components/leaguepour-google-tags";
+import { LeaguePourAdsenseLoader } from "@/components/leaguepour-adsense-loader";
 import "./globals.css";
 
 const inter = Inter({
@@ -76,11 +77,12 @@ export default function RootLayout({
       <head>
         <meta charSet="utf-8" />
         <meta name="google-adsense-account" content="ca-pub-9572509189594279" />
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9572509189594279"
-          crossOrigin="anonymous"
-        />
+        {/*
+          Loaded conditionally (guides + per-game software pages only, LeaguePour host only) -
+          see the comment inside LeaguePourAdsenseLoader for why this used to load unconditionally
+          on every page, including the authenticated app and venuesprocket.com.
+        */}
+        <LeaguePourAdsenseLoader />
         {/*
           Loaded from a client component rather than inlined here: this root layout wraps
           venuesprocket.com pages too (next.config.ts's rewrites change routing, not the Host

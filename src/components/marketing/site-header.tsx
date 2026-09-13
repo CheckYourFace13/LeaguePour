@@ -14,6 +14,7 @@ const baseNav = [
   { href: marketingRoutes.features, label: "Features" },
   { href: marketingRoutes.forVenues, label: "For venues" },
   { href: marketingRoutes.forPlayers, label: "For players" },
+  { href: "/guides", label: "Guides" },
   { href: marketingRoutes.pricing, label: "Pricing" },
   { href: marketingRoutes.faq, label: "FAQ" },
 ] as const;

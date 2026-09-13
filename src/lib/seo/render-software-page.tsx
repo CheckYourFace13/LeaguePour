@@ -88,14 +88,28 @@ export function getAllSoftwareSlugs(): SoftwarePageSlug[] {
   return Object.keys(SOFTWARE) as SoftwarePageSlug[];
 }
 
+// dart-league-software, cornhole-tournament-software, and trivia-night-signup-software all cover
+// the exact same topic as their standalone counterpart (the hand-written page at legacyPath) using
+// this file's generic, template-driven content (the same comparison table and format-roadmap
+// blocks the city discovery pages use) - a near-duplicate-content pair per slug. Canonicalizing to
+// legacyPath consolidates the SEO signal onto the stronger, original page without touching the URL
+// or its content. bar-tournament-software's legacyPath (/features/tournaments) is a genuinely
+// different page/intent, not a duplicate, so it stays self-canonical.
+const DUPLICATE_OF_LEGACY: SoftwarePageSlug[] = [
+  "dart-league-software",
+  "cornhole-tournament-software",
+  "trivia-night-signup-software",
+];
+
 export async function buildSoftwareMetadata(slug: SoftwarePageSlug): Promise<Metadata> {
   const page = SOFTWARE[slug];
   if (!page) return {};
   const path = `/software/${slug}`;
+  const canonicalPath = DUPLICATE_OF_LEGACY.includes(slug) ? page.legacyPath : path;
   return {
     title: { absolute: page.title },
     description: page.description,
-    alternates: { canonical: path },
+    alternates: { canonical: canonicalPath },
     openGraph: { title: page.title, description: page.description, url: path },
     robots: { index: true, follow: true },
   };

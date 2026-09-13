@@ -107,6 +107,36 @@ export default function DemoPage() {
         </p>
       </div>
 
+      {/* What you're looking at */}
+      <div className="mt-14 grid gap-6 md:grid-cols-3">
+        <div className="rounded-xl border border-lp-border bg-lp-surface/40 p-5">
+          <h2 className="font-semibold text-lp-text">What players see</h2>
+          <p className="mt-2 text-sm text-lp-text-soft leading-relaxed">
+            Players find this page from a link or QR code, register their team, and check back here
+            to follow standings and results - no login needed just to view it, and no app to
+            download.
+          </p>
+        </div>
+        <div className="rounded-xl border border-lp-border bg-lp-surface/40 p-5">
+          <h2 className="font-semibold text-lp-text">What venues control</h2>
+          <p className="mt-2 text-sm text-lp-text-soft leading-relaxed">
+            The venue sets the format, entry fee, and schedule when they create the competition, then
+            enters match scores as the night happens. Everything above - the standings table, the
+            results list - updates automatically from those scores.
+          </p>
+        </div>
+        <div className="rounded-xl border border-lp-border bg-lp-surface/40 p-5">
+          <h2 className="font-semibold text-lp-text">How standings work</h2>
+          <p className="mt-2 text-sm text-lp-text-soft leading-relaxed">
+            The table above uses the standard 3-1-0 points system (3 for a win, 1 for a tie),
+            re-ranking automatically after every result.{" "}
+            <Link href="/guides/how-standings-and-points-work" className="text-lp-accent hover:underline">
+              Read how the scoring works →
+            </Link>
+          </p>
+        </div>
+      </div>
+
       <div className="mt-14 rounded-2xl bg-lp-accent/10 border border-lp-accent/20 p-8 text-center">
         <h2 className="font-display text-2xl font-bold text-lp-text">Ready to set this up for your venue?</h2>
         <p className="mt-2 text-lp-text-soft">Free to start. Your own competition page in minutes.</p>
