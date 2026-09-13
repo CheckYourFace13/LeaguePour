@@ -419,7 +419,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
       },
       {
         q: "Is LeaguePour included?",
-        a: "LeaguePour is included in the Growth plan. You can also use it separately at leaguepour.com.",
+        a: "No. LeaguePour is a separate product with its own subscription at leaguepour.com. Active VenueSprocket subscribers get 50% off it.",
       },
     ],
     cta: "Start managing restaurant events",
@@ -525,11 +525,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
       },
       {
         title: "LeaguePour for bar leagues",
-        body: "Run dart leagues, cornhole, trivia nights, pool leagues, poker nights, and bar game competitions through LeaguePour. Players sign up online, pay entry fees, and come back every week.",
-      },
-      {
-        title: "Combined revenue tracking",
-        body: "See private event revenue and LeaguePour public event revenue side by side in your dashboard.",
+        body: "Run dart leagues, cornhole, trivia nights, pool leagues, poker nights, and bar game competitions through LeaguePour, a separate companion product available at a discount. Players sign up online, pay entry fees, and come back every week.",
       },
     ],
     useCases: [

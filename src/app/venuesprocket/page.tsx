@@ -85,6 +85,54 @@ const venueTypes = [
   { label: "Private Dining", emoji: "🕯️" },
 ];
 
+// Answers must match visible copy exactly - the FAQPage schema below is generated straight
+// from this array. Keep these in sync with actual plan gating on /pricing (Free plan doesn't
+// include proposals/contracts/deposits/BEOs; those start on Pro).
+const homeFaqs = [
+  {
+    q: "What does VenueSprocket manage?",
+    a: "Private events for restaurants, breweries, bars, taprooms, and event spaces - from the first inquiry through proposals, e-signature contracts, Stripe deposits, and the Banquet Event Order (BEO) for event day.",
+  },
+  {
+    q: "Do customers need an account?",
+    a: "No. Customers submit an inquiry, review a proposal, sign a contract, and pay a deposit without ever creating a VenueSprocket account.",
+  },
+  {
+    q: "Can I send proposals and contracts?",
+    a: "Yes. Starter includes a basic proposal builder. Online contracts with typed e-signature are part of the Pro plan and above.",
+  },
+  {
+    q: "How are deposits collected?",
+    a: "Through Stripe, on the Pro plan and above. The customer pays right after signing their contract, and the payment shows in your dashboard as soon as it clears.",
+  },
+  {
+    q: "What is a BEO?",
+    a: "A Banquet Event Order - the document staff use on event day covering room setup, food and beverage, staffing, and timeline. VenueSprocket builds it from the same event record as the proposal and contract, with a print-ready view.",
+  },
+  {
+    q: "Is LeaguePour included?",
+    a: "No. LeaguePour is a separate product with its own subscription, for bar leagues and recurring game nights. Active VenueSprocket subscribers get 50% off it.",
+  },
+  {
+    q: "How does the LeaguePour discount work?",
+    a: "If your venue has an active subscription to either product, you get 50% off the other one. It applies automatically - no code needed.",
+  },
+  {
+    q: "Is there a free plan?",
+    a: "Yes. The Free plan gets your inquiry form live with up to 10 leads a month, no credit card required.",
+  },
+];
+
+const homeFaqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: homeFaqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
 export default function VsSprocketHome() {
   const jsonLd = {
     "@context": "https://schema.org",
@@ -196,7 +244,7 @@ export default function VsSprocketHome() {
       {/* ── Features ───────────────────────────────────────────────────── */}
       <section className="vs-section bg-vs-surface px-4 md:px-6">
         <div className="mx-auto max-w-6xl">
-          <p className="vs-kicker text-center mb-3">What's included</p>
+          <p className="vs-kicker text-center mb-3">What&apos;s included</p>
           <h2 className="text-center font-display text-3xl font-bold md:text-4xl text-vs-text mb-12">
             Everything from inquiry to BEO
           </h2>
@@ -382,6 +430,32 @@ export default function VsSprocketHome() {
               See how VenueSprocket compares to Tripleseat, Perfect Venue, and others →
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* ── FAQ ────────────────────────────────────────────────────────── */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(homeFaqJsonLd) }} />
+      <section className="vs-section bg-vs-surface px-4 md:px-6">
+        <div className="mx-auto max-w-3xl">
+          <p className="vs-kicker text-center mb-3">Questions</p>
+          <h2 className="text-center font-display text-3xl font-bold md:text-4xl text-vs-text mb-10">
+            Frequently asked questions
+          </h2>
+          <div className="space-y-4">
+            {homeFaqs.map((faq) => (
+              <div key={faq.q} className="rounded-xl border border-vs-border bg-vs-bg p-6">
+                <p className="font-semibold text-vs-text mb-2">{faq.q}</p>
+                <p className="text-sm text-vs-text-soft leading-relaxed">{faq.a}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-6 text-center text-sm text-vs-muted">
+            More questions?{" "}
+            <Link href="/contact" className="font-semibold text-vs-accent hover:underline">
+              Get in touch
+            </Link>
+            .
+          </p>
         </div>
       </section>
 

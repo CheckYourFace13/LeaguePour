@@ -43,7 +43,7 @@ const modules = [
     id: "proposals",
     title: "Proposal Builder",
     icon: "📄",
-    href: null,
+    href: "/guides/sample-proposal-and-contract",
     features: [
       "Build a proposal from your event record",
       "Add packages, room fees, food minimums, and beverage options",

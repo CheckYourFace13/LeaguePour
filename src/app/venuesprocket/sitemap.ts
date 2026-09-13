@@ -33,6 +33,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/guides/beo-template", priority: 0.8 },
     { path: "/guides/beo-vs-contract", priority: 0.75 },
     { path: "/guides/private-event-inquiry-form-template", priority: 0.8 },
+    { path: "/guides/sample-proposal-and-contract", priority: 0.8 },
     { path: "/compare/tripleseat", priority: 0.9 },
     { path: "/compare/perfect-venue", priority: 0.9 },
     { path: "/compare/planning-pod", priority: 0.9 },

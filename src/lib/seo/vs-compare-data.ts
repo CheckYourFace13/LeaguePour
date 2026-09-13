@@ -54,7 +54,7 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       { feature: "BEO builder", vs: YES, competitor: YES },
       { feature: "PDF export (BEO/proposal/contract)", vs: YES, competitor: YES },
       { feature: "Customer CRM", vs: YES, competitor: YES },
-      { feature: "Public event & game-night tools (LeaguePour)", vs: YES, competitor: NO },
+      { feature: "Public event tools via LeaguePour (separate product, 50% off)", vs: "Add-on", competitor: NO },
       { feature: "Automated follow-up emails", vs: YES, competitor: YES },
       { feature: "Free starting plan", vs: YES, competitor: NO },
       { feature: "Setup in one afternoon", vs: YES, competitor: PARTIAL },
@@ -83,11 +83,11 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
     competitorBestFor:
       "Restaurants and bars with active private dining programs that want a purpose-built event management system.",
     summary:
-      "Perfect Venue is a solid private event management tool focused on restaurants and bars. VenueSprocket covers a similar workflow and adds the LeaguePour public events module, which helps venues fill slow nights with leagues and game nights.",
+      "Perfect Venue is a solid private event management tool focused on restaurants and bars. VenueSprocket covers a similar workflow, and venues that also want to fill slow nights with leagues and game nights can add LeaguePour, a separate companion product, at a discount.",
     competitorSummary:
       "Perfect Venue is built specifically for restaurant and bar event management. It covers the core workflow from inquiry to BEO and is well-regarded by restaurants that need a clean, focused private event tool.",
     vsSummary:
-      "VenueSprocket covers the same core private event workflow and adds the LeaguePour public events module, so the same venue can also run leagues and game nights to fill slow nights.",
+      "VenueSprocket covers the same core private event workflow. Venues that also want to run leagues and game nights to fill slow nights can add LeaguePour, a separate companion product, at a discount.",
     featureRows: [
       { feature: "Public inquiry form", vs: YES, competitor: YES },
       { feature: "Lead pipeline", vs: YES, competitor: YES },
@@ -96,7 +96,7 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       { feature: "Deposit collection", vs: YES, competitor: YES },
       { feature: "BEO builder", vs: YES, competitor: YES },
       { feature: "Customer CRM", vs: YES, competitor: YES },
-      { feature: "Public event & league tools (LeaguePour)", vs: YES, competitor: NO },
+      { feature: "Public event tools via LeaguePour (separate product, 50% off)", vs: "Add-on", competitor: NO },
       { feature: "Free starting plan", vs: YES, competitor: NO },
     ],
     vsBestFor: [
@@ -132,7 +132,7 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       { feature: "BEO builder", vs: YES, competitor: YES },
       { feature: "Customer CRM", vs: YES, competitor: YES },
       { feature: "Seating charts / floor plans", vs: NO, competitor: YES },
-      { feature: "Public event & league tools (LeaguePour)", vs: YES, competitor: NO },
+      { feature: "Public event tools via LeaguePour (separate product, 50% off)", vs: "Add-on", competitor: NO },
       { feature: "Free starting plan", vs: YES, competitor: PARTIAL },
       { feature: "Setup in one afternoon (small venues)", vs: YES, competitor: PARTIAL },
     ],
@@ -171,7 +171,7 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       { feature: "BEO builder", vs: YES, competitor: YES },
       { feature: "Catering production sheets", vs: NO, competitor: YES },
       { feature: "Kitchen workflow tools", vs: NO, competitor: YES },
-      { feature: "Public event & league tools (LeaguePour)", vs: YES, competitor: NO },
+      { feature: "Public event tools via LeaguePour (separate product, 50% off)", vs: "Add-on", competitor: NO },
       { feature: "Free starting plan", vs: YES, competitor: NO },
       { feature: "Modern web-first interface", vs: YES, competitor: PARTIAL },
     ],
@@ -209,7 +209,7 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       { feature: "Deposit collection", vs: YES, competitor: YES },
       { feature: "BEO builder", vs: YES, competitor: YES },
       { feature: "Hotel property management integration", vs: NO, competitor: YES },
-      { feature: "Public event & league tools (LeaguePour)", vs: YES, competitor: NO },
+      { feature: "Public event tools via LeaguePour (separate product, 50% off)", vs: "Add-on", competitor: NO },
       { feature: "Free starting plan", vs: YES, competitor: NO },
       { feature: "Designed for independent local venues", vs: YES, competitor: PARTIAL },
     ],
@@ -234,11 +234,11 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
     competitorBestFor:
       "Freelancers, photographers, wedding planners, and independent creative service businesses that need client management and invoicing.",
     summary:
-      "HoneyBook is a client management and invoicing tool popular with creative service businesses — photographers, wedding planners, designers. VenueSprocket is purpose-built for hospitality venues — restaurants, bars, breweries — with venue-specific tools like BEOs, room management, and the LeaguePour public events module.",
+      "HoneyBook is a client management and invoicing tool popular with creative service businesses — photographers, wedding planners, designers. VenueSprocket is purpose-built for hospitality venues — restaurants, bars, breweries — with venue-specific tools like BEOs and room management, plus a discounted add-on (LeaguePour) for venues that also want public event tools.",
     competitorSummary:
       "HoneyBook is a well-designed platform for independent service businesses. It handles proposals, contracts, invoices, and client communication in a clean interface. It's widely used by creative professionals.",
     vsSummary:
-      "VenueSprocket is purpose-built for the venue and hospitality market. It understands the specific language of private event booking — BEOs, event spaces, room minimums, banquet menus, deposits — and includes tools specific to venues like staff day-of views and LeaguePour for public events.",
+      "VenueSprocket is purpose-built for the venue and hospitality market. It understands the specific language of private event booking — BEOs, event spaces, room minimums, banquet menus, deposits — and includes venue-specific tools like staff day-of views. Venues that also want public event tools can add LeaguePour, a separate companion product, at a discount.",
     featureRows: [
       { feature: "Proposals and contracts", vs: YES, competitor: YES },
       { feature: "Online payment collection", vs: YES, competitor: YES },
@@ -247,7 +247,7 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       { feature: "BEO builder", vs: YES, competitor: NO },
       { feature: "Venue-specific inquiry form", vs: YES, competitor: PARTIAL },
       { feature: "Event space / room management", vs: YES, competitor: NO },
-      { feature: "Public event & league tools (LeaguePour)", vs: YES, competitor: NO },
+      { feature: "Public event tools via LeaguePour (separate product, 50% off)", vs: "Add-on", competitor: NO },
       { feature: "Staff day-of-event mobile view", vs: YES, competitor: NO },
       { feature: "Purpose-built for hospitality venues", vs: YES, competitor: NO },
       { feature: "Free starting plan", vs: YES, competitor: PARTIAL },
@@ -287,7 +287,7 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       { feature: "BEO builder", vs: YES, competitor: NO },
       { feature: "Customer CRM", vs: YES, competitor: NO },
       { feature: "Automated follow-up", vs: YES, competitor: NO },
-      { feature: "LeaguePour public event tools", vs: YES, competitor: NO },
+      { feature: "Public event tools via LeaguePour (separate product, 50% off)", vs: "Add-on", competitor: NO },
       { feature: "Mobile-friendly staff view", vs: YES, competitor: PARTIAL },
       { feature: "Cost to start", vs: "Free plan", competitor: "Free (manual labor cost)" },
     ],
@@ -326,7 +326,7 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       { feature: "BEO generation", vs: YES, competitor: "Manual Word doc" },
       { feature: "Customer records", vs: YES, competitor: "Email thread" },
       { feature: "Automated follow-up", vs: YES, competitor: NO },
-      { feature: "LeaguePour public event tools", vs: YES, competitor: NO },
+      { feature: "Public event tools via LeaguePour (separate product, 50% off)", vs: "Add-on", competitor: NO },
       { feature: "Mobile-friendly customer experience", vs: YES, competitor: NO },
     ],
     vsBestFor: [

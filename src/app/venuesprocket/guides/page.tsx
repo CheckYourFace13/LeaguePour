@@ -43,6 +43,13 @@ const guides = [
       "The fields every private event inquiry form needs, a filled-out example, and what to do in the first hour after a lead comes in.",
     tag: "Template",
   },
+  {
+    href: "/guides/sample-proposal-and-contract",
+    title: "Sample Event Proposal & Contract",
+    description:
+      "See what a proposal and e-signature contract actually look like, with a made-up event and customer - no login required.",
+    tag: "Sample",
+  },
 ];
 
 export default function VsGuidesIndexPage() {
