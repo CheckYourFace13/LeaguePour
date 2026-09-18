@@ -73,15 +73,12 @@ const plans = [
     name: "Growth",
     price: "$149",
     period: "/mo",
-    tagline: "For venues that want reporting AND multi-room management",
+    tagline: "For larger venues on the Pro workflow",
     cta: "Start Growth",
     ctaHref: "/start?plan=growth",
     highlight: false,
     features: [
       "Everything in Pro",
-      "Reporting and revenue tracking",
-      "Multi-room support",
-      "Up to 5 staff users",
     ],
   },
   {
@@ -140,7 +137,7 @@ export default function VsPricingPage() {
           </h1>
           <p className="vs-page-sub mx-auto text-center max-w-2xl">
             The free plan gets your inquiry form live immediately. Upgrade to Pro for contracts,
-            deposits, and BEOs. Growth adds reporting and multi-room support.
+            deposits, and BEOs.
           </p>
         </div>
 

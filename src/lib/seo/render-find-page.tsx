@@ -12,7 +12,6 @@ import {
   buildFaqPageJsonLd,
   buildItemListJsonLd,
 } from "@/lib/seo/json-ld-builders";
-import { marketingImages } from "@/lib/marketing-images";
 import { getAllOutreachCitySlugs } from "@/lib/seo/outreach-city-slugs";
 import {
   BRACKET_ROADMAP_SECTION,
@@ -160,7 +159,7 @@ export async function FindDiscoveryPage({ findSlug }: { findSlug: string }) {
       reactivationPromo={BRING_PLAYERS_BACK_PROMO}
       upgradePromo={UPGRADE_PROMO}
       roadmap={BRACKET_ROADMAP_SECTION}
-      heroImage={findSlug === "dart-leagues" ? marketingImages.playerDiscovery : undefined}
+      heroImage={undefined}
       afterHero={
         findSlug === "dart-leagues" ? (
           <LeaguePourProductMockup compact className="mt-12 max-w-3xl" />

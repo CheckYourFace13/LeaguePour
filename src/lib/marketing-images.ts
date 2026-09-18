@@ -1,28 +1,18 @@
 /** Marketing visuals in /public/marketing */
 
 export const marketingImages = {
+  /**
+   * A real, cropped screenshot of the actual /demo page's standings/results panel (sample data,
+   * clearly labeled). Replaced an AI-generated composite graphic that showed a fabricated
+   * "Championship Bracket" and "Team Sign Up" card UI that doesn't match the real app - see the
+   * visual-truth-audit commit for context. The exact same image file was previously also
+   * duplicated under two other unused names (leaguepour-hero-tournament.png,
+   * leaguepour-bracket-tools.png); those dead entries were removed rather than replaced.
+   */
   realVenueNights: {
-    src: "/marketing/leaguepour-real-venue-nights.png",
-    alt: "LeaguePour marketing graphic showing bar league signups, payments, standings, QR codes, event specials, and repeat-player marketing for real venue nights.",
-    width: 1200,
-    height: 800,
-  },
-  heroTournament: {
-    src: "/marketing/leaguepour-hero-tournament.png",
-    alt: "LeaguePour tournament platform showing bracket preview, standings, team signup, and QR code signup in a bar setting",
-    width: 1200,
-    height: 800,
-  },
-  bracketTools: {
-    src: "/marketing/leaguepour-bracket-tools.png",
-    alt: "LeaguePour bracket tools - championship bracket preview, live standings, and team signup for venue tournaments",
-    width: 1200,
-    height: 800,
-  },
-  playerDiscovery: {
-    src: "/marketing/leaguepour-player-discovery.png",
-    alt: "LeaguePour player discovery - find local leagues and tournaments near you with venue listings and scan to sign up",
-    width: 1200,
-    height: 800,
+    src: "/marketing/lp-public-standings.webp",
+    alt: "A real LeaguePour public competition page showing live standings (3-1-0 points system) and recent match results for a sample venue.",
+    width: 848,
+    height: 780,
   },
 } as const;

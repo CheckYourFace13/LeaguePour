@@ -125,11 +125,12 @@ export function HomePage() {
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-2">
           <MarketingImage {...marketingImages.realVenueNights} />
           <div>
-            <p className="lp-kicker text-lp-accent">Real venue nights</p>
-            <h2 className="mt-2 font-display text-3xl font-bold md:text-4xl">Everything around the bracket matters</h2>
+            <p className="lp-kicker text-lp-accent">Real public page</p>
+            <h2 className="mt-2 font-display text-3xl font-bold md:text-4xl">Live standings players actually check</h2>
             <p className="mt-4 text-lg text-lp-muted leading-relaxed">
-              Signups, payments, QR codes, standings, event specials, and repeat-player campaigns - the parts that turn
-              one tournament into a packed weekly league night.
+              This is an actual LeaguePour competition page - standings that update automatically as scores come in,
+              with recent results right below. Every venue gets one, with signups, QR codes, and repeat-player
+              campaigns behind the scenes.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
               {["Live Standings", "Venue Hub", "Staff Score Entry", "Repeat-Player Campaigns"].map((chip) => (
@@ -246,27 +247,22 @@ export function HomePage() {
       </section>
 
       <section className="border-y border-lp-border bg-lp-surface/40">
-        <div className="mx-auto max-w-6xl px-4 py-14 md:px-6 md:py-18">
-          <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
-            <div>
-              <h2 className="lp-page-title text-4xl md:text-5xl">Built for players</h2>
-              <p className="mt-3 max-w-xl text-lg text-lp-text-soft">
-                Find local events, join solo or with your crew, and register from your phone. No app download required.
-              </p>
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                <Button asChild size="lg">
-                  <Link href="/signup/player">{cta.joinPlayer}</Link>
-                </Button>
-                <Button asChild size="lg" variant="secondary">
-                  <Link href="/player/discover">
-                    {cta.browseEvents} <Users className="size-4" />
-                  </Link>
-                </Button>
-              </div>
-              <p className="mt-4 text-sm font-semibold text-lp-accent">Play. Compete. Win. Repeat.</p>
-            </div>
-            <MarketingImage {...marketingImages.playerDiscovery} />
+        <div className="mx-auto max-w-2xl px-4 py-14 text-center md:px-6 md:py-18">
+          <h2 className="lp-page-title text-4xl md:text-5xl">Built for players</h2>
+          <p className="mx-auto mt-3 max-w-xl text-lg text-lp-text-soft">
+            Find local events, join solo or with your crew, and register from your phone. No app download required.
+          </p>
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <Button asChild size="lg">
+              <Link href="/signup/player">{cta.joinPlayer}</Link>
+            </Button>
+            <Button asChild size="lg" variant="secondary">
+              <Link href="/player/discover">
+                {cta.browseEvents} <Users className="size-4" />
+              </Link>
+            </Button>
           </div>
+          <p className="mt-4 text-sm font-semibold text-lp-accent">Play. Compete. Win. Repeat.</p>
         </div>
       </section>
 
