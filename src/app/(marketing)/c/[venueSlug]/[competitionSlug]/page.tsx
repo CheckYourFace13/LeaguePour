@@ -39,7 +39,11 @@ export async function generateMetadata({
     `${comp.title} at ${comp.venue.name}${city ? ` in ${city}` : ""}. Signup for this ${compType} competition.`
   ).slice(0, 160);
   return {
-    title: titleParts.join(" | "),
+    // Must be { absolute } here, not a plain string - the root layout's title template
+    // ("%s | LeaguePour") would otherwise append a second "LeaguePour" on top of the one this
+    // page already puts at the end of titleParts, producing "... | LeaguePour | LeaguePour".
+    // Found live on a real competition page during the customer-facing smoke test.
+    title: { absolute: titleParts.join(" | ") },
     description: desc,
     alternates: { canonical: pageUrl },
     openGraph: {

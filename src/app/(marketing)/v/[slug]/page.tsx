@@ -30,7 +30,10 @@ export async function generateMetadata({
   const base = getPublicSiteUrl();
   const pageUrl = `${base}/v/${venue.slug}`;
   return {
-    title: `${venue.name}${cityTitle} | LeaguePour`,
+    // { absolute } - a plain string here gets the root layout's "%s | LeaguePour" template
+    // applied on top of the "| LeaguePour" already in this string, producing a doubled suffix.
+    // Same bug found and fixed on the competition page during the customer-facing smoke test.
+    title: { absolute: `${venue.name}${cityTitle} | LeaguePour` },
     description: `${venue.name} (${venue.venueType}). ${cityIntent}`,
     alternates: { canonical: pageUrl },
     openGraph: {
