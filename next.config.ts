@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import { VS_HOST, vsExactRewrites, vsCompareRewrite, vsGuidesRewrite } from "./src/lib/vs-routing";
+import { VS_HOST, LP_HOST, vsExactRewrites, vsCompareRewrite, vsGuidesRewrite } from "./src/lib/vs-routing";
 
 // VS domain rewrites: venuesprocket.com/* → /venuesprocket/* internally.
 // This allows a single Next.js deployment to serve both brands. The path list itself lives in
@@ -27,9 +27,9 @@ const nextConfig: NextConfig = {
       // GrokBot audit: venuesprocket.com/privacy and /terms aren't real pages on either brand
       // (both live at /legal/*), so without these they fell through middleware's host-gate to
       // leaguepour.com/privacy and /terms - which don't exist there either, so a plausible alias
-      // URL 404'd on the wrong domain. Scoped to the VS host only (LP has never had this alias
-      // and isn't part of this cleanup) - the destination is already in vs-routing.ts's
-      // exactRules, so it resolves to VenueSprocket's real, correctly-branded legal pages.
+      // URL 404'd on the wrong domain. Scoped to the VS host only - the destination is already in
+      // vs-routing.ts's exactRules, so it resolves to VenueSprocket's real, correctly-branded
+      // legal pages.
       {
         source: "/privacy",
         destination: "/legal/privacy",
@@ -41,6 +41,21 @@ const nextConfig: NextConfig = {
         destination: "/legal/terms",
         permanent: true,
         has: [{ type: "host", value: VS_HOST }],
+      },
+      // Same alias gap on the LP side itself, found during the customer-facing smoke test:
+      // leaguepour.com/privacy and /terms 404'd instead of landing on the real pages at
+      // /legal/*. Scoped to the LP host only so this can't affect VS's own routing above.
+      {
+        source: "/privacy",
+        destination: "/legal/privacy",
+        permanent: true,
+        has: [{ type: "host", value: LP_HOST }],
+      },
+      {
+        source: "/terms",
+        destination: "/legal/terms",
+        permanent: true,
+        has: [{ type: "host", value: LP_HOST }],
       },
     ];
   },
