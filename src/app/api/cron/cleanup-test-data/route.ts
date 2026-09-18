@@ -55,6 +55,10 @@ const TEST_VENUE_NAMES = [
   // /api/cron/vs-refund-selftest.
   "CLAUDE-VS-REFUND-TEST-A-DELETE-ME",
   "CLAUDE-VS-REFUND-TEST-B-DELETE-ME",
+  // Customer-facing production smoke test (LP signup/competition flow + VS signup/inquiry/
+  // proposal/contract/BEO flow, both through real production UI with disposable data).
+  "CLAUDE-SMOKE-LP-DELETE-ME",
+  "CLAUDE-SMOKE-VS-DELETE-ME",
 ];
 const TEST_USER_EMAILS = [
   "claude-test-verify2-delete-me@example.com",
@@ -100,6 +104,9 @@ const TEST_USER_EMAILS = [
   "claude-matrix-delete-me-player4@example.com",
   "claude-vs-refund-test-a-delete-me-owner@example.com",
   "claude-vs-refund-test-b-delete-me-owner@example.com",
+  "claude-smoke-lp-delete-me@example.com",
+  "claude-smoke-vs-delete-me@example.com",
+  "claude-smoke-vs-customer-delete-me@example.com",
 ];
 
 export async function GET(request: Request) {
