@@ -40,7 +40,7 @@ const jsonLd = {
       publisher: {
         "@type": "Organization",
         name: "LeaguePour",
-        logo: { "@type": "ImageObject", url: "https://leaguepour.com/logo.png" },
+        logo: { "@type": "ImageObject", url: "https://leaguepour.com/logos/leaguepour-icon.png" },
       },
       url: "https://leaguepour.com/guides/round-robin-vs-single-elimination",
       datePublished: "2026-09-13",

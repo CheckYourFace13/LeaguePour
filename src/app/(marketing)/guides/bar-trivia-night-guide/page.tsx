@@ -36,7 +36,7 @@ const jsonLd = {
       publisher: {
         "@type": "Organization",
         name: "LeaguePour",
-        logo: { "@type": "ImageObject", url: "https://leaguepour.com/logo.png" },
+        logo: { "@type": "ImageObject", url: "https://leaguepour.com/logos/leaguepour-icon.png" },
       },
       url: "https://leaguepour.com/guides/bar-trivia-night-guide",
       datePublished: "2026-05-10",

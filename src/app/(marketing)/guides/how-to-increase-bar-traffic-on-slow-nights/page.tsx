@@ -41,7 +41,7 @@ const jsonLd = {
       publisher: {
         "@type": "Organization",
         name: "LeaguePour",
-        logo: { "@type": "ImageObject", url: "https://leaguepour.com/logo.png" },
+        logo: { "@type": "ImageObject", url: "https://leaguepour.com/logos/leaguepour-icon.png" },
       },
       url: "https://leaguepour.com/guides/how-to-increase-bar-traffic-on-slow-nights",
       datePublished: "2026-08-19",

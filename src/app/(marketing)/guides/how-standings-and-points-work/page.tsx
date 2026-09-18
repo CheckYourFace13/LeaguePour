@@ -39,7 +39,7 @@ const jsonLd = {
       publisher: {
         "@type": "Organization",
         name: "LeaguePour",
-        logo: { "@type": "ImageObject", url: "https://leaguepour.com/logo.png" },
+        logo: { "@type": "ImageObject", url: "https://leaguepour.com/logos/leaguepour-icon.png" },
       },
       url: "https://leaguepour.com/guides/how-standings-and-points-work",
       datePublished: "2026-09-13",
