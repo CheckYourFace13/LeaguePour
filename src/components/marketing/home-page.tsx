@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, CalendarClock, Megaphone, MapPin, QrCode, Trophy, Users } from "lucide-react";
-import { LeaguePourProductMockup } from "@/components/marketing/LeaguePourProductMockup";
+import { LeaguePourRealVisual } from "@/components/marketing/LeaguePourRealVisual";
 import { MarketingImage } from "@/components/marketing/marketing-image";
 import { VenuePainPoints } from "@/components/marketing/VenuePainPoints";
 import { cta } from "@/lib/brand";
@@ -116,14 +116,14 @@ export function HomePage() {
                 ))}
               </ul>
             </div>
-            <LeaguePourProductMockup />
+            <LeaguePourRealVisual variant="hero" priority />
           </div>
         </div>
       </section>
 
       <section className="border-b border-lp-border bg-gradient-to-r from-lp-accent/5 via-white to-lp-accent-2/15">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-2">
-          <MarketingImage {...marketingImages.realVenueNights} />
+          <MarketingImage {...marketingImages.standings} />
           <div>
             <p className="lp-kicker text-lp-accent">Real public page</p>
             <h2 className="mt-2 font-display text-3xl font-bold md:text-4xl">Live standings players actually check</h2>

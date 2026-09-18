@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { BracketPreview } from "@/components/app/bracket-preview";
+import { buildSingleEliminationRound1, pairNextRound, type Participant } from "@/lib/tournament";
+import { buildQrDataUrl } from "@/lib/qr";
+import { getPublicSiteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
   title: { absolute: "See LeaguePour In Action | Demo" },
@@ -29,7 +33,47 @@ const DEMO_RESULTS = [
   { round: "Round 4", match: "Brew Crew vs. High Fives", score: "1 - 3" },
 ];
 
-export default function DemoPage() {
+// Same 8-team single-elimination bracket a venue would get from Start Tournament - built with the
+// real bracket math (buildSingleEliminationRound1 / pairNextRound), just fed fictional names and
+// never written to the database. Illustrates bracket *shape*, not a real result, so each round's
+// "home" seed is carried forward mechanically rather than picking a winner - matching the same
+// non-claim the sample-bracket preview inside the app itself makes.
+const BRACKET_TEAMS: Participant[] = [
+  "The Board Room",
+  "Rack Attack",
+  "Chalk Talk",
+  "Last Call",
+  "Brew Crew",
+  "High Fives",
+  "Pool Sharks",
+  "Sharkbait",
+].map((name, i) => ({ id: String(i), name }));
+
+function buildDemoBracketRows() {
+  const rows: { id: string; round: number; homeName: string; awayName: string | null; label: string | null }[] = [];
+  let { pairings } = buildSingleEliminationRound1(BRACKET_TEAMS);
+  let round = 1;
+  while (pairings.length > 0) {
+    for (const p of pairings) {
+      rows.push({
+        id: `${round}-${p.slot}`,
+        round,
+        homeName: p.home.name,
+        awayName: p.away?.name ?? null,
+        label: null,
+      });
+    }
+    const winners = pairings.map((p) => p.home);
+    if (pairings.length === 1) break;
+    pairings = pairNextRound(winners);
+    round += 1;
+  }
+  return rows;
+}
+
+export default async function DemoPage() {
+  const bracketRows = buildDemoBracketRows();
+  const qrDataUrl = await buildQrDataUrl(`${getPublicSiteUrl()}/demo`);
   return (
     <div className="lp-section mx-auto max-w-4xl px-4 md:px-6">
       <div className="text-center">
@@ -104,6 +148,38 @@ export default function DemoPage() {
         <p className="mt-6 text-center text-xs text-lp-muted">
           Sample data shown for demonstration only. This page updates automatically and can be
           displayed on a TV behind the bar as a live scoreboard.
+        </p>
+      </div>
+
+      {/* Sample bracket + QR signup - a different sample competition, single elimination format */}
+      <div className="mt-8 rounded-2xl border border-lp-border bg-lp-surface/40 p-6 md:p-8">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="lp-kicker">Sample venue</p>
+            <p className="mt-1 font-display text-2xl font-extrabold tracking-tight text-lp-text">The Alley House</p>
+            <p className="mt-1 text-sm text-lp-text-soft">Friday Night Darts Shootout - Single Elimination</p>
+          </div>
+          <Badge variant="accent">8-team bracket (demo)</Badge>
+        </div>
+
+        <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_auto]">
+          <div>
+            <h2 className="mb-3 text-sm font-bold uppercase tracking-widest text-lp-muted">Tournament bracket</h2>
+            <BracketPreview title="Sample bracket" matches={bracketRows.map((r) => ({ ...r, homeScore: null, awayScore: null, completed: false }))} />
+          </div>
+          <div className="flex flex-col items-center gap-3 lg:w-48">
+            <h2 className="text-sm font-bold uppercase tracking-widest text-lp-muted">Scan to sign up</h2>
+            {/* eslint-disable-next-line @next/next/no-img-element -- a generated data: URL, not a static asset Next/Image can optimize */}
+            <img src={qrDataUrl} alt="QR code linking to this demo page" className="size-40 rounded-xl border border-lp-border" />
+            <p className="text-center text-xs text-lp-muted">
+              A real, working QR code - scan it to open this page. On a real competition it links straight to team signup.
+            </p>
+          </div>
+        </div>
+
+        <p className="mt-6 text-center text-xs text-lp-muted">
+          Sample bracket for illustration only - built with the same bracket logic every single-elimination
+          competition uses, with placeholder team names.
         </p>
       </div>
 

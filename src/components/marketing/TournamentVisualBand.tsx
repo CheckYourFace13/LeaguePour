@@ -1,4 +1,4 @@
-import { LeaguePourProductMockup } from "@/components/marketing/LeaguePourProductMockup";
+import { LeaguePourRealVisual } from "@/components/marketing/LeaguePourRealVisual";
 
 type StatusGroup = {
   label: string;
@@ -93,7 +93,7 @@ export function TournamentVisualBand({ title, copy }: TournamentVisualBandProps)
               <StatusBadges groups={tournamentStatusGroups} />
             </div>
           </div>
-          <LeaguePourProductMockup compact />
+          <LeaguePourRealVisual variant="bracket" />
         </div>
       </div>
     </section>

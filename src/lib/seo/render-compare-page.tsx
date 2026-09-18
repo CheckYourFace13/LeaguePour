@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ChallongeComparisonVisual } from "@/components/marketing/ChallongeComparisonVisual";
-import { LeaguePourProductMockup } from "@/components/marketing/LeaguePourProductMockup";
+import { LeaguePourRealVisual } from "@/components/marketing/LeaguePourRealVisual";
 import { LeaguePourDiscoveryLanding } from "@/components/seo/LeaguePourDiscoveryLanding";
 import { getComparePage } from "@/lib/seo/compare-pages";
 import { marketingImages } from "@/lib/marketing-images";
@@ -102,8 +102,8 @@ export function CompareDiscoveryPage({ slug }: { slug: string }) {
       reactivationPromo={BRING_PLAYERS_BACK_PROMO}
       upgradePromo={UPGRADE_PROMO}
       roadmap={BRACKET_ROADMAP_SECTION}
-      heroImage={isChallonge ? marketingImages.realVenueNights : undefined}
-      afterHero={isChallonge ? <LeaguePourProductMockup compact className="mt-12 max-w-3xl" /> : undefined}
+      heroImage={isChallonge ? marketingImages.standings : undefined}
+      afterHero={isChallonge ? <LeaguePourRealVisual variant="standings" className="mt-12 max-w-3xl" /> : undefined}
       fullWidthAfterHero={isChallonge ? <ChallongeComparisonVisual /> : undefined}
       jsonLdGraphs={jsonLd}
     />

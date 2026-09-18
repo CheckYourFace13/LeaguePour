@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { LeaguePourProductMockup } from "@/components/marketing/LeaguePourProductMockup";
+import { LeaguePourRealVisual } from "@/components/marketing/LeaguePourRealVisual";
 import { LeaguePourDiscoveryLanding } from "@/components/seo/LeaguePourDiscoveryLanding";
 import { DISCOVERY_GAMES, getDiscoveryGameBySlug } from "@/lib/seo/discovery-games";
 import {
@@ -162,7 +162,7 @@ export async function FindDiscoveryPage({ findSlug }: { findSlug: string }) {
       heroImage={undefined}
       afterHero={
         findSlug === "dart-leagues" ? (
-          <LeaguePourProductMockup compact className="mt-12 max-w-3xl" />
+          <LeaguePourRealVisual variant="standings" className="mt-12 max-w-3xl" />
         ) : undefined
       }
       jsonLdGraphs={jsonLd}

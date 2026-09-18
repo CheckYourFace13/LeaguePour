@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { LeaguePourProductMockup } from "@/components/marketing/LeaguePourProductMockup";
+import { LeaguePourRealVisual } from "@/components/marketing/LeaguePourRealVisual";
 import { LeaguePourDiscoveryLanding } from "@/components/seo/LeaguePourDiscoveryLanding";
 import {
   fetchDiscoveryCompetitionsForKind,
@@ -197,10 +197,10 @@ export async function SoftwareDiscoveryPage({ slug }: { slug: SoftwarePageSlug }
       reactivationPromo={BRING_PLAYERS_BACK_PROMO}
       upgradePromo={UPGRADE_PROMO}
       roadmap={BRACKET_ROADMAP_SECTION}
-      heroImage={slug === "bar-tournament-software" ? marketingImages.realVenueNights : undefined}
+      heroImage={slug === "bar-tournament-software" ? marketingImages.standings : undefined}
       afterHero={
         slug === "bar-tournament-software" ? (
-          <LeaguePourProductMockup compact className="mt-12 max-w-3xl" />
+          <LeaguePourRealVisual variant="standings" className="mt-12 max-w-3xl" />
         ) : undefined
       }
       jsonLdGraphs={jsonLd}
