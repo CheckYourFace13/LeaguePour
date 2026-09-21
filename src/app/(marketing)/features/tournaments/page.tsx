@@ -1,5 +1,6 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Check, Minus } from "lucide-react";
 import { TournamentVisualBand } from "@/components/marketing/TournamentVisualBand";
@@ -14,7 +15,8 @@ import {
   type FormatStatus,
 } from "@/lib/tournament-formats";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/features/tournaments", {
   title: {
     absolute: "Tournament & League Management for Bars & Breweries | LeaguePour",
   },
@@ -39,7 +41,8 @@ export const metadata: Metadata = {
       "Run bar competitions with signups, payments, brackets, and repeat-player marketing - built for venues, not hobby brackets.",
     url: "/features/tournaments",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

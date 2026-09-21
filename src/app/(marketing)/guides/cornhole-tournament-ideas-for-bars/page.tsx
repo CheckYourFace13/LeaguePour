@@ -1,9 +1,11 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/guides/cornhole-tournament-ideas-for-bars", {
   title: { absolute: "Cornhole Tournament Ideas for Bars | LeaguePour Guide" },
   description:
     "Cornhole tournament ideas for bars: bracket formats, team sizes, prize structures, sponsorship, seasonal themes, and promotion tips that actually fill your patio.",
@@ -22,7 +24,8 @@ export const metadata: Metadata = {
       "Bracket formats, prize ideas, seasonal themes, and promotion tips for bar cornhole tournaments.",
     url: "/guides/cornhole-tournament-ideas-for-bars",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

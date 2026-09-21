@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/legal/privacy", {
   title: { absolute: "Privacy Policy | LeaguePour" },
   description:
     "LeaguePour privacy policy: what data we collect, how we use it, player marketing preferences, and how to contact us.",
   alternates: { canonical: "/legal/privacy" },
-};
+});
+}
 
 export default function PrivacyPage() {
   return (

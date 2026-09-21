@@ -1,10 +1,12 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getPublicSiteUrl } from "@/lib/site-url";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/pool-league-management", {
   title: { absolute: "Pool League Management Software for Bars | LeaguePour" },
   description:
     "Manage 8-ball and 9-ball pool leagues at your bar with LeaguePour. Online signup, entry fees via Stripe, standings, and player communication - no paper brackets.",
@@ -24,7 +26,8 @@ export const metadata: Metadata = {
       "Manage bar pool leagues - online signup, entry fees, standings, and player messaging. Built for bars.",
     url: "/pool-league-management",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

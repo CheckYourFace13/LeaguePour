@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { buildBreadcrumbJsonLd, safeJsonLd } from "@/lib/seo/json-ld-builders";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/guides/how-to-start-a-pool-league", {
   title: { absolute: "How to Start a Pool League at Your Bar | LeaguePour" },
   description:
     "A practical guide to starting a bar pool league: choosing 8-ball or 9-ball, handicapping mixed-skill players, table logistics, entry fees, running league night, and filling a season.",
@@ -22,7 +24,8 @@ export const metadata: Metadata = {
       "Format, handicapping, table logistics, entry fees, and how to run a bar pool league that fills a full season.",
     url: "/guides/how-to-start-a-pool-league",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,8 @@ import { buildSingleEliminationRound1, pairNextRound, type Participant } from "@
 import { buildQrDataUrl } from "@/lib/qr";
 import { getPublicSiteUrl } from "@/lib/site-url";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/demo", {
   title: { absolute: "See LeaguePour In Action | Demo" },
   description:
     "A sample LeaguePour venue page - bracket, live standings, results, and player signup - so you can see how competitions look before you sign up.",
@@ -17,7 +19,8 @@ export const metadata: Metadata = {
     description: "A sample venue competition page - bracket, standings, and results.",
     url: "/demo",
   },
-};
+});
+}
 
 const DEMO_STANDINGS = [
   { rank: 1, team: "High Fives", w: 5, l: 1, pts: 15 },

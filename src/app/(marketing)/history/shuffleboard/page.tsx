@@ -1,9 +1,11 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/history/shuffleboard", {
   title: { absolute: "History of Shuffleboard | Five Centuries at the Table | LeaguePour" },
   description:
     "Shuffleboard has been a tavern game since Tudor England - Henry VIII banned it in 1532 and people kept playing anyway. The full history from 'shovelboard' to bar staple.",
@@ -22,7 +24,8 @@ export const metadata: Metadata = {
       "Henry VIII banned it. Tudor tavern-keepers kept running it anyway. Five centuries of shuffleboard history.",
     url: "/history/shuffleboard",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

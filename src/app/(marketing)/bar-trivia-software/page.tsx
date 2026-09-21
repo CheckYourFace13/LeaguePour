@@ -1,10 +1,12 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getPublicSiteUrl } from "@/lib/site-url";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/bar-trivia-software", {
   title: { absolute: "Bar Trivia Software & Signup Management | LeaguePour" },
   description:
     "Run trivia nights at your bar with LeaguePour. Online team registration, entry fees, standings, and repeat player alerts - trivia night management made simple.",
@@ -24,7 +26,8 @@ export const metadata: Metadata = {
       "Online trivia night registration, entry fees, team signup, and standings for bars. No spreadsheets.",
     url: "/bar-trivia-software",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

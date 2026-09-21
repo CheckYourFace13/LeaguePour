@@ -1,9 +1,11 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/history/darts", {
   title: { absolute: "History of Darts | From English Pubs to World Sport | LeaguePour" },
   description:
     "The real history of darts - medieval English origins, how elm tree cross-sections became boards, Brian Gamlin's number arrangement in 1896, the rise of the WDF, and the Phil Taylor era.",
@@ -22,7 +24,8 @@ export const metadata: Metadata = {
       "From medieval English pubs to packed arenas - the real story of how darts became a world sport.",
     url: "/history/darts",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

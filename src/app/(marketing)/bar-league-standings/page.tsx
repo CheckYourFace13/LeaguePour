@@ -1,10 +1,12 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getPublicSiteUrl } from "@/lib/site-url";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/bar-league-standings", {
   title: { absolute: "Bar League Standings Software | Live Scoreboards | LeaguePour" },
   description:
     "Keep bar league standings live and public. LeaguePour updates standings automatically as scores come in and displays them on a shareable page or a TV behind the bar.",
@@ -23,7 +25,8 @@ export const metadata: Metadata = {
       "Live, automatically-updating standings for any bar league - darts, pool, cornhole, trivia, and more. Shareable page or TV scoreboard.",
     url: "/bar-league-standings",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

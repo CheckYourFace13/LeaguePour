@@ -1,9 +1,11 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/history/trivia", {
   title: { absolute: "History of Pub Trivia | How Quiz Night Conquered the Bar | LeaguePour" },
   description:
     "How pub trivia went from a British pub format in the 1970s to one of the most profitable recurring bar events in the world - the real history of quiz night.",
@@ -22,7 +24,8 @@ export const metadata: Metadata = {
       "The real history of pub trivia - from 1970s Britain through Trivial Pursuit to packed bar nights every Tuesday across America.",
     url: "/history/trivia",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

@@ -1,9 +1,11 @@
 import { safeJsonLd, buildBreadcrumbJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/guides/managing-no-shows-and-forfeits", {
   title: { absolute: "Managing No-Shows and Forfeits in Bar Leagues | LeaguePour Guide" },
   description:
     "A practical forfeit policy for bar leagues: how to define a no-show, what counts as fair notice, how entry fees reduce no-shows, and how to keep the schedule fair when a team doesn't come.",
@@ -20,7 +22,8 @@ export const metadata: Metadata = {
     description: "A fair, written forfeit policy that protects the teams who actually show up.",
     url: "/guides/managing-no-shows-and-forfeits",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

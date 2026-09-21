@@ -1,8 +1,10 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/faq", {
   title: { absolute: "LeaguePour FAQ | Bar Tournament Platform Questions" },
   description:
     "Answers about LeaguePour venue competition software, entry fee tournaments, team registration, and league management for bars.",
@@ -12,7 +14,8 @@ export const metadata: Metadata = {
     description: "FAQ for bar event registration software and tournament signup workflows.",
     url: "/faq",
   },
-};
+});
+}
 
 const faqs = [
   {

@@ -1,9 +1,11 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/poker-tournament-software", {
   title: { absolute: "Bar Poker Tournament Software | LeaguePour" },
   description:
     "Run poker tournaments and poker nights at your bar with LeaguePour. Online registration, optional entry fees via Stripe, standings, and player notifications - no spreadsheets.",
@@ -22,7 +24,8 @@ export const metadata: Metadata = {
       "Run poker nights and tournaments at your bar - online registration, standings, and player notifications. No spreadsheets.",
     url: "/poker-tournament-software",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

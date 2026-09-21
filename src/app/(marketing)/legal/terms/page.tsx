@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/legal/terms", {
   title: { absolute: "Terms of Service | LeaguePour" },
   description:
     "LeaguePour terms of service for venues and players: acceptable use, payments, refunds, and responsibilities.",
   alternates: { canonical: "/legal/terms" },
-};
+});
+}
 
 export default function TermsPage() {
   return (

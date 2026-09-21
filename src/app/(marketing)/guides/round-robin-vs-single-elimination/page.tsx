@@ -1,9 +1,11 @@
 import { safeJsonLd, buildBreadcrumbJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/guides/round-robin-vs-single-elimination", {
   title: { absolute: "Round Robin vs. Single Elimination for Bars | LeaguePour Guide" },
   description:
     "Round robin vs single elimination for bar tournaments: which keeps players (and their tabs) in the room longer, how long each takes to run, and how to pick between them.",
@@ -21,7 +23,8 @@ export const metadata: Metadata = {
       "Which tournament format actually keeps a bar full - round robin or single elimination - and how to choose.",
     url: "/guides/round-robin-vs-single-elimination",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

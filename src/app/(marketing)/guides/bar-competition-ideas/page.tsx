@@ -1,9 +1,11 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/guides/bar-competition-ideas", {
   title: { absolute: "25 Bar Competition Ideas That Fill Seats | LeaguePour" },
   description:
     "25 bar competition ideas across darts, cornhole, trivia, pool, poker, shuffleboard, and more - with notes on what makes each one work and how to get started.",
@@ -22,7 +24,8 @@ export const metadata: Metadata = {
       "25 competition formats across darts, cornhole, trivia, pool, poker, shuffleboard, and more.",
     url: "/guides/bar-competition-ideas",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

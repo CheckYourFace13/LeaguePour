@@ -1,9 +1,11 @@
 import { safeJsonLd, buildBreadcrumbJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/guides/how-standings-and-points-work", {
   title: { absolute: "How Standings and Points Systems Work for Bar Leagues | LeaguePour Guide" },
   description:
     "How points, wins, losses, and ties translate into league standings - the standard 3-1-0 system, tiebreakers, and why visible standings keep players coming back.",
@@ -20,7 +22,8 @@ export const metadata: Metadata = {
     description: "The points system behind league standings, and why visible standings drive attendance.",
     url: "/guides/how-standings-and-points-work",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

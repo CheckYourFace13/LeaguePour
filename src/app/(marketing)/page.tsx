@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import { HomePage } from "@/components/marketing/home-page";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/", {
   title: { absolute: "LeaguePour | Venue Competition Software for Bars" },
   description:
     "LeaguePour is venue competition software for bars: tournament signup software, player registration, Stripe entry fees, and league management in one platform.",
@@ -19,7 +21,8 @@ export const metadata: Metadata = {
     description: "Tournament signup and player registration software built for bars and venue game nights.",
     images: ["/opengraph-image"],
   },
-};
+});
+}
 
 export default function Page() {
   return <HomePage />;

@@ -1,8 +1,10 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/history", {
   title: { absolute: "Bar Game History | How Your Favorite Bar Games Came to Be | LeaguePour" },
   description:
     "The real history behind the games your bar runs every week - darts, cornhole, billiards, trivia, and shuffleboard. Where they started, how they spread, and why they stuck.",
@@ -21,7 +23,8 @@ export const metadata: Metadata = {
       "The real history behind darts, cornhole, billiards, trivia, and shuffleboard - where they came from and why they're still packing bars.",
     url: "/history",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

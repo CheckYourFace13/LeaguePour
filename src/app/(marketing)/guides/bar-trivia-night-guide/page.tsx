@@ -1,9 +1,11 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/guides/bar-trivia-night-guide", {
   title: { absolute: "How to Run Trivia Night at Your Bar | LeaguePour Guide" },
   description:
     "A complete guide to running trivia night at your bar. Hosting tips, theme ideas, team sizes, scoring systems, prizes, and how to keep a full room of regulars coming back every week.",
@@ -22,7 +24,8 @@ export const metadata: Metadata = {
       "Hosting tips, themes, scoring, prizes, and the secrets to keeping a full room of trivia regulars.",
     url: "/guides/bar-trivia-night-guide",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

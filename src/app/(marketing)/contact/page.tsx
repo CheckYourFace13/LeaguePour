@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { ContactForm } from "@/components/marketing/contact-form";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/contact", {
   title: { absolute: "Contact LeaguePour" },
   description:
     "Contact LeaguePour for venue setup help, billing questions, player support, or migration from spreadsheets and paper signups.",
   alternates: { canonical: "/contact" },
-};
+});
+}
 
 export default function ContactPage() {
   return (

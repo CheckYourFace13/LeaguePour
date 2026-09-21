@@ -1,10 +1,12 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getPublicSiteUrl } from "@/lib/site-url";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/cornhole-tournament-software", {
   title: { absolute: "Bar Cornhole & Bag Toss Tournament App | LeaguePour" },
   description:
     "Run cornhole and bag toss tournaments at your bar with LeaguePour. Online team registration, entry fees via Stripe, brackets, standings, and player alerts.",
@@ -24,7 +26,8 @@ export const metadata: Metadata = {
       "Run cornhole and bag toss tournaments at your bar - team signup, entry fees, brackets, and standings.",
     url: "/cornhole-tournament-software",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

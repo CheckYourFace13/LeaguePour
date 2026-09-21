@@ -1,9 +1,11 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/rules", {
   title: { absolute: "Official Rules for Bar Games | LeaguePour Resource Guide" },
   description:
     "Direct links to official rules from the governing bodies and associations that maintain them - darts, cornhole, pool, shuffleboard, poker, trivia, and more. No paraphrasing, just the real sources.",
@@ -23,7 +25,8 @@ export const metadata: Metadata = {
       "Links to official rules from the governing bodies - WDF, ACA, WPA, BCA, NSA, TDA, and more. We link to the source; we don't rewrite it.",
     url: "/rules",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

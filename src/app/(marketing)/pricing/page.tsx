@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,8 @@ const FEATURE_ROWS: { label: string; values: string[] }[] = [
   { label: "Unlimited staff accounts", values: ["✓", "✓", "✓", "✓"] },
 ];
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/pricing", {
   title: { absolute: "LeaguePour Pricing | Bar Event Registration Software Plans" },
   description:
     "Pricing for LeaguePour venue competition software. Plans for trivia signup software, dart league software, and cornhole tournament software.",
@@ -38,7 +40,8 @@ export const metadata: Metadata = {
     title: "LeaguePour Pricing",
     description: "Venue competition software plans for bars and recurring tournament signup.",
   },
-};
+});
+}
 
 export default function PricingPage() {
   return (

@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { buildBreadcrumbJsonLd, safeJsonLd } from "@/lib/seo/json-ld-builders";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/guides/how-to-increase-bar-traffic-on-slow-nights", {
   title: { absolute: "How to Increase Bar Traffic on Slow Nights | LeaguePour" },
   description:
     "A practical guide to filling slow weeknights at your bar with a recurring anchor event - why one-off promotions don't stick, how to pick a format, and how to build it into a habit.",
@@ -22,7 +24,8 @@ export const metadata: Metadata = {
       "Why recurring anchor events outperform one-off promotions, and how to build a slow night into a full one.",
     url: "/guides/how-to-increase-bar-traffic-on-slow-nights",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

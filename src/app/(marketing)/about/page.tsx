@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/about", {
   title: { absolute: "About LeaguePour | Bar League & Tournament Management Platform" },
   description:
     "LeaguePour helps bars and venues run dart leagues, cornhole tournaments, trivia nights, and pool leagues — with online signup, Stripe payments, standings, and player marketing built in.",
@@ -13,7 +15,8 @@ export const metadata: Metadata = {
       "LeaguePour helps bars run organized leagues and tournaments — online signup, Stripe entry fees, live standings, and player marketing in one platform.",
     url: "https://leaguepour.com/about",
   },
-};
+});
+}
 
 export default function AboutPage() {
   return (

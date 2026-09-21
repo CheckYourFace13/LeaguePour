@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { getManagedFeed } from "@/lib/gravyblock-managed";
 import { prisma } from "@/lib/db";
 import { getAllCompareSlugs } from "@/lib/seo/compare-pages";
 import { getSitemapCityGamePaths, getSitemapCityOnlyPaths } from "@/lib/seo/discovery-data";
@@ -120,5 +121,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  return [...staticPages, ...venuePages, ...compPages];
+  const managedItems = (await getManagedFeed())?.items ?? [];
+  const managedPages: MetadataRoute.Sitemap = managedItems.map((i) => ({ url: `${base}/insights/${i.slug}`, lastModified: new Date(i.publishedAt), changeFrequency: "monthly" as const, priority: 0.6 }));
+
+  return [...staticPages, ...venuePages, ...compPages, ...managedPages];
 }

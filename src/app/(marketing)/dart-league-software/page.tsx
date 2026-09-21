@@ -1,10 +1,12 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getPublicSiteUrl } from "@/lib/site-url";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/dart-league-software", {
   title: { absolute: "Bar Dart League Management Software | LeaguePour" },
   description:
     "Run dart leagues at your bar with LeaguePour. Online signup, team registration, entry fees via Stripe, standings, and bracket management - no spreadsheets needed.",
@@ -24,7 +26,8 @@ export const metadata: Metadata = {
       "Run dart leagues at your bar - online signup, entry fees, standings, and brackets. No spreadsheets.",
     url: "/dart-league-software",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

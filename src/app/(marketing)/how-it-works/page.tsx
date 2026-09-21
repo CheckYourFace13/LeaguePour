@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/how-it-works", {
   title: { absolute: "How LeaguePour Works | Tournament Signup Software for Bars" },
   description:
     "How LeaguePour works for venue competition software: pick a format, launch bar event registration, run standings, and fill the next league night.",
@@ -12,7 +14,8 @@ export const metadata: Metadata = {
     description: "From signup page to brackets and repeat players.",
     url: "/how-it-works",
   },
-};
+});
+}
 
 const steps = [
   {

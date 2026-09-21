@@ -1,9 +1,11 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/music-bingo-software", {
   title: { absolute: "Music Bingo Software for Bars | LeaguePour" },
   description:
     "Run music bingo nights at your bar with LeaguePour. Online team registration, entry fees via Stripe, and player notifications - all in one platform built for bars.",
@@ -22,7 +24,8 @@ export const metadata: Metadata = {
       "Run music bingo nights at your bar - online registration, entry fees, and player notifications. No spreadsheets.",
     url: "/music-bingo-software",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

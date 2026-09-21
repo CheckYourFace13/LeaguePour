@@ -1,9 +1,11 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/euchre-tournament-software", {
   title: { absolute: "Euchre Tournament Software for Bars | LeaguePour" },
   description:
     "Run euchre tournaments and euchre leagues at your bar with LeaguePour. Online signup, entry fees via Stripe, standings, and bracket management - no spreadsheets.",
@@ -22,7 +24,8 @@ export const metadata: Metadata = {
       "Run euchre tournaments and leagues at your bar - online signup, entry fees, standings, and brackets. No spreadsheets.",
     url: "/euchre-tournament-software",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

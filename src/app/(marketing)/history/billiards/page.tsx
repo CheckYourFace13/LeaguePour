@@ -1,9 +1,11 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/history/billiards", {
   title: { absolute: "History of Billiards & Pool | From Kings to Corner Bars | LeaguePour" },
   description:
     "How billiards went from a 15th-century French lawn game to a royal pastime to every dive bar in America - including the story of why we call it 'pool' and when 8-ball became standard.",
@@ -23,7 +25,8 @@ export const metadata: Metadata = {
       "A French lawn game, King Louis XI, a mace that became a cue, horse-racing betting pools, and eventually your bar's back room. The full story.",
     url: "/history/billiards",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",

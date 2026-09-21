@@ -1,9 +1,11 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
+import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  return applyManagedMetadata("/guides/how-to-run-a-dart-league-at-your-bar", {
   title: { absolute: "How to Run a Dart League at Your Bar | LeaguePour Guide" },
   description:
     "A complete guide to starting and running a dart league at your bar. Covers formats (501, Cricket, round-robin), entry fees, scheduling, promotion, disputes, and building a loyal player base.",
@@ -22,7 +24,8 @@ export const metadata: Metadata = {
       "Everything you need to start and sustain a dart league - formats, fees, scheduling, and keeping players coming back.",
     url: "/guides/how-to-run-a-dart-league-at-your-bar",
   },
-};
+});
+}
 
 const jsonLd = {
   "@context": "https://schema.org",
