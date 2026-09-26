@@ -37,6 +37,10 @@ type ScheduledJob = {
   path: string;
   utcHour: number;
   utcMinute: number;
+  /** Restrict to specific UTC weekdays (0=Sun..6=Sat). Omit to fire every day. */
+  daysOfWeekUtc?: number[];
+  /** Restrict to a specific UTC day-of-month (1-28, keep <=28 so it always exists). Omit for daily/weekly jobs. */
+  dayOfMonthUtc?: number;
 };
 
 // Mirrors the exact schedule in .github/workflows/*.yml. vs-eligibility-backfill is
@@ -51,6 +55,14 @@ const JOBS: ScheduledJob[] = [
   // db-heartbeat.yml runs every 3 days; a read-only `SELECT now()` has no meaningful cost, so
   // this runs it daily instead - strictly more margin against Supabase auto-pause, not less.
   { path: "/api/cron/supabase-heartbeat", utcHour: 6, utcMinute: 0 },
+  // Content engine (see src/lib/content-engine/**) - VenueSprocket 3x/week (Mon/Wed/Fri),
+  // LeaguePour 2x/week (Tue/Thu). Each run publishes at most one article; runContentEngine()
+  // itself also enforces the weekly cap and topic-backlog exhaustion, so this schedule is a
+  // ceiling, not a guarantee - a run can no-op (skipped) and that's expected, not a failure.
+  { path: "/api/cron/content-engine-vs", utcHour: 13, utcMinute: 0, daysOfWeekUtc: [1, 3, 5] },
+  { path: "/api/cron/content-engine-lp", utcHour: 13, utcMinute: 30, daysOfWeekUtc: [2, 4] },
+  // Monthly content decay/refresh pass for both brands - see refresh.ts.
+  { path: "/api/cron/content-refresh", utcHour: 5, utcMinute: 0, dayOfMonthUtc: 1 },
 ];
 
 const TICK_MS = 5 * 60 * 1000;
@@ -84,6 +96,8 @@ function utcDateString(d: Date): string {
 function isDue(job: ScheduledJob, now: Date): boolean {
   const today = utcDateString(now);
   if (firedToday.get(job.path) === today) return false;
+  if (job.daysOfWeekUtc && !job.daysOfWeekUtc.includes(now.getUTCDay())) return false;
+  if (job.dayOfMonthUtc && now.getUTCDate() !== job.dayOfMonthUtc) return false;
   const minutesNow = now.getUTCHours() * 60 + now.getUTCMinutes();
   const minutesTarget = job.utcHour * 60 + job.utcMinute;
   return minutesNow >= minutesTarget && minutesNow < minutesTarget + WINDOW_MINUTES;

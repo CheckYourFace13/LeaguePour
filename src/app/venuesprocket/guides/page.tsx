@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { prisma } from "@/lib/db";
 
 export const metadata: Metadata = {
   title: { absolute: "Guides & Resources for Private Event Venues | VenueSprocket" },
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
   },
 };
 
-const guides = [
+const coreGuides = [
   {
     href: "/guides/what-is-a-beo",
     title: "What Is a BEO (Banquet Event Order)?",
@@ -52,7 +53,23 @@ const guides = [
   },
 ];
 
-export default function VsGuidesIndexPage() {
+export default async function VsGuidesIndexPage() {
+  const generated = await prisma.guide
+    .findMany({
+      where: { brand: "VS", status: "PUBLISHED" },
+      select: { slug: true, title: true, description: true, category: true, datePublished: true },
+      orderBy: { datePublished: "desc" },
+    })
+    .catch(() => []);
+
+  const byCategory = new Map<string, typeof generated>();
+  for (const g of generated) {
+    const list = byCategory.get(g.category) ?? [];
+    list.push(g);
+    byCategory.set(g.category, list);
+  }
+  const newest = generated.slice(0, 3);
+
   return (
     <div className="vs-section px-4 md:px-6">
       <div className="mx-auto max-w-4xl">
@@ -66,8 +83,9 @@ export default function VsGuidesIndexPage() {
           you use VenueSprocket.
         </p>
 
+        <h2 className="font-display text-xl font-bold text-vs-text mb-4">Core resources</h2>
         <div className="space-y-4">
-          {guides.map((guide) => (
+          {coreGuides.map((guide) => (
             <Link
               key={guide.href}
               href={guide.href}
@@ -78,13 +96,49 @@ export default function VsGuidesIndexPage() {
                   {guide.tag}
                 </span>
                 <div>
-                  <h2 className="font-display text-lg font-bold text-vs-text">{guide.title}</h2>
+                  <h3 className="font-display text-lg font-bold text-vs-text">{guide.title}</h3>
                   <p className="mt-1 text-sm leading-relaxed text-vs-text-soft">{guide.description}</p>
                 </div>
               </div>
             </Link>
           ))}
         </div>
+
+        {newest.length > 0 && (
+          <div className="mt-16">
+            <h2 className="font-display text-xl font-bold text-vs-text mb-4">Newest guides</h2>
+            <div className="space-y-4">
+              {newest.map((g) => (
+                <Link
+                  key={g.slug}
+                  href={`/guides/${g.slug}`}
+                  className="block rounded-xl border border-vs-border bg-vs-surface p-6 transition-colors hover:border-vs-accent/40 hover:bg-vs-surface-2"
+                >
+                  <h3 className="font-display text-lg font-bold text-vs-text">{g.title}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-vs-text-soft">{g.description}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {[...byCategory.entries()].map(([category, guides]) => (
+          <div key={category} className="mt-16">
+            <h2 className="font-display text-xl font-bold text-vs-text mb-4">{category}</h2>
+            <div className="space-y-4">
+              {guides.map((g) => (
+                <Link
+                  key={g.slug}
+                  href={`/guides/${g.slug}`}
+                  className="block rounded-xl border border-vs-border bg-vs-surface p-6 transition-colors hover:border-vs-accent/40 hover:bg-vs-surface-2"
+                >
+                  <h3 className="font-display text-lg font-bold text-vs-text">{g.title}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-vs-text-soft">{g.description}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        ))}
 
         <div className="mt-16 text-center rounded-2xl border border-vs-border bg-vs-surface p-10">
           <h2 className="font-display text-2xl font-bold text-vs-text mb-3">

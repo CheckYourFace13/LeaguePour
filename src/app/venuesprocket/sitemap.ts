@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { prisma } from "@/lib/db";
 
 const BASE = "https://venuesprocket.com";
 
@@ -9,7 +10,7 @@ const BUILD_TIME = new Date();
 // Explicit short revalidate window - see the matching comment in src/app/robots.ts.
 export const revalidate = 3600;
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pages = [
     { path: "", priority: 1.0 },
     { path: "/about", priority: 0.8 },
@@ -46,10 +47,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/legal/privacy", priority: 0.4 },
   ];
 
-  return pages.map(({ path, priority }) => ({
+  const staticPages: MetadataRoute.Sitemap = pages.map(({ path, priority }) => ({
     url: `${BASE}${path}`,
     lastModified: BUILD_TIME,
     changeFrequency: "weekly" as const,
     priority,
   }));
+
+  const generatedGuides = await prisma.guide
+    .findMany({ where: { brand: "VS", status: "PUBLISHED" }, select: { slug: true, dateModified: true, createdAt: true } })
+    .catch(() => []);
+  const generatedGuidePages: MetadataRoute.Sitemap = generatedGuides.map((g) => ({
+    url: `${BASE}/guides/${g.slug}`,
+    lastModified: g.dateModified ?? g.createdAt,
+    changeFrequency: "monthly" as const,
+    priority: 0.75,
+  }));
+
+  return [...staticPages, ...generatedGuidePages];
 }

@@ -124,5 +124,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const managedItems = (await getManagedFeed())?.items ?? [];
   const managedPages: MetadataRoute.Sitemap = managedItems.map((i) => ({ url: `${base}/insights/${i.slug}`, lastModified: new Date(i.publishedAt), changeFrequency: "monthly" as const, priority: 0.6 }));
 
-  return [...staticPages, ...venuePages, ...compPages, ...managedPages];
+  const generatedGuides = await prisma.guide
+    .findMany({ where: { brand: "LP", status: "PUBLISHED" }, select: { slug: true, dateModified: true, createdAt: true } })
+    .catch(() => []);
+  const generatedGuidePages: MetadataRoute.Sitemap = generatedGuides.map((g) => ({
+    url: `${base}/guides/${g.slug}`,
+    lastModified: g.dateModified ?? g.createdAt,
+    changeFrequency: "monthly" as const,
+    priority: 0.75,
+  }));
+
+  return [...staticPages, ...venuePages, ...compPages, ...managedPages, ...generatedGuidePages];
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { applyManagedMetadata } from "@/lib/gravyblock-managed";
+import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -130,7 +131,36 @@ const categories: Category[] = [
   },
 ];
 
-export default function GuidesIndexPage() {
+export default async function GuidesIndexPage() {
+  const generated = await prisma.guide
+    .findMany({
+      where: { brand: "LP", status: "PUBLISHED" },
+      select: { slug: true, title: true, description: true, category: true, datePublished: true },
+      orderBy: { datePublished: "desc" },
+    })
+    .catch(() => []);
+
+  const merged = categories.map((cat) => ({
+    ...cat,
+    guides: [
+      ...cat.guides,
+      ...generated
+        .filter((g) => g.category === cat.name)
+        .map((g) => ({ href: `/guides/${g.slug}`, title: g.title, description: g.description })),
+    ],
+  }));
+  const extraCategoryNames = new Set(generated.map((g) => g.category).filter((c) => !categories.some((cat) => cat.name === c)));
+  for (const name of extraCategoryNames) {
+    merged.push({
+      name,
+      intro: "",
+      guides: generated
+        .filter((g) => g.category === name)
+        .map((g) => ({ href: `/guides/${g.slug}`, title: g.title, description: g.description })),
+    });
+  }
+  const newest = generated.slice(0, 3);
+
   return (
     <>
       <div className="mx-auto max-w-4xl px-4 py-16 md:px-6 md:py-20">
@@ -146,11 +176,29 @@ export default function GuidesIndexPage() {
           their first league night, organized by the question you&apos;re actually trying to answer.
         </p>
 
+        {newest.length > 0 && (
+          <div className="mt-12">
+            <h2 className="font-display text-xl font-bold text-lp-text">Newest guides</h2>
+            <div className="mt-5 space-y-4">
+              {newest.map((g) => (
+                <Link
+                  key={g.slug}
+                  href={`/guides/${g.slug}`}
+                  className="block rounded-xl border border-lp-border bg-lp-surface/40 p-6 transition-colors hover:border-lp-accent/40 hover:bg-lp-surface/60"
+                >
+                  <h3 className="font-display text-lg font-bold text-lp-text">{g.title}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-lp-muted">{g.description}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="mt-14 space-y-14">
-          {categories.map((cat) => (
+          {merged.map((cat) => (
             <div key={cat.name}>
               <h2 className="font-display text-2xl font-bold text-lp-text">{cat.name}</h2>
-              <p className="mt-2 max-w-2xl text-sm text-lp-muted leading-relaxed">{cat.intro}</p>
+              {cat.intro && <p className="mt-2 max-w-2xl text-sm text-lp-muted leading-relaxed">{cat.intro}</p>}
               <div className="mt-6 space-y-4">
                 {cat.guides.map((guide) => (
                   <Link

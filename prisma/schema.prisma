@@ -198,6 +198,56 @@ model LifecycleNudgeSent {
   @@schema("leaguepour_lp")
 }
 
+enum ContentBrand {
+  LP
+  VS
+
+  @@schema("leaguepour_lp")
+}
+
+enum GuideStatus {
+  PUBLISHED
+  REJECTED
+
+  @@schema("leaguepour_lp")
+}
+
+/**
+ * Auto-generated editorial guide article (see src/lib/content-engine/**). One row per generated
+ * article, including rejected drafts that failed the quality gate - kept (not deleted) so
+ * `topicKey` stays a durable dedup record and a rejected topic isn't immediately retried next run.
+ * Rendered by src/app/(marketing)/guides/[slug]/page.tsx (LP) and
+ * src/app/venuesprocket/guides/[slug]/page.tsx (VS) alongside the hand-written static guides -
+ * never the same slug space as those, enforced by each brand's route only rendering what its own
+ * static directory doesn't already claim.
+ */
+model Guide {
+  id          String       @id @default(cuid())
+  brand       ContentBrand
+  slug        String
+  /** Stable dedup key derived from the topic (see topics.ts) - unique per brand so the same topic
+   * is never regenerated, published or rejected. */
+  topicKey    String
+  status      GuideStatus
+  category    String
+  title       String
+  description String
+  bodyHtml    String       @db.Text
+  faq         Json?
+  /** Full quality-gate score breakdown, kept for audit even on a rejected draft - never shown publicly. */
+  qualityScore Json
+  rejectReason String?     @db.Text
+  datePublished DateTime?
+  dateModified  DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@unique([brand, slug])
+  @@unique([brand, topicKey])
+  @@index([brand, status])
+  @@schema("leaguepour_lp")
+}
+
 // ——— Venues & staff ———
 
 enum StaffRole {

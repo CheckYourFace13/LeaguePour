@@ -1,0 +1,21 @@
+name: Monthly content refresh
+
+# Content decay pass for both brands' auto-generated guides - see src/lib/content-engine/refresh.ts.
+# Checks every PUBLISHED guide older than 90 days against current PRODUCT_FACTS and rewrites the
+# body only if something is materially stale; most guides get no change on a given run.
+#
+# Manual-only, same reasoning as the other content-engine workflows: the in-process scheduler
+# fires this automatically on the 1st of each month; kept here as a manual fallback/on-demand
+# trigger only.
+on:
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger content refresh
+        run: |
+          resp=$(curl -sS --max-time 300 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/content-refresh")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1

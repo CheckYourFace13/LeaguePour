@@ -1,0 +1,27 @@
+name: VenueSprocket content engine
+
+# Runs one content-engine attempt for VenueSprocket - discovers the next topic, generates a
+# draft, quality-gates it, and publishes or rejects it (see src/lib/content-engine/**). Publishes
+# at most one article per run; runContentEngine() itself enforces the weekly cap (3/week) and
+# the kill switch (AppSetting "content-engine-enabled").
+#
+# Requires CRON_SECRET (same repo secret as the other cron workflows) and, on the Hostinger
+# deployment, ANTHROPIC_API_KEY - without it every run no-ops with a clear "not configured" error
+# rather than crashing.
+#
+# Manual-only, same reasoning as vs-lifecycle-daily.yml: the in-process scheduler
+# (src/lib/scheduler.ts) fires this automatically 3x/week already; GitHub Actions runner IPs get
+# challenged by Hostinger's CDN, so a real `schedule:` trigger here would be unreliable. Kept as
+# a manual fallback/on-demand trigger only.
+on:
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger VS content engine
+        run: |
+          resp=$(curl -sS --max-time 180 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/content-engine-vs")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1
