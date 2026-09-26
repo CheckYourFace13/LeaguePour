@@ -36,7 +36,7 @@ const benefits = [
   },
   {
     title: "Control your alerts",
-    body: "Choose email or SMS (or both) for each venue you follow. Never miss a league night - and never get spam you didn't ask for.",
+    body: "Set your alert preferences for each venue you follow. Never miss a league night - and never get spam you didn't ask for.",
   },
   {
     title: "Team-based or solo",

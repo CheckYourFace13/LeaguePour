@@ -85,8 +85,8 @@ const features = [
   { title: "Online team signup", body: "Solo, doubles, or captain-led teams - players register from their phone before they walk in." },
   { title: "Entry fees via Stripe", body: "Collect league buy-ins automatically. Funds go directly to your venue's bank account." },
   { title: "Standings & scoring", body: "Update scores after each round. Standings refresh automatically and display on your public page." },
-  { title: "Bracket management", body: "Single elimination, round-robin, or Swiss format - set it once when you create the league." },
-  { title: "Email & SMS alerts", body: "Notify registered players about schedule changes, results, and the next league night." },
+  { title: "Bracket management", body: "Single elimination or round-robin - set it once when you create the league, and LeaguePour builds the bracket or schedule automatically." },
+  { title: "Email alerts", body: "Notify registered players about schedule changes, results, and the next league night." },
   { title: "Waitlists", body: "Cap the league at your table count. Overflow goes to a waitlist and gets notified when spots open." },
 ];
 

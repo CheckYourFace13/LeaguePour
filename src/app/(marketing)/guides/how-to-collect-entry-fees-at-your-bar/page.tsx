@@ -1,4 +1,4 @@
-import { safeJsonLd } from "@/lib/seo/json-ld-builders";
+import { safeJsonLd, buildBreadcrumbJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
 import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
@@ -30,6 +30,11 @@ export async function generateMetadata(): Promise<Metadata> {
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
+    buildBreadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "Guides", path: "/guides" },
+      { name: "How to Collect Entry Fees at Your Bar (The Right Way)", path: "/guides/how-to-collect-entry-fees-at-your-bar" },
+    ]),
     {
       "@type": "Article",
       headline: "How to Collect Entry Fees at Your Bar (The Right Way)",

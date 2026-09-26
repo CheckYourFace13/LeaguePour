@@ -63,7 +63,7 @@ const plans = [
       "Online contract with typed e-signature",
       "Stripe deposit collection",
       "BEO builder with print-ready view",
-      "Customer CRM with tags",
+      "Customer directory",
       "Untouched-lead follow-up reminders",
       "Mobile BEO day-of view",
       "Payment tracking",

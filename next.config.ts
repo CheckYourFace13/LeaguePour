@@ -42,6 +42,30 @@ const nextConfig: NextConfig = {
         permanent: true,
         has: [{ type: "host", value: VS_HOST }],
       },
+      // September 26 review: venuesprocket.com's Hostinger CDN edge redirects ANY path our app
+      // doesn't itself match to the same path on leaguepour.com (a pre-existing host-level
+      // catch-all, outside this codebase) - so unmapped alias URLs like /privacy-policy silently
+      // land on the wrong brand instead of 404ing on VS. Matching them here in our own
+      // redirects() makes the app claim the path first, so the request never reaches that
+      // catch-all. VS-scoped only - do not add an LP-side mirror, these aliases aren't a gap on LP.
+      {
+        source: "/privacy-policy",
+        destination: "/legal/privacy",
+        permanent: true,
+        has: [{ type: "host", value: VS_HOST }],
+      },
+      {
+        source: "/terms-of-service",
+        destination: "/legal/terms",
+        permanent: true,
+        has: [{ type: "host", value: VS_HOST }],
+      },
+      {
+        source: "/tos",
+        destination: "/legal/terms",
+        permanent: true,
+        has: [{ type: "host", value: VS_HOST }],
+      },
       // Same alias gap on the LP side itself, found during the customer-facing smoke test:
       // leaguepour.com/privacy and /terms 404'd instead of landing on the real pages at
       // /legal/*. Scoped to the LP host only so this can't affect VS's own routing above.

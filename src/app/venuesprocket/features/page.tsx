@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: { absolute: "Features | VenueSprocket" },
   description:
-    "VenueSprocket features: inquiry forms, proposal builder, e-signature contracts, Stripe deposits, BEO builder, customer CRM, and LeaguePour game nights.",
+    "VenueSprocket features: inquiry forms, proposal builder, e-signature contracts, Stripe deposits, BEO builder, customer directory, and LeaguePour game nights.",
   alternates: { canonical: "https://venuesprocket.com/features" },
 };
 
@@ -102,18 +102,15 @@ const modules = [
   },
   {
     id: "crm",
-    title: "Customer CRM",
+    title: "Customer Directory",
     icon: "👥",
     href: null,
     features: [
-      "Customer record created from inquiry",
-      "Contact info, company, past events",
-      "Tags for filtering and segmentation",
-      "Notes",
-      "Marketing opt-in status",
-      "Past event history and revenue",
+      "Customer record created from inquiry automatically",
+      "Contact info: name, email, phone, company",
+      "Number of past events booked at your venue",
     ],
-    body: "Every inquiry creates a customer record. See who's booked before, tag your best customers, and follow up with past guests after the event.",
+    body: "Every inquiry creates a customer record automatically, so you can see contact info and how many events they've booked with you before.",
   },
   {
     id: "marketing",

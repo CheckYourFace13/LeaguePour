@@ -90,7 +90,7 @@ export default function ForVenuesPage() {
           </li>
           <li className="flex gap-3">
             <span className="text-lp-accent font-bold">|</span>
-            <span>Email and SMS campaigns to re-engage your player audience</span>
+            <span>Email campaigns to re-engage your player audience</span>
           </li>
           <li className="flex gap-3">
             <span className="text-lp-accent font-bold">|</span>
