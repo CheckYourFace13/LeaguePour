@@ -51,7 +51,7 @@ export const BRANDS: Record<Brand, BrandConfig> = {
       "/guides/round-robin-vs-single-elimination",
     ],
     weeklyCap: 2,
-    queueBuffer: 3,
+    queueBuffer: 5,
   },
   VS: {
     brand: "VS",
@@ -74,6 +74,6 @@ export const BRANDS: Record<Brand, BrandConfig> = {
       "/guides/private-event-inquiry-form-template", "/guides/sample-proposal-and-contract",
     ],
     weeklyCap: 3,
-    queueBuffer: 4,
+    queueBuffer: 5,
   },
 };

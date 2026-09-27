@@ -15,6 +15,11 @@ name: VenueSprocket content engine
 # a manual fallback/on-demand trigger only.
 on:
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run without persisting anything (safe mode)"
+        type: boolean
+        default: false
 
 jobs:
   trigger:
@@ -22,6 +27,8 @@ jobs:
     steps:
       - name: Trigger VS content engine
         run: |
-          resp=$(curl -sS --max-time 180 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/content-engine-vs")
+          url="https://leaguepour.com/api/cron/content-engine-vs"
+          if [ "${{ inputs.dry_run }}" = "true" ]; then url="$url?dryRun=true"; fi
+          resp=$(curl -sS --max-time 180 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "$url")
           echo "$resp"
           echo "$resp" | grep -q '"ok":true' || exit 1

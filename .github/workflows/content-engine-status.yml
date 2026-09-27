@@ -1,0 +1,16 @@
+name: Content engine status
+
+# Read-only diagnostic - queue counts, top queued topics, publish counts, kill switch state.
+# Never mutates anything (see src/app/api/cron/content-engine-status/route.ts).
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch content engine status
+        run: |
+          resp=$(curl -sS --max-time 60 -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" "https://leaguepour.com/api/cron/content-engine-status")
+          echo "$resp"
+          echo "$resp" | grep -q '"ok":true' || exit 1
