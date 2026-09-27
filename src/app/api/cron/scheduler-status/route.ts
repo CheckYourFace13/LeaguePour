@@ -15,6 +15,9 @@ const JOB_PATHS = [
   "/api/cron/vs-outreach-send",
   "/api/cron/indexnow-submit",
   "/api/cron/supabase-heartbeat",
+  "/api/cron/content-engine-vs",
+  "/api/cron/content-engine-lp",
+  "/api/cron/content-refresh",
 ];
 
 /**
