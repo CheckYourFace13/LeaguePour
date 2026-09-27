@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { runJob } from "@/lib/job-runs";
-import { refreshBrandGuides } from "@/lib/content-engine/refresh";
+import { findStaleGuides } from "@/lib/content-engine/refresh";
 
 // Monthly decay/refresh pass for both brands' auto-generated guides - see refresh.ts's doc
-// comment. One route for both brands (unlike the two separate content-engine-{lp,vs} publish
-// routes) since this never publishes anything new and is cheap to run for both in one call.
+// comment. Deterministic and report-only: flags guides for human review (by age, or because they
+// now fail a check against current FACTS/FORBIDDEN_CLAIM_PATTERNS), never mutates a live guide.
+// One route for both brands since this is read-only and cheap to run for both in one call.
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET?.trim();
   if (!secret) {
@@ -16,9 +17,8 @@ export async function GET(request: Request) {
 
   try {
     const outcome = await runJob("content-refresh", async () => {
-      const [lp, vs] = await Promise.all([refreshBrandGuides("LP"), refreshBrandGuides("VS")]);
-      const updated = [...lp, ...vs].filter((r) => r.updated).length;
-      return { status: "success" as const, detail: `LP: ${lp.length} checked, VS: ${vs.length} checked, ${updated} updated.`, result: { lp, vs } };
+      const [lp, vs] = await Promise.all([findStaleGuides("LP"), findStaleGuides("VS")]);
+      return { status: "success" as const, detail: `LP: ${lp.length} flagged, VS: ${vs.length} flagged.`, result: { lp, vs } };
     });
     return NextResponse.json({ ok: true, result: outcome });
   } catch (err) {

@@ -56,9 +56,11 @@ const JOBS: ScheduledJob[] = [
   // this runs it daily instead - strictly more margin against Supabase auto-pause, not less.
   { path: "/api/cron/supabase-heartbeat", utcHour: 6, utcMinute: 0 },
   // Content engine (see src/lib/content-engine/**) - VenueSprocket 3x/week (Mon/Wed/Fri),
-  // LeaguePour 2x/week (Tue/Thu). Each run publishes at most one article; runContentEngine()
-  // itself also enforces the weekly cap and topic-backlog exhaustion, so this schedule is a
-  // ceiling, not a guarantee - a run can no-op (skipped) and that's expected, not a failure.
+  // LeaguePour 2x/week (Tue/Thu). Never generates an article body itself: each run either
+  // publishes one already-written, already-passing queued article, or queues the next topic's
+  // brief/outline with no body. runContentEngine() also enforces the weekly cap and topic-backlog
+  // exhaustion, so this schedule is a ceiling, not a guarantee - a run can no-op and that's
+  // expected, not a failure.
   { path: "/api/cron/content-engine-vs", utcHour: 13, utcMinute: 0, daysOfWeekUtc: [1, 3, 5] },
   { path: "/api/cron/content-engine-lp", utcHour: 13, utcMinute: 30, daysOfWeekUtc: [2, 4] },
   // Monthly content decay/refresh pass for both brands - see refresh.ts.

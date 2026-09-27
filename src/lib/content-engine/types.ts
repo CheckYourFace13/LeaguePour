@@ -5,30 +5,13 @@ export type TopicCandidate = {
   topicKey: string;
   category: string;
   title: string;
-  /** One-line brief telling the writer what angle/question this topic should answer. */
+  /** One-line brief telling whoever writes the body what angle/question this topic should answer. */
   brief: string;
 };
 
-export type ArticleDraft = {
-  slug: string;
-  title: string;
-  description: string;
-  category: string;
-  bodyHtml: string;
-  faq: { q: string; a: string }[] | null;
-};
+/** Deterministic classification from the title alone - no LLM. */
+export type SearchIntent = "how-to" | "comparison" | "listicle" | "informational";
 
-export type QualityScore = {
-  originality: number;
-  usefulness: number;
-  depth: number;
-  productAccuracy: number;
-  duplicationRisk: number;
-  seoCompleteness: number;
-  readability: number;
-  total: number;
-  maxTotal: number;
-  passed: boolean;
-  deterministicFailures: string[];
-  notes: string;
-};
+export type Outline = { sections: string[] };
+
+export type CheckResult = { failures: string[]; passed: boolean };

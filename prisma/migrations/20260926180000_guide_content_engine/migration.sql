@@ -1,7 +1,8 @@
--- Automatic content engine: one row per generated guide article, published or rejected.
--- Purely additive - two new enum types and one new table, no existing table touched.
+-- Automatic content engine: topics are queued and published automatically, but article bodies
+-- are never machine-generated - see src/lib/content-engine/**. Purely additive - two new enum
+-- types and one new table, no existing table touched.
 CREATE TYPE "leaguepour_lp"."ContentBrand" AS ENUM ('LP', 'VS');
-CREATE TYPE "leaguepour_lp"."GuideStatus" AS ENUM ('PUBLISHED', 'REJECTED');
+CREATE TYPE "leaguepour_lp"."GuideStatus" AS ENUM ('NEEDS_CONTENT', 'PUBLISHED');
 
 CREATE TABLE "leaguepour_lp"."Guide" (
     "id" TEXT NOT NULL,
@@ -12,9 +13,13 @@ CREATE TABLE "leaguepour_lp"."Guide" (
     "category" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "bodyHtml" TEXT NOT NULL,
+    "bodyHtml" TEXT,
     "faq" JSONB,
-    "qualityScore" JSONB NOT NULL,
+    "searchIntent" TEXT,
+    "outline" JSONB,
+    "relatedPages" JSONB,
+    "suggestedCta" TEXT,
+    "priorityScore" INTEGER NOT NULL DEFAULT 0,
     "rejectReason" TEXT,
     "datePublished" TIMESTAMP(3),
     "dateModified" TIMESTAMP(3),

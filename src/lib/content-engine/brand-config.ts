@@ -11,7 +11,13 @@ export type BrandConfig = {
   ctaLabel: string;
   /** Titles of existing hand-written static guides - never regenerate/duplicate these topics. */
   existingGuideTitles: string[];
+  /** Relative paths (existing static guides + core product pages) a body is allowed to link to,
+   * checked by quality-gate.ts's internal-link validation - in addition to any currently
+   * PUBLISHED Guide slug, added dynamically by internalPathsForBrand() in publish.ts. */
+  staticKnownPaths: string[];
   weeklyCap: number;
+  /** Buffer of unfilled (bodyHtml null) NEEDS_CONTENT rows to keep queued at once. */
+  queueBuffer: number;
 };
 
 export const BRANDS: Record<Brand, BrandConfig> = {
@@ -35,7 +41,17 @@ export const BRANDS: Record<Brand, BrandConfig> = {
       "Managing No-Shows and Forfeits",
       "Round Robin vs. Single Elimination for Bars",
     ],
+    staticKnownPaths: [
+      "/", "/guides", "/pricing", "/demo", "/features", "/features/tournaments", "/for-venues", "/for-players",
+      "/signup/venue", "/faq", "/how-it-works", "/contact",
+      "/guides/bar-competition-ideas", "/guides/bar-trivia-night-guide", "/guides/cornhole-tournament-ideas-for-bars",
+      "/guides/how-standings-and-points-work", "/guides/how-to-collect-entry-fees-at-your-bar",
+      "/guides/how-to-increase-bar-traffic-on-slow-nights", "/guides/how-to-run-a-dart-league-at-your-bar",
+      "/guides/how-to-start-a-pool-league", "/guides/managing-no-shows-and-forfeits",
+      "/guides/round-robin-vs-single-elimination",
+    ],
     weeklyCap: 2,
+    queueBuffer: 3,
   },
   VS: {
     brand: "VS",
@@ -52,6 +68,12 @@ export const BRANDS: Record<Brand, BrandConfig> = {
       "Sample Proposal and Contract",
       "BEO Template",
     ],
+    staticKnownPaths: [
+      "/", "/guides", "/pricing", "/start", "/features", "/about", "/contact", "/leaguepour",
+      "/guides/what-is-a-beo", "/guides/beo-template", "/guides/beo-vs-contract",
+      "/guides/private-event-inquiry-form-template", "/guides/sample-proposal-and-contract",
+    ],
     weeklyCap: 3,
+    queueBuffer: 4,
   },
 };

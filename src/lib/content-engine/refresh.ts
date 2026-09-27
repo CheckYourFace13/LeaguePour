@@ -1,57 +1,56 @@
 import { prisma } from "@/lib/db";
-import { PRODUCT_FACTS } from "./facts";
-import { callClaude, extractJson } from "./llm";
+import { BRANDS } from "./brand-config";
+import { runQualityChecks } from "./quality-gate";
+import { internalPathsForBrand } from "./publish";
 import type { Brand } from "./types";
 
 const STALE_AFTER_DAYS = 90;
 
-const REFRESH_SYSTEM = `You are checking one existing published guide article for a software product against that
-product's current FACTS list, to catch content decay - claims that were true when written but no
-longer match the product, or links/references that have gone stale. Most articles need NO change;
-only flag a change when something is materially wrong, not for stylistic polish.
-Output ONLY a JSON object, no other text:
-{
-  "needsUpdate": boolean,
-  "reason": string (empty string if needsUpdate is false),
-  "revisedBodyHtml": string or null (the full corrected body HTML, only if needsUpdate is true - otherwise null)
-}`;
+export type RefreshFlag = {
+  slug: string;
+  title: string;
+  ageDays: number;
+  staleByAge: boolean;
+  claimDrift: string[]; // deterministic check failures re-run against CURRENT facts/patterns
+};
 
-export type RefreshResult = { slug: string; title: string; updated: boolean; reason: string };
-
-export async function refreshBrandGuides(brand: Brand): Promise<RefreshResult[]> {
+/**
+ * Deterministic (no LLM) monthly decay check for `brand`'s published guides. Flags candidates
+ * for human review - it never mutates a live guide automatically, since unpublishing or rewriting
+ * a live page is a content decision, not something safe to automate unsupervised. Two independent
+ * signals: age (>90 days is "worth a look", not proof of staleness) and claim drift (the guide
+ * now fails checks it would have failed had FACTS/FORBIDDEN_CLAIM_PATTERNS been what they are
+ * today - i.e. the product changed underneath the article, or the denylist grew, since it was
+ * published).
+ */
+export async function findStaleGuides(brand: Brand): Promise<RefreshFlag[]> {
   const cutoff = new Date(Date.now() - STALE_AFTER_DAYS * 24 * 60 * 60 * 1000);
-  const stale = await prisma.guide.findMany({
-    where: { brand, status: "PUBLISHED", dateModified: { lt: cutoff } },
-    select: { id: true, slug: true, title: true, bodyHtml: true },
+  const all = await prisma.guide.findMany({
+    where: { brand, status: "PUBLISHED" },
+    select: { slug: true, title: true, description: true, category: true, bodyHtml: true, faq: true, dateModified: true, createdAt: true },
   });
 
-  const facts = PRODUCT_FACTS[brand].map((f) => `- ${f}`).join("\n");
-  const results: RefreshResult[] = [];
+  const config = BRANDS[brand];
+  const existingTitles = [...config.existingGuideTitles, ...all.map((g) => g.title)];
+  const validPaths = await internalPathsForBrand(brand);
 
-  for (const guide of stale) {
-    const prompt = `FACTS:\n${facts}\n\nExisting article title: ${guide.title}\nExisting article body (HTML):\n${guide.bodyHtml}`;
-    try {
-      const text = await callClaude({ system: REFRESH_SYSTEM, prompt, maxTokens: 8192 });
-      const parsed = extractJson<{ needsUpdate: boolean; reason: string; revisedBodyHtml: string | null }>(text);
+  const flags: RefreshFlag[] = [];
+  for (const g of all) {
+    const modified = g.dateModified ?? g.createdAt;
+    const ageDays = Math.floor((Date.now() - modified.getTime()) / (24 * 60 * 60 * 1000));
+    const staleByAge = modified < cutoff;
 
-      if (parsed.needsUpdate && parsed.revisedBodyHtml) {
-        await prisma.guide.update({
-          where: { id: guide.id },
-          data: { bodyHtml: parsed.revisedBodyHtml, dateModified: new Date() },
-        });
-        results.push({ slug: guide.slug, title: guide.title, updated: true, reason: parsed.reason });
-      } else {
-        results.push({ slug: guide.slug, title: guide.title, updated: false, reason: "No material staleness found." });
-      }
-    } catch (err) {
-      results.push({
-        slug: guide.slug,
-        title: guide.title,
-        updated: false,
-        reason: `Refresh check failed: ${err instanceof Error ? err.message : String(err)}`,
-      });
+    const otherTitles = existingTitles.filter((t) => t !== g.title);
+    const check = runQualityChecks(
+      brand,
+      { title: g.title, description: g.description, category: g.category, bodyHtml: g.bodyHtml ?? "", faq: g.faq as { q: string; a: string }[] | null },
+      otherTitles,
+      validPaths,
+    );
+
+    if (staleByAge || !check.passed) {
+      flags.push({ slug: g.slug, title: g.title, ageDays, staleByAge, claimDrift: check.failures });
     }
   }
-
-  return results;
+  return flags;
 }

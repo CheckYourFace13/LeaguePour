@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function GeneratedGuidePage({ params }: Props) {
   const { slug } = await params;
   const guide = await getGuide(slug);
-  if (!guide || guide.status !== "PUBLISHED") notFound();
+  if (!guide || guide.status !== "PUBLISHED" || !guide.bodyHtml) notFound();
 
   const faq = guide.faq as { q: string; a: string }[] | null;
   const jsonLd = {
@@ -89,7 +89,7 @@ export default async function GeneratedGuidePage({ params }: Props) {
 
         <article
           className="prose prose-lp mt-10 max-w-none text-lp-text leading-relaxed [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-10 [&_h3]:font-display [&_h3]:text-xl [&_h3]:font-bold [&_h3]:mt-8 [&_p]:mt-4 [&_ul]:mt-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:mt-4 [&_ol]:list-decimal [&_ol]:pl-6"
-          dangerouslySetInnerHTML={{ __html: guide.bodyHtml }}
+          dangerouslySetInnerHTML={{ __html: guide.bodyHtml ?? "" }}
         />
 
         {faq && faq.length > 0 && (

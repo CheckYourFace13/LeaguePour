@@ -206,36 +206,48 @@ enum ContentBrand {
 }
 
 enum GuideStatus {
+  /** Queued topic - metadata only until a human (or Claude/Cursor during normal dev work) writes
+   * bodyHtml. Also the state a body sits in if it was written but failed a deterministic check -
+   * rejectReason explains why, and the same row gets re-checked next time the body changes. */
+  NEEDS_CONTENT
   PUBLISHED
-  REJECTED
 
   @@schema("leaguepour_lp")
 }
 
 /**
- * Auto-generated editorial guide article (see src/lib/content-engine/**). One row per generated
- * article, including rejected drafts that failed the quality gate - kept (not deleted) so
- * `topicKey` stays a durable dedup record and a rejected topic isn't immediately retried next run.
- * Rendered by src/app/(marketing)/guides/[slug]/page.tsx (LP) and
- * src/app/venuesprocket/guides/[slug]/page.tsx (VS) alongside the hand-written static guides -
- * never the same slug space as those, enforced by each brand's route only rendering what its own
- * static directory doesn't already claim.
+ * Editorial guide article, queued automatically and published automatically - but the article
+ * body itself is never machine-generated (see src/lib/content-engine/**). One row per topic:
+ * created as NEEDS_CONTENT with just the topic brief/outline/metadata, filled in later with real
+ * content (through normal Claude/Cursor development work, not a production job), then published
+ * automatically once it passes every deterministic check. Rendered by
+ * src/app/(marketing)/guides/[slug]/page.tsx (LP) and src/app/venuesprocket/guides/[slug]/page.tsx
+ * (VS) alongside the hand-written static guides - never the same slug space as those, enforced by
+ * each brand's route only rendering what its own static directory doesn't already claim.
  */
 model Guide {
   id          String       @id @default(cuid())
   brand       ContentBrand
   slug        String
   /** Stable dedup key derived from the topic (see topics.ts) - unique per brand so the same topic
-   * is never regenerated, published or rejected. */
+   * is never re-queued once attempted. */
   topicKey    String
   status      GuideStatus
   category    String
   title       String
   description String
-  bodyHtml    String       @db.Text
+  /** Null while queued (NEEDS_CONTENT with no body yet). Filled in by hand before publish. */
+  bodyHtml    String?      @db.Text
   faq         Json?
-  /** Full quality-gate score breakdown, kept for audit even on a rejected draft - never shown publicly. */
-  qualityScore Json
+  /** What this article should answer and how, filled in at queue time - the brief for whoever
+   * writes the body. Not shown publicly. */
+  searchIntent String?
+  outline      Json?
+  relatedPages Json?
+  suggestedCta String?
+  priorityScore Int        @default(0)
+  /** Deterministic check failures from the most recent publish attempt, if any - lets whoever
+   * wrote the body see exactly what to fix. Cleared once the row publishes. */
   rejectReason String?     @db.Text
   datePublished DateTime?
   dateModified  DateTime?

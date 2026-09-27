@@ -1,13 +1,13 @@
 name: VenueSprocket content engine
 
-# Runs one content-engine attempt for VenueSprocket - discovers the next topic, generates a
-# draft, quality-gates it, and publishes or rejects it (see src/lib/content-engine/**). Publishes
-# at most one article per run; runContentEngine() itself enforces the weekly cap (3/week) and
-# the kill switch (AppSetting "content-engine-enabled").
+# Runs one content-engine step for VenueSprocket - either publishes a queued article that already
+# has a finished, human-written body and passes every deterministic check, or queues the next
+# topic's metadata (brief/outline/related links) with no body (see src/lib/content-engine/**).
+# Never generates article bodies itself - no external API dependency. At most one action per run;
+# runContentEngine() itself enforces the weekly publish cap (3/week) and the kill switch
+# (AppSetting "content-engine-enabled").
 #
-# Requires CRON_SECRET (same repo secret as the other cron workflows) and, on the Hostinger
-# deployment, ANTHROPIC_API_KEY - without it every run no-ops with a clear "not configured" error
-# rather than crashing.
+# Requires CRON_SECRET (same repo secret as the other cron workflows). No other secret needed.
 #
 # Manual-only, same reasoning as vs-lifecycle-daily.yml: the in-process scheduler
 # (src/lib/scheduler.ts) fires this automatically 3x/week already; GitHub Actions runner IPs get

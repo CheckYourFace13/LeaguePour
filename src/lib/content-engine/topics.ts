@@ -1,14 +1,15 @@
 import { prisma } from "@/lib/db";
 import { BRANDS } from "./brand-config";
-import type { Brand, TopicCandidate } from "./types";
+import type { Brand, Outline, SearchIntent, TopicCandidate } from "./types";
 
 /**
- * Curated topic backlog per brand. This is a static seed list, not LLM-invented topics - keeps
+ * Curated topic backlog per brand. This is a static seed list, not invented on the fly - keeps
  * "no near-duplicate topics" a design property (hand-picked for distinct angles) rather than
  * something only caught after the fact. `nextTopic()` below still re-checks against everything
- * already published/rejected (by topicKey, and by a title-similarity check against both the DB
- * and each brand's existing static guides) before handing one back, so a topic redundant with an
- * existing hand-written guide is skipped even if it slipped in here.
+ * already queued/published (by topicKey, and by a title-similarity check against both the DB and
+ * each brand's existing static guides) before handing one back, so a topic redundant with an
+ * existing hand-written guide is skipped even if it slipped in here. Array order is the base
+ * priority order - see `scoreForCategory()`.
  */
 const BACKLOG: Record<Brand, TopicCandidate[]> = {
   VS: [
@@ -159,7 +160,7 @@ const BACKLOG: Record<Brand, TopicCandidate[]> = {
 
 /** Cheap token-overlap similarity check - deliberately simple, not semantic, on purpose: it only
  * needs to catch obvious near-duplicates, and a simple heuristic is easier to reason about and
- * audit than an LLM-based similarity judgment for this particular gate. */
+ * audit than a judgment call for this particular gate. */
 function titleSimilarity(a: string, b: string): number {
   const norm = (s: string) =>
     new Set(
@@ -186,23 +187,65 @@ export function isDuplicateTitle(candidateTitle: string, existingTitles: string[
   return null;
 }
 
-/** Picks the next backlog topic for `brand` that hasn't been published or rejected yet, and
- * doesn't look like a near-duplicate of any existing static guide or prior Guide row. Returns
- * null when the backlog is exhausted - the caller should stop, not invent a topic on the fly. */
-export async function nextTopic(brand: Brand): Promise<TopicCandidate | null> {
-  const config = BRANDS[brand];
-  const existing = await prisma.guide.findMany({
-    where: { brand },
-    select: { topicKey: true, title: true },
-  });
-  const usedKeys = new Set(existing.map((g) => g.topicKey));
-  const existingTitles = [...config.existingGuideTitles, ...existing.map((g) => g.title)];
+/** Rule-based, no LLM: classifies search intent from the title shape alone. */
+export function classifySearchIntent(title: string): SearchIntent {
+  const t = title.toLowerCase();
+  if (t.startsWith("how to") || t.startsWith("how ") || t.includes("how to")) return "how-to";
+  if (/\bvs\.?\b/.test(t) || t.includes("versus") || t.includes("difference")) return "comparison";
+  if (/^\d+\s/.test(title) || t.includes("examples") || t.includes("ideas")) return "listicle";
+  return "informational";
+}
 
-  for (const candidate of BACKLOG[brand]) {
-    if (usedKeys.has(candidate.topicKey)) continue;
-    const dupe = isDuplicateTitle(candidate.title, existingTitles);
-    if (dupe) continue;
-    return candidate;
-  }
-  return null;
+/** A generic, topic-agnostic starting outline - deliberately not overly specific, since section 5
+ * of the content spec says not to force the same structure every time. Whoever writes the body is
+ * expected to adapt it, not follow it mechanically. */
+export function buildOutline(topic: TopicCandidate): Outline {
+  return {
+    sections: [
+      `The problem: ${topic.brief}`,
+      "Practical steps or approach",
+      "Common mistakes to avoid",
+      "A concrete example, checklist, or template",
+      "Where this fits with the product (one short paragraph, only real features)",
+    ],
+  };
+}
+
+/** Deterministic priority score: earlier backlog position scores higher, and a category with
+ * fewer existing (queued + published) entries scores higher too, so topic queueing naturally
+ * spreads across categories instead of exhausting one category first. */
+export function scoreTopic(topic: TopicCandidate, backlogIndex: number, existingInCategory: number): number {
+  const positionScore = Math.max(0, 100 - backlogIndex * 5);
+  const categoryBalanceBonus = Math.max(0, 20 - existingInCategory * 8);
+  return positionScore + categoryBalanceBonus;
+}
+
+/** Existing static guide titles + all known DB rows (any status) for `brand`. */
+async function knownTitlesAndKeys(brand: Brand): Promise<{ titles: string[]; keys: Set<string>; categoryCounts: Map<string, number> }> {
+  const config = BRANDS[brand];
+  const existing = await prisma.guide.findMany({ where: { brand }, select: { topicKey: true, title: true, category: true } });
+  const categoryCounts = new Map<string, number>();
+  for (const g of existing) categoryCounts.set(g.category, (categoryCounts.get(g.category) ?? 0) + 1);
+  return {
+    titles: [...config.existingGuideTitles, ...existing.map((g) => g.title)],
+    keys: new Set(existing.map((g) => g.topicKey)),
+    categoryCounts,
+  };
+}
+
+/** Picks the next backlog topic for `brand` that hasn't been queued/published yet, and doesn't
+ * look like a near-duplicate of any existing static guide or prior Guide row. Returns null when
+ * the backlog is exhausted - the caller should stop, not invent a topic on the fly. Among
+ * available candidates, returns the one with the highest `scoreTopic()` score. */
+export async function nextTopic(brand: Brand): Promise<{ topic: TopicCandidate; score: number } | null> {
+  const { titles, keys, categoryCounts } = await knownTitlesAndKeys(brand);
+
+  let best: { topic: TopicCandidate; score: number } | null = null;
+  BACKLOG[brand].forEach((candidate, index) => {
+    if (keys.has(candidate.topicKey)) return;
+    if (isDuplicateTitle(candidate.title, titles)) return;
+    const score = scoreTopic(candidate, index, categoryCounts.get(candidate.category) ?? 0);
+    if (!best || score > best.score) best = { topic: candidate, score };
+  });
+  return best;
 }

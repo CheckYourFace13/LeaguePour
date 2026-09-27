@@ -1,17 +1,16 @@
 import { prisma } from "@/lib/db";
 import { getBoolSetting } from "@/lib/app-settings";
 import { BRANDS } from "./brand-config";
-import { generateDraft } from "./generate";
-import { evaluateDraft, PASS_THRESHOLD_RATIO } from "./quality-gate";
-import { nextTopic } from "./topics";
-import { LlmNotConfiguredError } from "./llm";
+import { runQualityChecks } from "./quality-gate";
+import { buildOutline, classifySearchIntent, nextTopic } from "./topics";
 import type { Brand } from "./types";
 
 export const KILL_SWITCH_KEY = "content-engine-enabled";
 
 export type PublishOutcome =
   | { status: "skipped"; reason: string }
-  | { status: "rejected"; slug: string; title: string; reason: string }
+  | { status: "queued"; slug: string; title: string }
+  | { status: "needs-revision"; slug: string; title: string; failures: string[] }
   | { status: "published"; slug: string; title: string; url: string };
 
 function startOfIsoWeek(d: Date): Date {
@@ -22,20 +21,6 @@ function startOfIsoWeek(d: Date): Date {
   return date;
 }
 
-async function withRetry<T>(fn: () => Promise<T>, attempts = 3): Promise<T> {
-  let lastErr: unknown;
-  for (let i = 0; i < attempts; i++) {
-    try {
-      return await fn();
-    } catch (err) {
-      lastErr = err;
-      if (err instanceof LlmNotConfiguredError) throw err; // not transient, don't retry
-      if (i < attempts - 1) await new Promise((r) => setTimeout(r, 2000 * (i + 1)));
-    }
-  }
-  throw lastErr;
-}
-
 async function publishedThisWeek(brand: Brand): Promise<number> {
   const weekStart = startOfIsoWeek(new Date());
   return prisma.guide.count({
@@ -43,93 +28,145 @@ async function publishedThisWeek(brand: Brand): Promise<number> {
   });
 }
 
-/** Existing published guides for this brand, used as internal-link candidates for the writer. */
-async function relatedLinks(brand: Brand, guidesBasePath: string): Promise<string[]> {
-  const rows = await prisma.guide.findMany({
-    where: { brand, status: "PUBLISHED" },
-    select: { title: true, slug: true },
-    orderBy: { datePublished: "desc" },
-    take: 8,
-  });
-  return rows.map((r) => `${r.title} (${guidesBasePath}/${r.slug})`);
+function slugify(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 80)
+    .replace(/-$/, "");
+}
+
+async function uniqueSlug(brand: Brand, base: string): Promise<string> {
+  let slug = base;
+  let n = 2;
+  while (await prisma.guide.findUnique({ where: { brand_slug: { brand, slug } } })) {
+    slug = `${base}-${n}`;
+    n++;
+  }
+  return slug;
+}
+
+/** Relative paths a body may link to: each brand's static product/guide pages plus every
+ * currently-PUBLISHED Guide slug for that brand. Used by quality-gate.ts's internal-link check
+ * and re-used by refresh.ts's drift check. */
+export async function internalPathsForBrand(brand: Brand): Promise<Set<string>> {
+  const config = BRANDS[brand];
+  const published = await prisma.guide.findMany({ where: { brand, status: "PUBLISHED" }, select: { slug: true } });
+  const set = new Set(config.staticKnownPaths);
+  for (const g of published) set.add(`${config.guidesBasePath}/${g.slug}`);
+  return set;
+}
+
+async function allKnownTitles(brand: Brand): Promise<string[]> {
+  const config = BRANDS[brand];
+  const rows = await prisma.guide.findMany({ where: { brand }, select: { title: true } });
+  return [...config.existingGuideTitles, ...rows.map((r) => r.title)];
 }
 
 /**
- * Runs one publish attempt for `brand`: checks the kill switch and weekly cap, picks the next
- * unpublished topic, generates a draft, runs it through the quality gate, and persists either a
- * PUBLISHED or REJECTED Guide row. Deliberately does at most one article per call - the cron
- * route calls this once; the caller (GH Actions workflow or in-process scheduler) controls
- * cadence, this function never loops to "catch up" on missed runs.
+ * Runs one content-engine step for `brand`: checks the kill switch, then does at most one of two
+ * things per call (never both, and never more than one article's worth of action) -
+ *
+ * Phase A - if a queued NEEDS_CONTENT row already has a written body (filled in by hand, through
+ * normal Claude/Cursor development work - never by this function), run every deterministic check
+ * against it and publish it if they all pass (respecting the weekly cap), or record why it failed
+ * and leave it queued for revision.
+ *
+ * Phase B - otherwise, if the queue isn't already full, pick the next backlog topic and queue it
+ * as a new NEEDS_CONTENT row with just a brief/outline/metadata - no body, nothing published.
+ *
+ * This function never writes a body itself and never publishes anything without every
+ * deterministic check passing - "no completed high-quality article available" always means
+ * "publish nothing," not "publish something anyway to hit cadence."
  */
 export async function runContentEngine(brand: Brand, opts: { dryRun?: boolean } = {}): Promise<PublishOutcome> {
   const enabled = opts.dryRun || (await getBoolSetting(KILL_SWITCH_KEY, true));
   if (!enabled) return { status: "skipped", reason: "Kill switch (content-engine-enabled) is off." };
 
   const config = BRANDS[brand];
-  if (!opts.dryRun) {
-    const publishedCount = await publishedThisWeek(brand);
-    if (publishedCount >= config.weeklyCap) {
-      return { status: "skipped", reason: `Weekly cap reached (${publishedCount}/${config.weeklyCap} published this ISO week).` };
+
+  // Phase A: a written-but-unpublished body is waiting - try to publish it.
+  const ready = await prisma.guide.findFirst({
+    where: { brand, status: "NEEDS_CONTENT", bodyHtml: { not: null } },
+    orderBy: { createdAt: "asc" },
+  });
+
+  if (ready && ready.bodyHtml && ready.bodyHtml.trim().length > 0) {
+    if (!opts.dryRun) {
+      const publishedCount = await publishedThisWeek(brand);
+      if (publishedCount >= config.weeklyCap) {
+        return { status: "skipped", reason: `Weekly cap reached (${publishedCount}/${config.weeklyCap} published this ISO week) - "${ready.title}" stays queued for next week.` };
+      }
     }
-  }
 
-  const topic = await nextTopic(brand);
-  if (!topic) return { status: "skipped", reason: "Topic backlog exhausted - no undedup'd topic left to generate." };
+    const existingTitles = (await allKnownTitles(brand)).filter((t) => t !== ready.title);
+    const validPaths = await internalPathsForBrand(brand);
+    const check = runQualityChecks(
+      brand,
+      { title: ready.title, description: ready.description, category: ready.category, bodyHtml: ready.bodyHtml, faq: ready.faq as { q: string; a: string }[] | null },
+      existingTitles,
+      validPaths,
+    );
 
-  const links = await relatedLinks(brand, config.guidesBasePath);
-  const draft = await withRetry(() => generateDraft(brand, topic, links));
-  const score = await withRetry(() => evaluateDraft(brand, draft));
+    if (!check.passed) {
+      if (!opts.dryRun) {
+        await prisma.guide.update({ where: { id: ready.id }, data: { rejectReason: check.failures.join(" ") } });
+      }
+      return { status: "needs-revision", slug: ready.slug, title: ready.title, failures: check.failures };
+    }
 
-  if (opts.dryRun) {
-    return score.passed
-      ? { status: "published", slug: draft.slug, title: draft.title, url: `[dry run - not persisted] score ${score.total}/${score.maxTotal}` }
-      : { status: "rejected", slug: draft.slug, title: draft.title, reason: `[dry run - not persisted] ${score.notes}` };
-  }
+    if (opts.dryRun) return { status: "published", slug: ready.slug, title: ready.title, url: "[dry run - not persisted]" };
 
-  const now = new Date();
-  if (!score.passed) {
-    await prisma.guide.create({
-      data: {
-        brand,
-        slug: draft.slug,
-        topicKey: topic.topicKey,
-        status: "REJECTED",
-        category: draft.category,
-        title: draft.title,
-        description: draft.description,
-        bodyHtml: draft.bodyHtml,
-        faq: draft.faq ?? undefined,
-        qualityScore: score,
-        rejectReason:
-          score.deterministicFailures.length > 0
-            ? score.deterministicFailures.join(" ")
-            : `Score ${score.total}/${score.maxTotal} below ${Math.round(PASS_THRESHOLD_RATIO * 100)}% threshold. ${score.notes}`,
-      },
+    const now = new Date();
+    await prisma.guide.update({
+      where: { id: ready.id },
+      data: { status: "PUBLISHED", datePublished: now, dateModified: now, rejectReason: null },
     });
-    return { status: "rejected", slug: draft.slug, title: draft.title, reason: score.notes };
+    return { status: "published", slug: ready.slug, title: ready.title, url: `https://${config.host}${config.guidesBasePath}/${ready.slug}` };
   }
+
+  // Phase B: nothing ready to publish - top up the queue if there's room.
+  const pendingCount = await prisma.guide.count({ where: { brand, status: "NEEDS_CONTENT", bodyHtml: null } });
+  if (pendingCount >= config.queueBuffer) {
+    return { status: "skipped", reason: `Queue already has ${pendingCount}/${config.queueBuffer} unfilled topics - not queueing another.` };
+  }
+
+  const picked = await nextTopic(brand);
+  if (!picked) return { status: "skipped", reason: "Topic backlog exhausted - no undedup'd topic left to queue." };
+  const { topic, score: priorityScore } = picked;
+
+  const slug = await uniqueSlug(brand, slugify(topic.title));
+  const intent = classifySearchIntent(topic.title);
+  const outline = buildOutline(topic);
+  const related = (await prisma.guide.findMany({
+    where: { brand, status: "PUBLISHED" },
+    select: { title: true, slug: true },
+    orderBy: { datePublished: "desc" },
+    take: 5,
+  })).map((r) => `${r.title} (${config.guidesBasePath}/${r.slug})`);
+
+  if (opts.dryRun) return { status: "queued", slug, title: topic.title };
 
   await prisma.guide.create({
     data: {
       brand,
-      slug: draft.slug,
+      slug,
       topicKey: topic.topicKey,
-      status: "PUBLISHED",
-      category: draft.category,
-      title: draft.title,
-      description: draft.description,
-      bodyHtml: draft.bodyHtml,
-      faq: draft.faq ?? undefined,
-      qualityScore: score,
-      datePublished: now,
-      dateModified: now,
+      status: "NEEDS_CONTENT",
+      category: topic.category,
+      title: topic.title,
+      description: `${topic.brief.slice(0, 150)}`,
+      bodyHtml: null,
+      searchIntent: intent,
+      outline: outline as unknown as object,
+      relatedPages: related as unknown as object,
+      suggestedCta: `${config.ctaLabel} (${config.ctaHref})`,
+      priorityScore,
     },
   });
 
-  return {
-    status: "published",
-    slug: draft.slug,
-    title: draft.title,
-    url: `https://${config.host}${config.guidesBasePath}/${draft.slug}`,
-  };
+  return { status: "queued", slug, title: topic.title };
 }

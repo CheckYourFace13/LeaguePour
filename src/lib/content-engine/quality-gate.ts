@@ -1,8 +1,6 @@
-import { BRANDS } from "./brand-config";
-import { PRODUCT_FACTS } from "./facts";
-import { callClaude, extractJson } from "./llm";
+import { FORBIDDEN_CLAIM_PATTERNS } from "./facts";
 import { isDuplicateTitle } from "./topics";
-import type { ArticleDraft, Brand, QualityScore } from "./types";
+import type { Brand, CheckResult } from "./types";
 
 const MIN_WORD_COUNT = 500;
 const FORBIDDEN_PHRASES = [
@@ -14,6 +12,10 @@ const FORBIDDEN_PHRASES = [
   "research shows",
   "according to a survey",
   "experts agree",
+  "lorem ipsum",
+  "todo",
+  "tbd",
+  "placeholder",
 ];
 // Matches an invented-sounding statistic like "73% of bars" or "9 out of 10 venues" - a real,
 // FACTS-grounded number (like the 3-1-0 point system) won't match this shape.
@@ -23,71 +25,73 @@ function wordCount(html: string): number {
   return html.replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length;
 }
 
-function runDeterministicChecks(draft: ArticleDraft, existingTitles: string[]): string[] {
+/** Extracts href targets from anchor tags in the body. */
+function extractLinks(html: string): string[] {
+  const matches = [...html.matchAll(/<a\s[^>]*href=["']([^"']+)["']/gi)];
+  return matches.map((m) => m[1]);
+}
+
+export type GuideForCheck = {
+  title: string;
+  description: string;
+  category: string;
+  bodyHtml: string;
+  faq: { q: string; a: string }[] | null;
+};
+
+/**
+ * Every check here is deterministic - no LLM, no external call. This is intentionally a denylist
+ * plus structural checks, not a claim of perfect editorial judgment; it catches the specific,
+ * known failure modes (filler, invented stats, known-false product claims, broken internal
+ * links, malformed metadata, duplicate titles) that would otherwise slip into an auto-published
+ * page.
+ */
+export function runQualityChecks(
+  brand: Brand,
+  guide: GuideForCheck,
+  existingTitles: string[],
+  validInternalPaths: Set<string>,
+): CheckResult {
   const failures: string[] = [];
-  const words = wordCount(draft.bodyHtml);
+
+  const words = wordCount(guide.bodyHtml);
   if (words < MIN_WORD_COUNT) failures.push(`Body is only ${words} words (minimum ${MIN_WORD_COUNT}).`);
 
-  const lowerBody = draft.bodyHtml.toLowerCase();
+  const lowerBody = guide.bodyHtml.toLowerCase();
   for (const phrase of FORBIDDEN_PHRASES) {
-    if (lowerBody.includes(phrase)) failures.push(`Contains forbidden filler phrase: "${phrase}".`);
+    if (lowerBody.includes(phrase)) failures.push(`Contains forbidden filler/placeholder phrase: "${phrase}".`);
   }
-  if (SUSPICIOUS_STAT.test(draft.bodyHtml)) {
+  if (SUSPICIOUS_STAT.test(guide.bodyHtml)) {
     failures.push("Contains an unattributed statistic that looks invented (e.g. \"NN% of venues\").");
   }
-  if (/<h1[\s>]/i.test(draft.bodyHtml)) failures.push("Body contains an <h1> - the page title is the h1, body must start at h2.");
-  if (/<script/i.test(draft.bodyHtml)) failures.push("Body contains a <script> tag.");
-
-  const dupe = isDuplicateTitle(draft.title, existingTitles);
-  if (dupe) failures.push(`Title is a near-duplicate of an existing guide: "${dupe}".`);
-
-  if (!draft.title || draft.title.length > 90) failures.push("Title missing or too long for a clean <title>.");
-  if (!draft.description || draft.description.length < 80 || draft.description.length > 170) {
-    failures.push(`Meta description length (${draft.description?.length ?? 0}) is out of the 80-170 char range.`);
+  for (const pattern of FORBIDDEN_CLAIM_PATTERNS[brand]) {
+    if (pattern.test(guide.bodyHtml)) failures.push(`Body appears to claim an unsupported product feature (matched pattern: ${pattern}).`);
   }
 
-  return failures;
-}
+  if (/<h1[\s>]/i.test(guide.bodyHtml)) failures.push("Body contains an <h1> - the page title is the h1, body must start at h2.");
+  if (/<script/i.test(guide.bodyHtml)) failures.push("Body contains a <script> tag.");
+  if (!/<h2[\s>]/i.test(guide.bodyHtml)) failures.push("Body has no <h2> heading - needs real structure, not one undifferentiated block.");
 
-const SCORER_SYSTEM = `You are a strict editorial quality reviewer for a B2B SaaS company's guide articles. You will
-be given a product's FACTS list and a draft article. Score the draft honestly and harshly - most
-drafts should NOT get a perfect score. Output ONLY a JSON object, no other text:
-{
-  "originality": 0-10,
-  "usefulness": 0-10,
-  "depth": 0-10,
-  "productAccuracy": 0-10,
-  "duplicationRisk": 0-10 (10 = no duplication risk, 0 = reads like an existing common article),
-  "seoCompleteness": 0-10,
-  "readability": 0-10,
-  "notes": "one or two sentences explaining the score, mentioning any specific problems found"
-}
-productAccuracy must be 0 if the article claims the product does anything not in FACTS.`;
+  const dupe = isDuplicateTitle(guide.title, existingTitles);
+  if (dupe) failures.push(`Title is a near-duplicate of an existing guide: "${dupe}".`);
 
-async function scoreDraft(brand: Brand, draft: ArticleDraft): Promise<Omit<QualityScore, "total" | "maxTotal" | "passed" | "deterministicFailures">> {
-  const facts = PRODUCT_FACTS[brand].map((f) => `- ${f}`).join("\n");
-  const prompt = `FACTS:\n${facts}\n\nDraft title: ${draft.title}\nDraft description: ${draft.description}\nDraft body (HTML):\n${draft.bodyHtml}`;
-  const text = await callClaude({ system: SCORER_SYSTEM, prompt, maxTokens: 1024 });
-  return extractJson(text);
-}
+  if (!guide.title || guide.title.length > 90) failures.push("Title missing or too long for a clean <title>.");
+  if (!guide.description || guide.description.length < 80 || guide.description.length > 170) {
+    failures.push(`Meta description length (${guide.description?.length ?? 0}) is out of the 80-170 char range.`);
+  }
+  if (!guide.category) failures.push("Category is empty.");
 
-export const PASS_THRESHOLD_RATIO = 0.8; // 80% of max possible score
+  if (guide.faq) {
+    if (guide.faq.length < 2 || guide.faq.length > 6) failures.push(`FAQ has ${guide.faq.length} items - expected 2-6 if present at all.`);
+    for (const f of guide.faq) {
+      if (!f.q?.trim() || !f.a?.trim()) failures.push("FAQ has an empty question or answer.");
+    }
+  }
 
-export async function evaluateDraft(brand: Brand, draft: ArticleDraft): Promise<QualityScore> {
-  const config = BRANDS[brand];
-  const deterministicFailures = runDeterministicChecks(draft, config.existingGuideTitles);
+  for (const link of extractLinks(guide.bodyHtml)) {
+    if (/^https?:\/\//i.test(link)) continue; // external links aren't checked here
+    if (!validInternalPaths.has(link)) failures.push(`Internal link "${link}" doesn't match any known page or published guide.`);
+  }
 
-  const scores = await scoreDraft(brand, draft);
-  const total =
-    scores.originality +
-    scores.usefulness +
-    scores.depth +
-    scores.productAccuracy +
-    scores.duplicationRisk +
-    scores.seoCompleteness +
-    scores.readability;
-  const maxTotal = 70;
-  const passed = deterministicFailures.length === 0 && scores.productAccuracy >= 8 && total / maxTotal >= PASS_THRESHOLD_RATIO;
-
-  return { ...scores, total, maxTotal, passed, deterministicFailures };
+  return { failures, passed: failures.length === 0 };
 }

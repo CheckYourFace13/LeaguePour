@@ -1,8 +1,8 @@
 /**
  * Curated, hand-verified list of what each product actually does today. This is the single
- * source of truth the generator is grounded on and the quality gate checks claims against - if a
- * feature isn't listed here, the article must not claim the product does it. Keep this in sync
- * with reality by hand; do not let the generator infer facts on its own.
+ * source of truth whoever writes an article body is grounded on, and the deterministic quality
+ * gate checks claims against (see FORBIDDEN_CLAIM_PATTERNS below) - if a feature isn't listed
+ * here, an article must not claim the product does it. Keep this in sync with reality by hand.
  *
  * Sourced from the September 26 2026 code-vs-marketing audit (see memory) - every line here was
  * independently verified against the actual implementation, not against existing marketing copy.
@@ -43,5 +43,33 @@ export const PRODUCT_FACTS: Record<Brand, string[]> = {
     "There is no plan-based staff-count limit enforced anywhere in the code.",
     "VenueSprocket is a separate product from LeaguePour with its own subscription; an active subscriber to either gets 50% off the other. LeaguePour is not included with any VenueSprocket plan.",
     "Built for restaurants, breweries, bars, taprooms, banquet rooms, and event spaces - private events like birthday parties, corporate events, holiday parties, rehearsal dinners, private dining.",
+  ],
+};
+
+/**
+ * Deterministic (no LLM) product-accuracy check: a body matching any of these patterns is
+ * claiming something not in PRODUCT_FACTS - the exact false-claim patterns found and corrected in
+ * the September 26 2026 audit (Swiss format, SMS delivery, CRM tags, multi-location/reporting,
+ * signed-contract PDF auto-email). Case-insensitive. This is necessarily a denylist, not a
+ * complete accuracy proof - whoever writes the body is still responsible for only using
+ * PRODUCT_FACTS, this just catches the specific claims already known to be wrong.
+ */
+export const FORBIDDEN_CLAIM_PATTERNS: Record<Brand, RegExp[]> = {
+  LP: [
+    /swiss format/i,
+    /\bsms\b.{0,20}(alert|campaign|notif|delivery|sent|sends|message)/i,
+    /(alert|campaign|notif|delivery|sent|sends|message).{0,20}\bsms\b/i,
+    /(staff|account).{0,15}limit/i,
+    /multi-?location/i,
+  ],
+  VS: [
+    /tag(ging|s)?\b.{0,25}(customer|segment|filter)/i,
+    /(customer|segment|filter).{0,25}tag(ging|s)?\b/i,
+    /marketing opt-?in/i,
+    /(auto|automatic).{0,20}(email|send).{0,20}(pdf|signed contract)/i,
+    /(pdf|signed contract).{0,20}(auto|automatic).{0,20}(email|send)/i,
+    /multi-?(room|location|space)/i,
+    /(revenue|analytics).{0,20}(chart|dashboard|report)/i,
+    /(staff|account).{0,15}limit/i,
   ],
 };
