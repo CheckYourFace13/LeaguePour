@@ -157,6 +157,8 @@ async function tick(loopbackBase: string, publicBase: string, secret: string): P
 }
 
 export function startInProcessScheduler(): void {
+  // Never in the edge runtime - see instrumentation.ts. No timers, no fetches, no status writes.
+  if (process.env.NEXT_RUNTIME === "edge") return;
   if (started) return;
   started = true;
   void persistStatus("scheduler_started_at", new Date().toISOString());

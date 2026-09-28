@@ -17,13 +17,21 @@
  * yet started stayed false with no captured error) showed that guard silently short-circuiting
  * on this specific host, for a reason that couldn't be root-caused further without server log
  * access. Safe to drop: the scheduler only uses fetch/setInterval/setTimeout, all available in
- * every Next.js runtime, and startInProcessScheduler()'s own `started` flag already makes a
- * second/duplicate call from a different runtime context a harmless no-op.
+ * every Next.js runtime.
+ *
+ * DOES skip the edge runtime explicitly (`=== "edge"`, not `!== "nodejs"`, so an unset
+ * NEXT_RUNTIME still starts the scheduler). register() also runs inside each edge (middleware)
+ * sandbox, which does not share module state with the Node.js server - so the `started` flag
+ * never deduped it, and production logs showed extra scheduler copies ticking there, each able
+ * to trigger every cron job (and each failing to write status, since Prisma can't load in edge).
+ * startInProcessScheduler() repeats the same guard as defense in depth.
  *
  * Wrapped in try/catch with any failure persisted to AppSetting (readable via
  * /api/cron/scheduler-status) since a silent failure here would otherwise be undebuggable.
  */
 export async function register() {
+  if (process.env.NEXT_RUNTIME === "edge") return;
+
   try {
     const { setSetting } = await import("./lib/app-settings");
     await setSetting(
