@@ -30,29 +30,31 @@
  * /api/cron/scheduler-status) since a silent failure here would otherwise be undebuggable.
  */
 export async function register() {
-  if (process.env.NEXT_RUNTIME === "edge") return;
-
-  try {
-    const { setSetting } = await import("./lib/app-settings");
-    await setSetting(
-      "scheduler_register_entered",
-      `${new Date().toISOString()} runtime=${process.env.NEXT_RUNTIME ?? "(unset)"}`,
-    );
-  } catch {
-    // Best-effort marker only - never block startup on it.
-  }
-
-  try {
-    const { startInProcessScheduler } = await import("./lib/scheduler");
-    startInProcessScheduler();
-  } catch (err) {
-    const message = err instanceof Error ? (err.stack ?? err.message) : String(err);
-    console.error("[instrumentation] register() failed", err);
+  // A wrapping `if`, not an early return: webpack only drops the edge bundle's dynamic imports
+  // (Prisma/pg, which can't resolve in edge) from a statically-dead branch.
+  if (process.env.NEXT_RUNTIME !== "edge") {
     try {
       const { setSetting } = await import("./lib/app-settings");
-      await setSetting("scheduler_register_error", `${new Date().toISOString()} ${message}`.slice(0, 2000));
+      await setSetting(
+        "scheduler_register_entered",
+        `${new Date().toISOString()} runtime=${process.env.NEXT_RUNTIME ?? "(unset)"}`,
+      );
     } catch {
-      // If even this fails (e.g. DB unreachable at boot), there's nothing more we can do here.
+      // Best-effort marker only - never block startup on it.
+    }
+
+    try {
+      const { startInProcessScheduler } = await import("./lib/scheduler");
+      startInProcessScheduler();
+    } catch (err) {
+      const message = err instanceof Error ? (err.stack ?? err.message) : String(err);
+      console.error("[instrumentation] register() failed", err);
+      try {
+        const { setSetting } = await import("./lib/app-settings");
+        await setSetting("scheduler_register_error", `${new Date().toISOString()} ${message}`.slice(0, 2000));
+      } catch {
+        // If even this fails (e.g. DB unreachable at boot), there's nothing more we can do here.
+      }
     }
   }
 }
