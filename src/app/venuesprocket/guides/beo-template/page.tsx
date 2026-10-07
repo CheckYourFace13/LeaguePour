@@ -8,6 +8,7 @@ export const metadata: Metadata = {
     "A free, copyable Banquet Event Order template with realistic field names, a filled-out example, required vs. optional fields, and a pre-event checklist.",
   alternates: { canonical: "https://venuesprocket.com/guides/beo-template" },
   openGraph: {
+    siteName: "VenueSprocket",
     title: "Free Banquet Event Order (BEO) Template",
     description:
       "A copyable BEO template with an example filled-out version and a pre-event checklist.",

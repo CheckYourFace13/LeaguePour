@@ -32,8 +32,19 @@ const cols = [
     ],
   },
   {
+    title: "Resources",
+    links: [
+      { href: "/demo", label: "Sample workflow" },
+      { href: "/faq", label: "FAQ" },
+      { href: "/guides", label: "Guides" },
+      { href: "/templates", label: "Free templates" },
+      { href: "/tools", label: "Free calculators" },
+    ],
+  },
+  {
     title: "Compare",
     links: [
+      { href: "/compare", label: "All comparisons" },
       { href: "/compare/tripleseat", label: "vs Tripleseat" },
       { href: "/compare/perfect-venue", label: "vs Perfect Venue" },
       { href: "/compare/planning-pod", label: "vs Planning Pod" },
@@ -46,7 +57,6 @@ const cols = [
     title: "Company",
     links: [
       { href: "/about", label: "About" },
-      { href: "/guides", label: "Guides" },
       { href: "/contact", label: "Contact" },
       { href: "/legal/terms", label: "Terms" },
       { href: "/legal/privacy", label: "Privacy" },
@@ -69,16 +79,16 @@ export function VsFooter() {
               Simple private event management for restaurants, breweries, bars, taprooms, and event spaces.
             </p>
             <div className="mt-3 flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-widest text-vs-muted">Also includes</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-vs-muted">Run leagues too?</span>
               <Link href="/leaguepour" className="text-sm font-semibold text-vs-accent hover:underline">
-                LeaguePour →
+                See LeaguePour, our companion product →
               </Link>
             </div>
           </div>
         </div>
 
         {/* Columns */}
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-5">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-3 lg:grid-cols-6">
           {cols.map((c) => (
             <div key={c.title}>
               <p className="vs-kicker mb-4">{c.title}</p>

@@ -8,6 +8,7 @@ export const metadata: Metadata = {
     "VenueSprocket helps restaurants, breweries, bars, taprooms, and event spaces capture inquiries, send proposals, sign contracts, collect deposits, and create BEOs. Start free.",
   alternates: { canonical: "https://venuesprocket.com" },
   openGraph: {
+    siteName: "VenueSprocket",
     title: { absolute: "VenueSprocket — Book More Private Events. Run Them Better." },
     description:
       "Simple private event software for restaurants, bars, breweries, and taprooms. Inquiries, proposals, contracts, deposits, and BEOs in one place.",
@@ -32,7 +33,7 @@ const features = [
   {
     icon: "📄",
     title: "Send proposals fast",
-    body: "Build a proposal from your event details. Add packages, room fees, minimums, and deposit amounts. Send a secure link. Customer accepts in one click.",
+    body: "Build a proposal from your event details. Set the room fee, food and beverage minimum, and deposit. Send a secure link. Customer accepts in one click.",
   },
   {
     icon: "✍️",
@@ -62,18 +63,18 @@ const pipeline = [
   { stage: "Proposal Sent", desc: "Customer receives your proposal link" },
   { stage: "Contract Sent", desc: "Contract delivered for signature" },
   { stage: "Deposit Pending", desc: "Awaiting deposit payment" },
-  { stage: "Booked", desc: "Signed and paid — it's on the calendar" },
+  { stage: "Booked", desc: "Signed and paid — the date is locked in" },
   { stage: "BEO Ready", desc: "Staff have everything they need" },
-  { stage: "Completed", desc: "Event done, follow-up triggered" },
+  { stage: "Completed", desc: "Event done — you get a rebooking reminder" },
 ];
 
 const whyUs = [
   "Easier to start than Tripleseat, Perfect Venue, or Planning Pod",
   "More affordable for restaurants, bars, breweries, and taprooms",
   "One shareable inquiry page — no setup required",
-  "BEOs, contracts, deposits, and follow-up in one place",
+  "BEOs, contracts, deposits, and follow-up reminders in one place",
   "No enterprise complexity or 90-minute onboarding calls",
-  "Add LeaguePour to fill slow nights with leagues and game nights",
+  "Pair it with LeaguePour (a separate product) for leagues and game nights",
 ];
 
 const venueTypes = [
@@ -187,7 +188,7 @@ export default function VsSprocketHome() {
               href="/leaguepour"
               className="text-base font-semibold text-vs-accent hover:underline"
             >
-              Add LeaguePour for Game Nights →
+              See LeaguePour for game nights →
             </Link>
           </div>
           <p className="mt-5 text-sm text-vs-muted">
@@ -320,7 +321,7 @@ export default function VsSprocketHome() {
                 {[
                   "One public inquiry page for every event type you host",
                   "Every submission becomes a lead in your pipeline instantly",
-                  "Automated follow-up for new inquiries",
+                  "Reminder to you if an inquiry goes unanswered",
                   "Customer confirmation the moment they submit",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2 text-sm text-vs-text-soft">
@@ -357,7 +358,7 @@ export default function VsSprocketHome() {
           <div className="rounded-2xl border border-vs-border-strong bg-vs-surface p-8 md:p-10">
             <div className="flex flex-col gap-6 md:flex-row md:items-center">
               <div className="flex-1">
-                <p className="vs-kicker mb-2">LeaguePour by VenueSprocket</p>
+                <p className="vs-kicker mb-2">Companion product</p>
                 <h2 className="font-display text-2xl font-bold text-vs-text md:text-3xl mb-3">
                   Fill slow nights with leagues and game nights
                 </h2>
@@ -386,7 +387,7 @@ export default function VsSprocketHome() {
                   href="/leaguepour"
                   className="inline-flex items-center gap-2 rounded-xl bg-vs-accent px-6 py-3 font-bold text-white hover:bg-vs-accent-hover transition-colors"
                 >
-                  Add LeaguePour for Game Nights
+                  See LeaguePour for game nights
                 </Link>
               </div>
               <div className="shrink-0 text-center">
@@ -395,7 +396,7 @@ export default function VsSprocketHome() {
                     League<span className="text-vs-accent">Pour</span>
                   </p>
                   <p className="mt-1 text-xs font-semibold text-vs-muted uppercase tracking-wide">
-                    by VenueSprocket
+                    Separate product · 50% off
                   </p>
                 </div>
               </div>
@@ -468,7 +469,7 @@ export default function VsSprocketHome() {
           </h2>
           <p className="text-vs-text-soft mb-8">
             The free plan gets your inquiry form live. Upgrade to Pro for proposals, contracts,
-            Stripe deposits, BEOs, and customer CRM. No surprise fees.
+            Stripe deposits, BEOs, and a customer directory. No surprise fees.
           </p>
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link

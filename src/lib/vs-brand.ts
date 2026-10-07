@@ -16,7 +16,7 @@ export const vsBrand = {
     startFree: "Start Free",
     seeHowItWorks: "See How It Works",
     bookDemo: "Book a Demo",
-    addLeaguePour: "Add LeaguePour for Game Nights",
+    addLeaguePour: "See LeaguePour for game nights",
     getStarted: "Get Started",
     viewPricing: "View Pricing",
     talkToUs: "Talk to Us",

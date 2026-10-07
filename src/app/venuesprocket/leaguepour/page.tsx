@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: { absolute: "LeaguePour by VenueSprocket — Fill Slow Nights with Leagues and Game Nights" },
+  title: { absolute: "LeaguePour — Companion Product for Leagues and Game Nights | VenueSprocket" },
   description:
-    "LeaguePour is VenueSprocket's companion product for recurring public events. Run dart leagues, cornhole tournaments, trivia nights, pool leagues, and bar game competitions with QR signups, standings, and Stripe entry fees.",
+    "LeaguePour is a separate companion product to VenueSprocket for recurring public events. Run dart leagues, cornhole tournaments, trivia nights, pool leagues, and bar game competitions with QR signups, standings, and Stripe entry fees.",
   alternates: { canonical: "https://venuesprocket.com/leaguepour" },
 };
 
@@ -29,16 +29,16 @@ export default function VsLeaguePourPage() {
           <div className="inline-block mb-4 rounded-xl border-2 border-vs-accent/20 bg-vs-surface-2 px-6 py-3">
             <p className="font-display text-lg font-extrabold text-vs-text">
               League<span className="text-vs-accent">Pour</span>{" "}
-              <span className="text-xs font-normal text-vs-muted">by VenueSprocket</span>
+              <span className="text-xs font-normal text-vs-muted">companion product</span>
             </p>
           </div>
           <h1 className="vs-page-title text-4xl md:text-5xl mb-4">
             Fill slow nights with leagues and game nights
           </h1>
           <p className="vs-page-sub mx-auto text-center max-w-2xl">
-            VenueSprocket manages your private events. LeaguePour fills the rest of your calendar
-            with recurring public competitions — dart leagues, cornhole tournaments, trivia nights,
-            and more — that bring the same players back every week.
+            VenueSprocket manages your private events. LeaguePour - a separate product with its own
+            subscription - runs recurring public competitions like dart leagues, cornhole
+            tournaments, and trivia nights that bring the same players back every week.
           </p>
         </div>
 
@@ -59,7 +59,7 @@ export default function VsLeaguePourPage() {
           </div>
           <div className="mt-6 text-center">
             <p className="text-sm font-bold text-vs-accent">
-              One platform to grow venue revenue from both private events and public programming.
+              Two separate products that work from the same venue login. Subscribe to one, get 50% off the other.
             </p>
           </div>
         </div>
@@ -111,21 +111,19 @@ export default function VsLeaguePourPage() {
         {/* Cross-promotion */}
         <div className="mb-14 rounded-2xl border border-vs-border bg-vs-surface-2 p-8">
           <h2 className="font-display text-2xl font-bold text-vs-text mb-3">
-            Turns game-night players into private event leads
+            How the two products fit together
           </h2>
           <p className="text-vs-text-soft leading-relaxed mb-4">
-            Every player who signs up for a LeaguePour dart league or trivia night is already a
-            regular at your venue. LeaguePour adds them to your marketing list automatically.
-            VenueSprocket can then invite them to book their next birthday party, work event,
-            or holiday party with you — turning repeat public event customers into private
-            event leads.
+            League and trivia regulars already know your venue - they&apos;re natural candidates for
+            a birthday party or work event. The two products stay separate, so here&apos;s exactly
+            what you get when you use both:
           </p>
           <ul className="space-y-2">
             {[
-              "LeaguePour venue pages include a 'Book a private event here' link",
-              "LeaguePour players can be invited to upcoming private event availability",
-              "VenueSprocket dashboard shows public event revenue alongside private event revenue",
-              "Combined player and event customer list in one CRM",
+              "One venue login for both products",
+              "50% off the second product while either subscription is active - applied automatically",
+              "LeaguePour builds an opted-in player email list you can message from LeaguePour",
+              "Your VenueSprocket inquiry link can go anywhere you promote events, including LeaguePour announcements",
             ].map((item) => (
               <li key={item} className="flex items-start gap-2 text-sm text-vs-text-soft">
                 <span className="text-vs-accent font-bold shrink-0">✓</span>

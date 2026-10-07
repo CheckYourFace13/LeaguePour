@@ -53,7 +53,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
       },
       {
         title: "BEO generation",
-        body: "BEOs are built from the same event details you already entered. Staff see everything they need on event day without digging through email.",
+        body: "BEOs start from the same event details you already entered, with a print-ready view your team can work from on event day instead of digging through email.",
       },
     ],
     useCases: [
@@ -95,11 +95,11 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     title: "BEO Software for Venues",
     metaTitle: "BEO Software for Restaurants, Bars & Event Venues — VenueSprocket",
     metaDescription:
-      "Create Banquet Event Orders (BEOs) without starting from scratch. VenueSprocket starts each BEO from your event record and gives staff a mobile day-of-event view.",
+      "Create Banquet Event Orders (BEOs) without starting from scratch. VenueSprocket starts each BEO from your event record and gives you a mobile-friendly, print-ready view for event day.",
     kicker: "BEO builder",
     hero: "Build BEOs in minutes, not hours",
     heroSub:
-      "VenueSprocket starts a Banquet Event Order from the event details you already have on file - name, date, time, guest count, room, and contact info carry over automatically. No starting from a blank Word document. Staff see what they need on event day, on their phone.",
+      "VenueSprocket starts a Banquet Event Order from the event details you already have on file - name, date, time, guest count, room, and contact info carry over automatically. No starting from a blank Word document. Open it on a phone or print it for the kitchen on event day.",
     icon: "📑",
     why: "Most venues build BEOs from scratch for every event — a Word document with copy-pasted details, printed and left in the kitchen, then lost or wrong when something changes. VenueSprocket starts the BEO from the same event record used for the inquiry, proposal, and contract, so the basics are already filled in.",
     features: [
@@ -124,8 +124,8 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
         body: "Open any BEO in a clean, print-ready layout - print it or save it as a PDF from your browser to hand to the kitchen or your event team.",
       },
       {
-        title: "Mobile day-of-event staff view",
-        body: "Staff can pull up the BEO on their phone during the event. Clean, readable, no need to find the printed copy or dig through email.",
+        title: "Mobile-friendly BEO view",
+        body: "Anyone logged in to your venue account can pull up the BEO on a phone during the event - no hunting for the printed copy. (There's no separate staff-only login; most venues print it for the kitchen too.)",
       },
     ],
     useCases: [
@@ -189,8 +189,8 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
         body: "Every contract records the signer's name, email, typed signature, exact timestamp, IP address, and user agent — creating a legally meaningful record.",
       },
       {
-        title: "PDF confirmation sent automatically",
-        body: "After signing, the customer receives a PDF copy of the signed contract by email automatically. Your venue records stay up to date.",
+        title: "Signed record on the event",
+        body: "The signed contract - signer name, typed signature, and timestamp - stays attached to the event in your dashboard, and the customer goes straight to the deposit step.",
       },
       {
         title: "Mobile-first signing experience",
@@ -252,7 +252,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
       },
       {
         title: "Deposit set on the proposal",
-        body: "The deposit amount is defined when you build the proposal — flat dollar amount or percentage. Customers know exactly what they owe before signing.",
+        body: "You set the deposit amount when you build the proposal, so customers know exactly what they owe before signing.",
       },
       {
         title: "One-click payment after signing",
@@ -263,12 +263,12 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
         body: "Every event shows paid/unpaid deposit status in the dashboard. No more wondering who has paid and who hasn't.",
       },
       {
-        title: "Stripe confirmation email",
-        body: "Customers receive a Stripe payment confirmation automatically. Your internal event record updates to 'Deposit Paid' immediately.",
+        title: "Deposit receipt email",
+        body: "Customers get a receipt email once the deposit goes through, and the payment shows as paid in your dashboard as soon as Stripe confirms it.",
       },
       {
-        title: "Payment tracking by event",
-        body: "Each event has a payment history so you can track the deposit, any additional payments, and balances due.",
+        title: "Deposit status by event",
+        body: "Each event shows whether its deposit is pending, paid, or refunded, and the Payments page totals what's collected and what's still outstanding.",
       },
     ],
     useCases: [
@@ -288,7 +288,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
       },
       {
         q: "Can I collect the full event payment through VenueSprocket?",
-        a: "VenueSprocket supports deposit collection. Additional payment tracking is included so you can record balances due and final payments.",
+        a: "Not today. VenueSprocket collects the deposit online; the remaining balance is settled however you normally take final payment (at the event, invoice, or your POS).",
       },
     ],
     cta: "Start collecting deposits online",
@@ -311,7 +311,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     heroSub:
       "VenueSprocket gives your venue a public inquiry page covering every event type you host — birthday parties, corporate events, holiday parties, private dining — so a customer can request their event in minutes, and it lands straight in your dashboard.",
     icon: "📣",
-    why: "Most event management platforms help you manage leads you already have. VenueSprocket makes it effortless to capture the leads you're already getting - one page you can share anywhere (your website, socials, Google Business Profile) instead of a phone tag or a buried contact form, with automated follow-up so nothing falls through the cracks.",
+    why: "Most event management platforms help you manage leads you already have. VenueSprocket makes it effortless to capture the leads you're already getting - one page you can share anywhere (your website, socials, Google Business Profile) instead of a phone tag or a buried contact form - with an instant confirmation email to the customer and a reminder to you if an inquiry sits unanswered.",
     features: [
       {
         title: "One inquiry page, every event type",
@@ -327,7 +327,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
       },
       {
         title: "Untouched-lead reminders",
-        body: "If an inquiry doesn't get a response in time, we automatically remind your staff so fewer leads fall through the cracks.",
+        body: "If an inquiry sits untouched for a couple of days, VenueSprocket emails your venue a reminder so fewer leads fall through the cracks.",
       },
       {
         title: "Instant customer confirmation",
@@ -385,8 +385,8 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
         body: "Every inquiry goes into a simple pipeline. Staff move leads from New to Contacted to Proposal Sent to Booked. Nothing gets lost in email.",
       },
       {
-        title: "Proposals with menu packages",
-        body: "Build and send a proposal that includes your prix-fixe menus, beverage options, room fees, and food minimums. Customer accepts online.",
+        title: "Proposals with room fees and minimums",
+        body: "Send a proposal with your room fee, food and beverage minimum, and deposit - the customer sees the estimated total and accepts online. Menu details go in the event notes and the BEO.",
       },
       {
         title: "Contract and deposit",
@@ -415,7 +415,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
       },
       {
         q: "Can I add my restaurant's menus to proposals?",
-        a: "Yes. The proposal builder lets you add menu packages, beverage options, room fees, and food minimums as line items.",
+        a: "Partly. A VenueSprocket proposal carries a room fee, a food and beverage minimum, and the deposit amount, which covers how most private dining rooms price. There's no itemized menu-package builder; menu choices go in the event notes and on the BEO.",
       },
       {
         q: "Is LeaguePour included?",
@@ -440,7 +440,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     kicker: "For breweries",
     hero: "Book more taproom events. Run them better.",
     heroSub:
-      "VenueSprocket helps craft breweries and taprooms capture private event inquiries, send proposals with tasting packages, get contracts signed, collect deposits, and build BEOs for every event.",
+      "VenueSprocket helps craft breweries and taprooms capture private event inquiries, send proposals with room fees and beverage minimums, get contracts signed, collect deposits, and build BEOs for every event.",
     icon: "🍺",
     why: "Taproom buyouts, birthday parties, corporate tastings, and rehearsal dinner events are high-value for breweries — and often managed through Instagram DMs, email, and handshake deals. VenueSprocket gives breweries a professional, fast private event workflow that doesn't require enterprise software or a dedicated event planner.",
     features: [
@@ -449,8 +449,8 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
         body: "A public booking page for brewery buyouts, birthday parties, corporate tastings, rehearsal dinners, and private events. Customers submit, you get the lead instantly.",
       },
       {
-        title: "Tasting and beverage packages",
-        body: "Build proposals with beer tasting flights, keg packages, beverage minimums, and food pairings as line items. Customers see exactly what they're booking.",
+        title: "Room fees and beverage minimums",
+        body: "Quote a room or buyout fee and a food and beverage minimum, and collect the deposit online. Record the tasting flights, kegs, or food pairings you've agreed on in the event notes and BEO.",
       },
       {
         title: "Contract and deposit",
@@ -474,7 +474,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     faqs: [
       {
         q: "Can I offer beer packages and tasting flights in the proposal?",
-        a: "Yes. The proposal builder lets you add beverage packages, tasting packages, room fees, and minimums as line items.",
+        a: "A proposal carries a room fee, a food and beverage minimum, and a deposit - there's no itemized package builder. Most taprooms set the minimum to cover the tasting or keg package and spell out what's included in the event notes and on the BEO.",
       },
       {
         q: "Does VenueSprocket work for small taprooms?",
@@ -503,25 +503,25 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     kicker: "For bars",
     hero: "Book private parties. Fill slow nights. Manage both from one place.",
     heroSub:
-      "VenueSprocket helps bars capture private event inquiries, send proposals, get contracts signed, and collect deposits. Add LeaguePour to fill slow Tuesday and Wednesday nights with dart leagues, trivia, and bar game competitions.",
+      "VenueSprocket helps bars capture private event inquiries, send proposals, get contracts signed, and collect deposits. Pair it with LeaguePour, a separate companion product, to fill slow Tuesday and Wednesday nights with dart leagues, trivia, and bar game competitions.",
     icon: "🍸",
-    why: "Bars are uniquely positioned to run both private events (birthday buyouts, corporate happy hours, bachelorette parties) and recurring public events (dart leagues, trivia, cornhole). Most bar software handles one or the other. VenueSprocket handles private events, and LeaguePour handles the public event programming — both connected in one platform.",
+    why: "Bars are uniquely positioned to run both private events (birthday buyouts, corporate happy hours, bachelorette parties) and recurring public events (dart leagues, trivia, cornhole). Most bar software handles one or the other. VenueSprocket handles private events; LeaguePour, a separate companion product, handles leagues and game nights - and both work from the same venue login.",
     features: [
       {
         title: "Private party inquiry form",
         body: "A public booking page for birthday buyouts, bachelorette parties, corporate happy hours, and private bar events. Customers submit, you get the lead.",
       },
       {
-        title: "Bar package proposals",
-        body: "Build proposals with bar tabs, drink packages, food and drink minimums, and venue fees. Customers see a clean quote and accept online.",
+        title: "Buyout and minimum-spend proposals",
+        body: "Quote a room or buyout fee and a food and drink minimum, set the deposit, and send one link. Customers see a clean estimated total and accept online.",
       },
       {
         title: "Contract and deposit",
         body: "Get the booking signed and deposited from the customer's phone. No checks, no paperwork, no back-and-forth.",
       },
       {
-        title: "Event day staff view",
-        body: "Staff see the event details for tonight — guest count, what's included, arrival time, bar tab limit, special instructions — without digging through email.",
+        title: "BEO for event night",
+        body: "Put the details for the night - guest count, what's included, arrival time, special instructions - on one BEO you can print or pull up on a phone, instead of digging through email.",
       },
       {
         title: "LeaguePour for bar leagues",
@@ -538,7 +538,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     faqs: [
       {
         q: "Can I run both private events and public leagues from one account?",
-        a: "Yes. VenueSprocket manages your private events. LeaguePour manages your public event programming. Both connect to the same venue account.",
+        a: "Yes, if you use both products. VenueSprocket manages your private events; LeaguePour - a separate subscription - manages leagues and game nights. Both work from the same venue login, and an active subscriber to either gets 50% off the other.",
       },
       {
         q: "How does LeaguePour work for bar dart leagues?",
@@ -567,7 +567,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     kicker: "For taprooms",
     hero: "Taproom events, organized.",
     heroSub:
-      "Private buyouts, birthday parties, beer tastings, corporate events — VenueSprocket captures the inquiry, manages the booking, and gives your staff a clean BEO for event day. Add LeaguePour to fill the rest of your calendar with recurring public events.",
+      "Private buyouts, birthday parties, beer tastings, corporate events — VenueSprocket captures the inquiry, manages the booking, and gives your staff a clean BEO for event day. LeaguePour, a separate companion product, can fill the rest of your calendar with recurring leagues and game nights.",
     icon: "🏠",
     why: "Taprooms with great spaces are underusing them when events are managed through text messages and word of mouth. VenueSprocket gives taprooms a professional booking system that feels easy for the customer and takes almost no time to set up for the venue.",
     features: [
@@ -576,8 +576,8 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
         body: "A public inquiry page for your taproom — private buyouts, beer tastings, birthday parties, corporate events, and more. No app needed for customers.",
       },
       {
-        title: "Beer and beverage packages",
-        body: "Include your taproom's beer packages, tasting flights, growler fills, and beverage minimums in proposals.",
+        title: "Beverage minimums",
+        body: "Quote a buyout fee and a beverage minimum on the proposal, and note the beer package or tasting flights you've agreed on in the event details and BEO.",
       },
       {
         title: "Contract and deposit online",
@@ -626,7 +626,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     title: "Banquet Hall Software",
     metaTitle: "Banquet Hall Software — Private Events, BEOs & Deposits — VenueSprocket",
     metaDescription:
-      "VenueSprocket helps banquet halls and event spaces manage private event inquiries, proposals, contracts, deposits, BEOs, and room scheduling without enterprise-priced software.",
+      "VenueSprocket helps banquet halls and event spaces manage private event inquiries, proposals, contracts, deposits, and BEOs without enterprise-priced software.",
     kicker: "For banquet halls & event spaces",
     hero: "Run your banquet hall without enterprise software prices",
     heroSub:
@@ -639,12 +639,8 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
         body: "Capture birthday parties, weddings, corporate events, quinceañeras, anniversaries, and other private events through a public booking form. Leads go directly to your dashboard.",
       },
       {
-        title: "Multi-room and event space support",
-        body: "Manage multiple rooms or event spaces within your venue. Each room can have its own capacity, room fee, and minimum spend.",
-      },
-      {
         title: "Detailed proposals",
-        body: "Build proposals with room fees, food and beverage packages, catering options, add-ons, and total pricing. Customers accept online.",
+        body: "Build proposals with a room fee, a food and beverage minimum, and the deposit - customers see the estimated total and accept online.",
       },
       {
         title: "Contract signing",
@@ -656,7 +652,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
       },
       {
         title: "BEO for every event",
-        body: "Generate a complete Banquet Event Order from the event record — food, beverage, setup, timeline, staffing — and give it to your kitchen and event staff.",
+        body: "Start a Banquet Event Order from the event record, fill in food, beverage, setup, timeline, and staffing, and print it for your kitchen and event staff.",
       },
     ],
     useCases: [
@@ -673,7 +669,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
       },
       {
         q: "Can I manage multiple event spaces or rooms?",
-        a: "Multi-room support is included in the Growth plan. The free and Pro plans support single-room setups.",
+        a: "Not as separate spaces today - VenueSprocket doesn't have room-by-room calendars or capacity settings. Many venues name the room in the event details and BEO, and set a room fee and minimum spend on each proposal.",
       },
       {
         q: "How does VenueSprocket compare to event software designed for large venues?",

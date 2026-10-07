@@ -8,6 +8,7 @@ export const metadata: Metadata = {
     "A BEO and an event contract are not the same document and one cannot replace the other. Here's what each one actually does, who signs what, and when each one applies.",
   alternates: { canonical: "https://venuesprocket.com/guides/beo-vs-contract" },
   openGraph: {
+    siteName: "VenueSprocket",
     title: "BEO vs. Event Contract: What's the Difference?",
     description:
       "What a BEO does, what a contract does, and why a BEO can't replace a signed event contract.",

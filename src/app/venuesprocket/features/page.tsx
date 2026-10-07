@@ -35,7 +35,7 @@ const modules = [
       "Staff can move leads between stages",
       "Notes on each lead",
       "Lost lead tracking",
-      "Follow-up reminders",
+      "Reminder email to you when a lead sits untouched",
     ],
     body: "Every inquiry goes into a pipeline. Staff can see what stage every lead is in and move them forward. Nothing gets forgotten.",
   },
@@ -46,7 +46,7 @@ const modules = [
     href: "/guides/sample-proposal-and-contract",
     features: [
       "Build a proposal from your event record",
-      "Add packages, room fees, food minimums, and beverage options",
+      "Set a room fee, a food & beverage minimum, and the deposit",
       "Line-item pricing",
       "Set deposit amount and due date",
       "Send a secure public link to the customer",
@@ -80,7 +80,7 @@ const modules = [
       "Deposit amount set on the proposal",
       "Payment status visible in dashboard",
       "Paid/unpaid labels",
-      "Stripe confirmation email to customer",
+      "Deposit receipt email to customer",
     ],
     body: "After signing, the customer pays their deposit through Stripe. No invoices, no checks, no chasing. You see the money, the lead moves to Booked.",
   },
@@ -96,9 +96,9 @@ const modules = [
       "Allergies and special requests",
       "Internal notes (staff-only)",
       "Print-ready and printable version",
-      "Mobile-friendly day-of-event staff view",
+      "Mobile-friendly, print-ready BEO view for event day",
     ],
-    body: "The BEO starts from the same event record used for the inquiry and proposal, so the basics are already filled in. Staff see everything they need on their phone on event day.",
+    body: "The BEO starts from the same event record used for the inquiry and proposal, so the basics are already filled in. Pull it up on a phone or print it for the kitchen on event day.",
   },
   {
     id: "crm",
@@ -122,7 +122,7 @@ const modules = [
       "Birthday parties, corporate events, holiday parties, rehearsal dinners, and more",
       "Share it on your website, socials, or Google Business Profile",
       "Every submission feeds straight into your pipeline",
-      "Automated follow-up for new inquiries",
+      "Reminder to you if an inquiry goes unanswered",
     ],
     body: "Every venue gets a public inquiry page covering the event types you host. Share it anywhere - leads come to you.",
   },
@@ -157,7 +157,7 @@ export default function VsFeaturesPage() {
           </h1>
           <p className="vs-page-sub mx-auto text-center max-w-2xl">
             One connected workflow: inquiry form, pipeline, proposal, contract, deposit, BEO,
-            and customer CRM. Pair it with LeaguePour, our separate companion product for
+            and customer directory. Pair it with LeaguePour, our separate companion product for
             recurring public events.
           </p>
         </div>

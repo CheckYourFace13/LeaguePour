@@ -8,6 +8,7 @@ export const metadata: Metadata = {
     "The fields every private event inquiry form needs, a filled-out example, required vs. optional fields, and what to do in the first hour after a lead comes in.",
   alternates: { canonical: "https://venuesprocket.com/guides/private-event-inquiry-form-template" },
   openGraph: {
+    siteName: "VenueSprocket",
     title: "Private Event Inquiry Form Template",
     description:
       "A copyable inquiry form template with an example submission and a first-response checklist.",

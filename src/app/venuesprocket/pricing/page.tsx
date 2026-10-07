@@ -6,7 +6,7 @@ import { PlanSelectLink } from "@/components/analytics/plan-select-link";
 export const metadata: Metadata = {
   title: { absolute: "Pricing | VenueSprocket" },
   description:
-    "VenueSprocket pricing: start free with an inquiry form. Upgrade to Pro for contracts, deposits, BEOs, and customer CRM. Affordable plans for restaurants, bars, and breweries.",
+    "VenueSprocket pricing: start free with an inquiry form. Upgrade to Pro for contracts, deposits, BEOs, and a customer directory. Affordable plans for restaurants, bars, and breweries.",
   alternates: { canonical: "https://venuesprocket.com/pricing" },
 };
 
@@ -23,7 +23,7 @@ const plans = [
       "Public inquiry form for your venue",
       "Up to 10 leads/month",
       "Basic lead dashboard",
-      "Event calendar view",
+      "Upcoming events list",
       "Simple customer records",
       "Email notifications",
     ],
@@ -41,8 +41,6 @@ const plans = [
       "Everything in Free",
       "Unlimited inquiries",
       "Lead pipeline",
-      "Public event booking page",
-      "Basic email follow-up templates",
       "Basic proposal builder",
       "Customer records",
     ],
@@ -59,14 +57,14 @@ const plans = [
     badge: "Most Popular",
     features: [
       "Everything in Starter",
-      "Proposal builder with line items",
+      "Proposals with room fee, F&B minimum, and deposit",
       "Online contract with typed e-signature",
       "Stripe deposit collection",
       "BEO builder with print-ready view",
       "Customer directory",
       "Untouched-lead follow-up reminders",
-      "Mobile BEO day-of view",
-      "Payment tracking",
+      "Mobile-friendly BEO view",
+      "Deposit status tracking",
     ],
   },
   {

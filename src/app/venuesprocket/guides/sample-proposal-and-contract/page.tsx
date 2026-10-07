@@ -8,6 +8,7 @@ export const metadata: Metadata = {
     "See what a VenueSprocket proposal and e-signature contract actually look like, with a sample event and made-up customer - no login required.",
   alternates: { canonical: "https://venuesprocket.com/guides/sample-proposal-and-contract" },
   openGraph: {
+    siteName: "VenueSprocket",
     title: "Sample Event Proposal & Contract | VenueSprocket",
     description: "A sample proposal and contract preview - made-up event, made-up customer.",
     url: "https://venuesprocket.com/guides/sample-proposal-and-contract",
@@ -39,11 +40,14 @@ const jsonLd = {
   ],
 };
 
+// Mirrors what a real VenueSprocket proposal shows (src/app/proposal/[token]/page.tsx): a room
+// fee, a food & beverage minimum, the estimated total, and the deposit. There's no menu/package
+// line-item entry in the product today, so the sample doesn't show one.
 const lineItems = [
-  { label: "Taproom back patio rental (4 hours)", amount: "$300.00" },
-  { label: "Taco bar package (45 guests × $28)", amount: "$1,260.00" },
-  { label: "Open bar, beer/wine/well (4-hour limit)", amount: "$540.00" },
-  { label: "Deposit due today", amount: "$400.00", highlight: true },
+  { label: "Room fee (back patio, 4 hours)", amount: "$300.00" },
+  { label: "Food & beverage minimum", amount: "$1,800.00" },
+  { label: "Estimated total", amount: "$2,100.00" },
+  { label: "Deposit to reserve date", amount: "$400.00", highlight: true },
 ];
 
 export default function SampleProposalContractGuide() {

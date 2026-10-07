@@ -7,6 +7,7 @@ export const metadata: Metadata = {
     "VenueSprocket helps restaurants, breweries, bars, taprooms, banquet rooms, and event spaces book and run private events — inquiry capture, proposals, e-signature contracts, Stripe deposits, and BEOs in one simple, self-serve platform.",
   alternates: { canonical: "https://venuesprocket.com/about" },
   openGraph: {
+    siteName: "VenueSprocket",
     title: "About VenueSprocket",
     description:
       "Simple, self-serve private-event management for independent restaurants, breweries, bars, taprooms, banquet rooms, and event spaces — inquiry to BEO in one platform.",
@@ -99,8 +100,10 @@ export default function VsAboutPage() {
             <Link href="/leaguepour" className="font-semibold text-vs-accent hover:underline">
               LeaguePour
             </Link>{" "}
-            is the companion product for venues that also want to run recurring public events —
-            dart leagues, trivia nights, cornhole tournaments — on the same account.
+            is our separate companion product, with its own subscription, for venues that also
+            run recurring public events — dart leagues, trivia nights, cornhole tournaments. It
+            uses the same venue login, and an active subscriber to either product gets 50% off
+            the other.
           </p>
         </div>
 

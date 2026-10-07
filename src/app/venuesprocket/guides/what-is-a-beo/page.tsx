@@ -8,6 +8,7 @@ export const metadata: Metadata = {
     "A BEO (Banquet Event Order) is the internal document that tells your staff how to run a private event. Here's what it is, what it includes, and how it differs from an inquiry, proposal, or contract.",
   alternates: { canonical: "https://venuesprocket.com/guides/what-is-a-beo" },
   openGraph: {
+    siteName: "VenueSprocket",
     title: "What Is a BEO? Banquet Event Order Explained",
     description:
       "What a BEO is, what it includes, and where it fits in the private event booking process.",

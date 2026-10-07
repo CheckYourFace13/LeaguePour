@@ -21,6 +21,7 @@ export async function generateMetadata({
     description: `How VenueSprocket compares to ${data.competitorName} for private event booking, BEOs, contracts, and deposits. Built for restaurants, bars, breweries, and taprooms.`,
     alternates: { canonical: `https://venuesprocket.com/compare/${slug}` },
     openGraph: {
+    siteName: "VenueSprocket",
       title: `VenueSprocket vs ${data.competitorName}`,
       description: data.summary,
       url: `https://venuesprocket.com/compare/${slug}`,
@@ -180,22 +181,21 @@ export default async function VsComparePage({
 
           {/* LeaguePour advantage */}
           <div className="mb-16 rounded-2xl border border-vs-border-strong bg-vs-surface-2 p-8">
-            <p className="vs-kicker mb-2">Unique to VenueSprocket</p>
+            <p className="vs-kicker mb-2">Companion product</p>
             <h2 className="font-display text-2xl font-bold text-vs-text mb-3">
-              LeaguePour for public events
+              Also run leagues or game nights? See LeaguePour
             </h2>
             <p className="text-vs-text-soft leading-relaxed mb-4">
-              VenueSprocket pairs with LeaguePour — a separate companion product for running dart
-              leagues, cornhole tournaments, trivia nights, pool leagues, and bar game
-              competitions, at 50% off for active VenueSprocket subscribers. Private events bring
-              bigger single bookings. LeaguePour brings repeat weekly traffic. Together, they help
-              venues make more money from the same space.
+              LeaguePour is a separate product, with its own subscription, for running dart
+              leagues, cornhole tournaments, trivia nights, pool leagues, and other recurring bar
+              competitions. It isn&apos;t part of any VenueSprocket plan - but an active subscriber to
+              either product gets 50% off the other.
             </p>
             <Link
               href="/leaguepour"
               className="text-sm font-semibold text-vs-accent hover:underline"
             >
-              Learn about LeaguePour by VenueSprocket →
+              How LeaguePour works with VenueSprocket →
             </Link>
           </div>
 
