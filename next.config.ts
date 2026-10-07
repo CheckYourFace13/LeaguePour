@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // www → apex for both brands. Without these, www.venuesprocket.com matched neither host
+      // www → apex for VenueSprocket. Without this, www.venuesprocket.com matched neither host
       // condition below or in vs-routing.ts, so it rendered the full LeaguePour homepage (LP title,
       // canonical, and nav) at a VenueSprocket URL. redirects() runs before middleware and covers
       // every path, including the static .txt/.xml files middleware's matcher skips.
@@ -28,12 +28,10 @@ const nextConfig: NextConfig = {
         permanent: true,
         has: [{ type: "host", value: `www.${VS_HOST}` }],
       },
-      {
-        source: "/:path*",
-        destination: `https://${LP_HOST}/:path*`,
-        permanent: true,
-        has: [{ type: "host", value: `www.${LP_HOST}` }],
-      },
+      // No www -> apex rule for leaguepour.com: in production Next treats leaguepour.com as its
+      // own origin and rewrites a redirect *to* it into a relative "Location: /", which on the www
+      // host loops forever (www.leaguepour.com hung/503'd in production, Oct 7 2026). www LP
+      // already serves LeaguePour content with an apex canonical, so it doesn't need one.
       // /register is a common guess for the signup URL; neither brand has a page there. VS-scoped
       // so it lands on VenueSprocket's own signup instead of falling through middleware's host gate
       // to leaguepour.com/register (a 404 on the wrong brand).
