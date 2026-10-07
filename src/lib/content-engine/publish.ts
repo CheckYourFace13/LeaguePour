@@ -4,6 +4,7 @@ import { BRANDS } from "./brand-config";
 import { runQualityChecks } from "./quality-gate";
 import { buildOutline, classifySearchIntent, nextTopic } from "./topics";
 import type { Brand } from "./types";
+import { AUTHORED_BODIES } from "./authored";
 
 export const KILL_SWITCH_KEY = "content-engine-enabled";
 
@@ -67,6 +68,47 @@ async function allKnownTitles(brand: Brand): Promise<string[]> {
 }
 
 /**
+ * Copies repo-authored bodies (see authored/index.ts) into their matching queued NEEDS_CONTENT
+ * rows. This is how "someone writes the body" works without direct database access: the body is
+ * written and reviewed in the repo, and the next engine run picks it up. While a row is still
+ * unpublished the repo copy stays the source of truth, so a body that failed a check can be fixed
+ * by editing the file. Never touches PUBLISHED rows, and never publishes anything itself - Phase A
+ * below still runs every check and enforces the weekly cap.
+ */
+async function syncAuthoredBodies(brand: Brand): Promise<void> {
+  const authored = AUTHORED_BODIES[brand];
+  const keys = Object.keys(authored);
+  if (keys.length === 0) return;
+  const rows = await prisma.guide.findMany({
+    where: { brand, status: "NEEDS_CONTENT", topicKey: { in: keys } },
+    select: { id: true, topicKey: true, bodyHtml: true },
+  });
+  for (const row of rows) {
+    const a = authored[row.topicKey];
+    if (!a || row.bodyHtml === a.bodyHtml) continue;
+    await prisma.guide.update({
+      where: { id: row.id },
+      data: { bodyHtml: a.bodyHtml, description: a.description, faq: a.faq ?? undefined, rejectReason: null },
+    });
+  }
+}
+
+/** Dry-run counterpart of syncAuthoredBodies(): the oldest queued row that has an authored body,
+ * with that body overlaid in memory. Nothing is written. */
+async function authoredReadyRow(brand: Brand) {
+  const authored = AUTHORED_BODIES[brand];
+  const keys = Object.keys(authored);
+  if (keys.length === 0) return null;
+  const row = await prisma.guide.findFirst({
+    where: { brand, status: "NEEDS_CONTENT", topicKey: { in: keys } },
+    orderBy: { createdAt: "asc" },
+  });
+  if (!row) return null;
+  const a = authored[row.topicKey];
+  return { ...row, bodyHtml: a.bodyHtml, description: a.description, faq: a.faq ?? null };
+}
+
+/**
  * Runs one content-engine step for `brand`: checks the kill switch, then does at most one of two
  * things per call (never both, and never more than one article's worth of action) -
  *
@@ -88,11 +130,17 @@ export async function runContentEngine(brand: Brand, opts: { dryRun?: boolean } 
 
   const config = BRANDS[brand];
 
+  // Repo-authored bodies (authored/*.ts) fill their queued rows before Phase A looks for one.
+  // Dry runs don't persist this, so they overlay the authored body in memory instead.
+  const authoredOverlay = opts.dryRun ? await authoredReadyRow(brand) : (await syncAuthoredBodies(brand), null);
+
   // Phase A: a written-but-unpublished body is waiting - try to publish it.
-  const ready = await prisma.guide.findFirst({
-    where: { brand, status: "NEEDS_CONTENT", bodyHtml: { not: null } },
-    orderBy: { createdAt: "asc" },
-  });
+  const ready =
+    authoredOverlay ??
+    (await prisma.guide.findFirst({
+      where: { brand, status: "NEEDS_CONTENT", bodyHtml: { not: null } },
+      orderBy: { createdAt: "asc" },
+    }));
 
   if (ready && ready.bodyHtml && ready.bodyHtml.trim().length > 0) {
     if (!opts.dryRun) {

@@ -11,7 +11,7 @@ import type { Brand, Outline, SearchIntent, TopicCandidate } from "./types";
  * existing hand-written guide is skipped even if it slipped in here. Array order is the base
  * priority order - see `scoreForCategory()`.
  */
-const BACKLOG: Record<Brand, TopicCandidate[]> = {
+export const BACKLOG: Record<Brand, TopicCandidate[]> = {
   VS: [
     {
       topicKey: "vs-deposit-policy",

@@ -70,6 +70,9 @@ export const BRANDS: Record<Brand, BrandConfig> = {
     ],
     staticKnownPaths: [
       "/", "/guides", "/pricing", "/start", "/features", "/about", "/contact", "/leaguepour",
+      "/faq", "/demo", "/compare", "/templates", "/tools",
+      "/tools/food-beverage-minimum-calculator", "/tools/event-deposit-calculator",
+      "/event-contract-software", "/event-deposit-software", "/beo-software", "/private-event-booking-software",
       "/guides/what-is-a-beo", "/guides/beo-template", "/guides/beo-vs-contract",
       "/guides/private-event-inquiry-form-template", "/guides/sample-proposal-and-contract",
     ],
