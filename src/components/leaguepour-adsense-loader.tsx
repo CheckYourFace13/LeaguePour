@@ -6,23 +6,14 @@ import { usePathname } from "next/navigation";
 const VS_HOST = "venuesprocket.com";
 const ADSENSE_CLIENT_ID = "ca-pub-9572509189594279";
 
-// Only these path prefixes are substantial, original editorial content - the guides hub/articles
-// and the per-game software landing pages. Everything else (home, pricing, demo, signup, login,
+// Only these path prefixes are substantial, original editorial content - the guides hub and
+// articles, the game history pages, and the rules hub. The per-game software landing pages were
+// removed in the October 2026 review: they're product/conversion pages with signup CTAs, not
+// editorial. Everything else (home, pricing, demo, signup, login,
 // the authenticated venue/player dashboards, checkout/payment flows) stays ad-free: AdSense's own
 // policies (and this site's "Needs attention: Low value content" flag) treat ads next to thin
 // utility screens or right on top of a conversion flow as a quality problem, not just a UX one.
-const LP_AD_ELIGIBLE_PREFIXES = [
-  "/guides",
-  "/dart-league-software",
-  "/cornhole-tournament-software",
-  "/bar-trivia-software",
-  "/pool-league-management",
-  "/shuffleboard-league-software",
-  "/poker-tournament-software",
-  "/music-bingo-software",
-  "/euchre-tournament-software",
-  "/bar-league-standings",
-];
+const LP_AD_ELIGIBLE_PREFIXES = ["/guides", "/history", "/rules"];
 
 // VS's own guides hub + articles are the only substantial, original editorial content on that
 // brand - the ~10 vertical/keyword landing pages (private-event-booking-software etc.) are
