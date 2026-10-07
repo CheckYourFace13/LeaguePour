@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { vsBrandMetadata } from "@/lib/vs-metadata";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { acceptProposal, markProposalViewed } from "@/lib/actions/vs";
@@ -10,6 +11,7 @@ import { acceptProposal, markProposalViewed } from "@/lib/actions/vs";
 // "LeaguePour | Venue Competitions & Entry Fees" for a customer reviewing a VenueSprocket
 // proposal, even though the page content itself was already correctly VS-branded.
 export const metadata: Metadata = {
+  ...vsBrandMetadata,
   title: { absolute: "Your event proposal | VenueSprocket" },
   robots: { index: false, follow: false },
 };

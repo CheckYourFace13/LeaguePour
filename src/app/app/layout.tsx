@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { vsBrandMetadata } from "@/lib/vs-metadata";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
@@ -5,7 +7,8 @@ import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import { VsAppShell } from "@/components/venuesprocket/vs-app-shell";
 
 export const dynamic = "force-dynamic";
-export const metadata = {
+export const metadata: Metadata = {
+  ...vsBrandMetadata,
   // Absolute, not a plain string: without this every /app/* page (this whole VS dashboard)
   // inherited the root layout's default title verbatim ("LeaguePour | Venue Competitions & Entry
   // Fees") since none of these pages set their own - found via whole-business audit, live on

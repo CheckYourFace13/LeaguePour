@@ -18,6 +18,27 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // www → apex for both brands. Without these, www.venuesprocket.com matched neither host
+      // condition below or in vs-routing.ts, so it rendered the full LeaguePour homepage (LP title,
+      // canonical, and nav) at a VenueSprocket URL. redirects() runs before middleware and covers
+      // every path, including the static .txt/.xml files middleware's matcher skips.
+      {
+        source: "/:path*",
+        destination: `https://${VS_HOST}/:path*`,
+        permanent: true,
+        has: [{ type: "host", value: `www.${VS_HOST}` }],
+      },
+      {
+        source: "/:path*",
+        destination: `https://${LP_HOST}/:path*`,
+        permanent: true,
+        has: [{ type: "host", value: `www.${LP_HOST}` }],
+      },
+      // /register is a common guess for the signup URL; neither brand has a page there. VS-scoped
+      // so it lands on VenueSprocket's own signup instead of falling through middleware's host gate
+      // to leaguepour.com/register (a 404 on the wrong brand).
+      { source: "/register", destination: "/signup", permanent: true, has: [{ type: "host", value: VS_HOST }] },
+      { source: "/register", destination: "/signup", permanent: true, has: [{ type: "host", value: LP_HOST }] },
       // Both brands already have a real content hub at /guides - no separate blog exists, so
       // /blog should land there instead of 404ing for anyone expecting content. Path-based (no
       // host condition needed): each host's own /guides already resolves to that host's own
@@ -42,12 +63,12 @@ const nextConfig: NextConfig = {
         permanent: true,
         has: [{ type: "host", value: VS_HOST }],
       },
-      // September 26 review: venuesprocket.com's Hostinger CDN edge redirects ANY path our app
-      // doesn't itself match to the same path on leaguepour.com (a pre-existing host-level
-      // catch-all, outside this codebase) - so unmapped alias URLs like /privacy-policy silently
-      // land on the wrong brand instead of 404ing on VS. Matching them here in our own
-      // redirects() makes the app claim the path first, so the request never reaches that
-      // catch-all. VS-scoped only - do not add an LP-side mirror, these aliases aren't a gap on LP.
+      // Any venuesprocket.com path that isn't in vs-routing.ts (or a shared/exempt prefix) is
+      // 301'd to the same path on leaguepour.com by middleware.ts's host gate - this app's own
+      // behavior, not a Hostinger rule (an earlier comment here blamed the CDN; the redirect
+      // carries no x-powered-by because middleware responses don't). So unmapped alias URLs like
+      // /privacy-policy would land on the wrong brand. Matching them here makes redirects() claim
+      // the path first. VS-scoped only - these aliases aren't a gap on LP.
       {
         source: "/privacy-policy",
         destination: "/legal/privacy",

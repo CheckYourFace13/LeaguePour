@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { vsBrandMetadata } from "@/lib/vs-metadata";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { DepositCheckoutForm } from "./deposit-checkout-form";
@@ -7,6 +8,7 @@ export const dynamic = "force-dynamic";
 // Token-gated customer payment page - never indexable, regardless of who links to it. See
 // src/app/proposal/[token]/page.tsx for why title needs to be {absolute:...} here too.
 export const metadata: Metadata = {
+  ...vsBrandMetadata,
   title: { absolute: "Pay your deposit | VenueSprocket" },
   robots: { index: false, follow: false },
 };

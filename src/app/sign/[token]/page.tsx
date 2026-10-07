@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { vsBrandMetadata } from "@/lib/vs-metadata";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import SignContractForm from "./sign-form";
@@ -6,6 +7,7 @@ import SignContractForm from "./sign-form";
 // Token-gated contract-signing page - never indexable, regardless of who links to it. See
 // src/app/proposal/[token]/page.tsx for why title needs to be {absolute:...} here too.
 export const metadata: Metadata = {
+  ...vsBrandMetadata,
   title: { absolute: "Sign your contract | VenueSprocket" },
   robots: { index: false, follow: false },
 };

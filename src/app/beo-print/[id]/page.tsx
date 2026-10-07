@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { vsBrandMetadata } from "@/lib/vs-metadata";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
@@ -19,6 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     select: { privateEvent: { select: { eventName: true } } },
   });
   return {
+    ...vsBrandMetadata,
     title: { absolute: beo ? `BEO — ${beo.privateEvent.eventName}` : "BEO" },
     robots: { index: false, follow: false },
   };

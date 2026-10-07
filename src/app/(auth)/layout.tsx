@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { VS_HOST } from "@/lib/vs-routing";
+import { vsBrandMetadata } from "@/lib/vs-metadata";
 
 export async function generateMetadata(): Promise<Metadata> {
   // /signup/venue, /forgot-password, and /reset-password are all plain client components with
@@ -13,8 +14,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const host = (await headers()).get("host")?.split(":")[0]?.toLowerCase();
   const isVs = host === VS_HOST;
   return {
+    // On VS, override the root layout's LeaguePour applicationName/keywords/OG (vs-metadata.ts).
+    ...(isVs ? vsBrandMetadata : {}),
     title: { absolute: isVs ? "VenueSprocket" : "LeaguePour" },
     robots: { index: false, follow: false },
+    // Clear the root layout's "/" canonical (it pointed every login/signup/reset page at the
+    // leaguepour.com homepage, on both brands). These pages are noindex - no canonical needed.
+    alternates: null,
   };
 }
 

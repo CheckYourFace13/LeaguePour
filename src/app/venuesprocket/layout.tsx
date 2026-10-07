@@ -3,9 +3,12 @@ import { VsHeader } from "@/components/venuesprocket/vs-header";
 import { VsFooter } from "@/components/venuesprocket/vs-footer";
 import { VsSiteJsonLd } from "@/components/venuesprocket/vs-site-json-ld";
 import { VenueSprocketGoogleTags } from "@/components/venuesprocket/vs-google-tags";
+import { vsBrandMetadata } from "@/lib/vs-metadata";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://venuesprocket.com"),
+  // applicationName, keywords, and a cleared canonical - see vs-metadata.ts for why every VS
+  // route needs these set explicitly.
+  ...vsBrandMetadata,
   title: {
     default: "VenueSprocket — Private Event Booking & Venue Management Software",
     template: "%s | VenueSprocket",

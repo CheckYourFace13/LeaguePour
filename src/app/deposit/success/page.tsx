@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { vsBrandMetadata } from "@/lib/vs-metadata";
 import { getStripe } from "@/lib/stripe/server";
 import { prisma } from "@/lib/db";
 import { VsEventStatus } from "@/generated/prisma/enums";
@@ -8,6 +9,7 @@ export const dynamic = "force-dynamic";
 // Token-gated customer payment page - never indexable, regardless of who links to it. See
 // src/app/proposal/[token]/page.tsx for why title needs to be {absolute:...} here too.
 export const metadata: Metadata = {
+  ...vsBrandMetadata,
   title: { absolute: "Deposit received | VenueSprocket" },
   robots: { index: false, follow: false },
 };

@@ -34,6 +34,18 @@ const exactRules: VsPathRule[] = [
   { source: "/banquet-hall-software", destination: "/venuesprocket/banquet-hall-software" },
   { source: "/guides", destination: "/venuesprocket/guides" },
   { source: "/contact", destination: "/venuesprocket/contact" },
+  { source: "/faq", destination: "/venuesprocket/faq" },
+  { source: "/demo", destination: "/venuesprocket/demo" },
+  { source: "/compare", destination: "/venuesprocket/compare" },
+  { source: "/templates", destination: "/venuesprocket/templates" },
+  { source: "/tools", destination: "/venuesprocket/tools" },
+  { source: "/tools/food-beverage-minimum-calculator", destination: "/venuesprocket/tools/food-beverage-minimum-calculator" },
+  { source: "/tools/event-deposit-calculator", destination: "/venuesprocket/tools/event-deposit-calculator" },
+  { source: "/llms.txt", destination: "/venuesprocket/llms.txt" },
+  // The root app/manifest.ts file convention emits <link rel="manifest" href="/manifest.webmanifest">
+  // on every page, which takes precedence over venuesprocket/layout.tsx's own metadata.manifest -
+  // so on the VS host that URL itself has to serve the VenueSprocket manifest.
+  { source: "/manifest.webmanifest", destination: "/venuesprocket/manifest.webmanifest" },
   { source: "/legal/terms", destination: "/venuesprocket/legal/terms" },
   { source: "/legal/privacy", destination: "/venuesprocket/legal/privacy" },
   { source: "/sitemap.xml", destination: "/venuesprocket/sitemap.xml" },
