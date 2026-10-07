@@ -28,7 +28,7 @@ const steps = [
   },
   {
     title: "Run it",
-    body: "Check-in, brackets, standings, manual scores when you need them.",
+    body: "Registration list, brackets, standings, and manual scores when you need them.",
   },
   {
     title: "Fill the next one",

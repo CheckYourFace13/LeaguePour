@@ -5,7 +5,7 @@ export const VENUE_WHY_ITEMS = [
   "Paid signups through Stripe - entry fees go to your venue account",
   "Public venue hub and mobile-friendly competition pages",
   "QR codes for tables, windows, and social posts",
-  "Waitlists, team formats, and automatic bracket/schedule generation for single elimination and round robin",
+  "Participant caps, team formats, and automatic bracket/schedule generation for single elimination and round robin",
   "Email campaigns to bring past players back",
   "Local SEO pages so players can find your bar",
 ];

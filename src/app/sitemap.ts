@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
+import { isPlaceholderCompetition } from "@/lib/seo/is-placeholder-competition";
 import { getManagedFeed } from "@/lib/gravyblock-managed";
 import { prisma } from "@/lib/db";
 import { getAllCompareSlugs } from "@/lib/seo/compare-pages";
 import { getSitemapCityGamePaths, getSitemapCityOnlyPaths } from "@/lib/seo/discovery-data";
-import { getAllFindSlugs } from "@/lib/seo/render-find-page";
+import { getIndexableFindPaths } from "@/lib/seo/render-find-page";
 import { getAllSoftwareSlugs } from "@/lib/seo/render-software-page";
 import { getAllOutreachCitySlugs } from "@/lib/seo/outreach-city-slugs";
 import { getPublicSiteUrl } from "@/lib/site-url";
@@ -23,7 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const citySlugs = getAllOutreachCitySlugs();
 
   let venues: { slug: string; updatedAt: Date }[] = [];
-  let competitions: { slug: string; updatedAt: Date; venue: { slug: string } }[] = [];
+  let competitions: { slug: string; title: string; updatedAt: Date; venue: { slug: string } }[] = [];
   let cityGamePaths: string[] = [];
   let cityDiscoveryPaths: string[] = [];
 
@@ -41,9 +42,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           status: { in: ["SIGNUP_OPEN", "PUBLISHED", "IN_PROGRESS"] },
           venue: { isDisabled: false },
         },
-        select: { slug: true, updatedAt: true, venue: { select: { slug: true } } },
+        select: { slug: true, title: true, updatedAt: true, venue: { select: { slug: true } } },
         take: 5000,
-      }),
+      }).then((rows) => rows.filter((c) => !isPlaceholderCompetition(c))),
       getSitemapCityGamePaths(["bar-leagues", "events", "bars"]),
       getSitemapCityOnlyPaths([...discoveryPrefixes], citySlugs),
     ]);
@@ -53,6 +54,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     cityGamePaths = [];
     cityDiscoveryPaths = [];
   }
+
+  const findPaths = await getIndexableFindPaths().catch(() => [] as string[]);
 
   const staticPages: MetadataRoute.Sitemap = [
     "",
@@ -77,7 +80,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/euchre-tournament-software",
     ...getAllSoftwareSlugs().map((s) => `/software/${s}`),
     ...getAllCompareSlugs().map((s) => `/compare/${s}`),
-    ...getAllFindSlugs().map((s) => `/find/${s}`),
+    // Only /find pages with at least one real listing - empty ones are noindex (render-find-page.tsx).
+    ...findPaths,
     "/guides",
     "/guides/how-to-run-a-dart-league-at-your-bar",
     "/guides/cornhole-tournament-ideas-for-bars",

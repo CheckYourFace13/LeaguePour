@@ -87,7 +87,7 @@ const features = [
   { title: "Standings & scoring", body: "Update scores after each round. Standings refresh automatically and display on your public page." },
   { title: "Bracket management", body: "Single elimination or round-robin - set it once when you create the league, and LeaguePour builds the bracket or schedule automatically." },
   { title: "Email alerts", body: "Notify registered players about schedule changes, results, and the next league night." },
-  { title: "Waitlists", body: "Cap the league at your table count. Overflow goes to a waitlist and gets notified when spots open." },
+  { title: "League caps", body: "Cap the league at your board count - signup closes automatically when it's full." },
 ];
 
 export default function DartLeagueSoftwarePage() {
@@ -132,7 +132,7 @@ export default function DartLeagueSoftwarePage() {
               { n: 1, title: "Create your dart league", body: "Pick darts as your format, set team size, entry fee, max teams, and signup deadline." },
               { n: 2, title: "Share the signup link", body: "Post it on social, your bar TV, or print a QR code. Players register and pay online before league night." },
               { n: 3, title: "Run the league", body: "Check in teams, enter scores each round, and let standings auto-update for all to see." },
-              { n: 4, title: "Fill the next season", body: "Email or text registered players about the next league - one click to re-open signup." },
+              { n: 4, title: "Fill the next season", body: "Email your opted-in players about the next league, and duplicate this one to re-open signup without rebuilding it." },
             ].map((s) => (
               <li key={s.n} className="flex gap-4">
                 <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-lp-accent/20 text-sm font-bold text-lp-accent">{s.n}</span>
@@ -143,6 +143,26 @@ export default function DartLeagueSoftwarePage() {
               </li>
             ))}
           </ol>
+        </div>
+
+        {/* Conservative, sourced only from DartConnect's own public site (Oct 2026) - no pricing or
+            feature claims we couldn't verify. Update or remove if their offering changes. */}
+        <div className="mt-20 rounded-2xl border border-lp-border bg-lp-surface p-7">
+          <h2 className="font-display text-2xl font-bold">LeaguePour or DartConnect?</h2>
+          <p className="mt-3 text-lp-muted leading-relaxed">
+            They solve different problems. DartConnect is a darts-specific platform built around
+            electronic scoring - it describes itself as the official scoring app of the Professional
+            Darts Corporation - with league and tournament software and detailed player stats. If your
+            league wants throw-by-throw scoring on a tablet and player averages, that&apos;s what
+            DartConnect is built for. LeaguePour doesn&apos;t do per-dart scoring.
+          </p>
+          <p className="mt-3 text-lp-muted leading-relaxed">
+            LeaguePour is built for the venue side of a bar league: a public signup page and QR code,
+            Stripe entry fees paid to your own bank account, team caps, automatic round robin or single
+            elimination schedules, match-level scores and standings, and email to your opted-in
+            players - across darts, cornhole, trivia, pool, and your other game nights. Some venues use
+            both. Check DartConnect&apos;s site for its current plans and pricing.
+          </p>
         </div>
 
         <div className="mt-20">

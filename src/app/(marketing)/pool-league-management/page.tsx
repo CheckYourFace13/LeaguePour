@@ -58,7 +58,7 @@ const features = [
   { title: "Season scheduling", body: "Set match schedules for weekly or bi-weekly league nights. Players see their schedule on your public page." },
   { title: "Standings & stats", body: "Track wins, losses, and standings throughout the season. Updated automatically after you enter results." },
   { title: "Player messaging", body: "Email your league players about schedule changes, standings updates, and playoff announcements." },
-  { title: "Playoff brackets", body: "End-of-season bracket playoffs - auto-seeded from regular season standings." },
+  { title: "Playoff brackets", body: "End-of-season single elimination playoffs. Brackets seed in signup order today, so enter your qualifiers in standings order (automatic seeding from standings is on the roadmap)." },
 ];
 
 export default function PoolLeagueManagementPage() {

@@ -87,7 +87,7 @@ const jsonLd = {
           name: "How is LeaguePour different from generic tournament software?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Generic tournament apps focus on brackets and seeding. LeaguePour is built for bars and breweries: paid signups to your Stripe account, venue hubs, waitlists, staff score entry, email campaigns to past players, and SEO-friendly event pages. Advanced bracket controls like bulk import and station queues are on the roadmap.",
+            text: "Generic tournament apps focus on brackets and seeding. LeaguePour is built for bars and breweries: paid signups to your Stripe account, venue hubs, participant caps, staff score entry, email campaigns to past players, and SEO-friendly event pages. Advanced bracket controls like bulk import and station queues are on the roadmap.",
           },
         },
       ],
@@ -114,7 +114,7 @@ const competitionTypes = [
   {
     title: "Pool & billiards",
     href: "/pool-league-management",
-    body: "League nights, season points, and playoff brackets seeded from regular-season results.",
+    body: "League nights with round robin standings across the season, then a playoff bracket you set up when it ends.",
   },
   {
     title: "Euchre & card nights",
@@ -141,7 +141,7 @@ const signupPayment = [
   "Solo, captain-led team, or full roster team registration",
   "Free events or paid entry fees collected through Stripe Checkout",
   "Entry fees deposit to your venue Stripe account - LeaguePour does not hold your funds",
-  "Participant caps with automatic waitlist when spots fill",
+  "Participant caps that close signup automatically when spots fill",
   "Downloadable QR codes for tables, windows, and social posts",
   "Payment records tied to registrations; refunds processed through Stripe when you issue them",
 ];
@@ -161,7 +161,7 @@ const featureCards: { title: string; body: string }[] = [
     body: "Live today: press Start Tournament and LeaguePour generates Round 1 automatically from your registrations (byes handled), then advances each round as scores come in until a champion is declared.",
   },
   {
-    title: "Double elimination tournaments",
+    title: "Double elimination (roadmap)",
     body: "Not yet available in the builder - pick Single elimination or Round robin for automatic generation today, or Custom to track a double-elim night manually. Full auto double-elim trees are on the roadmap.",
   },
   {
@@ -169,10 +169,10 @@ const featureCards: { title: string; body: string }[] = [
     body: "Live today: press Start Tournament and LeaguePour generates the full round-robin schedule automatically. Standings (wins, losses, ties, points) update automatically as scores are entered.",
   },
   {
-    title: "Pool play into playoffs",
-    body: "Planned: pool groups with advancement into elimination playoffs. Use season standings + manual playoffs until pool play ships.",
+    title: "Pool play into playoffs (planned)",
+    body: "Planned: pool groups with advancement into elimination playoffs. Until pool play ships, run round robin groups and set up the playoff bracket yourself.",
   },
-  { title: "Weekly recurring leagues", body: "Set recurring rules and signup windows so the same night runs week after week." },
+  { title: "Weekly leagues", body: "Show the schedule on the signup page (for example, \"Every Thursday, 8 weeks + finals\"), and duplicate the league to re-open signup for the next season." },
   { title: "Team-based signups", body: "Register full teams with caps sized to your boards, tables, or lanes." },
   { title: "Captain-managed teams", body: "One captain registers and invites partners - common for doubles and euchre." },
   { title: "Free events or paid entry fees", body: "Set entry to $0 for free nights or collect buy-ins before players arrive." },
@@ -180,14 +180,14 @@ const featureCards: { title: string; body: string }[] = [
   { title: "Mobile-friendly public event page", body: "Players register from any phone browser; no app install required." },
   { title: "Staff/admin score entry", body: "Venue staff enter match scores; bracket and standings views refresh from those rows." },
   {
-    title: "Participant self-reporting",
-    body: "Built to support player-submitted scores where you want lighter staff load - today, venues enter scores in the dashboard.",
+    title: "Participant self-reporting (roadmap)",
+    body: "Player-submitted scores are on the roadmap - today, venue staff enter scores in the dashboard.",
   },
   {
     title: "Station/table/board assignment",
     body: "Use match labels and your registration list to assign boards; dedicated auto-assignment is on the roadmap.",
   },
-  { title: "Check-in list", body: "Confirmed and waitlisted registrations in one place for door and table staff." },
+  { title: "Registration list", body: "Every confirmed and paid registration in one place - print it or pull it up to check people in at the door." },
   {
     title: "Printable bracket",
     body: "Bracket cards on the Standings page - screenshot or print from the browser for wall brackets.",
@@ -200,7 +200,7 @@ const featureCards: { title: string; body: string }[] = [
     title: "Custom registration questions",
     body: "Capture extra details in rules and waiver text today; structured custom fields are planned.",
   },
-  { title: "Waitlists", body: "When caps fill, additional signups land on the waitlist automatically." },
+  { title: "Participant caps", body: "Set a cap and signup closes automatically when it fills - no overselling your boards or tables." },
   {
     title: "Promo codes",
     body: "Platform promo codes are managed in admin today; checkout promo flows are expanding.",
@@ -254,7 +254,7 @@ const comparisonRows: {
   { feature: "Verified email requirement", generic: "Often", leaguepour: "Account email required" },
   { feature: "Blocklist / banned participant controls", generic: "Sometimes", leaguepour: "Roadmap" },
   { feature: "Custom registration fields", generic: true, leaguepour: "Planned" },
-  { feature: "Participant check-in", generic: "Limited", leaguepour: true },
+  { feature: "Registration list for door check-in", generic: "Limited", leaguepour: true },
   { feature: "Match station assignment", generic: "Sometimes", leaguepour: "Roadmap" },
   { feature: "Station queue display", generic: true, leaguepour: "Roadmap" },
   { feature: "Match times", generic: true, leaguepour: "Roadmap" },

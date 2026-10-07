@@ -86,8 +86,8 @@ const features = [
   { title: "Free or paid entry", body: "Run free trivia nights or collect buy-ins - set the entry fee to any amount, including $0." },
   { title: "Weekly recurring events", body: "Set up your Thursday trivia once. Reopen signup each week with one click." },
   { title: "Live standings", body: "Update scores between rounds. Standings display on your public page in real time." },
-  { title: "Repeat player marketing", body: "Email or text your regulars about next week's theme, prizes, or special nights." },
-  { title: "Waitlists", body: "When you're at capacity, overflow teams join a waitlist and get notified when spots open." },
+  { title: "Repeat player marketing", body: "Email your opted-in regulars about next week's theme, prizes, or special nights." },
+  { title: "Team caps", body: "Cap the night at your table count - signup closes automatically when you're full." },
 ];
 
 export default function BarTriviaSoftwarePage() {
@@ -132,7 +132,7 @@ export default function BarTriviaSoftwarePage() {
               { n: 1, title: "Create your trivia night", body: "Set your format (teams, solo), entry fee, table cap, and signup window. Name the night and add your rules." },
               { n: 2, title: "Players register before they arrive", body: "Share a link or QR. Teams sign up and pay online - no more walk-up chaos or overfilling the room." },
               { n: 3, title: "Run the night", body: "Check in teams, post scores after each round, and show a live leaderboard on your venue page." },
-              { n: 4, title: "Bring them back next week", body: "Email or text all registered players from last night with one message - announce next week's theme and open signup." },
+              { n: 4, title: "Bring them back next week", body: "Email your opted-in players with one message - announce next week's theme and open signup." },
             ].map((s) => (
               <li key={s.n} className="flex gap-4">
                 <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-lp-accent/20 text-sm font-bold text-lp-accent">{s.n}</span>

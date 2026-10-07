@@ -65,7 +65,7 @@ const jsonLd = {
           name: "Does LeaguePour support doubles cornhole teams?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes - pairs/doubles is the most common cornhole format. One player registers as captain and invites their partner, or both register independently and are paired at check-in.",
+            text: "Yes - pairs/doubles is the most common cornhole format. One player registers as captain and invites their partner, or players register solo and you pair them up on the night.",
           },
         },
       ],
@@ -76,8 +76,8 @@ const jsonLd = {
 const features = [
   { title: "Doubles & team signup", body: "Cornhole is a pairs game - captain-led team registration so partners sign up together." },
   { title: "Entry fee collection", body: "Collect buy-ins online before event night. Stripe deposits directly to your bar's bank." },
-  { title: "Bracket generation", body: "Single elimination or round-robin brackets - auto-seeded from registrations." },
-  { title: "Waitlists & caps", body: "Limit entries to your board count. Overflow goes to a waitlist automatically." },
+  { title: "Bracket generation", body: "Single elimination or round-robin brackets, generated automatically from registrations (seeded in signup order)." },
+  { title: "Team caps", body: "Limit entries to your board count - signup closes automatically when the bracket is full." },
   { title: "Public standings", body: "Live leaderboard on your venue's public page - players check the board from their seats." },
   { title: "Player messaging", body: "Announce schedule changes, results, and next tournament to opted-in players." },
 ];
@@ -144,7 +144,7 @@ export default function CornholeTournamentSoftwarePage() {
               { q: "Can I run both one-night tournaments and weekly leagues?", a: "Yes. Set a single event date for one-off tournaments, or configure weekly signup windows for ongoing cornhole leagues." },
               { q: "Does LeaguePour support doubles format?", a: "Yes - one player registers as captain and invites their partner. Both get confirmation emails and appear on the bracket." },
               { q: "How are entry fees handled?", a: "Players pay online via Stripe when they register. Funds go directly to your venue. No collecting cash on the night." },
-              { q: "Can I cap the number of teams?", a: "Yes. Set a max team count - additional registrations go to an automatic waitlist and get notified if spots open." },
+              { q: "Can I cap the number of teams?", a: "Yes. Set a max team count and signup closes automatically once it's reached." },
             ].map((f) => (
               <details key={f.q} className="rounded-xl border border-lp-border bg-lp-surface/40 px-5 py-4">
                 <summary className="cursor-pointer list-none font-semibold text-lp-text [&::-webkit-details-marker]:hidden">{f.q}</summary>

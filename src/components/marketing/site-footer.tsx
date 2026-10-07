@@ -53,17 +53,11 @@ export function SiteFooter() {
               League<span className="text-lp-accent">Pour</span>
             </p>
           </div>
-          <p className="mt-1 text-xs font-semibold uppercase tracking-widest text-lp-muted">
-            by{" "}
-            <a href="https://venuesprocket.com" className="hover:text-lp-accent transition-colors">
-              VenueSprocket
-            </a>
-          </p>
           <p className="mt-4 max-w-md text-[1.0625rem] leading-relaxed text-lp-text-soft">
             Competitions, signups, and entry fees for bars and venues, built for repeat nights.
           </p>
           <div className="mt-6 rounded-xl border border-lp-border bg-lp-bg/60 px-4 py-4">
-            <p className="text-xs font-bold uppercase tracking-widest text-lp-muted mb-1">Our full platform</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-lp-muted mb-1">Also run private events?</p>
             <a
               href="https://venuesprocket.com"
               target="_blank"
@@ -73,7 +67,8 @@ export function SiteFooter() {
               VenueSprocket
             </a>
             <p className="mt-1 text-sm text-lp-text-soft">
-              Private event management — leads, proposals, contracts, and BEOs for your venue.
+              Our separate companion product for private events — inquiries, proposals, contracts,
+              deposits, and BEOs. Subscribers to either product get 50% off the other.
             </p>
             <a
               href="https://venuesprocket.com"
@@ -81,7 +76,7 @@ export function SiteFooter() {
               rel="noopener noreferrer"
               className="mt-2 inline-flex text-sm font-semibold text-lp-accent hover:underline"
             >
-              Learn more →
+              See VenueSprocket →
             </a>
           </div>
         </div>
@@ -104,9 +99,7 @@ export function SiteFooter() {
         ))}
       </div>
       <div className="border-t border-lp-border/70 py-7 text-center text-[0.9375rem] font-medium text-lp-text-soft">
-        Copyright {new Date().getFullYear()}{" "}
-        <a href="https://venuesprocket.com" className="hover:text-lp-accent transition-colors">VenueSprocket</a>
-        {" "}— LeaguePour is a VenueSprocket product. All rights reserved.
+        Copyright {new Date().getFullYear()} LeaguePour. All rights reserved.
       </div>
     </footer>
   );

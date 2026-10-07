@@ -122,7 +122,7 @@ export function BillingCard({ currentPlan, subscriptionStatus, subscriptionPerio
                 interval === "annual" ? "bg-lp-accent text-white" : "bg-lp-surface text-lp-muted hover:text-lp-text"
               }`}
             >
-              Annual <span className="text-xs opacity-80">−10%</span>
+              Annual <span className="text-xs opacity-80">2 months free</span>
             </button>
           </div>
 

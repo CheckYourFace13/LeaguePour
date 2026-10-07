@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 const painPointCards = [
   {
     title: "No more paper signup sheets",
-    body: "Players register from their phone, and staff can see who is confirmed, waitlisted, or paid.",
+    body: "Players register from their phone, and staff can see who is confirmed and who has paid.",
   },
   {
     title: "Less chasing payments",

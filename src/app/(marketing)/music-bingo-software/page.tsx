@@ -105,8 +105,8 @@ const features = [
     body: "Send reminders before each music bingo night, theme announcements, and results - directly from your LeaguePour dashboard to everyone who's registered.",
   },
   {
-    title: "Waitlists",
-    body: "Cap attendance at your fire-code limit. Players who miss the cutoff go on a waitlist and get notified automatically if a spot opens before the event.",
+    title: "Attendance caps",
+    body: "Cap attendance at your fire-code limit - signup closes automatically once it's reached.",
   },
   {
     title: "Venue public page",
@@ -167,7 +167,7 @@ export default function MusicBingoSoftwarePage() {
               {
                 n: 3,
                 title: "Run the event",
-                body: "Check in registered players, run your rounds, and announce winners. The registration list in your dashboard is your check-in sheet.",
+                body: "Check people in from the registration list in your dashboard, run your rounds, and announce winners.",
               },
               {
                 n: 4,

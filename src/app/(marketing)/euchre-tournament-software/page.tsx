@@ -109,8 +109,8 @@ const features = [
     body: "Email confirmed players with event reminders, updated standings, and upcoming dates - from your LeaguePour dashboard with one click.",
   },
   {
-    title: "Waitlists",
-    body: "Cap the tournament at your table count. Additional players go on a waitlist and are notified automatically if spots open before the event.",
+    title: "Table caps",
+    body: "Cap the tournament at your table count - signup closes automatically once it's full.",
   },
 ];
 

@@ -64,7 +64,7 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
       "Free bracket generators are fine for drawing matchups. LeaguePour is venue software that helps you collect signups, take entry fees, and bring players back.",
     theirStrength: "Fast, free bracket visuals with minimal setup.",
     leaguePourFocus:
-      "Stripe signups, waitlists, staff scoring, public venue pages, and campaigns to past players.",
+      "Stripe signups, participant caps, staff scoring, public venue pages, and campaigns to past players.",
     rows: VENUE_ROWS,
     faqs: [
       {
@@ -80,13 +80,13 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
       "Stop running bar leagues on spreadsheets. LeaguePour handles signups, payments, standings, and player communication.",
     heroTitle: "LeaguePour vs spreadsheets",
     heroIntro:
-      "Spreadsheets work until they don't - lost tabs, manual payments, and no public signup page. LeaguePour gives players a link and gives you a check-in list.",
+      "Spreadsheets work until they don't - lost tabs, manual payments, and no public signup page. LeaguePour gives players a link and gives you a registration list to check them in from.",
     theirStrength: "Familiar, flexible, zero software cost.",
     leaguePourFocus: "Online signup, Stripe entry fees, public standings, and email to past players.",
     rows: [
       { feature: "Public signup page", generic: false, leaguepour: true },
       { feature: "Card payments", generic: false, leaguepour: true },
-      { feature: "Automatic waitlist", generic: false, leaguepour: true },
+      { feature: "Participant caps that close signup automatically", generic: false, leaguepour: true },
       { feature: "Live standings page", generic: "Manual", leaguepour: true },
       { feature: "Player marketing", generic: false, leaguepour: true },
     ],
@@ -106,7 +106,7 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
     heroIntro:
       "Facebook is great for reach. LeaguePour is where players actually register, pay entry, and see standings.",
     theirStrength: "Social distribution and casual RSVPs.",
-    leaguePourFocus: "Paid registration, caps, waitlists, brackets, and a venue-owned player list.",
+    leaguePourFocus: "Paid registration, caps, brackets, and a venue-owned player list.",
     rows: [
       { feature: "Paid entry collection", generic: "Limited", leaguepour: true },
       { feature: "Team registration", generic: "Limited", leaguepour: true },

@@ -77,7 +77,7 @@ const SOFTWARE: Record<
     description:
       "Trivia night signup software - team caps, paid entry, QR signup, and venue hubs for bar trivia.",
     heroTitle: "Trivia night signup software",
-    heroIntro: "Confirm teams before trivia night with signup windows, waitlists, and Stripe entry fees.",
+    heroIntro: "Confirm teams before trivia night with signup windows, team caps, and Stripe entry fees.",
     legacyPath: "/bar-trivia-software",
     gameSlug: "trivia",
     kind: "TRIVIA",

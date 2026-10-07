@@ -14,6 +14,7 @@ import { buildQrDataUrl } from "@/lib/qr";
 import { formatDateTime, formatMoney } from "@/lib/utils";
 import { cta } from "@/lib/brand";
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
+import { isPlaceholderCompetition } from "@/lib/seo/is-placeholder-competition";
 import { RegistrationPanel } from "./registration-panel";
 
 export const dynamic = "force-dynamic";
@@ -46,6 +47,8 @@ export async function generateMetadata({
     title: { absolute: titleParts.join(" | ") },
     description: desc,
     alternates: { canonical: pageUrl },
+    // A placeholder record ("Test", "Demo"...) stays reachable but out of search results.
+    ...(isPlaceholderCompetition(comp) ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title: titleParts.join(" | "),
       description: desc,

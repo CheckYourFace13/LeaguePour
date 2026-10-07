@@ -81,7 +81,7 @@ export default async function VenueSettingsPage({
         ) : null}
       </div>
 
-      <Card className="space-y-4 p-5">
+      <Card id="billing" className="scroll-mt-24 space-y-4 p-5">
         <BillingCard
           currentPlan={venue.billingPlan}
           subscriptionStatus={venue.subscriptionStatus}

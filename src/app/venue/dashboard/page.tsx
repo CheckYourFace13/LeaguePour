@@ -16,6 +16,7 @@ import { venueAppRoutes } from "@/lib/routes";
 import { redirect } from "next/navigation";
 import { EmbedCopyButton } from "./embed-copy-button";
 import { CONNECT_STATUS_COPY, deriveConnectStatus } from "@/lib/stripe/connect-status";
+import { ACTIVE_COMPETITION_LIMITS_BY_PLAN, PLAN_DEFINITIONS } from "@/lib/pricing";
 
 export default async function VenueDashboardPage({
   searchParams,
@@ -38,6 +39,7 @@ export default async function VenueDashboardPage({
       stripeChargesEnabled: true,
       stripePayoutsEnabled: true,
       stripeDetailsSubmitted: true,
+      billingPlan: true,
     },
   });
   const venueSlug = venueRow?.slug ?? "";
@@ -55,7 +57,7 @@ export default async function VenueDashboardPage({
   const stripeConnectReady = connectDashboardStatus === "ready";
   const connectBannerCopy = CONNECT_STATUS_COPY[connectDashboardStatus];
 
-  const [openCount, regCount, campaignDrafts, pendingPayments, upcoming] = await Promise.all([
+  const [openCount, regCount, campaignDrafts, pendingPayments, upcoming, activeCount] = await Promise.all([
     prisma.competition.count({
       where: { venueId: access.venueId, status: { in: ["SIGNUP_OPEN", "PUBLISHED"] } },
     }),
@@ -77,7 +79,24 @@ export default async function VenueDashboardPage({
       take: 4,
       include: { prizeStructure: true, _count: { select: { registrations: true } } },
     }),
+    // Same statuses the publish gate counts against the plan cap (competitions/new/actions.ts).
+    prisma.competition.count({
+      where: {
+        venueId: access.venueId,
+        status: { in: ["PUBLISHED", "SIGNUP_OPEN", "SIGNUP_CLOSED", "IN_PROGRESS"] },
+      },
+    }),
   ]);
+
+  // Contextual upgrade note: only shown to people who can publish, only when the venue is at or
+  // one away from its plan's active-competition cap. Informational - doesn't change entitlements.
+  const plan = venueRow?.billingPlan;
+  const planLimit = plan ? ACTIVE_COMPETITION_LIMITS_BY_PLAN[plan] : Number.POSITIVE_INFINITY;
+  const planIndex = PLAN_DEFINITIONS.findIndex((d) => d.plan === plan);
+  const currentPlanName = planIndex >= 0 ? PLAN_DEFINITIONS[planIndex].name : null;
+  const nextPlan = planIndex >= 0 ? PLAN_DEFINITIONS[planIndex + 1] : undefined;
+  const nextLimit = nextPlan ? ACTIVE_COMPETITION_LIMITS_BY_PLAN[nextPlan.plan] : undefined;
+  const showCapNote = canCreate && Number.isFinite(planLimit) && activeCount >= planLimit - 1 && !!nextPlan;
 
   return (
     <div className="space-y-10 md:space-y-12">
@@ -100,6 +119,26 @@ export default async function VenueDashboardPage({
           </div>
           <Button asChild size="lg" variant="secondary" className="shrink-0 w-full sm:w-auto">
             <Link href={venueAppRoutes.profile}>View details</Link>
+          </Button>
+        </div>
+      ) : null}
+      {showCapNote ? (
+        <div className="flex flex-col gap-3 rounded-[10px] border border-lp-border bg-lp-surface/60 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-semibold text-lp-text">
+              {activeCount >= planLimit
+                ? `You're at your ${currentPlanName} limit of ${planLimit} active competitions`
+                : `${activeCount} of ${planLimit} active competitions on ${currentPlanName}`}
+            </p>
+            <p className="mt-0.5 text-sm text-lp-muted">
+              Drafts never count, and finished events free up a slot.{" "}
+              {nextPlan && nextLimit !== undefined
+                ? `${nextPlan.name} runs ${Number.isFinite(nextLimit) ? `up to ${nextLimit}` : "unlimited"} at once if you need more nights going.`
+                : null}
+            </p>
+          </div>
+          <Button asChild size="lg" variant="secondary" className="shrink-0 w-full sm:w-auto">
+            <Link href={`${venueAppRoutes.settings}#billing`}>Compare plans</Link>
           </Button>
         </div>
       ) : null}

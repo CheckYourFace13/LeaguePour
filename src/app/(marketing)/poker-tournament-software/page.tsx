@@ -71,7 +71,7 @@ const jsonLd = {
           name: "Can LeaguePour track poker season standings?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes. For a poker league format where players accumulate points across weekly sessions, you can track standings per season and display them publicly. A quarterly championship event with the top-point finishers is a popular format that keeps weekly attendance high all season.",
+            text: "Not automatically yet. LeaguePour's automatic standings score head-to-head matches (3 points for a win), and poker is scored by finishing position, so a points-per-finish season isn't calculated for you today - a dedicated points/season format is on the roadmap. Many bars run each week as its own LeaguePour event for signups and headcount, and keep the season points table themselves.",
           },
         },
         {
@@ -97,16 +97,16 @@ const features = [
     body: "Collect seat reservation fees or food-and-beverage minimums online. Funds deposit directly to your venue's bank account.",
   },
   {
-    title: "Season standings",
-    body: "Track cumulative points across weekly poker nights. Publish a leaderboard that keeps players competing for the season championship.",
+    title: "Repeatable weekly events",
+    body: "Run each poker night as its own event with its own signup page and seat cap, and duplicate last week's event in a click. (Automatic season points by finishing position are on the roadmap.)",
   },
   {
     title: "Player notifications",
-    body: "Email registered players about upcoming tournaments, results, and season leaderboard updates - directly from your dashboard.",
+    body: "Email your opted-in players about upcoming tournaments and results - directly from your dashboard.",
   },
   {
-    title: "Waitlists",
-    body: "Cap the tournament at your seating capacity. Overflow goes to a waitlist and gets notified automatically when seats open up.",
+    title: "Seat caps",
+    body: "Cap the tournament at your seating capacity - signup closes automatically when every seat is taken.",
   },
   {
     title: "Venue public page",
@@ -125,7 +125,7 @@ export default function PokerTournamentSoftwarePage() {
           <span className="text-lp-accent">No spreadsheets.</span>
         </h1>
         <p className="mt-5 max-w-2xl text-lg text-lp-muted">
-          LeaguePour handles poker tournament registration, season standings, player notifications,
+          LeaguePour handles poker night registration, seat caps, player emails,
           and optional online payment collection - all in one platform built for bars running regular
           poker nights.
         </p>
@@ -157,7 +157,7 @@ export default function PokerTournamentSoftwarePage() {
               {
                 n: 1,
                 title: "Create your poker tournament",
-                body: "Set the format (weekly night, one-time tournament, or league season), max players, any registration fee, and the event date and time.",
+                body: "Set the event name, date and time, max players, and any registration fee.",
               },
               {
                 n: 2,
@@ -167,12 +167,12 @@ export default function PokerTournamentSoftwarePage() {
               {
                 n: 3,
                 title: "Run the tournament",
-                body: "Check in registered players, start with a confirmed field, and enter finish positions after the tournament concludes. Season points update automatically.",
+                body: "Check players in from your registration list, start with a confirmed field, and announce the results when the night ends.",
               },
               {
                 n: 4,
                 title: "Build your season",
-                body: "Email all registered players the updated leaderboard after each week. Create urgency for the next event - players in contention for the championship keep coming back.",
+                body: "Email your opted-in players about next week's game and post the season standings you keep - players in contention for the championship keep coming back.",
               },
             ].map((s) => (
               <li key={s.n} className="flex gap-4">
@@ -238,7 +238,7 @@ export default function PokerTournamentSoftwarePage() {
               },
               {
                 q: "Can LeaguePour track poker season standings?",
-                a: "Yes. Track cumulative points across weekly sessions and display a public leaderboard. A quarterly championship with the top-point finishers keeps weekly attendance high all season.",
+                a: "Not automatically yet. LeaguePour's automatic standings score head-to-head matches (3 points for a win), and poker is scored by finishing position, so a points-per-finish season isn't calculated for you today - a dedicated points/season format is on the roadmap. Many bars run each week as its own LeaguePour event for signups and headcount, and keep the season points table themselves.",
               },
               {
                 q: "What poker format works best for a bar?",

@@ -62,10 +62,12 @@ export async function buildFindMetadata(findSlug: string): Promise<Metadata> {
     description,
     alternates: { canonical: path },
     openGraph: { title, description, url: path },
+    // Index only once there's at least one real listing. The page's copy and FAQ are the same
+    // template across every game, so on its own it's a thin page that promises "real venues" and
+    // shows none - noindex,follow until a venue or competition exists, then it flips automatically.
     robots: discoveryRobots({
       venueCount: venues.length,
       competitionCount: competitions.length,
-      hasEditorialContent: true,
     }),
   };
 }
@@ -168,4 +170,21 @@ export async function FindDiscoveryPage({ findSlug }: { findSlug: string }) {
       jsonLdGraphs={jsonLd}
     />
   );
+}
+
+/** /find/* paths that currently have at least one real venue or competition - the only ones the
+ * sitemap should list (see buildFindMetadata's robots rule above). */
+export async function getIndexableFindPaths(): Promise<string[]> {
+  const results = await Promise.all(
+    getAllFindSlugs().map(async (slug) => {
+      const game = resolveFindGame(slug);
+      if (!game) return null;
+      const [venues, competitions] = await Promise.all([
+        fetchDiscoveryVenuesForKind(game.kind, 1),
+        fetchDiscoveryCompetitionsForKind(game.kind, 1),
+      ]);
+      return venues.length > 0 || competitions.length > 0 ? `/find/${slug}` : null;
+    }),
+  );
+  return results.filter((p): p is string => p !== null);
 }

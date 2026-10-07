@@ -82,7 +82,7 @@ export default function ForVenuesPage() {
           </li>
           <li className="flex gap-3">
             <span className="text-lp-accent font-bold">|</span>
-            <span>Team or solo formats, participant caps, and waitlists</span>
+            <span>Team or solo formats and participant caps</span>
           </li>
           <li className="flex gap-3">
             <span className="text-lp-accent font-bold">|</span>
@@ -168,7 +168,7 @@ export default function ForVenuesPage() {
       {/* VenueSprocket cross-promo */}
       <div className="rounded-xl border border-lp-border bg-lp-surface/60 p-7 flex flex-col sm:flex-row gap-6 items-start">
         <div className="flex-1">
-          <p className="text-xs font-bold uppercase tracking-widest text-lp-muted mb-1">Also from VenueSprocket</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-lp-muted mb-1">Companion product</p>
           <p className="font-display text-xl font-bold text-lp-text">Need to manage private events?</p>
           <p className="mt-2 text-sm text-lp-muted leading-relaxed">
             <strong className="text-lp-text">VenueSprocket</strong> handles private event bookings — birthday parties,

@@ -109,8 +109,8 @@ const features = [
     body: "Email registered players about schedule changes, match results, and upcoming league nights - from your dashboard.",
   },
   {
-    title: "Waitlists",
-    body: "Cap the league at your table count. Overflow goes to a waitlist and gets notified automatically when spots open.",
+    title: "League caps",
+    body: "Cap the league at your table count - signup closes automatically when it's full.",
   },
 ];
 
@@ -172,7 +172,7 @@ export default function ShuffleboardLeagueSoftwarePage() {
               {
                 n: 4,
                 title: "Fill the next season",
-                body: "Email or text all registered players about the upcoming season - one click to re-open signup and lock in your returning teams.",
+                body: "Email your opted-in players about the upcoming season, and duplicate last season's league to re-open signup for returning teams.",
               },
             ].map((s) => (
               <li key={s.n} className="flex gap-4">

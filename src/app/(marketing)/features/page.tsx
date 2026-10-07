@@ -25,7 +25,7 @@ const groups = [
     items: [
       "Format templates",
       "Signup windows & run dates",
-      "Fees, caps, waitlists",
+      "Fees and participant caps",
       "Solo, captain, or team signup",
       "Rules, prizes, waivers",
       "One-off or recurring",
@@ -33,7 +33,7 @@ const groups = [
   },
   {
     title: "Night-of",
-    items: ["Registrations & check-in", "Teams & rosters", "Brackets & standings", "Scores → public page"],
+    items: ["Registration list", "Teams & rosters", "Brackets & standings", "Scores → public page"],
   },
   {
     title: "Growth",
@@ -74,7 +74,7 @@ export default function FeaturesPage() {
               {g.title === "Builder"
                 ? "Set up the event before doors open."
                 : g.title === "Night-of"
-                  ? "Run check-in, scores, and standings during the event."
+                  ? "Run the night from your registration list, enter scores, and standings update."
                   : "Bring the same players back for the next league night."}
             </p>
             <ul className="mt-5 space-y-3">

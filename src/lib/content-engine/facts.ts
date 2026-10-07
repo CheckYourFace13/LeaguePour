@@ -25,6 +25,10 @@ export const PRODUCT_FACTS: Record<Brand, string[]> = {
     "There is no plan-based limit on staff accounts - unlimited staff on every plan.",
     "The only plan-based limit anywhere in the product is the number of concurrently-active competitions (STARTER=2, GROWTH=9, PRO=19, ELITE=unlimited).",
     "Multi-location support does not exist - no code path for it.",
+    "There is NO waitlist: when a competition reaches its participant cap, signup simply closes (\"This event is full\"). Nothing notifies anyone when a spot opens.",
+    "There is NO check-in feature - no attendance field. The registration list (confirmed/paid) can be printed or pulled up and used as a check-in sheet.",
+    "Bracket seeding is registration order (oldest first). Automatic seeding from standings, and placement-based scoring (e.g. poker finish positions -> season points), are roadmap only.",
+    "Players pay a $1.50 service fee on top of the entry fee; the venue receives the entry fee minus a 5% platform fee.",
     "Games supported: trivia, darts, cornhole, euchre, pool, poker (where legal), shuffleboard, music bingo.",
   ],
   VS: [
@@ -65,6 +69,8 @@ export const FORBIDDEN_CLAIM_PATTERNS: Record<Brand, RegExp[]> = {
     /(alert|campaign|notif|delivery|sent|sends|message).{0,20}\bsms\b/i,
     /(staff|account).{0,15}limit/i,
     /multi-?location/i,
+    /(auto|automatic(ally)?).{0,15}waitlist|waitlist.{0,40}notif/i,
+    /(seeded|seeding).{0,30}(standings|season)/i,
   ],
   VS: [
     /tag(ging|s)?\b.{0,25}(customer|segment|filter)/i,
