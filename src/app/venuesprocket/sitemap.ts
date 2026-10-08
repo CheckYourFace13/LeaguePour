@@ -8,7 +8,7 @@ const BASE = "https://venuesprocket.com";
 const BUILD_TIME = new Date();
 
 // Explicit short revalidate window - see the matching comment in src/app/robots.ts.
-export const revalidate = 3600;
+export const revalidate = 300; // short: content-engine guides publish between deploys
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pages = [

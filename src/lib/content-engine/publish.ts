@@ -124,7 +124,10 @@ async function authoredReadyRow(brand: Brand) {
  * deterministic check passing - "no completed high-quality article available" always means
  * "publish nothing," not "publish something anyway to hit cadence."
  */
-export async function runContentEngine(brand: Brand, opts: { dryRun?: boolean } = {}): Promise<PublishOutcome> {
+export async function runContentEngine(
+  brand: Brand,
+  opts: { dryRun?: boolean; publishOnly?: boolean } = {},
+): Promise<PublishOutcome> {
   const enabled = opts.dryRun || (await getBoolSetting(KILL_SWITCH_KEY, true));
   if (!enabled) return { status: "skipped", reason: "Kill switch (content-engine-enabled) is off." };
 
@@ -176,6 +179,9 @@ export async function runContentEngine(brand: Brand, opts: { dryRun?: boolean } 
     return { status: "published", slug: ready.slug, title: ready.title, url: `https://${config.host}${config.guidesBasePath}/${ready.slug}` };
   }
 
+  // publishOnly (used by publishAuthoredNow below): never queue a new topic.
+  if (opts.publishOnly) return { status: "skipped", reason: "No written article ready to publish." };
+
   // Phase B: nothing ready to publish - top up the queue if there's room.
   const pendingCount = await prisma.guide.count({ where: { brand, status: "NEEDS_CONTENT", bodyHtml: null } });
   if (pendingCount >= config.queueBuffer) {
@@ -217,4 +223,22 @@ export async function runContentEngine(brand: Brand, opts: { dryRun?: boolean } 
   });
 
   return { status: "queued", slug, title: topic.title };
+}
+
+/**
+ * Publishes every repo-authored article that's ready for `brand`, one runContentEngine() step at a
+ * time - so every quality-gate check, the weekly cap, and the kill switch apply exactly as on a
+ * scheduled run - and never queues a new topic. Stops at the first step that doesn't publish
+ * (cap reached, nothing ready, or a body that needs revision). Run once per server boot by
+ * scheduler.ts, because authored bodies only ever arrive with a deploy; on any boot with nothing
+ * ready it's a no-op.
+ */
+export async function publishAuthoredNow(brand: Brand): Promise<PublishOutcome[]> {
+  const outcomes: PublishOutcome[] = [];
+  for (let i = 0; i < BRANDS[brand].weeklyCap; i++) {
+    const outcome = await runContentEngine(brand, { publishOnly: true });
+    outcomes.push(outcome);
+    if (outcome.status !== "published") break;
+  }
+  return outcomes;
 }

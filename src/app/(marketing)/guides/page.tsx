@@ -4,6 +4,9 @@ import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
+// Lists content-engine guides from the DB, which publish between deploys - refresh every 5 min.
+export const revalidate = 300;
+
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/guides", {
   title: { absolute: "Bar Competition Guides | LeaguePour" },

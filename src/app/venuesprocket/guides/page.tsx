@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 
+// Lists content-engine guides from the DB, which publish between deploys - refresh every 5 min
+// (without this the hub stayed frozen at its build-time list).
+export const revalidate = 300;
+
 export const metadata: Metadata = {
   title: { absolute: "Guides & Resources for Private Event Venues | VenueSprocket" },
   description:

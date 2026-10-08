@@ -175,5 +175,29 @@ export function startInProcessScheduler(): void {
   // Staggered first tick so this never competes with the server's own startup work.
   setTimeout(() => void tick(loopbackBase, publicBase, secret), 30_000);
   setInterval(() => void tick(loopbackBase, publicBase, secret), TICK_MS);
+  setTimeout(() => void publishAuthoredOnBoot(), 60_000);
   console.log(`[scheduler] in-process cron scheduler started (${JOBS.length} jobs, ${TICK_MS / 60000}min tick)`);
+}
+
+/**
+ * Repo-authored guide bodies (content-engine/authored) only ever arrive with a deploy, so publish
+ * any that are ready once per boot instead of waiting for the next Mon/Wed/Fri (VS) or Tue/Thu (LP)
+ * slot. publishAuthoredNow() runs the normal engine step with publishOnly - same quality gates,
+ * weekly cap, and kill switch, and it never queues a new topic - so a boot with nothing ready is a
+ * no-op.
+ */
+async function publishAuthoredOnBoot(): Promise<void> {
+  try {
+    const { publishAuthoredNow } = await import("./content-engine/publish");
+    for (const brand of ["VS", "LP"] as const) {
+      const outcomes = await publishAuthoredNow(brand);
+      const summary = outcomes
+        .map((o) => (o.status === "skipped" ? `skipped (${o.reason})` : `${o.status}: ${o.title}`))
+        .join("; ");
+      console.log(`[scheduler] boot publish ${brand}: ${summary}`);
+      await persistStatus(`content_engine_boot_publish_${brand}`, `${new Date().toISOString()} ${summary}`.slice(0, 900));
+    }
+  } catch (err) {
+    console.error("[scheduler] boot publish failed", err);
+  }
 }

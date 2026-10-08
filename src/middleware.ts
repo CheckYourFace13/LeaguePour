@@ -44,9 +44,9 @@ function pathIsUnder(pathname: string, prefix: string): boolean {
  * Enforces the other half of brand/domain separation that next.config.ts's VS host rewrites
  * only set up one side of: previously nothing stopped an LP-only marketing path (e.g. /about)
  * from rendering in full on venuesprocket.com (wrong branding, wrong Organization schema), or
- * /venuesprocket/* from rendering on leaguepour.com. Redirects (301, permanent) to the correct
- * domain instead of a bare 404 - more useful for a real visitor and consolidates any accidental
- * backlinks/crawl attention onto the canonical location. Only fires for the two known
+ * /venuesprocket/* from rendering on leaguepour.com. leaguepour.com/venuesprocket/* 301s to the
+ * VS domain; an unknown venuesprocket.com path gets a VenueSprocket-branded 404 on the same host
+ * (it used to 301 to leaguepour.com, which leaked VS visitors onto LP). Only fires for the two known
  * production hostnames, never for localhost/preview hosts, so local dev is unaffected.
  */
 function hostRedirect(request: NextRequest): NextResponse | null {
@@ -61,7 +61,11 @@ function hostRedirect(request: NextRequest): NextResponse | null {
     if (pathIsUnder(pathname, "/venuesprocket")) return null; // direct internal path, let it resolve
     if (hostGateExemptPrefixes.some((p) => pathIsUnder(pathname, p))) return null;
     if (!isVsPath(pathname)) {
-      return NextResponse.redirect(`https://${LP_HOST}${pathname}${search}`, 301);
+      // Never send an unknown venuesprocket.com URL to leaguepour.com. Rewrite (same host, URL
+      // unchanged) into the VS tree, where venuesprocket/[...missing] returns a VenueSprocket-
+      // branded 404. Known VS pages are matched by isVsPath() and the exempt prefixes above;
+      // legacy aliases are same-host redirects in next.config.ts.
+      return NextResponse.rewrite(new URL(`/venuesprocket${pathname}${search}`, request.url));
     }
   }
   return null;

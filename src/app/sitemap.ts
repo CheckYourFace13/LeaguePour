@@ -17,7 +17,7 @@ const BUILD_TIME = new Date();
 // Explicit short revalidate window, same reasoning as src/app/robots.ts - dynamic venue/
 // competition data means this route was never subject to the far-future default anyway, but
 // making it explicit removes any doubt after the CDN-staleness incident.
-export const revalidate = 3600;
+export const revalidate = 300; // short: content-engine guides publish between deploys
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getPublicSiteUrl();
