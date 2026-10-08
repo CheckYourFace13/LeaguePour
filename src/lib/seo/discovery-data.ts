@@ -290,7 +290,7 @@ export async function getSitemapCityOnlyPaths(
 export async function getSitemapCityGamePaths(
   prefixes: ("bar-leagues" | "events" | "bars")[],
 ): Promise<string[]> {
-  const { getOutreachCitySlug } = await import("@/lib/seo/outreach-city-slugs");
+  const { getOutreachCitySlug, getOutreachCityBySlug } = await import("@/lib/seo/outreach-city-slugs");
   const { getDiscoveryGameByKind } = await import("@/lib/seo/discovery-games");
 
   const paths = new Set<string>();
@@ -313,6 +313,10 @@ export async function getSitemapCityGamePaths(
 
     const addPair = (city: string, state: string, kind?: CompetitionKind) => {
       const citySlug = getOutreachCitySlug(city, state);
+      // City pages only exist for the fixed outreach-city list (render-city-discovery.tsx 404s
+      // anything else), so a venue in an unlisted city (e.g. Carmel, IN) must not add sitemap
+      // URLs - they were 404s that Search Console reported as "Not found (404)".
+      if (!getOutreachCityBySlug(citySlug)) return;
       const kinds = kind ? [kind] : [];
       for (const k of kinds.length ? kinds : []) {
         const game = getDiscoveryGameByKind(k);
