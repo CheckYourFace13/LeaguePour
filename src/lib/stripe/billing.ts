@@ -74,6 +74,19 @@ export async function getOrCreateBundleCoupon(): Promise<string> {
  */
 export type BillingProduct = "lp" | "vs";
 
+/**
+ * Builds a Stripe return URL from an origin, a path, and a `notice` value. Uses URL/searchParams
+ * rather than string concatenation: the old `${base}${path}?notice=...` produced
+ * "/app/dashboard?notice=vs-subscribed?notice=subscribed" whenever the path already carried a
+ * query string, so VenueSprocket's post-checkout banner and analytics event never fired.
+ * A `notice` already present on the path wins over the default.
+ */
+export function buildCheckoutReturnUrl(origin: string, path: string, defaultNotice: string): string {
+  const url = new URL(path, origin.replace(/\/$/, "") + "/");
+  if (!url.searchParams.has("notice")) url.searchParams.set("notice", defaultNotice);
+  return url.toString();
+}
+
 /** Create a Stripe Checkout session in subscription mode for a venue plan. */
 export async function createSubscriptionCheckoutUrl(opts: {
   customerId: string;
@@ -85,6 +98,10 @@ export async function createSubscriptionCheckoutUrl(opts: {
   vsPlan?: string;
   successPath?: string;
   cancelPath?: string;
+  /** Origin for the success URL (default: the app base URL, i.e. leaguepour.com). */
+  successOrigin?: string;
+  /** Origin for the cancel URL (default: the app base URL, i.e. leaguepour.com). */
+  cancelOrigin?: string;
   bundleDiscount?: boolean;
 }): Promise<string> {
   const stripe = getStripe();
@@ -122,8 +139,8 @@ export async function createSubscriptionCheckoutUrl(opts: {
     // ever sees sub.metadata, and MRR needs to know monthly vs annual per active subscription
     // rather than assuming every subscriber pays the monthly rate.
     subscription_data: { metadata: subscriptionMetadata },
-    success_url: `${base}${opts.successPath ?? "/venue/settings"}?notice=subscribed`,
-    cancel_url: `${base}${opts.cancelPath ?? "/venue/settings"}?notice=subscribe-cancel`,
+    success_url: buildCheckoutReturnUrl(opts.successOrigin ?? base, opts.successPath ?? "/venue/settings", "subscribed"),
+    cancel_url: buildCheckoutReturnUrl(opts.cancelOrigin ?? base, opts.cancelPath ?? "/venue/settings", "subscribe-cancel"),
     ...discountOpts,
   });
 

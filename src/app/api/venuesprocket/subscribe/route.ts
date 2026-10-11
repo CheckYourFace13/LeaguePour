@@ -19,6 +19,7 @@ import {
   subscriptionIsActive,
 } from "@/lib/stripe/billing";
 import { isStripePaymentsConfigured } from "@/lib/stripe/env";
+import { LP_HOST, VS_HOST } from "@/lib/vs-routing";
 import type { BillingInterval } from "@/lib/stripe/billing";
 
 // VS plan name → LP BillingPlan enum (Stripe price catalog is shared; VS plans map onto
@@ -36,6 +37,17 @@ const VS_PLAN_TIER: Record<string, VsPlan> = {
   pro: VsPlan.VS_PRO,
   growth: VsPlan.VS_GROWTH,
 };
+
+/**
+ * Where a paid VenueSprocket checkout should land. Session cookies are per-domain, so the success
+ * URL must be on the host the customer is actually signed in on: venuesprocket.com in every normal
+ * flow, or leaguepour.com in the one case where the checkout was started there (/app is reachable
+ * on both). The cancel URL always goes to VenueSprocket's public pricing page.
+ */
+function vsReturnOrigin(req: Request): string {
+  const host = req.headers.get("host")?.split(":")[0]?.toLowerCase();
+  return host === LP_HOST ? `https://${LP_HOST}` : `https://${VS_HOST}`;
+}
 
 export async function POST(req: Request) {
   if (!isStripePaymentsConfigured()) {
@@ -95,9 +107,14 @@ export async function POST(req: Request) {
       product: "vs",
       vsPlan: VS_PLAN_TIER[vsPlanName],
       bundleDiscount,
-      // Return to VS dashboard after payment
+      // Return to the VenueSprocket dashboard after payment, on VenueSprocket's own domain - these
+      // used to be built from the app base URL (leaguepour.com), where a customer who signed up on
+      // venuesprocket.com has no session, so paying dropped them at LeaguePour's login and
+      // cancelling showed LeaguePour's pricing page.
       successPath: "/app/dashboard?notice=vs-subscribed",
       cancelPath: "/pricing?notice=subscribe-cancel",
+      successOrigin: vsReturnOrigin(req),
+      cancelOrigin: `https://${VS_HOST}`,
     });
     return NextResponse.json({ url, bundleDiscount });
   } catch (err) {

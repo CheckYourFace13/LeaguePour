@@ -4,7 +4,7 @@ import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 
 const URL = "https://venuesprocket.com/bundle";
 const DESCRIPTION =
-  "VenueSprocket and LeaguePour are separate products with separate subscriptions. Subscribe to one and get 50% off the other - here's what each does and how the discount works.";
+  "VenueSprocket and LeaguePour are separate products with separate subscriptions. Add the second while subscribed to the first and it's 50% off - here's how the discount works.";
 
 export const metadata: Metadata = {
   title: { absolute: "VenueSprocket + LeaguePour: 50% Off the Second Product | VenueSprocket" },
@@ -23,7 +23,7 @@ const faqs = [
   },
   {
     q: "How does the 50% discount work?",
-    a: "If your venue has an active paid subscription to one product and you subscribe to the other, the second subscription is 50% off. It's applied automatically at checkout - there's no code to enter.",
+    a: "If your venue's subscription to one product is active or in a trial at the moment you subscribe to the other, the second subscription is 50% off. It's applied automatically at checkout - there's no code to enter - and it can't be combined with another promotion code.",
   },
   {
     q: "Which product gets the discount?",
@@ -38,8 +38,8 @@ const faqs = [
     a: "Only if you do both things. VenueSprocket is for private events you book - parties, corporate events, buyouts. LeaguePour is for recurring public competitions - leagues, tournaments, trivia nights. Plenty of venues only need one.",
   },
   {
-    q: "What happens to the discount if I cancel one?",
-    a: "The discount is for venues subscribed to both. For how a cancellation affects your remaining subscription, contact us before you cancel so there are no surprises on your next invoice.",
+    q: "How long does the discount last?",
+    a: "It's a recurring discount: the second subscription stays 50% off on every renewal. It's set when you buy the second product - today it remains on that subscription even if you later cancel the first one. If you cancel the discounted subscription and subscribe again later, the discount applies again only if your other subscription is active or in a trial at that time.",
   },
 ];
 
@@ -102,7 +102,7 @@ export default function VsBundlePage() {
           <p className="mb-10 max-w-3xl text-lg leading-relaxed text-vs-text-soft">
             Private events fill a room for a night. Leagues and game nights fill it every week.
             VenueSprocket and LeaguePour are separate products for those two jobs, each with its own
-            subscription - and if you subscribe to one, the other is 50% off.
+            subscription - and if you&apos;re subscribed to one when you add the other, the second is 50% off.
           </p>
 
           <div className="grid gap-5 md:grid-cols-2">
@@ -136,7 +136,7 @@ export default function VsBundlePage() {
               <h2 className="font-display text-xl font-bold text-vs-text mb-3">What you get with both</h2>
               <ul className="space-y-2 text-sm leading-relaxed text-vs-text-soft">
                 <li>• One venue login for both products</li>
-                <li>• 50% off the second subscription, applied automatically at checkout</li>
+                <li>• 50% off the second subscription on every renewal, applied automatically at checkout</li>
                 <li>• Each product billed as its own subscription</li>
               </ul>
             </div>
