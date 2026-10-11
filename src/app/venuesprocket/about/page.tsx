@@ -4,10 +4,10 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: { absolute: "About VenueSprocket | Private Event Management Software" },
   description:
-    "VenueSprocket helps restaurants, breweries, bars, taprooms, banquet rooms, and event spaces book and run private events — inquiry capture, proposals, e-signature contracts, Stripe deposits, and BEOs in one simple, self-serve platform.",
+    "VenueSprocket is simple, self-serve private event software for independent restaurants, bars, breweries, and event spaces - inquiry to BEO in one place.",
   alternates: { canonical: "https://venuesprocket.com/about" },
   openGraph: {
-    siteName: "VenueSprocket",
+    siteName: "VenueSprocket", images: [{ url: "/venuesprocket/opengraph-image", alt: "VenueSprocket - private event management software" }],
     title: "About VenueSprocket",
     description:
       "Simple, self-serve private-event management for independent restaurants, breweries, bars, taprooms, banquet rooms, and event spaces — inquiry to BEO in one platform.",

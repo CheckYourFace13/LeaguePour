@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     "Free event deposit calculator for restaurants, bars, and event spaces: deposit amount (percent or flat), remaining balance, balance due date, and an estimate of card processing - with the math shown.",
   alternates: { canonical: URL },
   openGraph: {
-    siteName: "VenueSprocket",
+    siteName: "VenueSprocket", images: [{ url: "/venuesprocket/opengraph-image", alt: "VenueSprocket - private event management software" }],
     title: "Event Deposit Calculator",
     description: "Deposit, remaining balance, balance due date, and card processing estimate - with the math shown.",
     url: URL,

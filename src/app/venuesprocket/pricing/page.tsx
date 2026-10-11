@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { TrackView } from "@/components/analytics/track-view";
 import { PlanSelectLink } from "@/components/analytics/plan-select-link";
+import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 
 export const metadata: Metadata = {
   title: { absolute: "Pricing | VenueSprocket" },
@@ -67,18 +68,10 @@ const plans = [
       "Deposit status tracking",
     ],
   },
-  {
-    name: "Growth",
-    price: "$149",
-    period: "/mo",
-    tagline: "For larger venues on the Pro workflow",
-    cta: "Start Growth",
-    ctaHref: "/start?plan=growth",
-    highlight: false,
-    features: [
-      "Everything in Pro",
-    ],
-  },
+  // Growth ($149) was removed from public pricing in October 2026: it listed only "Everything in
+  // Pro" and nothing in the product differentiates it. The checkout route still accepts the plan
+  // key so any existing Growth subscription is unaffected; bring the card back only when the tier
+  // has a real entitlement of its own.
   {
     name: "Custom",
     price: "Contact us",
@@ -117,9 +110,33 @@ const faqs = [
   },
 ];
 
+// Generated from the same `faqs` array the page renders, so the schema always matches the
+// visible questions and answers exactly.
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "VenueSprocket", item: "https://venuesprocket.com" },
+        { "@type": "ListItem", position: 2, name: "Pricing", item: "https://venuesprocket.com/pricing" },
+      ],
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: faqs.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    },
+  ],
+};
+
 export default function VsPricingPage() {
   return (
     <div className="vs-section px-4 md:px-6">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }} />
       <TrackView event="pricing_view" params={{ product: "vs" }} />
       <div className="mx-auto max-w-6xl">
 
@@ -136,7 +153,7 @@ export default function VsPricingPage() {
         </div>
 
         {/* Plans */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 mb-20">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-20">
           {plans.map((p) => (
             <div
               key={p.name}

@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: { absolute: "LeaguePour — Companion Product for Leagues and Game Nights | VenueSprocket" },
+  title: { absolute: "LeaguePour: Companion Product for Leagues & Game Nights | VenueSprocket" },
   description:
-    "LeaguePour is a separate companion product to VenueSprocket for recurring public events. Run dart leagues, cornhole tournaments, trivia nights, pool leagues, and bar game competitions with QR signups, standings, and Stripe entry fees.",
+    "LeaguePour is a separate companion product to VenueSprocket for leagues, tournaments, and trivia nights. Subscribe to one and get 50% off the other.",
   alternates: { canonical: "https://venuesprocket.com/leaguepour" },
 };
 
@@ -144,10 +144,10 @@ export default function VsLeaguePourPage() {
           </p>
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link
-              href="/start"
+              href="/bundle"
               className="rounded-xl bg-vs-accent px-8 py-4 text-lg font-bold text-white hover:bg-vs-accent-hover transition-colors"
             >
-              Start with VenueSprocket
+              How the 50% discount works
             </Link>
             <a
               href="https://leaguepour.com"

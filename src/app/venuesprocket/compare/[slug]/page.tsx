@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { VS_COMPARE_DATA, type FeatureRow } from "@/lib/seo/vs-compare-data";
+import { VS_COMPARE_FAQS } from "@/lib/seo/vs-compare-faqs";
 
 export async function generateStaticParams() {
   return Object.keys(VS_COMPARE_DATA).map((slug) => ({ slug }));
@@ -21,7 +22,7 @@ export async function generateMetadata({
     description: `How VenueSprocket compares to ${data.competitorName} for private event booking, BEOs, contracts, and deposits. Built for restaurants, bars, breweries, and taprooms.`,
     alternates: { canonical: `https://venuesprocket.com/compare/${slug}` },
     openGraph: {
-    siteName: "VenueSprocket",
+    siteName: "VenueSprocket", images: [{ url: "/venuesprocket/opengraph-image", alt: "VenueSprocket - private event management software" }],
       title: `VenueSprocket vs ${data.competitorName}`,
       description: data.summary,
       url: `https://venuesprocket.com/compare/${slug}`,
@@ -49,12 +50,40 @@ export default async function VsComparePage({
     .filter((d) => d.slug !== slug)
     .slice(0, 5);
 
+  const faqs = VS_COMPARE_FAQS[slug] ?? [];
+  const pageUrl = `https://venuesprocket.com/compare/${slug}`;
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Article",
-    headline: `VenueSprocket vs ${data.competitorName}`,
-    description: data.summary,
-    url: `https://venuesprocket.com/compare/${slug}`,
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "VenueSprocket", item: "https://venuesprocket.com" },
+          { "@type": "ListItem", position: 2, name: "Compare", item: "https://venuesprocket.com/compare" },
+          { "@type": "ListItem", position: 3, name: `vs ${data.competitorName}`, item: pageUrl },
+        ],
+      },
+      {
+        "@type": "Article",
+        headline: `VenueSprocket vs ${data.competitorName}`,
+        description: data.summary,
+        url: pageUrl,
+        author: { "@type": "Organization", name: "VenueSprocket" },
+        publisher: { "@type": "Organization", name: "VenueSprocket", url: "https://venuesprocket.com" },
+      },
+      ...(faqs.length
+        ? [
+            {
+              "@type": "FAQPage",
+              mainEntity: faqs.map((f) => ({
+                "@type": "Question",
+                name: f.q,
+                acceptedAnswer: { "@type": "Answer", text: f.a },
+              })),
+            },
+          ]
+        : []),
+    ],
   };
 
   return (
@@ -70,7 +99,7 @@ export default async function VsComparePage({
           <nav className="mb-8 text-sm text-vs-muted">
             <Link href="/" className="hover:text-vs-accent">VenueSprocket</Link>
             {" / "}
-            <span>Compare</span>
+            <Link href="/compare" className="hover:text-vs-accent">Compare</Link>
             {" / "}
             <span className="text-vs-text-soft font-medium">vs {data.competitorName}</span>
           </nav>
@@ -178,6 +207,24 @@ export default async function VsComparePage({
               </ul>
             </div>
           </div>
+
+          {faqs.length > 0 && (
+            <div className="mb-16">
+              <h2 className="font-display text-2xl font-bold text-vs-text mb-5">
+                Questions venues ask about this choice
+              </h2>
+              <div className="space-y-3">
+                {faqs.map((f) => (
+                  <details key={f.q} className="rounded-xl border border-vs-border bg-vs-surface p-5">
+                    <summary className="cursor-pointer list-none font-semibold text-vs-text [&::-webkit-details-marker]:hidden">
+                      {f.q}
+                    </summary>
+                    <p className="mt-3 text-sm leading-relaxed text-vs-text-soft">{f.a}</p>
+                  </details>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* LeaguePour advantage */}
           <div className="mb-16 rounded-2xl border border-vs-border-strong bg-vs-surface-2 p-8">

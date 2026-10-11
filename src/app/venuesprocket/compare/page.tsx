@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     "Honest side-by-side comparisons of VenueSprocket with Tripleseat, Perfect Venue, Planning Pod, Caterease, Event Temple, HoneyBook, and spreadsheet-and-email planning - including where another tool is the better fit.",
   alternates: { canonical: URL },
   openGraph: {
-    siteName: "VenueSprocket",
+    siteName: "VenueSprocket", images: [{ url: "/venuesprocket/opengraph-image", alt: "VenueSprocket - private event management software" }],
     title: "Compare VenueSprocket to other private event software",
     description: "Side-by-side comparisons, including where another tool is the better fit.",
     url: URL,

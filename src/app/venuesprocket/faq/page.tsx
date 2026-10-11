@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     "Straight answers about VenueSprocket: inquiries, proposals, e-signature contracts, Stripe deposits, BEOs, pricing, and what the product does not do yet.",
   alternates: { canonical: URL },
   openGraph: {
-    siteName: "VenueSprocket",
+    siteName: "VenueSprocket", images: [{ url: "/venuesprocket/opengraph-image", alt: "VenueSprocket - private event management software" }],
     title: "VenueSprocket FAQ",
     description: "Straight answers about inquiries, proposals, contracts, deposits, BEOs, and pricing.",
     url: URL,

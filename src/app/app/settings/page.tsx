@@ -4,6 +4,7 @@ import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import { VS_HOST } from "@/lib/vs-routing";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { InquiryButtonSnippet } from "@/components/venuesprocket/inquiry-button-snippet";
 
 async function saveVsSettings(formData: FormData) {
   "use server";
@@ -77,6 +78,8 @@ export default async function VsSettingsPage() {
           Preview inquiry page ↗
         </a>
       </div>
+
+      <InquiryButtonSnippet inquiryUrl={inquiryUrl} />
 
       {/* VS Config form */}
       <form action={saveVsSettings}>

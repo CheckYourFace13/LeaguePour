@@ -7,10 +7,10 @@ const URL = "https://venuesprocket.com/tools";
 export const metadata: Metadata = {
   title: { absolute: "Free Private Event Calculators for Venues | VenueSprocket" },
   description:
-    "Free, no-login calculators for restaurants, bars, breweries, and event spaces: food and beverage minimums and event deposits, with every formula shown.",
+    "Free, no-login calculators for restaurants, bars, breweries, and event spaces: F&B minimums, deposits, event profit, and room rental pricing - every formula shown.",
   alternates: { canonical: URL },
   openGraph: {
-    siteName: "VenueSprocket", title: "Free private event calculators", description: "F&B minimum and event deposit calculators - no login.", url: URL },
+    siteName: "VenueSprocket", images: [{ url: "/venuesprocket/opengraph-image", alt: "VenueSprocket - private event management software" }], title: "Free private event calculators", description: "F&B minimum, deposit, event profit, and room rental pricing calculators - no login.", url: URL },
 };
 
 const tools = [
@@ -23,6 +23,16 @@ const tools = [
     href: "/tools/event-deposit-calculator",
     title: "Event deposit calculator",
     body: "Deposit as a percent or flat amount, remaining balance, balance due date, and an estimate of card processing on the deposit.",
+  },
+  {
+    href: "/tools/event-profit-calculator",
+    title: "Event profit calculator",
+    body: "What a private event actually makes after food, beverage, labor, and card costs - in total, per guest, and against a normal night.",
+  },
+  {
+    href: "/tools/room-rental-pricing-calculator",
+    title: "Room rental pricing calculator",
+    body: "The break-even room fee from what the space normally earns plus what a booking adds, and the equivalent food and beverage minimum.",
   },
 ];
 
@@ -57,7 +67,9 @@ export default function VsToolsPage() {
             ))}
           </div>
           <p className="mt-10 text-sm text-vs-text-soft">
-            Looking for documents instead? See the{" "}
+            Writing a cancellation policy? That&apos;s a judgment call, not a calculation - see the{" "}
+            <Link href="/guides/event-cancellation-policy-examples-for-restaurants-and-venues" className="font-semibold text-vs-accent hover:underline">four example policies</Link>{" "}
+            and when each one fits. Looking for documents instead? See the{" "}
             <Link href="/templates" className="font-semibold text-vs-accent hover:underline">free templates and checklists</Link>{" "}
             or the <Link href="/guides" className="font-semibold text-vs-accent hover:underline">guides</Link>.
           </p>

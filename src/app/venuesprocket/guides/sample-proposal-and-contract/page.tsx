@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     "See what a VenueSprocket proposal and e-signature contract actually look like, with a sample event and made-up customer - no login required.",
   alternates: { canonical: "https://venuesprocket.com/guides/sample-proposal-and-contract" },
   openGraph: {
-    siteName: "VenueSprocket",
+    siteName: "VenueSprocket", images: [{ url: "/venuesprocket/opengraph-image", alt: "VenueSprocket - private event management software" }],
     title: "Sample Event Proposal & Contract | VenueSprocket",
     description: "A sample proposal and contract preview - made-up event, made-up customer.",
     url: "https://venuesprocket.com/guides/sample-proposal-and-contract",

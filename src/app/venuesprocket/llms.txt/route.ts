@@ -25,8 +25,9 @@ Related product:
 
 ## Guides and free resources
 - [Guides](https://venuesprocket.com/guides): practical guides for running private events
-- [Templates](https://venuesprocket.com/templates): BEO template, proposal and contract checklists
-- [Free tools](https://venuesprocket.com/tools): food & beverage minimum and event deposit calculators
+- [Templates](https://venuesprocket.com/templates): inquiry form, proposal, contract checklist, BEO, and run of show templates
+- [LeaguePour bundle](https://venuesprocket.com/bundle): how the 50% cross-product discount works
+- [Free tools](https://venuesprocket.com/tools): F&B minimum, event deposit, event profit, and room rental pricing calculators
 - [What is a BEO?](https://venuesprocket.com/guides/what-is-a-beo)
 
 ## Company

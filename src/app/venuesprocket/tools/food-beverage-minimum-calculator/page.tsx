@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     "Free food and beverage minimum calculator: projected spend, shortfall, service charge, tax, and the guest count or per-guest spend needed to hit a minimum. Shows every step of the math.",
   alternates: { canonical: URL },
   openGraph: {
-    siteName: "VenueSprocket",
+    siteName: "VenueSprocket", images: [{ url: "/venuesprocket/opengraph-image", alt: "VenueSprocket - private event management software" }],
     title: "Food & Beverage Minimum Calculator",
     description: "Projected spend, shortfall, service charge, and tax for a private event minimum - with the math shown.",
     url: URL,

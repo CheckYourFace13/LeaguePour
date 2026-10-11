@@ -15,6 +15,8 @@ import { VS_HOST } from "@/lib/vs-routing";
 export const vsBrandMetadata: Metadata = {
   metadataBase: new URL(`https://${VS_HOST}`),
   applicationName: "VenueSprocket",
+  description:
+    "VenueSprocket is private event management software for restaurants, breweries, bars, taprooms, and event spaces: inquiries, proposals, contracts, deposits, and BEOs.",
   keywords: [
     "private event management software",
     "private event booking",
@@ -32,10 +34,12 @@ export const vsBrandMetadata: Metadata = {
     description: "Private event management for restaurants, breweries, bars, taprooms, and event spaces.",
     type: "website",
     locale: "en_US",
+    images: [{ url: "/venuesprocket/opengraph-image", width: 1200, height: 630, alt: "VenueSprocket - private event management software" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "VenueSprocket",
     description: "Private event management for restaurants, breweries, bars, taprooms, and event spaces.",
+    images: [{ url: "/venuesprocket/opengraph-image", alt: "VenueSprocket - private event management software" }],
   },
 };

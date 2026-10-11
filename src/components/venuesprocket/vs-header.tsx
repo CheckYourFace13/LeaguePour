@@ -11,7 +11,7 @@ const navLinks = [
 
 export function VsHeader() {
   return (
-    <header className="sticky top-0 z-50 border-b border-vs-border bg-vs-surface/95 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-vs-border bg-vs-surface/95 backdrop-blur-md print:hidden">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 md:px-6">
         {/* Logo */}
         <Link href="/" className="flex items-center shrink-0">

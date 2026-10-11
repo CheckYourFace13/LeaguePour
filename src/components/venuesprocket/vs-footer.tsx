@@ -39,6 +39,7 @@ const cols = [
       { href: "/guides", label: "Guides" },
       { href: "/templates", label: "Free templates" },
       { href: "/tools", label: "Free calculators" },
+      { href: "/bundle", label: "LeaguePour bundle" },
     ],
   },
   {
@@ -66,7 +67,7 @@ const cols = [
 
 export function VsFooter() {
   return (
-    <footer className="mt-auto border-t border-vs-border bg-vs-surface-2">
+    <footer className="mt-auto border-t border-vs-border bg-vs-surface-2 print:hidden">
       <div className="mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-16">
         {/* Brand */}
         <div className="mb-10 flex items-start gap-4">

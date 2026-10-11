@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { vsBrandMetadata } from "@/lib/vs-metadata";
 
 // { absolute } so the root layout's "%s | LeaguePour" template can't wrap it.
 export const metadata: Metadata = {
+  ...vsBrandMetadata,
   title: { absolute: "Page not found | VenueSprocket" },
   robots: { index: false, follow: false },
 };

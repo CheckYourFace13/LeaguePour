@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   description:
     "VenueSprocket helps restaurants, breweries, bars, and event spaces book private events, send proposals, sign contracts, collect deposits, and create BEOs.",
   openGraph: {
-    siteName: "VenueSprocket",
+    siteName: "VenueSprocket", images: [{ url: "/venuesprocket/opengraph-image", alt: "VenueSprocket - private event management software" }],
     type: "website",
     locale: "en_US",
   },

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { VS_HOST } from "@/lib/vs-routing";
 import { vsBrandMetadata } from "@/lib/vs-metadata";
+import { VenueSprocketGoogleTags } from "@/components/venuesprocket/vs-google-tags";
 
 export async function generateMetadata(): Promise<Metadata> {
   // /signup/venue, /forgot-password, and /reset-password are all plain client components with
@@ -37,6 +38,9 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
 
   return (
     <div className="flex min-h-full flex-col bg-lp-bg">
+      {/* VS signup/login pages sit outside the venuesprocket/ layout, so its GA4 tag never loaded
+          here (LP's is already suppressed on the VS host) - VS signups were untracked. */}
+      {isVs ? <VenueSprocketGoogleTags /> : null}
       <header className="border-b border-lp-border bg-lp-bg/90 px-4 py-4 backdrop-blur-md md:px-6 md:py-5">
         {isVs ? (
           <Link href="https://venuesprocket.com" className="font-display text-xl font-bold tracking-tight">

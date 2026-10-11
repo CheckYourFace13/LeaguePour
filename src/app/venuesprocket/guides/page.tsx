@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     "Free guides on running private events at restaurants, bars, breweries, and taprooms - BEOs, contracts, inquiry forms, and the practical documents venues actually need.",
   alternates: { canonical: "https://venuesprocket.com/guides" },
   openGraph: {
-    siteName: "VenueSprocket",
+    siteName: "VenueSprocket", images: [{ url: "/venuesprocket/opengraph-image", alt: "VenueSprocket - private event management software" }],
     title: "Guides & Resources for Private Event Venues | VenueSprocket",
     description:
       "Free guides and templates for restaurants, bars, breweries, and taprooms booking private events.",
@@ -114,8 +114,8 @@ export default async function VsGuidesIndexPage() {
           {[
             { href: "/tools/food-beverage-minimum-calculator", title: "F&B minimum calculator", body: "Projected spend, shortfall, service charge, and tax - with the math shown." },
             { href: "/tools/event-deposit-calculator", title: "Event deposit calculator", body: "Deposit, remaining balance, due date, and a card-processing estimate." },
-            { href: "/templates#proposal-checklist", title: "Proposal checklist", body: "Everything a host needs to say yes without a follow-up call." },
-            { href: "/templates#contract-checklist", title: "Contract checklist", body: "The topics that cause disputes when a contract leaves them out." },
+            { href: "/templates/event-proposal-template", title: "Proposal template", body: "A one-page, copy-and-fill proposal with a filled-in example." },
+            { href: "/templates/private-event-contract-checklist", title: "Contract checklist", body: "The topics that cause disputes when a contract leaves them out." },
           ].map((t) => (
             <Link
               key={t.href}
