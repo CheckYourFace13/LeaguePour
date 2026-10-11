@@ -499,7 +499,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     title: "Bar Event Management Software",
     metaTitle: "Bar Event Management Software — Private Parties & Game Nights — VenueSprocket",
     metaDescription:
-      "VenueSprocket helps bars book private parties, birthday events, and corporate buyouts while LeaguePour fills slow nights with dart leagues, trivia, cornhole, and bar game competitions.",
+      "VenueSprocket helps bars book private parties, birthday events, and corporate buyouts - inquiries, proposals, contracts, deposits, and BEOs in one place.",
     kicker: "For bars",
     hero: "Book private parties. Fill slow nights. Manage both from one place.",
     heroSub:
@@ -563,7 +563,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     title: "Taproom Event Management Software",
     metaTitle: "Taproom Event Management Software — Bookings, Leagues & Events — VenueSprocket",
     metaDescription:
-      "VenueSprocket helps taprooms book private events and buyouts while LeaguePour builds weekly traffic with dart leagues, trivia, cornhole, and recurring game nights.",
+      "VenueSprocket helps taprooms book private events and buyouts - inquiries, proposals, contracts, deposits, and BEOs without enterprise software.",
     kicker: "For taprooms",
     hero: "Taproom events, organized.",
     heroSub:
