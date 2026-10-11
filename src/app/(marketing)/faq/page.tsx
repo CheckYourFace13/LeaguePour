@@ -9,7 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
   description:
     "Answers about LeaguePour venue competition software, entry fee tournaments, team registration, and league management for bars.",
   alternates: { canonical: "/faq" },
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "LeaguePour FAQ",
     description: "FAQ for bar event registration software and tournament signup workflows.",
     url: "/faq",

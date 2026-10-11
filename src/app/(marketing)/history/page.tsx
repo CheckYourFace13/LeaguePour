@@ -2,6 +2,7 @@ import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
 import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
+import { PagePrintButton } from "@/components/marketing/print-button";
 
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/history", {
@@ -17,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "pub trivia history",
     "shuffleboard history",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "Bar Game History | How Your Favorite Bar Games Came to Be | LeaguePour",
     description:
       "The real history behind darts, cornhole, billiards, trivia, and shuffleboard - where they came from and why they're still packing bars.",
@@ -94,6 +95,7 @@ export default function HistoryHubPage() {
           Every game on your bar menu has a story. Some started in medieval England, some in 19th-century
           rural America, some in a British pub on a slow Tuesday night. These are those stories.
         </p>
+        <PagePrintButton />
 
         <div className="mt-14 grid gap-6 sm:grid-cols-2">
           {articles.map((a) => (

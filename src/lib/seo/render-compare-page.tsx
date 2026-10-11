@@ -28,7 +28,7 @@ export async function buildCompareMetadata(slug: string): Promise<Metadata> {
     title: { absolute: page.title },
     description: page.description,
     alternates: { canonical: path },
-    openGraph: { title: page.title, description: page.description, url: path },
+    openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }], title: page.title, description: page.description, url: path },
     robots: { index: true, follow: true },
   };
 }

@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "round robin points system",
     "tiebreaker rules bar league",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "How Standings and Points Systems Work for Bar Leagues | LeaguePour Guide",
     description: "The points system behind league standings, and why visible standings drive attendance.",
     url: "/guides/how-standings-and-points-work",

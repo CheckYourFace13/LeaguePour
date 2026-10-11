@@ -2,6 +2,7 @@ import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
 import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
+import { PagePrintButton } from "@/components/marketing/print-button";
 import { Button } from "@/components/ui/button";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -19,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "pub trivia rules",
     "bar game official rules",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "Official Rules for Bar Games | LeaguePour Resource Guide",
     description:
       "Links to official rules from the governing bodies - WDF, ACA, WPA, BCA, NSA, TDA, and more. We link to the source; we don't rewrite it.",
@@ -208,7 +209,7 @@ export default function RulesPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
-      <div className="mx-auto max-w-4xl px-4 py-16 md:px-6 md:py-20">
+      <div className="print-link-urls mx-auto max-w-4xl px-4 py-16 md:px-6 md:py-20">
         <p className="lp-kicker text-lp-accent">Rules resource</p>
         <h1 className="mt-2 font-display text-4xl font-bold md:text-5xl">
           Official rules for bar games
@@ -217,6 +218,7 @@ export default function RulesPage() {
           We link to official rules only - from the governing bodies and associations that maintain them.
           We don't rewrite or paraphrase rules; go straight to the source.
         </p>
+        <PagePrintButton />
         <p className="mt-3 max-w-2xl text-sm text-lp-muted">
           Some games have multiple governing bodies with slightly different rules. We've noted where
           significant variations exist so you can choose the right reference for your context.

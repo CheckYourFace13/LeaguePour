@@ -97,7 +97,7 @@ export async function buildCityDiscoveryMetadata(
     title: { absolute: title },
     description,
     alternates: { canonical: path },
-    openGraph: { title, description, url: path },
+    openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }], title, description, url: path },
     robots: discoveryRobots({
       venueCount: venues.length,
       competitionCount: competitions.length,

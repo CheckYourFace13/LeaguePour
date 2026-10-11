@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "TV scoreboard for bars",
     "bar league management software",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "Bar League Standings Software | LeaguePour",
     description:
       "Live, automatically-updating standings for any bar league - darts, pool, cornhole, trivia, and more. Shareable page or TV scoreboard.",

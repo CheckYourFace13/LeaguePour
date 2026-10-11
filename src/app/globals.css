@@ -253,3 +253,25 @@ h1, h2, h3, h4 {
   border-color: color-mix(in oklab, var(--vs-accent) 45%, var(--vs-border));
   box-shadow: 0 0 0 2px color-mix(in oklab, var(--vs-accent) 24%, transparent), 0 18px 44px -26px rgba(184, 115, 51, 0.35);
 }
+
+/* Print: editorial pages (rules, history, templates, tools) print as clean documents. Site chrome
+   is hidden per component with print:hidden; this covers what components can't - injected ads,
+   dark backgrounds, and (inside .print-link-urls) the destination of external links, so a printed
+   list of official rule sources still says where each one is. */
+@media print {
+  ins.adsbygoogle,
+  .google-auto-placed,
+  iframe[id^="aswift"],
+  iframe[id^="google_ads"] {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+  }
+  .print-link-urls a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    font-weight: 400;
+    word-break: break-all;
+  }
+}

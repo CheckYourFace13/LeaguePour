@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "round robin league format",
     "tournament format for bars",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "Round Robin vs. Single Elimination for Bars | LeaguePour Guide",
     description:
       "Which tournament format actually keeps a bar full - round robin or single elimination - and how to choose.",

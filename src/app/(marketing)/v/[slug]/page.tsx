@@ -36,7 +36,7 @@ export async function generateMetadata({
     title: { absolute: `${venue.name}${cityTitle} | LeaguePour` },
     description: `${venue.name} (${venue.venueType}). ${cityIntent}`,
     alternates: { canonical: pageUrl },
-    openGraph: {
+    openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
       title: `${venue.name}${cityTitle} | LeaguePour`,
       description: (venue.description || `${venue.name} on LeaguePour.`).slice(0, 160),
       type: "website",

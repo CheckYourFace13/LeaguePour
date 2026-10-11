@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "trivia night app for bars",
     "trivia tournament management",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "Bar Trivia Software & Signup Management | LeaguePour",
     description:
       "Online trivia night registration, entry fees, team signup, and standings for bars. No spreadsheets.",

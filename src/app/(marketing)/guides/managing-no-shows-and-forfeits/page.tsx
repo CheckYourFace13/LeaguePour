@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "how to handle no shows league",
     "bar league attendance policy",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "Managing No-Shows and Forfeits in Bar Leagues | LeaguePour Guide",
     description: "A fair, written forfeit policy that protects the teams who actually show up.",
     url: "/guides/managing-no-shows-and-forfeits",

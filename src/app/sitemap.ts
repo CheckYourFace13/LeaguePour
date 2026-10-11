@@ -82,6 +82,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...getAllCompareSlugs().map((s) => `/compare/${s}`),
     // Only /find pages with at least one real listing - empty ones are noindex (render-find-page.tsx).
     ...findPaths,
+    "/tools",
+    "/tools/single-elimination-bracket-generator",
+    "/tools/round-robin-schedule-generator",
+    "/tools/standings-calculator",
     "/guides",
     "/guides/how-to-run-a-dart-league-at-your-bar",
     "/guides/cornhole-tournament-ideas-for-bars",

@@ -2,6 +2,7 @@ import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
 import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
+import { PagePrintButton } from "@/components/marketing/print-button";
 import { Button } from "@/components/ui/button";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -18,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "bar trivia history",
     "Sharon Burns Tom Porter pub quiz",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "History of Pub Trivia | How Quiz Night Conquered the Bar | LeaguePour",
     description:
       "The real history of pub trivia - from 1970s Britain through Trivial Pursuit to packed bar nights every Tuesday across America.",
@@ -68,6 +69,7 @@ export default function TriviaHistoryPage() {
           no special setup - and it still manages to fill rooms every week. That's not an accident.
           It took decades to develop the format that makes it work.
         </p>
+        <PagePrintButton />
 
         <div className="mt-12 space-y-8 text-lp-text leading-relaxed">
           <section>

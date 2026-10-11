@@ -31,7 +31,7 @@ export function SiteHeader() {
     : [...baseNav];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-lp-border-strong/80 bg-lp-surface/95 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-lp-border-strong/80 bg-lp-surface/95 backdrop-blur-md print:hidden">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 md:px-6 md:py-5">
         <Link href="/" className="flex items-center shrink-0">
           <Image src="/logos/leaguepour-full-logo.png" alt="LeaguePour" width={180} height={36} priority />

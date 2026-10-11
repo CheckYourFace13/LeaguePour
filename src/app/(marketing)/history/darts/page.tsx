@@ -2,6 +2,7 @@ import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
 import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
+import { PagePrintButton } from "@/components/marketing/print-button";
 import { Button } from "@/components/ui/button";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -18,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "pub darts history",
     "World Darts Federation history",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "History of Darts | From English Pubs to World Sport | LeaguePour",
     description:
       "From medieval English pubs to packed arenas - the real story of how darts became a world sport.",
@@ -67,6 +68,7 @@ export default function DartsHistoryPage() {
           Darts has been a pub game for centuries. The version you play today - with that specific
           number arrangement on the board - was largely settled by 1896.
         </p>
+        <PagePrintButton />
 
         <div className="mt-12 space-y-8 text-lp-text leading-relaxed">
           <section>

@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
   description:
     "LeaguePour features for venue competition software: tournament signup, bar event registration, league management, standings, and Stripe Connect entry fees.",
   alternates: { canonical: "/features" },
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "LeaguePour Features | Competition Management for Bars",
     description: "Tools for trivia signup software, dart league software, and cornhole tournament operations.",
     url: "/features",

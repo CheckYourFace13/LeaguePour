@@ -9,7 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
   description:
     "Find and join bar competitions near you on LeaguePour. Sign up for trivia nights, dart leagues, cornhole tournaments, pool leagues, and more - one account, secure payments.",
   alternates: { canonical: "/for-players" },
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "LeaguePour for Players | Join Bar Leagues & Tournaments",
     description: "One account to find and join venue competitions - trivia, darts, cornhole, pool, and more.",
     url: "/for-players",

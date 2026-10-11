@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "bar league registration fees",
     "refund policy bar tournament",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "How to Collect Entry Fees at Your Bar (The Right Way) | LeaguePour",
     description:
       "Cash is a headache. Learn how online payments solve entry fee collection for bar leagues and tournaments.",

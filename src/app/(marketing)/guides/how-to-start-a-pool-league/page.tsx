@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "pool tournament bar",
     "billiards league setup",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "How to Start a Pool League at Your Bar | LeaguePour",
     description:
       "Format, handicapping, table logistics, entry fees, and how to run a bar pool league that fills a full season.",

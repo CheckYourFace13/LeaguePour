@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "how to run a cornhole tournament",
     "bar cornhole league",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "Cornhole Tournament Ideas for Bars | LeaguePour Guide",
     description:
       "Bracket formats, prize ideas, seasonal themes, and promotion tips for bar cornhole tournaments.",

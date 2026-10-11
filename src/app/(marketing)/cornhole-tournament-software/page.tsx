@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "cornhole bracket software",
     "bag toss league signup",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "Bar Cornhole & Bag Toss Tournament App | LeaguePour",
     description:
       "Run cornhole and bag toss tournaments at your bar - team signup, entry fees, brackets, and standings.",

@@ -61,7 +61,7 @@ export async function buildFindMetadata(findSlug: string): Promise<Metadata> {
     title: { absolute: title },
     description,
     alternates: { canonical: path },
-    openGraph: { title, description, url: path },
+    openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }], title, description, url: path },
     // Index only once there's at least one real listing. The page's copy and FAQ are the same
     // template across every game, so on its own it's a thin page that promises "real venues" and
     // shows none - noindex,follow until a venue or competition exists, then it flips automatically.

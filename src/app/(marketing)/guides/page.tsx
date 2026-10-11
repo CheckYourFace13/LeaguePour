@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "how to collect entry fees at a bar",
     "bar competition ideas",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "Bar Competition Guides | LeaguePour",
     description:
       "Free guides for bar owners on running leagues, tournaments, and trivia nights that fill seats.",

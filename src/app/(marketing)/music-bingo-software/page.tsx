@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "music bingo app for bars",
     "bar music bingo platform",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "Music Bingo Software for Bars | LeaguePour",
     description:
       "Run music bingo nights at your bar - online registration, entry fees, and player notifications. No spreadsheets.",

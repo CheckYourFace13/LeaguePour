@@ -49,7 +49,7 @@ export async function generateMetadata({
     alternates: { canonical: pageUrl },
     // A placeholder record ("Test", "Demo"...) stays reachable but out of search results.
     ...(isPlaceholderCompetition(comp) ? { robots: { index: false, follow: true } } : {}),
-    openGraph: {
+    openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
       title: titleParts.join(" | "),
       description: desc,
       type: "website",

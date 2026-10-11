@@ -9,7 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
   description:
     "LeaguePour helps bars and venues run dart leagues, cornhole tournaments, trivia nights, and pool leagues — with online signup, Stripe payments, standings, and player marketing built in.",
   alternates: { canonical: "/about" },
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "About LeaguePour",
     description:
       "LeaguePour helps bars run organized leagues and tournaments — online signup, Stripe entry fees, live standings, and player marketing in one platform.",

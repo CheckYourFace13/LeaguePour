@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
   description:
     "A sample LeaguePour venue page - bracket, live standings, results, and player signup - so you can see how competitions look before you sign up.",
   alternates: { canonical: "/demo" },
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "See LeaguePour In Action",
     description: "A sample venue competition page - bracket, standings, and results.",
     url: "/demo",

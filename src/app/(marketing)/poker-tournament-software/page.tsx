@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "bar poker night app",
     "poker tournament management",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "Bar Poker Tournament Software | LeaguePour",
     description:
       "Run poker nights and tournaments at your bar - online registration, standings, and player notifications. No spreadsheets.",

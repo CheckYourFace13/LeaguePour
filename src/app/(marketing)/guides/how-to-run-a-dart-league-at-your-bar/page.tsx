@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "dart league entry fees",
     "dart league promotion",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "How to Run a Dart League at Your Bar | LeaguePour Guide",
     description:
       "Everything you need to start and sustain a dart league - formats, fees, scheduling, and keeping players coming back.",

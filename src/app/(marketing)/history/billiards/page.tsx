@@ -2,6 +2,7 @@ import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
 import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
+import { PagePrintButton } from "@/components/marketing/print-button";
 import { Button } from "@/components/ui/button";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -19,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "8-ball history",
     "bar pool league history",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "History of Billiards & Pool | From Kings to Corner Bars | LeaguePour",
     description:
       "A French lawn game, King Louis XI, a mace that became a cue, horse-racing betting pools, and eventually your bar's back room. The full story.",
@@ -69,6 +70,7 @@ export default function BilliardsHistoryPage() {
           indoors, acquired a royal patron, and begun its long journey toward becoming the game you're
           running leagues for at your bar.
         </p>
+        <PagePrintButton />
 
         <div className="mt-12 space-y-8 text-lp-text leading-relaxed">
           <section>

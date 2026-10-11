@@ -2,6 +2,7 @@ import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
 import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
+import { PagePrintButton } from "@/components/marketing/print-button";
 import { Button } from "@/components/ui/button";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -18,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "American Cornhole Association history",
     "bar cornhole league",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "History of Cornhole | The Origin of America's Backyard Game | LeaguePour",
     description:
       "Ohio says they invented it. Wisconsin disagrees. The real story of how cornhole went from rural pastime to American institution.",
@@ -67,6 +68,7 @@ export default function CornholeHistoryPage() {
           Ask someone from Ohio and ask someone from Wisconsin where cornhole comes from, and you'll get
           two very different answers. Neither has definitive proof. That's been the state of things for a while.
         </p>
+        <PagePrintButton />
 
         <div className="mt-12 space-y-8 text-lp-text leading-relaxed">
           <section>

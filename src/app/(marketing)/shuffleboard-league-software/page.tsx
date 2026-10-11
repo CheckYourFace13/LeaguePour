@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "bar shuffleboard league app",
     "shuffleboard competition management",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "Shuffleboard League Software for Bars | LeaguePour",
     description:
       "Run shuffleboard leagues and tournaments at your bar - online signup, entry fees, standings, and brackets. No spreadsheets.",

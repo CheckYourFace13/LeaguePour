@@ -44,6 +44,7 @@ export const BRANDS: Record<Brand, BrandConfig> = {
     staticKnownPaths: [
       "/", "/guides", "/pricing", "/demo", "/features", "/features/tournaments", "/for-venues", "/for-players",
       "/signup/venue", "/faq", "/how-it-works", "/contact",
+      "/tools", "/tools/single-elimination-bracket-generator", "/tools/round-robin-schedule-generator", "/tools/standings-calculator",
       "/guides/bar-competition-ideas", "/guides/bar-trivia-night-guide", "/guides/cornhole-tournament-ideas-for-bars",
       "/guides/how-standings-and-points-work", "/guides/how-to-collect-entry-fees-at-your-bar",
       "/guides/how-to-increase-bar-traffic-on-slow-nights", "/guides/how-to-run-a-dart-league-at-your-bar",
@@ -72,6 +73,8 @@ export const BRANDS: Record<Brand, BrandConfig> = {
       "/", "/guides", "/pricing", "/start", "/features", "/about", "/contact", "/leaguepour",
       "/faq", "/demo", "/compare", "/templates", "/tools",
       "/tools/food-beverage-minimum-calculator", "/tools/event-deposit-calculator",
+      "/tools/event-profit-calculator", "/tools/room-rental-pricing-calculator", "/bundle",
+      "/templates/event-proposal-template", "/templates/private-event-contract-checklist", "/templates/run-of-show-template",
       "/event-contract-software", "/event-deposit-software", "/beo-software", "/private-event-booking-software",
       "/guides/what-is-a-beo", "/guides/beo-template", "/guides/beo-vs-contract",
       "/guides/private-event-inquiry-form-template", "/guides/sample-proposal-and-contract",

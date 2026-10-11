@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "trivia night prizes",
     "trivia night theme ideas",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "How to Run Trivia Night at Your Bar | LeaguePour Guide",
     description:
       "Hosting tips, themes, scoring, prizes, and the secrets to keeping a full room of trivia regulars.",

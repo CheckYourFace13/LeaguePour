@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "bar promotion ideas",
     "weekday bar traffic",
   ],
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "How to Increase Bar Traffic on Slow Nights | LeaguePour",
     description:
       "Why recurring anchor events outperform one-off promotions, and how to build a slow night into a full one.",

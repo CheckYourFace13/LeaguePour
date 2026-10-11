@@ -11,7 +11,9 @@ Key facts:
 - Entry fees are collected with Stripe Checkout through Stripe Connect and paid out to the venue's own bank account, minus a platform fee. Free ($0) events are supported.
 - Staff enter scores from the venue dashboard; standings (3 points win / 1 tie / 0 loss) update automatically, with a fullscreen scoreboard view for a bar TV.
 - Email campaigns to a venue's opted-in player audience. SMS sending is not available.
-- Plans differ by the number of concurrently active competitions; staff accounts are unlimited. See https://leaguepour.com/pricing.
+- Plans (Starter, Growth, Pro, Elite) differ only by how many competitions run at once (2, 9, 19, unlimited); staff accounts are unlimited. See https://leaguepour.com/pricing.
+- On paid entries the venue keeps the entry fee minus a 5% platform fee and the player pays a $1.50 service fee. LeaguePour is not fee-free.
+- There is no waitlist (signup closes at the cap) and no check-in feature; bracket seeding is signup order.
 
 Related product:
 - VenueSprocket (https://venuesprocket.com) is a separate companion product, with its own subscription, for private event management (inquiries, proposals, contracts, deposits, BEOs). An active subscriber to either product gets 50% off the other.
@@ -23,6 +25,11 @@ Related product:
 - [FAQ](https://leaguepour.com/faq)
 - [For venues](https://leaguepour.com/for-venues)
 - [For players](https://leaguepour.com/for-players)
+
+## Free tools (no signup, nothing saved)
+- [Single elimination bracket generator](https://leaguepour.com/tools/single-elimination-bracket-generator)
+- [Round robin schedule generator](https://leaguepour.com/tools/round-robin-schedule-generator)
+- [Standings calculator](https://leaguepour.com/tools/standings-calculator)
 
 ## Guides
 - [Guides](https://leaguepour.com/guides): running leagues, tournaments, and game nights at a bar

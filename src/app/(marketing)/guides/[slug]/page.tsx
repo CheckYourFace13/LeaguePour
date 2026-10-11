@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: { absolute: `${guide.title} | LeaguePour` },
     description: guide.description,
     alternates: { canonical: `/guides/${slug}` },
-    openGraph: { title: guide.title, description: guide.description, url: `/guides/${slug}` },
+    openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }], title: guide.title, description: guide.description, url: `/guides/${slug}` },
   });
 }
 

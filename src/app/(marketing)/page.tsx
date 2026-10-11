@@ -8,7 +8,7 @@ export async function generateMetadata(): Promise<Metadata> {
   description:
     "LeaguePour is venue competition software for bars: tournament signup software, player registration, Stripe entry fees, and league management in one platform.",
   alternates: { canonical: "/" },
-  openGraph: {
+  openGraph: { siteName: "LeaguePour",
     title: "LeaguePour | Venue Competition Software for Bars",
     description:
       "Bar competition software for trivia, dart league, cornhole tournament, and recurring game nights.",

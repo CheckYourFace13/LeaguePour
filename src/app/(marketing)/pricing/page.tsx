@@ -7,6 +7,9 @@ import { Card } from "@/components/ui/card";
 import { formatUsdCents, PLAN_DEFINITIONS } from "@/lib/pricing";
 import { TrackView } from "@/components/analytics/track-view";
 import { PlanSelectLink } from "@/components/analytics/plan-select-link";
+import { ACTIVE_COMPETITION_LIMITS_BY_PLAN } from "@/lib/pricing";
+import { PLATFORM_FEE_BPS, PLAYER_SERVICE_FEE_CENTS } from "@/lib/stripe/connect-fees";
+import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 
 // Every row here is a real, verified feature: either available to every plan today (no
 // BillingPlan-based gate exists in code for it) or the one row that IS actually plan-limited
@@ -15,7 +18,14 @@ import { PlanSelectLink } from "@/components/analytics/plan-select-link";
 // any non-EMAIL channel) and multi-location is a schema-only stub (Venue.parentVenueId has no
 // functional code anywhere) - neither is a real, usable feature on any plan.
 const FEATURE_ROWS: { label: string; values: string[] }[] = [
-  { label: "Active competitions", values: PLAN_DEFINITIONS.map((t) => t.eventLimitLabel) },
+  {
+    label: "Competitions running at once",
+    values: PLAN_DEFINITIONS.map((t) => {
+      const limit = ACTIVE_COMPETITION_LIMITS_BY_PLAN[t.plan];
+      return Number.isFinite(limit) ? `Up to ${limit}` : "Unlimited";
+    }),
+  },
+  { label: "Drafts and finished competitions", values: ["Unlimited", "Unlimited", "Unlimited", "Unlimited"] },
   { label: "Stripe Connect entry fees", values: ["✓", "✓", "✓", "✓"] },
   { label: "QR code registration", values: ["✓", "✓", "✓", "✓"] },
   { label: "Live standings & TV scoreboard", values: ["✓", "✓", "✓", "✓"] },
@@ -29,9 +39,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/pricing", {
   title: { absolute: "LeaguePour Pricing | Bar Event Registration Software Plans" },
   description:
-    "Pricing for LeaguePour venue competition software. Plans for trivia signup software, dart league software, and cornhole tournament software.",
+    "LeaguePour pricing: four plans that differ only by how many competitions you run at once, 2 months free on annual billing, and a clear breakdown of fees on paid registrations.",
   alternates: { canonical: "/pricing" },
-  openGraph: {
+  openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "LeaguePour Pricing | Bar Event Registration Software",
     description: "Monthly and annual plans for bar tournament platform workflows and player registration.",
     url: "/pricing",
@@ -43,13 +53,60 @@ export async function generateMetadata(): Promise<Metadata> {
 });
 }
 
+// Fee figures come straight from the constants the checkout uses, so this page can't drift from
+// what players and venues are actually charged.
+const PLATFORM_FEE_PCT = PLATFORM_FEE_BPS / 100;
+const SERVICE_FEE = formatUsdCents(PLAYER_SERVICE_FEE_CENTS);
+const EXAMPLE_ENTRY_CENTS = 1000;
+const EXAMPLE_PLAYER_PAYS = formatUsdCents(EXAMPLE_ENTRY_CENTS + PLAYER_SERVICE_FEE_CENTS);
+const EXAMPLE_VENUE_GETS = formatUsdCents(EXAMPLE_ENTRY_CENTS - Math.floor((EXAMPLE_ENTRY_CENTS * PLATFORM_FEE_BPS) / 10_000));
+
+const faqs: { q: string; a: string }[] = [
+  {
+    q: "What is the difference between the plans?",
+    a: "Only how many competitions you can have running at the same time: up to 2 on Starter, 9 on Growth, 19 on Pro, and unlimited on Elite. Every feature - entry fees, QR signup, brackets, standings, email campaigns, staff accounts - is on every plan.",
+  },
+  {
+    q: "What counts as a competition running at once?",
+    a: "One that is published, open for signup, closed but not finished, or in progress. Drafts and completed competitions never count, so a finished league frees up its slot.",
+  },
+  {
+    q: "What does a paid registration cost?",
+    a: `The venue keeps the entry fee minus a ${PLATFORM_FEE_PCT}% platform fee, and the player pays a ${SERVICE_FEE} service fee on top of the entry price at checkout. On a ${formatUsdCents(EXAMPLE_ENTRY_CENTS)} entry, the player pays ${EXAMPLE_PLAYER_PAYS} and the venue receives ${EXAMPLE_VENUE_GETS}.`,
+  },
+  {
+    q: "Are free events charged anything?",
+    a: "No. A $0 competition has no platform fee and no player service fee - players just register.",
+  },
+  {
+    q: "How does annual billing work?",
+    a: "Annual plans cost ten times the monthly price, so you get two months free (about 17% off). You can choose monthly or annual when you subscribe.",
+  },
+  {
+    q: "Which tournament formats are included?",
+    a: "Single elimination and round robin are generated automatically, and Custom lets you run any other format by hand. Double elimination, Swiss, pool play, and ladder formats are not automated yet.",
+  },
+  {
+    q: "Is VenueSprocket included?",
+    a: "No. VenueSprocket is a separate product, with its own subscription, for private event bookings. If your venue has an active subscription to either product, the other one is 50% off.",
+  },
+];
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+};
+
 export default function PricingPage() {
   return (
     <div className="lp-section mx-auto max-w-6xl px-4 md:px-6">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }} />
       <TrackView event="pricing_view" params={{ product: "lp" }} />
       <h1 className="lp-page-title text-5xl md:text-6xl">Pricing</h1>
       <p className="lp-page-sub mt-5 max-w-xl text-xl text-lp-text-soft">
-        Simple tiers. Pay annually and get 2 months free (~17% off).
+        Every plan has every feature. You pay for how many competitions you run at once - and
+        get 2 months free (~17% off) on annual billing.
       </p>
       <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-4 md:gap-6">
         {PLAN_DEFINITIONS.map((t) => (
@@ -71,7 +128,11 @@ export default function PricingPage() {
             <ul className="mt-8 space-y-2.5 text-[1.02rem] leading-snug text-lp-text-soft">
               <li className="flex gap-2">
                 <span className="text-lp-accent">|</span>
-                <span>{t.eventLimitLabel} / mo</span>
+                <span>
+                  {Number.isFinite(ACTIVE_COMPETITION_LIMITS_BY_PLAN[t.plan])
+                    ? `Up to ${ACTIVE_COMPETITION_LIMITS_BY_PLAN[t.plan]} competitions at once`
+                    : "Unlimited competitions at once"}
+                </span>
               </li>
               <li className="flex gap-2">
                 <span className="text-lp-accent">|</span>
@@ -133,9 +194,57 @@ export default function PricingPage() {
         </div>
       </div>
 
-      <p className="mt-10 text-center text-sm text-lp-text-soft">
-        Platform fee on paid registrations - set in Venue profile.
-      </p>
+      {/* Paid-registration economics */}
+      <div className="mt-16 grid gap-6 md:grid-cols-2">
+        <div className="rounded-2xl border border-lp-border bg-lp-surface/50 p-7">
+          <h2 className="font-display text-2xl font-bold text-lp-text">What a paid registration costs</h2>
+          <p className="mt-3 text-sm leading-relaxed text-lp-text-soft">
+            On top of your plan, paid entries have two fees. Free ($0) events have neither.
+          </p>
+          <ul className="mt-4 space-y-2 text-sm leading-relaxed text-lp-text-soft">
+            <li>• <strong className="text-lp-text">{PLATFORM_FEE_PCT}% platform fee</strong> - taken from the entry fee before it reaches your bank account.</li>
+            <li>• <strong className="text-lp-text">{SERVICE_FEE} service fee</strong> - paid by the player, added to the entry price at checkout.</li>
+          </ul>
+          <div className="mt-5 rounded-xl border border-lp-border bg-lp-bg px-4 py-3 font-mono text-sm text-lp-text-soft">
+            <p>{formatUsdCents(EXAMPLE_ENTRY_CENTS)} entry fee</p>
+            <p>Player pays: {EXAMPLE_PLAYER_PAYS}</p>
+            <p>Venue receives: {EXAMPLE_VENUE_GETS}</p>
+          </div>
+          <p className="mt-3 text-xs text-lp-muted">
+            Entry fees are collected with Stripe Checkout and paid out to your own bank account through Stripe Connect.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-lp-border bg-lp-surface/50 p-7">
+          <h2 className="font-display text-2xl font-bold text-lp-text">Formats on every plan</h2>
+          <ul className="mt-4 space-y-2 text-sm leading-relaxed text-lp-text-soft">
+            <li>• <strong className="text-lp-text">Single elimination</strong> - bracket generated automatically, byes handled.</li>
+            <li>• <strong className="text-lp-text">Round robin</strong> - full schedule generated automatically, standings from scores.</li>
+            <li>• <strong className="text-lp-text">Custom</strong> - run any other format by hand.</li>
+          </ul>
+          <p className="mt-4 text-sm leading-relaxed text-lp-text-soft">
+            Double elimination, Swiss, pool play, and ladder formats aren&apos;t automated yet.{" "}
+            <Link href="/features/tournaments" className="font-semibold text-lp-accent hover:underline">See what&apos;s live and what&apos;s planned</Link>.
+          </p>
+          <p className="mt-4 text-sm leading-relaxed text-lp-text-soft">
+            Want to try the logic first? The free{" "}
+            <Link href="/tools" className="font-semibold text-lp-accent hover:underline">bracket and round robin generators</Link>{" "}
+            use the same rules, no signup needed.
+          </p>
+        </div>
+      </div>
+
+      {/* FAQ */}
+      <div className="mt-16 mx-auto max-w-3xl">
+        <h2 className="font-display text-2xl font-bold text-lp-text text-center">Pricing questions</h2>
+        <div className="mt-6 space-y-3">
+          {faqs.map((f) => (
+            <details key={f.q} className="rounded-xl border border-lp-border bg-lp-surface/40 px-5 py-4">
+              <summary className="cursor-pointer list-none font-semibold text-lp-text [&::-webkit-details-marker]:hidden">{f.q}</summary>
+              <p className="mt-3 text-sm leading-relaxed text-lp-text-soft">{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
       <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-base">
         <Link href="/features" className="font-semibold text-lp-accent hover:underline">
           See competition management features
@@ -156,8 +265,8 @@ export default function PricingPage() {
             Already have VenueSprocket?
           </p>
           <p className="mt-2 text-sm text-lp-muted leading-relaxed">
-            Venues using <strong className="text-lp-text">VenueSprocket</strong> for private events automatically get
-            50% off their LeaguePour subscription — no code needed. The discount applies at checkout when you sign in.
+            <strong className="text-lp-text">VenueSprocket</strong> is our separate product for private events. Venues with an
+            active VenueSprocket subscription automatically get 50% off LeaguePour — no code needed; it applies at checkout.
           </p>
           <p className="mt-2 text-sm text-lp-muted">
             The reverse works too — LeaguePour subscribers get 50% off VenueSprocket.

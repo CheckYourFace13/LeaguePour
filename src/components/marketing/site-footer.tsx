@@ -11,6 +11,7 @@ const cols = [
       { href: marketingRoutes.pricing, label: "Pricing" },
       { href: marketingRoutes.faq, label: "FAQ" },
       { href: "/guides", label: "Guides" },
+      { href: "/tools", label: "Free tools" },
       { href: "/for-venues", label: "For venues" },
       { href: "/for-players", label: "For players" },
     ],
@@ -44,7 +45,7 @@ const cols = [
 
 export function SiteFooter() {
   return (
-    <footer className="mt-auto border-t border-lp-border-strong bg-lp-surface">
+    <footer className="mt-auto border-t border-lp-border-strong bg-lp-surface print:hidden">
       <div className="mx-auto grid max-w-6xl gap-12 px-4 py-14 md:grid-cols-5 md:px-6 md:py-16">
         <div className="md:col-span-2">
           <div className="flex items-center gap-3">
