@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { AffiliateDisclosure, AmazonSearchLink } from "@/components/marketing/affiliate";
 
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/guides/how-to-run-a-dart-league-at-your-bar", {
@@ -48,7 +49,7 @@ const jsonLd = {
       },
       url: "https://leaguepour.com/guides/how-to-run-a-dart-league-at-your-bar",
       datePublished: "2026-05-10",
-      dateModified: "2026-05-10",
+      dateModified: "2026-10-12",
     },
     {
       "@type": "FAQPage",
@@ -175,8 +176,65 @@ export default function DartLeagueGuide() {
             </p>
           </section>
 
+          <section id="equipment">
+            <h2 className="font-display text-2xl font-bold">3. Set up your boards</h2>
+            <p className="mt-4">
+              Board count decides how big the league can be. One board runs one match at a time, so
+              an eight-team round robin (four matches a night) needs two boards to finish in two
+              45-minute waves, or four boards to play everything at once. Count your boards before
+              you set the team cap, not after.
+            </p>
+            <p className="mt-4">
+              Hang every board to the same standard measurements so no team has a &ldquo;home
+              board&rdquo; advantage:
+            </p>
+            <ul className="mt-4 list-disc space-y-2 pl-6">
+              <li><strong>Height:</strong> the center of the bullseye is 5 ft 8 in (173 cm) from the floor.</li>
+              <li><strong>Throw line, steel tip:</strong> 7 ft 9&frac14; in (237 cm) from the face of the board, measured along the floor.</li>
+              <li><strong>Throw line, soft tip:</strong> 8 ft (244 cm).</li>
+              <li><strong>Quick check:</strong> for steel tip, the diagonal from the bullseye to the throw line should be 9 ft 7&frac38; in (293 cm).</li>
+            </ul>
+            <p className="mt-4">
+              Mark the throw line with something that won&apos;t peel up by week three, light each board
+              from the front so darts don&apos;t cast shadows across the scoring area, and keep boards
+              away from doors, walkways, and the path to the restrooms. A dart that misses or bounces
+              out has to land somewhere.
+            </p>
+            <h3 className="mt-8 font-display text-xl font-bold">What to buy, and what to look for</h3>
+            <AffiliateDisclosure />
+            <ul className="mt-4 list-disc space-y-3 pl-6">
+              <li>
+                <strong>Boards:</strong> for steel-tip league play you want a bristle (sisal) board at the
+                standard 17&frac34; in (451 mm) size. Look for thin, blade-style wiring with no staples in
+                the scoring area - less metal for a dart to hit means fewer bounce-outs - and a
+                removable number ring so you can rotate the board and spread the wear instead of
+                replacing it when the 20 gets chewed up.{" "}
+                <AmazonSearchLink query="bristle dartboard staple-free">Staple-free bristle dartboards on Amazon</AmazonSearchLink>
+              </li>
+              <li>
+                <strong>House darts:</strong> regulars bring their own, but new players won&apos;t. Keep a
+                few sets of plain steel-tip darts behind the bar in a middle weight - 20 to 24 grams
+                suits most people - and expect to replace flights and shafts often; they&apos;re the
+                parts that break.{" "}
+                <AmazonSearchLink query="steel tip darts 22 gram">Steel-tip darts around 22 g on Amazon</AmazonSearchLink>
+              </li>
+              <li>
+                <strong>Wall protection:</strong> a surround that fits a standard board, or a backboard
+                behind it, costs far less than repairing the wall after a season of misses. Check that
+                it&apos;s sized for a 17&frac34; in board.{" "}
+                <AmazonSearchLink query="dartboard surround">Dartboard surrounds on Amazon</AmazonSearchLink>
+              </li>
+            </ul>
+            <p className="mt-4">
+              If your bar already has coin-operated soft-tip machines, you don&apos;t need to buy boards
+              at all - run the league on those and use the 8 ft line. Just don&apos;t mix steel-tip
+              and soft-tip boards in the same league; the scoring feel and the throw distance are
+              different enough to cause arguments.
+            </p>
+          </section>
+
           <section>
-            <h2 className="font-display text-2xl font-bold">3. Set entry fees and prizes</h2>
+            <h2 className="font-display text-2xl font-bold">4. Set entry fees and prizes</h2>
             <p className="mt-4">
               Entry fees serve two purposes: they fund the prize pool and they create commitment. Teams
               that have paid are far more likely to show up than teams that signed up for free.
@@ -196,7 +254,7 @@ export default function DartLeagueGuide() {
           </section>
 
           <section>
-            <h2 className="font-display text-2xl font-bold">4. Promote the league before it starts</h2>
+            <h2 className="font-display text-2xl font-bold">5. Promote the league before it starts</h2>
             <p className="mt-4">
               Your existing customers are your easiest recruit. Post a sign near your dart boards six
               weeks before the start date. Print a simple flyer with the format, night, and a QR code
@@ -216,7 +274,7 @@ export default function DartLeagueGuide() {
           </section>
 
           <section>
-            <h2 className="font-display text-2xl font-bold">5. Handle disputes before they happen</h2>
+            <h2 className="font-display text-2xl font-bold">6. Handle disputes before they happen</h2>
             <p className="mt-4">
               Write a simple rulebook - one page is enough. Cover the game format, scoring rules, what
               happens if a dart falls out of the board, how to handle a thrown dart that misses the board
@@ -236,7 +294,7 @@ export default function DartLeagueGuide() {
           </section>
 
           <section>
-            <h2 className="font-display text-2xl font-bold">6. Build a loyal regular player base</h2>
+            <h2 className="font-display text-2xl font-bold">7. Build a loyal regular player base</h2>
             <p className="mt-4">
               The best dart league advertisement is a full bar of people having a good time. Make the
               experience social: celebrate good finishes, post standings on your TV or near the bar,

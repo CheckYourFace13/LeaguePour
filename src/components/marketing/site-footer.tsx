@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { marketingRoutes } from "@/lib/routes";
 import { LpMarkSvg } from "@/components/lp-logo";
+import { AMAZON_ASSOCIATE_STATEMENT } from "@/components/marketing/affiliate";
 
 const cols = [
   {
@@ -101,6 +102,9 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-lp-border/70 py-7 text-center text-[0.9375rem] font-medium text-lp-text-soft">
         Copyright {new Date().getFullYear()} LeaguePour. All rights reserved.
+        <p className="mx-auto mt-2 max-w-xl px-4 text-xs font-normal text-lp-muted">
+          Some guides contain affiliate links. {AMAZON_ASSOCIATE_STATEMENT}
+        </p>
       </div>
     </footer>
   );

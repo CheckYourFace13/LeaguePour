@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { AffiliateDisclosure, AmazonSearchLink } from "@/components/marketing/affiliate";
 
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/guides/cornhole-tournament-ideas-for-bars", {
@@ -48,7 +49,7 @@ const jsonLd = {
       },
       url: "https://leaguepour.com/guides/cornhole-tournament-ideas-for-bars",
       datePublished: "2026-05-10",
-      dateModified: "2026-05-10",
+      dateModified: "2026-10-12",
     },
     {
       "@type": "FAQPage",
@@ -170,8 +171,52 @@ export default function CornholeTournamentIdeas() {
             </p>
           </section>
 
+          <section id="equipment">
+            <h2 className="font-display text-2xl font-bold">3. Boards, bags, and court setup</h2>
+            <p className="mt-4">
+              Every match needs its own pair of boards, so your board count sets your pace. Before you
+              cap the field, measure the space: a single court needs a strip roughly 8 to 10 feet wide
+              and 40 to 45 feet long once you allow room to stand and throw.
+            </p>
+            <ul className="mt-4 list-disc space-y-2 pl-6">
+              <li><strong>Board:</strong> 4 ft long by 2 ft wide (48 &times; 24 in).</li>
+              <li><strong>Hole:</strong> 6 in across, centered 9 in from the top edge and 12 in from each side.</li>
+              <li><strong>Slope:</strong> the front edge sits 3 to 4 in off the ground and the back edge 12 in.</li>
+              <li><strong>Distance:</strong> 27 ft between the front edges of the two boards.</li>
+              <li><strong>Bags:</strong> 6 &times; 6 in and 15 to 16 oz each; a set is eight bags, four in each of two colors.</li>
+            </ul>
+            <p className="mt-4">
+              Set every court to the same distance with a tape measure rather than pacing it off, and
+              run courts parallel so stray bags slide past players instead of into them. On a patio,
+              check the lighting before you schedule a late bracket - a final played in the dark is
+              no fun for anyone.
+            </p>
+            <h3 className="mt-8 font-display text-xl font-bold">What to buy, and what to look for</h3>
+            <AffiliateDisclosure />
+            <ul className="mt-4 list-disc space-y-3 pl-6">
+              <li>
+                <strong>Boards:</strong> buy regulation 2 &times; 4 ft boards, not the smaller tailgate
+                size - serious players notice immediately. For a bar, favor a thick, braced plywood
+                deck that doesn&apos;t bounce when a bag lands, folding legs that lock, and a finish you
+                can wipe down. Matching boards across all your courts matters more than fancy graphics.{" "}
+                <AmazonSearchLink query="regulation cornhole boards 2x4">Regulation 2&times;4 cornhole boards on Amazon</AmazonSearchLink>
+              </li>
+              <li>
+                <strong>Bags:</strong> for anything played outdoors or near drinks, choose resin-filled
+                bags over corn-filled ones. Corn breaks down and can mold once it gets wet; resin
+                pellets don&apos;t, and the bags can be washed. Buy more sets than you have courts so a
+                split seam doesn&apos;t stop a match.{" "}
+                <AmazonSearchLink query="regulation cornhole bags resin filled">Resin-filled regulation cornhole bags on Amazon</AmazonSearchLink>
+              </li>
+            </ul>
+            <p className="mt-4">
+              You don&apos;t need to own everything on day one. Plenty of bar leagues start by asking
+              teams to bring their own bags and adding house boards as the field grows.
+            </p>
+          </section>
+
           <section>
-            <h2 className="font-display text-2xl font-bold">3. Prize ideas that keep money at your bar</h2>
+            <h2 className="font-display text-2xl font-bold">4. Prize ideas that keep money at your bar</h2>
             <p className="mt-4">
               The best prizes for bar events are prizes that encourage more spending at your venue.
             </p>
@@ -200,7 +245,7 @@ export default function CornholeTournamentIdeas() {
           </section>
 
           <section>
-            <h2 className="font-display text-2xl font-bold">4. Seasonal themes and special events</h2>
+            <h2 className="font-display text-2xl font-bold">5. Seasonal themes and special events</h2>
             <p className="mt-4">
               A themed cornhole tournament gives people a reason to invite friends who might not show
               up for a regular league night. Themes create social media content, encourage costume
@@ -229,7 +274,7 @@ export default function CornholeTournamentIdeas() {
           </section>
 
           <section>
-            <h2 className="font-display text-2xl font-bold">5. Sponsorship and partnerships</h2>
+            <h2 className="font-display text-2xl font-bold">6. Sponsorship and partnerships</h2>
             <p className="mt-4">
               Local sponsors can fund your prize pool, cover the cost of custom boards, and even pay
               for branded event promotion - in exchange for visibility at your event.
@@ -249,7 +294,7 @@ export default function CornholeTournamentIdeas() {
           </section>
 
           <section>
-            <h2 className="font-display text-2xl font-bold">6. Promotion tips that actually work</h2>
+            <h2 className="font-display text-2xl font-bold">7. Promotion tips that actually work</h2>
             <p className="mt-4">
               Start promoting at least three weeks before the event. Post your event details across
               all social channels with clear registration information and a deadline. Use a signup link
@@ -262,7 +307,7 @@ export default function CornholeTournamentIdeas() {
             <p className="mt-4">
               If you're running an ongoing league, the easiest new-season promotion is an email to
               everyone who signed up for the previous season. People who've already played once are
-              four to five times more likely to register again than cold contacts.
+              far easier to bring back than strangers are to recruit.
             </p>
             <p className="mt-4">
               Highlight a moment from your last event when promoting the next one. A photo of the
