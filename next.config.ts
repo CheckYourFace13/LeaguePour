@@ -11,6 +11,15 @@ const vsDomainRewrites = [...vsExactRewrites, vsCompareRewrite, vsGuidesRewrite]
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  experimental: {
+    // Build-time only: caps the worker processes `next build` spawns for page-data collection and
+    // static generation. The default is (CPU cores - 1), which is 63 on Hostinger's build host -
+    // on a shared plan with a 200-process limit that was already running near the ceiling. Four
+    // workers leave headroom for the running sites at the cost of a slower static-generation step
+    // (18.7s with 63 workers on Hostinger; expect up to a few minutes with 4). Does not affect the
+    // running server.
+    cpus: 4,
+  },
   async rewrites() {
     return {
       beforeFiles: vsDomainRewrites,
