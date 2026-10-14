@@ -1,6 +1,7 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { TemplateDownloads, TemplateFaqs, faqJsonLd, type TemplateFaq } from "@/components/venuesprocket/template-parts";
 
 export const metadata: Metadata = {
   title: { absolute: "Free Banquet Event Order (BEO) Template | VenueSprocket" },
@@ -15,6 +16,21 @@ export const metadata: Metadata = {
     url: "https://venuesprocket.com/guides/beo-template",
   },
 };
+
+const FAQS: TemplateFaq[] = [
+  {
+    q: "Who should get a copy of the BEO?",
+    a: "Everyone working the event: kitchen, bar, floor, and the manager on duty. A BEO that only the manager has read doesn't stop the kitchen from missing an allergy or the bar from running past the agreed cutoff.",
+  },
+  {
+    q: "What's the difference between a BEO and the event contract?",
+    a: "The contract is the agreement with the customer - price, deposit, cancellation terms, signatures. The BEO is the internal operating plan for event day. The BEO should match the contract, but it's written for your staff, not the customer.",
+  },
+  {
+    q: "When should the BEO be final?",
+    a: "After the final guest count is in and menu and bar choices are locked - usually a few days to a week before the event. Reconfirm the count and allergies before you hand it out.",
+  },
+];
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -36,8 +52,9 @@ const jsonLd = {
       publisher: { "@type": "Organization", name: "VenueSprocket", url: "https://venuesprocket.com" },
       url: "https://venuesprocket.com/guides/beo-template",
       datePublished: "2026-08-19",
-      dateModified: "2026-08-19",
+      dateModified: "2026-10-14",
     },
+    faqJsonLd(FAQS),
   ],
 };
 
@@ -134,6 +151,7 @@ export default function BeoTemplateGuide() {
 
           <section className="mb-10">
             <h2 className="font-display text-2xl font-bold text-vs-text mb-4">The template</h2>
+            <TemplateDownloads file="venuesprocket-beo-template" docxKb={39} pdfKb={8} />
             <p className="text-vs-text-soft leading-relaxed mb-6">
               Fields marked <span className="font-semibold text-vs-accent">Required</span> should be
               filled in for every event, no exceptions - staff will look for these first. Fields marked{" "}
@@ -181,7 +199,7 @@ SETUP START: 5:00 PM | GUEST ARRIVAL: 7:00 PM | EVENT END: 11:00 PM
 ROOM: Taproom back patio (full buyout)
 GUEST COUNT: 45 confirmed
 
-CLIENT: Dana Marino | (555) 019-2244 | dana.marino@email.com
+CLIENT: Dana Marino | (555) 019-2244 | dana.marino@example.com
 DAY-OF CONTACT: same as client
 EVENT MANAGER: James (assistant manager)
 
@@ -231,15 +249,18 @@ shots for the host if bar hits minimum before 10 PM.`}
             </ul>
           </section>
 
+          <TemplateFaqs faqs={FAQS} />
+
           <div className="mt-14 rounded-2xl border border-vs-border-strong bg-vs-surface-2 p-8">
             <h2 className="font-display text-xl font-bold text-vs-text mb-3">
               Skip the manual template
             </h2>
             <p className="text-vs-text-soft mb-5">
-              VenueSprocket's BEO builder starts a BEO like the one above from the event details
-              you've already entered, with food, beverage, staffing, AV, and timeline sections
-              built into the editor, a print-ready view, and a mobile view your staff can pull up
-              on event day.
+              VenueSprocket starts a BEO from the event you've already booked - name, date, times,
+              guest count, room, and contact details carry over - and you fill in food, beverage,
+              room setup, staffing, AV, allergies, and special instructions. The print-ready view
+              also reads on a phone for anyone signed in to your venue account (there's no
+              separate staff login).
             </p>
             <Link
               href="/beo-software"

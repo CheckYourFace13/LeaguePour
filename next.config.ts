@@ -94,6 +94,20 @@ const nextConfig: NextConfig = {
         permanent: true,
         has: [{ type: "host", value: VS_HOST }],
       },
+      // Short template URLs people guess or type from print/social. Permanent, VS host only,
+      // each pointing at the one existing canonical page (no duplicate articles).
+      ...[
+        ["/templates/beo", "/guides/beo-template"],
+        ["/templates/event-contract", "/templates/private-event-contract-checklist"],
+        ["/templates/proposal", "/templates/event-proposal-template"],
+        ["/templates/inquiry-form", "/guides/private-event-inquiry-form-template"],
+        ["/templates/run-of-show", "/templates/run-of-show-template"],
+      ].map(([source, destination]) => ({
+        source,
+        destination,
+        permanent: true,
+        has: [{ type: "host" as const, value: VS_HOST }],
+      })),
       // Same alias gap on the LP side itself, found during the customer-facing smoke test:
       // leaguepour.com/privacy and /terms 404'd instead of landing on the real pages at
       // /legal/*. Scoped to the LP host only so this can't affect VS's own routing above.

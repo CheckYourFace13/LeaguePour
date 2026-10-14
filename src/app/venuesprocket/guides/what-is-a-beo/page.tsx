@@ -16,6 +16,22 @@ export const metadata: Metadata = {
   },
 };
 
+// One list for the visible FAQ and the FAQPage schema, so they can't drift apart.
+const FAQS = [
+  {
+    q: "Who writes the BEO - the venue or the customer?",
+    a: "The venue writes it. A BEO is an internal operations document for your staff, not something the customer fills out or signs. It's built from the details already gathered during the inquiry, proposal, and contract stages.",
+  },
+  {
+    q: "Does every private event need a BEO?",
+    a: "A small, simple booking with one or two staff involved might not need a formal BEO. Once multiple staff, departments (kitchen, bar, floor), or setup steps are involved, a BEO prevents details from getting lost between the person who booked the event and the people running it.",
+  },
+  {
+    q: "Is a BEO a legal document?",
+    a: "No. A BEO is an internal operational document, not a legal agreement. It isn't signed by the customer and doesn't establish payment or cancellation terms - that's the job of the event contract. Do not rely on a BEO in place of a signed contract.",
+  },
+];
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
@@ -40,32 +56,7 @@ const jsonLd = {
     },
     {
       "@type": "FAQPage",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "Who writes the BEO - the venue or the customer?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "The venue writes it. A BEO is an internal operations document for your staff, not something the customer fills out or signs. It's built from the details already gathered during the inquiry, proposal, and contract stages.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Does every private event need a BEO?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "A small, simple booking with one or two staff involved might not need a formal BEO. Once multiple staff, departments (kitchen, bar, floor), or setup steps are involved, a BEO prevents details from getting lost between the person who booked the event and the people running it.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Is a BEO a legal document?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "No. A BEO is an internal operational document, not a legal agreement. It isn't signed by the customer and doesn't establish payment or cancellation terms - that's the job of the event contract. Do not rely on a BEO in place of a signed contract.",
-          },
-        },
-      ],
+      mainEntity: FAQS.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
     },
   ],
 };
@@ -232,20 +223,7 @@ export default function WhatIsABeoGuide() {
           <div className="mt-10">
             <h2 className="font-display text-xl font-bold text-vs-text mb-5">Frequently asked questions</h2>
             <div className="space-y-4">
-              {[
-                {
-                  q: "Who writes the BEO - the venue or the customer?",
-                  a: "The venue writes it. A BEO is an internal operations document for your staff, not something the customer fills out or signs.",
-                },
-                {
-                  q: "Does every private event need a BEO?",
-                  a: "A small, simple booking might not need one. Once multiple staff or departments are involved, a BEO prevents details from getting lost between booking and event day.",
-                },
-                {
-                  q: "Is a BEO a legal document?",
-                  a: "No. It's an internal operational document, not a signed legal agreement. Payment and cancellation terms belong in the event contract, not the BEO.",
-                },
-              ].map((f) => (
+              {FAQS.map((f) => (
                 <details key={f.q} className="rounded-xl border border-vs-border bg-vs-surface px-5 py-4">
                   <summary className="cursor-pointer list-none font-semibold text-vs-text [&::-webkit-details-marker]:hidden">
                     {f.q}

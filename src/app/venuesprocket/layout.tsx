@@ -9,8 +9,11 @@ export const metadata: Metadata = {
   // applicationName, keywords, and a cleared canonical - see vs-metadata.ts for why every VS
   // route needs these set explicitly.
   ...vsBrandMetadata,
+  // absolute, not default: a layout's own title.default is still wrapped by the PARENT template
+  // (the root layout's "%s | LeaguePour"), which is what any VS page without its own title -
+  // including the [...missing] 404 after hydration - showed as its tab title and og:title.
   title: {
-    default: "VenueSprocket — Private Event Booking & Venue Management Software",
+    absolute: "VenueSprocket — Private Event Booking & Venue Management Software",
     template: "%s | VenueSprocket",
   },
   description:

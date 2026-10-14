@@ -11,6 +11,18 @@ const AMAZON_TAG = "leaguepour-20";
 
 export const AMAZON_ASSOCIATE_STATEMENT = "As an Amazon Associate I earn from qualifying purchases.";
 
+/**
+ * Awin-generated Viski (barware) link supplied by Chris on 2026-10-12. NOT PLACED ANYWHERE: no
+ * existing LeaguePour or VenueSprocket guide is about cocktail tools or barware. Keep the URL
+ * exactly as generated. Rules if a genuinely relevant guide exists later: at most one contextual
+ * text link per guide, two pages total across both brands, a visible commission disclosure before
+ * the link, rel="sponsored nofollow noopener", never in the darts/cornhole equipment sections.
+ * Still unresolved: whether Viski's Awin program terms permit leaguepour.com / venuesprocket.com
+ * specifically (approval was shown for the account, not per domain).
+ */
+export const VISKI_AWIN_URL =
+  "https://www.awin1.com/cread.php?awinmid=77462&awinaffid=3112962&ued=https%3A%2F%2Fviski.com%2Fcollections%2Fbarware-bar-tools";
+
 export function amazonSearchUrl(query: string): string {
   return `https://www.amazon.com/s?k=${encodeURIComponent(query).replace(/%20/g, "+")}&tag=${AMAZON_TAG}`;
 }

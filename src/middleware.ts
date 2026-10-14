@@ -122,5 +122,5 @@ export const config = {
   // Broad match for the host-gating check above (needs to see every marketing/page path, not
   // just the auth-protected ones) - excludes Next internals and common static file extensions,
   // which were never part of the host split and don't need this middleware to run on them.
-  matcher: ["/((?!_next/static|_next/image|.*\\.(?:ico|png|jpg|jpeg|svg|webp|txt|xml|webmanifest)$).*)"],
+  matcher: ["/((?!_next/static|_next/image|.*\\.(?:ico|png|jpg|jpeg|svg|webp|txt|xml|webmanifest|pdf|docx)$).*)"],
 };

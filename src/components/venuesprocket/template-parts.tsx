@@ -80,3 +80,55 @@ export function TemplateFooterLinks() {
     </section>
   );
 }
+
+/**
+ * Ungated DOCX + PDF downloads (files in public/downloads/, built by
+ * scripts/generate-template-downloads.py from the same content as the page).
+ */
+export function TemplateDownloads({ file, docxKb, pdfKb }: { file: string; docxKb: number; pdfKb: number }) {
+  const link =
+    "inline-flex items-center gap-2 rounded-lg border border-vs-border-strong bg-vs-bg px-4 py-2 text-sm font-semibold text-vs-text hover:border-vs-accent";
+  return (
+    <div className="mb-6 rounded-2xl border border-vs-border bg-vs-surface-2 p-5 print:hidden">
+      <p className="mb-3 text-sm font-semibold text-vs-text">Download it - free, no email required</p>
+      <div className="flex flex-wrap gap-3">
+        <a href={`/downloads/${file}.docx`} download className={link}>
+          Word (.docx, editable) <span className="font-normal text-vs-muted">{docxKb} KB</span>
+        </a>
+        <a href={`/downloads/${file}.pdf`} download className={link}>
+          PDF (printable) <span className="font-normal text-vs-muted">{pdfKb} KB</span>
+        </a>
+      </div>
+      <p className="mt-3 text-xs leading-relaxed text-vs-muted">
+        Each file has the blank template plus a filled-in example. The names and contact details in
+        the example are fictional.
+      </p>
+    </div>
+  );
+}
+
+export type TemplateFaq = { q: string; a: string };
+
+/** Visible FAQ; pass the same array to faqJsonLd so the schema always matches what's shown. */
+export function TemplateFaqs({ faqs }: { faqs: TemplateFaq[] }) {
+  return (
+    <section className="mb-12 print:hidden">
+      <h2 className="font-display text-2xl font-bold text-vs-text mb-4">Questions</h2>
+      <div className="space-y-5">
+        {faqs.map((f) => (
+          <div key={f.q}>
+            <h3 className="font-semibold text-vs-text">{f.q}</h3>
+            <p className="mt-1 text-sm leading-relaxed text-vs-text-soft">{f.a}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function faqJsonLd(faqs: TemplateFaq[]) {
+  return {
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+  };
+}

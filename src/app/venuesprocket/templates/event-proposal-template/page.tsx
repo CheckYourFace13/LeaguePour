@@ -2,7 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import { proposalChecklist } from "@/lib/seo/vs-templates-data";
-import { Checklist, TemplateBreadcrumb, TemplateFooterLinks, TemplateText, templateJsonLd } from "@/components/venuesprocket/template-parts";
+import {
+  Checklist,
+  TemplateBreadcrumb,
+  TemplateDownloads,
+  TemplateFaqs,
+  TemplateFooterLinks,
+  TemplateText,
+  faqJsonLd,
+  templateJsonLd,
+  type TemplateFaq,
+} from "@/components/venuesprocket/template-parts";
 import { PrintButton } from "@/components/venuesprocket/tools/print-button";
 
 const URL = "https://venuesprocket.com/templates/event-proposal-template";
@@ -78,13 +88,34 @@ Full terms are in the event contract.
 This proposal is valid until March 10. The date is not held until the deposit is paid.
 Next step: reply to accept, sign the contract, and pay the deposit.`;
 
+const FAQS: TemplateFaq[] = [
+  {
+    q: "Should the food and beverage minimum include tax and service charge?",
+    a: "Either works, but say which on the proposal. Most venues set the minimum before tax and service charge, which means the host's final bill will be higher than the minimum - stating that up front avoids the most common end-of-night surprise.",
+  },
+  {
+    q: "Is a proposal the same as a contract?",
+    a: "No. The proposal sets out the event and the price so the host can say yes. The contract is what they sign, with the full cancellation, payment, and house-rule terms. This template points to the contract rather than replacing it.",
+  },
+  {
+    q: "How long should a proposal stay valid?",
+    a: "Long enough for the host to decide, short enough that you aren't holding a date indefinitely - many venues use about a week. Put the expiry date on the proposal and say the date isn't held until the deposit is paid.",
+  },
+];
+
+function withFaq(ld: ReturnType<typeof templateJsonLd>) {
+  return { ...ld, "@graph": [...ld["@graph"], faqJsonLd(FAQS)] };
+}
+
 export default function ProposalTemplatePage() {
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: safeJsonLd(templateJsonLd({ url: URL, name: "Proposal template", headline: "Private Event Proposal Template", description: DESCRIPTION })),
+          __html: safeJsonLd(
+            withFaq(templateJsonLd({ url: URL, name: "Proposal template", headline: "Private Event Proposal Template", description: DESCRIPTION })),
+          ),
         }}
       />
       <div className="vs-section px-4 md:px-6">
@@ -103,6 +134,7 @@ export default function ProposalTemplatePage() {
               <h2 className="font-display text-2xl font-bold text-vs-text">The template</h2>
               <PrintButton />
             </div>
+            <TemplateDownloads file="venuesprocket-event-proposal-template" docxKb={38} pdfKb={7} />
             <TemplateText>{BLANK}</TemplateText>
           </section>
 
@@ -125,6 +157,8 @@ export default function ProposalTemplatePage() {
               <li><strong className="text-vs-text">Give it an expiry date.</strong> It tells the host the date isn&apos;t held indefinitely, and gives you a clean reason to follow up.</li>
             </ul>
           </section>
+
+          <TemplateFaqs faqs={FAQS} />
 
           <section className="rounded-2xl border border-vs-border-strong bg-vs-surface p-6 md:p-8 print:hidden">
             <h2 className="font-display text-2xl font-bold text-vs-text mb-2">Proposal checklist</h2>

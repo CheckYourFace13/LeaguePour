@@ -91,7 +91,7 @@ const groups: { title: string; faqs: Faq[] }[] = [
     faqs: [
       {
         q: "What is a BEO, and does VenueSprocket make one?",
-        a: "A Banquet Event Order is the one-page operating plan your team works from on event day. VenueSprocket starts each BEO from the event record - name, date, time, guest count, and contact details carry over - and you fill in food, beverage, room setup, staffing, AV, allergies, and timeline.",
+        a: "A Banquet Event Order is the one-page operating plan your team works from on event day. VenueSprocket starts each BEO from the event record - name, date, time, guest count, and contact details carry over - and you fill in food, beverage, room setup, staffing, AV, allergies, and special instructions.",
       },
       {
         q: "Can my staff see the BEO on their phones?",

@@ -16,6 +16,22 @@ export const metadata: Metadata = {
   },
 };
 
+// One list for the visible FAQ and the FAQPage schema, so they can't drift apart.
+const FAQS = [
+  {
+    q: "Can a BEO replace a signed contract?",
+    a: "No. A BEO is an internal staff document with no signature, no payment terms, and no cancellation policy. It has no legal standing on its own. Always get a signed contract in place before treating a booking as confirmed, regardless of how detailed the BEO is.",
+  },
+  {
+    q: "Does the customer ever see the BEO?",
+    a: "Usually not. A BEO is written for internal staff - kitchen, bar, floor, and management - and often includes internal notes that aren't meant for the customer. Some venues share a simplified version with the client to confirm details, but the working copy stays internal.",
+  },
+  {
+    q: "Which comes first, the BEO or the contract?",
+    a: "The contract comes first. A venue typically finalizes the BEO only after the contract is signed and the booking is confirmed - there's no reason to build a detailed operational plan for an event that isn't locked in yet.",
+  },
+];
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
@@ -40,32 +56,7 @@ const jsonLd = {
     },
     {
       "@type": "FAQPage",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "Can a BEO replace a signed contract?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "No. A BEO is an internal staff document with no signature, no payment terms, and no cancellation policy. It has no legal standing on its own. Always get a signed contract in place before treating a booking as confirmed, regardless of how detailed the BEO is.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Does the customer ever see the BEO?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Usually not. A BEO is written for internal staff - kitchen, bar, floor, and management - and often includes internal notes that aren't meant for the customer. Some venues share a simplified version with the client to confirm details, but the working copy stays internal.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Which comes first, the BEO or the contract?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "The contract comes first. A venue typically finalizes the BEO only after the contract is signed and the booking is confirmed - there's no reason to build a detailed operational plan for an event that isn't locked in yet.",
-          },
-        },
-      ],
+      mainEntity: FAQS.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
     },
   ],
 };
@@ -214,20 +205,7 @@ export default function BeoVsContractGuide() {
           <div className="mt-10">
             <h2 className="font-display text-xl font-bold text-vs-text mb-5">Frequently asked questions</h2>
             <div className="space-y-4">
-              {[
-                {
-                  q: "Can a BEO replace a signed contract?",
-                  a: "No. A BEO has no signature, payment terms, or cancellation policy and has no legal standing on its own. Always get a signed contract in place first.",
-                },
-                {
-                  q: "Does the customer ever see the BEO?",
-                  a: "Usually not - it's an internal staff document, sometimes including notes not meant for the customer. Some venues share a simplified version to confirm details.",
-                },
-                {
-                  q: "Which comes first, the BEO or the contract?",
-                  a: "The contract comes first. The BEO is typically finalized only after the contract is signed and the booking is confirmed.",
-                },
-              ].map((f) => (
+              {FAQS.map((f) => (
                 <details key={f.q} className="rounded-xl border border-vs-border bg-vs-surface px-5 py-4">
                   <summary className="cursor-pointer list-none font-semibold text-vs-text [&::-webkit-details-marker]:hidden">
                     {f.q}
