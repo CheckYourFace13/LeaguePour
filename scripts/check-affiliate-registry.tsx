@@ -24,7 +24,7 @@ const ENV_KEYS = [
   "CJ_WEBSITE_PID_LEAGUEPOUR", "CJ_WEBSITE_PID_VENUESPROCKET", "CJ_HEIL_SOUND_ENABLED", "CJ_HEIL_SOUND_APPROVAL",
   "CJ_HEIL_SOUND_WEBSITES", "CJ_HEIL_SOUND_TRACKING_URL", "CJ_HEIL_SOUND_TRACKING_URL_LEAGUEPOUR",
   "CJ_HEIL_SOUND_TRACKING_URL_VENUESPROCKET", "CJ_LAWDEPOT_ENABLED", "CJ_LAWDEPOT_TRACKING_URL_VENUESPROCKET",
-  "CJ_LAWDEPOT_TRACKING_URL_LEAGUEPOUR",
+  "CJ_LAWDEPOT_TRACKING_URL_LEAGUEPOUR", "CJ_LAWDEPOT_WEBSITES",
 ];
 const reset = () => ENV_KEYS.forEach((k) => delete process.env[k]);
 const render = (website: "leaguepour" | "venuesprocket") =>
@@ -42,7 +42,7 @@ check("PID parsing for both CJ link shapes", () => {
   assert.equal(cjPidFromUrl("https://www.heilsound.com/"), null);
 });
 
-check("defaults: PIDs recorded, no merchant links, nothing renders on either site", () => {
+check("defaults: PIDs recorded; Heil Sound (pending) renders on neither site", () => {
   // Real PIDs are recorded, but no merchant has a link, so nothing renders.
   assert.equal(cjWebsitePid("leaguepour"), "101904040");
   assert.equal(cjWebsitePid("venuesprocket"), "101904044");
@@ -111,24 +111,23 @@ check("each missing piece keeps it dark", () => {
   }
 });
 
-check("LawDepot: approved but dark until a VS-PID link exists; never on LP", () => {
+check("LawDepot: real CJ link (LP PID) renders on LP only; VS stays dark", () => {
   const law = (website: "leaguepour" | "venuesprocket") =>
     renderToStaticMarkup(
-      <CjRecommendation advertiserId="lawdepot" website={website} anchor="LawDepot's event contract template">
+      <CjRecommendation advertiserId="lawdepot" website={website} anchor="LawDepot's activity waiver form">
         It isn&apos;t legal advice.
       </CjRecommendation>,
     );
-  assert.equal(law("venuesprocket"), "", "no link, not enabled");
-  process.env.CJ_LAWDEPOT_ENABLED = "true";
-  assert.equal(law("venuesprocket"), "", "enabled but still no link");
-  process.env.CJ_WEBSITE_PID_VENUESPROCKET = VS_PID;
-  process.env.CJ_LAWDEPOT_TRACKING_URL_VENUESPROCKET = VS_LINK;
-  const html = law("venuesprocket");
-  assert.ok(html.includes(`href="${VS_LINK}"`) && html.includes("VenueSprocket may earn"));
-  assert.ok(html.includes("legal advice"));
-  process.env.CJ_WEBSITE_PID_LEAGUEPOUR = LP_PID;
-  process.env.CJ_LAWDEPOT_TRACKING_URL_LEAGUEPOUR = LP_LINK;
-  assert.equal(law("leaguepour"), "", "LawDepot is only permitted on venuesprocket");
+  const real = "https://www.jdoqocy.com/click-101904040-16995856-1734590589000";
+  const html = law("leaguepour");
+  assert.ok(html.includes(`href="${real}"`), "CJ-returned LP link");
+  assert.ok(html.includes("LeaguePour may earn") && html.includes("through CJ") && !html.includes("Amazon"));
+  assert.ok(html.indexOf("Disclosure:") < html.indexOf("<a "));
+  assert.ok(html.includes('rel="sponsored nofollow noopener"') && html.includes('target="_blank"'));
+  assert.equal(law("venuesprocket"), "", "not permitted on VS and no VS-PID link");
+  process.env.CJ_LAWDEPOT_TRACKING_URL_VENUESPROCKET = real;
+  process.env.CJ_LAWDEPOT_WEBSITES = "leaguepour,venuesprocket";
+  assert.equal(law("venuesprocket"), "", "an LP-PID link can never render on VS");
 });
 
 check("Amazon links and disclosure unchanged", () => {

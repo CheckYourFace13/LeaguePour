@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { CjRecommendation } from "@/components/marketing/affiliate";
 
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/guides/bar-competition-ideas", {
@@ -290,6 +291,21 @@ export default function BarCompetitionIdeas() {
             </div>
           ))}
         </div>
+
+        <section className="mt-12">
+          <h2 className="font-display text-xl font-bold">Participation waivers for physical formats</h2>
+          <p className="mt-3 text-sm leading-relaxed text-lp-muted">
+            Formats where people throw, swing, or move around - axe throwing, cornhole, bocce, bar
+            olympics - are where venues most often ask players to accept written participation terms
+            before they play. LeaguePour shows whatever terms you write in a competition&apos;s optional
+            waiver field at signup; it doesn&apos;t supply the wording.
+          </p>
+          <CjRecommendation advertiserId="lawdepot" website="leaguepour" anchor="LawDepot's activity waiver form">
+            If you want a written waiver, a fill-in-the-blanks document service is one optional way to
+            start a draft. It isn&apos;t legal advice, and enforceability varies by state, so have an
+            attorney review the final version.
+          </CjRecommendation>
+        </section>
 
         <div className="mt-14 rounded-2xl bg-lp-accent/10 border border-lp-accent/20 p-8 text-center">
           <h2 className="font-display text-2xl font-bold">Ready to run your first competition?</h2>

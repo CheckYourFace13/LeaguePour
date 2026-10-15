@@ -124,14 +124,20 @@ export const ADVERTISER_REGISTRY: AdvertiserRecord[] = [
     advertiserId: "4544498",
     name: "LawDepot",
     approvalStatus: "approved",
-    // Selected for one VS guide (event cancellation policies). Still dark: enabled is false and no
-    // CJ link generated for VS PID 101904044 has been supplied yet.
-    permittedWebsites: ["venuesprocket"],
-    categories: ["tenants-leases", "landlord-documents"],
-    keywords: ["lease agreement", "rental agreement", "document-checklist"],
+    // Live on one LP guide (bar-competition-ideas) via the Activity Waiver link. The VS cancellation
+    // guide slot stays dark: CJ's Link Search returned no LawDepot event-contract link for VS.
+    permittedWebsites: ["leaguepour"],
+    // Hand-placed only: no auto-match terms now that the row is active.
+    categories: [],
+    keywords: [],
     trackedDestination: null,
+    // CJ Link Search API, 2026-10-15: link 16995856 "Activity Waiver Form", destination
+    // https://www.lawdepot.com/contracts/activity-waiver/?loc=US, website PID 101904040.
+    siteTrackedDestinations: {
+      leaguepour: "https://www.jdoqocy.com/click-101904040-16995856-1734590589000",
+    },
     disclosure: "Optional document service. Paid CJ link. It does not replace this site's own documents or software.",
-    enabled: false,
+    enabled: true,
   },
   {
     id: "chefs-deal",
