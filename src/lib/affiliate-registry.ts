@@ -42,13 +42,13 @@ export type AdvertiserRecord = {
 export const CJ_ACCOUNT_CID = "7990498";
 
 /**
- * CJ website PIDs per property. Unknown until copied from CJ (Account > Websites). The env vars
- * CJ_WEBSITE_PID_LEAGUEPOUR / CJ_WEBSITE_PID_VENUESPROCKET fill them without a code change. A CJ
- * row cannot render on a site whose PID is missing.
+ * CJ website PIDs per property, from Chris's CJ account (Account > Websites, confirmed
+ * 2026-10-14). The env vars CJ_WEBSITE_PID_LEAGUEPOUR / CJ_WEBSITE_PID_VENUESPROCKET override
+ * them. A PID alone activates nothing: each merchant still needs its own CJ-generated link.
  */
 export const CJ_WEBSITE_PIDS: Record<string, string | null> = {
-  leaguepour: null,
-  venuesprocket: null,
+  leaguepour: "101904040",
+  venuesprocket: "101904044",
 };
 
 export function cjWebsitePid(website: string): string | null {

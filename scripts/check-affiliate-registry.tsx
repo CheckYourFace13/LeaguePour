@@ -41,9 +41,10 @@ check("PID parsing for both CJ link shapes", () => {
   assert.equal(cjPidFromUrl("https://www.heilsound.com/"), null);
 });
 
-check("defaults: nothing configured, nothing renders on either site", () => {
-  assert.equal(cjWebsitePid("leaguepour"), null);
-  assert.equal(cjWebsitePid("venuesprocket"), null);
+check("defaults: PIDs recorded, no merchant links, nothing renders on either site", () => {
+  // Real PIDs are recorded, but no merchant has a link, so nothing renders.
+  assert.equal(cjWebsitePid("leaguepour"), "101904040");
+  assert.equal(cjWebsitePid("venuesprocket"), "101904044");
   assert.equal(activeAdvertiserFor("heil-sound", "leaguepour"), null);
   assert.equal(render("leaguepour"), "");
   assert.equal(render("venuesprocket"), "");
