@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import Link from "next/link";
+import { CjRecommendation } from "@/components/marketing/affiliate";
 
 // Renders auto-generated Guide rows (see src/lib/content-engine/**) that aren't one of the
 // hand-written static guides under src/app/venuesprocket/guides/*/page.tsx - a static segment
@@ -10,6 +11,28 @@ import Link from "next/link";
 export const revalidate = 300;
 
 type Props = { params: Promise<{ slug: string }> };
+
+const ARTICLE_CLASS =
+  "prose mt-10 max-w-none text-vs-text leading-relaxed [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-10 [&_h3]:font-display [&_h3]:text-xl [&_h3]:font-bold [&_h3]:mt-8 [&_p]:mt-4 [&_ul]:mt-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:mt-4 [&_ol]:list-decimal [&_ol]:pl-6";
+
+/**
+ * Hand-picked CJ recommendations for specific DB-rendered guides: at most one per guide, shown
+ * just before `beforeHeading` (or after the article if that heading is missing). Each renders
+ * nothing until its registry row is enabled with a CJ link generated for VenueSprocket's PID.
+ */
+const GUIDE_RECOMMENDATIONS: Record<string, { beforeHeading: string; node: React.ReactNode }> = {
+  "event-cancellation-policy-examples-for-restaurants-and-venues": {
+    beforeHeading: "<h2>Where VenueSprocket fits</h2>",
+    node: (
+      <CjRecommendation advertiserId="lawdepot" website="venuesprocket" anchor="LawDepot's event contract template">
+        If you don&apos;t have written contract terms yet, a fill-in-the-blanks document service is
+        one optional place to start a first draft of your venue rental terms. It isn&apos;t legal
+        advice, and it doesn&apos;t replace having an attorney review the final wording for your
+        state.
+      </CjRecommendation>
+    ),
+  },
+};
 
 async function getGuide(slug: string) {
   return prisma.guide.findUnique({ where: { brand_slug: { brand: "VS", slug } } });
@@ -86,10 +109,26 @@ export default async function GeneratedVsGuidePage({ params }: Props) {
           </nav>
           <h1 className="vs-page-title text-4xl md:text-5xl">{guide.title}</h1>
 
-          <article
-            className="prose mt-10 max-w-none text-vs-text leading-relaxed [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-10 [&_h3]:font-display [&_h3]:text-xl [&_h3]:font-bold [&_h3]:mt-8 [&_p]:mt-4 [&_ul]:mt-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:mt-4 [&_ol]:list-decimal [&_ol]:pl-6"
-            dangerouslySetInnerHTML={{ __html: guide.bodyHtml ?? "" }}
-          />
+          {(() => {
+            const body = guide.bodyHtml ?? "";
+            const rec = GUIDE_RECOMMENDATIONS[slug];
+            const at = rec ? body.indexOf(rec.beforeHeading) : -1;
+            if (!rec) return <article className={ARTICLE_CLASS} dangerouslySetInnerHTML={{ __html: body }} />;
+            if (at < 0)
+              return (
+                <>
+                  <article className={ARTICLE_CLASS} dangerouslySetInnerHTML={{ __html: body }} />
+                  {rec.node}
+                </>
+              );
+            return (
+              <>
+                <article className={ARTICLE_CLASS} dangerouslySetInnerHTML={{ __html: body.slice(0, at) }} />
+                {rec.node}
+                <div className={ARTICLE_CLASS.replace("mt-10 ", "")} dangerouslySetInnerHTML={{ __html: body.slice(at) }} />
+              </>
+            );
+          })()}
 
           {faq && faq.length > 0 && (
             <div className="mt-10">

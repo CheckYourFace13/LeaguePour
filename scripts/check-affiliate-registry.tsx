@@ -23,7 +23,8 @@ const VS_LINK = `https://www.anrdoezrs.net/links/${VS_PID}/type/dlg/https%3A%2F%
 const ENV_KEYS = [
   "CJ_WEBSITE_PID_LEAGUEPOUR", "CJ_WEBSITE_PID_VENUESPROCKET", "CJ_HEIL_SOUND_ENABLED", "CJ_HEIL_SOUND_APPROVAL",
   "CJ_HEIL_SOUND_WEBSITES", "CJ_HEIL_SOUND_TRACKING_URL", "CJ_HEIL_SOUND_TRACKING_URL_LEAGUEPOUR",
-  "CJ_HEIL_SOUND_TRACKING_URL_VENUESPROCKET",
+  "CJ_HEIL_SOUND_TRACKING_URL_VENUESPROCKET", "CJ_LAWDEPOT_ENABLED", "CJ_LAWDEPOT_TRACKING_URL_VENUESPROCKET",
+  "CJ_LAWDEPOT_TRACKING_URL_LEAGUEPOUR",
 ];
 const reset = () => ENV_KEYS.forEach((k) => delete process.env[k]);
 const render = (website: "leaguepour" | "venuesprocket") =>
@@ -108,6 +109,26 @@ check("each missing piece keeps it dark", () => {
     reset(); activate(); process.env.CJ_HEIL_SOUND_TRACKING_URL_LEAGUEPOUR = bad;
     assert.equal(render("leaguepour"), "", bad);
   }
+});
+
+check("LawDepot: approved but dark until a VS-PID link exists; never on LP", () => {
+  const law = (website: "leaguepour" | "venuesprocket") =>
+    renderToStaticMarkup(
+      <CjRecommendation advertiserId="lawdepot" website={website} anchor="LawDepot's event contract template">
+        It isn&apos;t legal advice.
+      </CjRecommendation>,
+    );
+  assert.equal(law("venuesprocket"), "", "no link, not enabled");
+  process.env.CJ_LAWDEPOT_ENABLED = "true";
+  assert.equal(law("venuesprocket"), "", "enabled but still no link");
+  process.env.CJ_WEBSITE_PID_VENUESPROCKET = VS_PID;
+  process.env.CJ_LAWDEPOT_TRACKING_URL_VENUESPROCKET = VS_LINK;
+  const html = law("venuesprocket");
+  assert.ok(html.includes(`href="${VS_LINK}"`) && html.includes("VenueSprocket may earn"));
+  assert.ok(html.includes("legal advice"));
+  process.env.CJ_WEBSITE_PID_LEAGUEPOUR = LP_PID;
+  process.env.CJ_LAWDEPOT_TRACKING_URL_LEAGUEPOUR = LP_LINK;
+  assert.equal(law("leaguepour"), "", "LawDepot is only permitted on venuesprocket");
 });
 
 check("Amazon links and disclosure unchanged", () => {
