@@ -21,11 +21,52 @@ export type AdvertiserRecord = {
   categories: string[];
   /** Phrases matched against the slug and named products. Short generic words are omitted. */
   keywords: string[];
-  /** Publisher-supplied tracking URL. Null until supplied. */
+  /**
+   * Publisher-supplied tracking URL. Null until supplied. Legacy single-link field: for CJ it only
+   * renders on the site whose website PID it carries (see siteTrackedDestinations).
+   */
   trackedDestination: string | null;
+  /**
+   * Per-site tracking URLs, each generated in CJ for that site's own website PID. A link generated
+   * for one property never renders on the other.
+   */
+  siteTrackedDestinations?: Partial<Record<string, string>>;
   disclosure: string;
   enabled: boolean;
 };
+
+/**
+ * CJ publisher account (CID), kept for reference only. It is NOT a website PID and never appears
+ * in a tracking link; links carry the per-website PID below.
+ */
+export const CJ_ACCOUNT_CID = "7990498";
+
+/**
+ * CJ website PIDs per property. Unknown until copied from CJ (Account > Websites). The env vars
+ * CJ_WEBSITE_PID_LEAGUEPOUR / CJ_WEBSITE_PID_VENUESPROCKET fill them without a code change. A CJ
+ * row cannot render on a site whose PID is missing.
+ */
+export const CJ_WEBSITE_PIDS: Record<string, string | null> = {
+  leaguepour: null,
+  venuesprocket: null,
+};
+
+export function cjWebsitePid(website: string): string | null {
+  const key = website.trim().toLowerCase();
+  const fromEnv = process.env[`CJ_WEBSITE_PID_${key.toUpperCase()}`]?.trim();
+  const pid = fromEnv || CJ_WEBSITE_PIDS[key] || null;
+  return pid && /^\d{5,10}$/.test(pid) && pid !== CJ_ACCOUNT_CID ? pid : null;
+}
+
+/** Website PID embedded in a CJ link: /click-<PID>-<AID> or /links/<PID>/... */
+export function cjPidFromUrl(raw: string): string | null {
+  try {
+    const path = new URL(raw).pathname;
+    return path.match(/^\/click-(\d+)-\d+/)?.[1] ?? path.match(/^\/links\/(\d+)\//)?.[1] ?? null;
+  } catch {
+    return null;
+  }
+}
 
 /** Gambling and other excluded promotions. These ids cannot be activated. */
 export const EXCLUDED_ADVERTISER_IDS = ["legendz"] as const;
@@ -132,7 +173,7 @@ export const ADVERTISER_REGISTRY: AdvertiserRecord[] = [
   {
     id: "aurzen",
     network: "cj",
-    advertiserId: null,
+    advertiserId: "7895424",
     name: "Aurzen",
     approvalStatus: "unverified",
     permittedWebsites: [],
@@ -145,7 +186,7 @@ export const ADVERTISER_REGISTRY: AdvertiserRecord[] = [
   {
     id: "click-and-grow",
     network: "cj",
-    advertiserId: null,
+    advertiserId: "4297609",
     name: "Click & Grow",
     approvalStatus: "unverified",
     permittedWebsites: [],
@@ -153,6 +194,20 @@ export const ADVERTISER_REGISTRY: AdvertiserRecord[] = [
     keywords: ["indoor herb", "smart garden"],
     trackedDestination: null,
     disclosure: "Optional indoor-garden retailer. Paid CJ link. Not a grow test.",
+    enabled: false,
+  },
+  {
+    id: "heil-sound",
+    network: "cj",
+    advertiserId: "7036312",
+    name: "Heil Sound",
+    approvalStatus: "unverified",
+    permittedWebsites: [],
+    // Hand-placed on one guide only; empty so the matcher can never insert it anywhere else.
+    categories: [],
+    keywords: [],
+    trackedDestination: null,
+    disclosure: "Microphone maker. Paid CJ link. Not a product test or a rank.",
     enabled: false,
   },
   {
@@ -228,6 +283,11 @@ export function resolveAdvertisers(): AdvertiserRecord[] {
     const websites = process.env[envKey(row.network, row.id, "WEBSITES")]?.trim();
     const destination = process.env[envKey(row.network, row.id, "TRACKING_URL")]?.trim();
     const advertiserId = process.env[envKey(row.network, row.id, "ADVERTISER_ID")]?.trim();
+    const siteTrackedDestinations = { ...row.siteTrackedDestinations };
+    for (const site of ["leaguepour", "venuesprocket"]) {
+      const url = process.env[envKey(row.network, row.id, `TRACKING_URL_${site.toUpperCase()}`)]?.trim();
+      if (url) siteTrackedDestinations[site] = url;
+    }
     return {
       ...row,
       enabled: enabled == null ? row.enabled : enabled,
@@ -236,16 +296,41 @@ export function resolveAdvertisers(): AdvertiserRecord[] {
         ? websites.split(",").map((site) => site.trim().toLowerCase()).filter(Boolean)
         : row.permittedWebsites,
       trackedDestination: destination || row.trackedDestination,
+      siteTrackedDestinations,
       advertiserId: advertiserId || row.advertiserId,
     };
   });
+}
+
+/**
+ * The tracking URL for this row on this site, or null. CJ: the per-site link, else the legacy
+ * single link - either way it must carry this site's own website PID, so a LeaguePour link can
+ * never be served on VenueSprocket (or the reverse). Impact keeps its single-link behavior.
+ */
+export function trackedDestinationFor(row: AdvertiserRecord, website: string): string | null {
+  const site = website.trim().toLowerCase();
+  const url = row.siteTrackedDestinations?.[site] ?? row.trackedDestination;
+  if (!url || !isValidTrackedDestination(row.network, url)) return null;
+  if (row.network === "cj") {
+    const pid = cjWebsitePid(site);
+    if (!pid || cjPidFromUrl(url) !== pid) return null;
+  }
+  return url;
 }
 
 export function isAdvertiserActive(row: AdvertiserRecord, website: string): boolean {
   if (isExcludedAdvertiser(row.id, row.name)) return false;
   if (!row.enabled || row.approvalStatus !== "approved") return false;
   if (!row.permittedWebsites.includes(website.trim().toLowerCase())) return false;
-  return isValidTrackedDestination(row.network, row.trackedDestination);
+  return trackedDestinationFor(row, website) !== null;
+}
+
+/** One named advertiser for a hand-placed recommendation; null unless fully active on this site. */
+export function activeAdvertiserFor(id: string, website: string): (AdvertiserRecord & { href: string }) | null {
+  const row = resolveAdvertisers().find((r) => r.id === id);
+  if (!row || !isAdvertiserActive(row, website)) return null;
+  const href = trackedDestinationFor(row, website);
+  return href ? { ...row, href } : null;
 }
 
 export function hasActiveAdvertiser(website: string): boolean {
@@ -298,7 +383,7 @@ export function matchEditorialPage(opts: {
   });
 }
 
-export function toRecommendedLinks(rows: AdvertiserRecord[]): Array<{
+export function toRecommendedLinks(rows: AdvertiserRecord[], website?: string): Array<{
   program: "cj" | "impact";
   merchant: string;
   label: string;
@@ -307,7 +392,9 @@ export function toRecommendedLinks(rows: AdvertiserRecord[]): Array<{
   linkKind: "cj_merchant" | "impact_merchant";
 }> {
   return rows.flatMap((row) => {
-    if (!row.trackedDestination) return [];
+    // With a website, that site's own link (CJ: must carry its PID); without one, legacy behavior.
+    const href = website ? trackedDestinationFor(row, website) : row.trackedDestination;
+    if (!href) return [];
     const merchant = row.id.toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 80);
     if (!merchant) return [];
     return [
@@ -315,7 +402,7 @@ export function toRecommendedLinks(rows: AdvertiserRecord[]): Array<{
         program: row.network,
         merchant,
         label: row.name,
-        href: row.trackedDestination,
+        href,
         note: row.disclosure,
         linkKind: row.network === "impact" ? ("impact_merchant" as const) : ("cj_merchant" as const),
       },

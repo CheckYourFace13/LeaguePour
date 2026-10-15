@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { CjRecommendation } from "@/components/marketing/affiliate";
 
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/guides/bar-trivia-night-guide", {
@@ -144,6 +145,11 @@ export default function BarTriviaNightGuide() {
               and you own the entire relationship with the players. This takes more time to ramp up but
               produces the most loyal regulars because the night feels unique to your bar.
             </p>
+            <CjRecommendation advertiserId="heil-sound" website="leaguepour" anchor="Heil Sound's dynamic microphones">
+              If you host in-house, every table has to hear the question over a full room. A wired
+              handheld dynamic microphone plugged into the sound system you already have is a simple
+              way to get there.
+            </CjRecommendation>
           </section>
 
           <section>

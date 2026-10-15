@@ -1,3 +1,5 @@
+import { activeAdvertiserFor } from "@/lib/affiliate-registry";
+
 /**
  * LeaguePour Amazon affiliate links - deliberately narrow. Used only inside equipment sections of
  * editorial guides (never pricing, auth, tools, or the app). Every paid link goes through
@@ -47,5 +49,62 @@ export function AffiliateDisclosure() {
       affiliate links - if you buy through them, LeaguePour may earn a commission at no extra cost
       to you. They go to search results, not products we&apos;ve tested. {AMAZON_ASSOCIATE_STATEMENT}
     </p>
+  );
+}
+
+const SITE_BRAND = { leaguepour: "LeaguePour", venuesprocket: "VenueSprocket" } as const;
+
+/**
+ * One hand-placed CJ recommendation. Renders nothing - not even the explanation - unless the
+ * registry row is enabled, approved, permitted on THIS site, and has a tracking link carrying
+ * this site's own CJ website PID (see trackedDestinationFor in affiliate-registry.ts). The
+ * disclosure sits directly before the link and names CJ, never the Amazon wording.
+ */
+export function CjRecommendation({
+  advertiserId,
+  website,
+  anchor,
+  children,
+}: {
+  advertiserId: string;
+  website: keyof typeof SITE_BRAND;
+  /** Descriptive link text, e.g. "Heil Sound's dynamic microphones". */
+  anchor: string;
+  /** Why this helps the reader's task. No prices, ratings, discounts, or testing claims. */
+  children: React.ReactNode;
+}) {
+  const row = activeAdvertiserFor(advertiserId, website);
+  if (!row) return null;
+  const vs = website === "venuesprocket";
+  return (
+    <aside
+      className={
+        vs
+          ? "mt-4 rounded-lg border border-vs-border bg-vs-surface-2 px-4 py-3 text-sm text-vs-text-soft"
+          : "mt-4 rounded-lg border border-lp-border bg-lp-surface/50 px-4 py-3 text-sm text-lp-muted"
+      }
+      aria-label="Affiliate recommendation"
+    >
+      <p>
+        <strong className={vs ? "text-vs-text" : "text-lp-text"}>Disclosure:</strong> the link below is
+        an affiliate link through CJ - if you buy through it, {SITE_BRAND[website]} may earn a commission
+        at no extra cost to you. We haven&apos;t tested this product.
+      </p>
+      <p className="mt-2">
+        {children}{" "}
+        <a
+          href={row.href}
+          target="_blank"
+          rel="sponsored nofollow noopener"
+          className={
+            vs
+              ? "font-semibold text-vs-accent underline underline-offset-2 hover:no-underline"
+              : "font-semibold text-lp-accent underline underline-offset-2 hover:no-underline"
+          }
+        >
+          {anchor}
+        </a>
+      </p>
+    </aside>
   );
 }
