@@ -1,4 +1,5 @@
 import { applyManagedMetadata, VENUESPROCKET_BUSINESS_ID } from "@/lib/gravyblock-managed";
+import { ManagedJsonLd } from "@/lib/gravyblock-jsonld";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
@@ -18,6 +19,9 @@ const baseMetadata: Metadata = {
   },
 };
 
+
+// Re-render periodically so approved metadata overrides reach the live page.
+export const revalidate = 300;
 
 export async function generateMetadata() {
   return applyManagedMetadata("/faq", baseMetadata, VENUESPROCKET_BUSINESS_ID);
@@ -157,6 +161,7 @@ const jsonLd = {
 export default function VsFaqPage() {
   return (
     <>
+      <ManagedJsonLd path="/faq" businessId={VENUESPROCKET_BUSINESS_ID} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
       <div className="vs-section px-4 md:px-6">
         <div className="mx-auto max-w-3xl">

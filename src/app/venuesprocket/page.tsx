@@ -1,4 +1,5 @@
 import { applyManagedMetadata, VENUESPROCKET_BUSINESS_ID } from "@/lib/gravyblock-managed";
+import { ManagedJsonLd } from "@/lib/gravyblock-jsonld";
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -25,6 +26,9 @@ const baseMetadata: Metadata = {
   },
 };
 
+
+// Re-render periodically so approved metadata overrides reach the live page.
+export const revalidate = 300;
 
 export async function generateMetadata() {
   return applyManagedMetadata("/", baseMetadata, VENUESPROCKET_BUSINESS_ID);
@@ -158,6 +162,7 @@ export default function VsSprocketHome() {
 
   return (
     <>
+      <ManagedJsonLd path="/" businessId={VENUESPROCKET_BUSINESS_ID} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}

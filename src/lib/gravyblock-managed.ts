@@ -65,3 +65,10 @@ export async function applyManagedMetadata(path: string, base: Metadata, busines
   }
   return out;
 }
+
+/** Signed JSON-LD override for a path (for the given business; defaults to LeaguePour), or null. */
+export async function getManagedJsonLd(path: string, businessId: string = GRAVYBLOCK_BUSINESS_ID): Promise<Record<string, unknown> | null> {
+  const feed = await getManagedFeed(businessId);
+  const ld = feed?.overrides.find((o) => o.path === path)?.jsonLd;
+  return ld && typeof ld === "object" ? ld : null;
+}
