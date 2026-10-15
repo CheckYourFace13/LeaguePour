@@ -1,8 +1,9 @@
+import { applyManagedMetadata, VENUESPROCKET_BUSINESS_ID } from "@/lib/gravyblock-managed";
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: { absolute: "VenueSprocket — Book More Private Events. Run Them Better." },
   description:
     "VenueSprocket helps restaurants, breweries, bars, taprooms, and event spaces capture inquiries, send proposals, sign contracts, collect deposits, and create BEOs. Start free.",
@@ -24,6 +25,10 @@ export const metadata: Metadata = {
   },
 };
 
+
+export async function generateMetadata() {
+  return applyManagedMetadata("/", baseMetadata, VENUESPROCKET_BUSINESS_ID);
+}
 const features = [
   {
     icon: "📋",

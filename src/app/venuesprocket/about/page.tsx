@@ -1,7 +1,8 @@
+import { applyManagedMetadata, VENUESPROCKET_BUSINESS_ID } from "@/lib/gravyblock-managed";
 import type { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: { absolute: "About VenueSprocket | Private Event Management Software" },
   description:
     "VenueSprocket is simple, self-serve private event software for independent restaurants, bars, breweries, and event spaces - inquiry to BEO in one place.",
@@ -15,6 +16,10 @@ export const metadata: Metadata = {
   },
 };
 
+
+export async function generateMetadata() {
+  return applyManagedMetadata("/about", baseMetadata, VENUESPROCKET_BUSINESS_ID);
+}
 export default function VsAboutPage() {
   return (
     <div className="vs-section px-4 md:px-6">

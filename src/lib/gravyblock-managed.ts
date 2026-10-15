@@ -8,7 +8,9 @@ import { createPublicKey, verify } from "node:crypto";
 import type { Metadata } from "next";
 
 export const GRAVYBLOCK_BUSINESS_ID = "81303fb5-8194-4113-9c56-c2e2e485d991";
-const FEED_URL = `https://gravyblock.com/api/managed-site/${GRAVYBLOCK_BUSINESS_ID}/feed`;
+/** This app also serves venuesprocket.com (a second GravyBlock house account); its pages pass this id. */
+export const VENUESPROCKET_BUSINESS_ID = "5fde422c-eebf-4b48-ab93-6c1be64266ab";
+const feedUrl = (businessId: string) => `https://gravyblock.com/api/managed-site/${businessId}/feed`;
 const PUBLIC_KEY_B64 = "LCDWzuoPOCXYqSf8s4SOwjeZ4wjJbEnZw37HDA+c320=";
 const SPKI_PREFIX = Buffer.from("302a300506032b6570032100", "hex");
 
@@ -16,9 +18,9 @@ export type ManagedItem = { slug: string; title: string; description: string | n
 export type ManagedOverride = { path: string; title: string | null; description: string | null; ogImage: string | null; jsonLd: Record<string, unknown> | null };
 export type ManagedFeed = { version: number; businessId: string; generatedAt: string; items: ManagedItem[]; overrides: ManagedOverride[] };
 
-export async function getManagedFeed(): Promise<ManagedFeed | null> {
+export async function getManagedFeed(businessId: string = GRAVYBLOCK_BUSINESS_ID): Promise<ManagedFeed | null> {
   try {
-    const res = await fetch(FEED_URL, { next: { revalidate: 60 }, signal: AbortSignal.timeout(4000) });
+    const res = await fetch(feedUrl(businessId), { next: { revalidate: 60 }, signal: AbortSignal.timeout(4000) });
     if (!res.ok) return null;
     const sig = res.headers.get("x-gravyblock-signature");
     const body = await res.text();
@@ -26,7 +28,7 @@ export async function getManagedFeed(): Promise<ManagedFeed | null> {
     const key = createPublicKey({ key: Buffer.concat([SPKI_PREFIX, Buffer.from(PUBLIC_KEY_B64, "base64")]), format: "der", type: "spki" });
     if (!verify(null, Buffer.from(body, "utf8"), key, Buffer.from(sig, "base64"))) return null;
     const feed = JSON.parse(body) as ManagedFeed;
-    return feed.businessId === GRAVYBLOCK_BUSINESS_ID ? feed : null;
+    return feed.businessId === businessId ? feed : null;
   } catch {
     return null;
   }
@@ -43,8 +45,8 @@ function httpsUrl(u: string | null): string | null {
 }
 
 /** Apply any signed GravyBlock override for this path (title, description, social image) to a page's own metadata. */
-export async function applyManagedMetadata(path: string, base: Metadata): Promise<Metadata> {
-  const feed = await getManagedFeed();
+export async function applyManagedMetadata(path: string, base: Metadata, businessId: string = GRAVYBLOCK_BUSINESS_ID): Promise<Metadata> {
+  const feed = await getManagedFeed(businessId);
   const ov = feed?.overrides.find((o) => o.path === path);
   if (!ov) return base;
   const out: Metadata = { ...base };

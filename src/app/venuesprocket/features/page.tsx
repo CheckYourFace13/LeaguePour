@@ -1,13 +1,18 @@
+import { applyManagedMetadata, VENUESPROCKET_BUSINESS_ID } from "@/lib/gravyblock-managed";
 import type { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: { absolute: "Features | VenueSprocket" },
   description:
     "VenueSprocket features: public inquiry page, lead pipeline, proposals, e-signature contracts, Stripe deposits, BEO builder, and a customer directory.",
   alternates: { canonical: "https://venuesprocket.com/features" },
 };
 
+
+export async function generateMetadata() {
+  return applyManagedMetadata("/features", baseMetadata, VENUESPROCKET_BUSINESS_ID);
+}
 const modules = [
   {
     id: "inquiries",

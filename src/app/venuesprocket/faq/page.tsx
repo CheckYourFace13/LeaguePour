@@ -1,10 +1,11 @@
+import { applyManagedMetadata, VENUESPROCKET_BUSINESS_ID } from "@/lib/gravyblock-managed";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 
 const URL = "https://venuesprocket.com/faq";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: { absolute: "VenueSprocket FAQ — Private Event Management Questions Answered" },
   description:
     "Straight answers about VenueSprocket: inquiries, proposals, e-signature contracts, Stripe deposits, BEOs, pricing, and what the product does not do yet.",
@@ -17,6 +18,10 @@ export const metadata: Metadata = {
   },
 };
 
+
+export async function generateMetadata() {
+  return applyManagedMetadata("/faq", baseMetadata, VENUESPROCKET_BUSINESS_ID);
+}
 type Faq = { q: string; a: string };
 
 // Every answer here is checked against what the product does today (see

@@ -1,16 +1,21 @@
+import { applyManagedMetadata, VENUESPROCKET_BUSINESS_ID } from "@/lib/gravyblock-managed";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { TrackView } from "@/components/analytics/track-view";
 import { PlanSelectLink } from "@/components/analytics/plan-select-link";
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: { absolute: "Pricing | VenueSprocket" },
   description:
     "VenueSprocket pricing: start free with an inquiry form. Upgrade to Pro for contracts, deposits, BEOs, and a customer directory. Affordable plans for restaurants, bars, and breweries.",
   alternates: { canonical: "https://venuesprocket.com/pricing" },
 };
 
+
+export async function generateMetadata() {
+  return applyManagedMetadata("/pricing", baseMetadata, VENUESPROCKET_BUSINESS_ID);
+}
 const plans = [
   {
     name: "Free",
