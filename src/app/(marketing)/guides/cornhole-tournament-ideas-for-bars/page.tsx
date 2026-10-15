@@ -3,7 +3,8 @@ import type { Metadata } from "next";
 import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { AffiliateDisclosure, AmazonSearchLink } from "@/components/marketing/affiliate";
+import { AffiliateDisclosure, AmazonSearchLink, CjInlineLink } from "@/components/marketing/affiliate";
+import { activeAdvertiserFor } from "@/lib/affiliate-registry";
 
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/guides/cornhole-tournament-ideas-for-bars", {
@@ -90,6 +91,25 @@ const jsonLd = {
     },
   ],
 };
+
+/** Only rendered while the DailySteals link is live, so the list never shows an empty item. */
+function CornholeSetItem() {
+  const link = (
+    <CjInlineLink advertiserId="dailysteals-cornhole-set">
+      Regulation-size cornhole set with resin bags at DailySteals
+    </CjInlineLink>
+  );
+  if (!activeAdvertiserFor("dailysteals-cornhole-set", "leaguepour")) return null;
+  return (
+    <li>
+      <strong>Boards and bags as one set:</strong> if you&apos;d rather buy a matched set, DailySteals
+      lists a regulation-size (24 &times; 48 in) pair of boards with eight resin-filled bags. It&apos;s a
+      deal site, so the price and stock change often - check the size and the bag option on the
+      listing before you order.{" "}
+      {link}
+    </li>
+  );
+}
 
 export default function CornholeTournamentIdeas() {
   return (
@@ -192,7 +212,7 @@ export default function CornholeTournamentIdeas() {
               no fun for anyone.
             </p>
             <h3 className="mt-8 font-display text-xl font-bold">What to buy, and what to look for</h3>
-            <AffiliateDisclosure />
+            <AffiliateDisclosure cj={{ advertiserId: "dailysteals-cornhole-set", merchant: "DailySteals" }} />
             <ul className="mt-4 list-disc space-y-3 pl-6">
               <li>
                 <strong>Boards:</strong> buy regulation 2 &times; 4 ft boards, not the smaller tailgate
@@ -208,6 +228,7 @@ export default function CornholeTournamentIdeas() {
                 split seam doesn&apos;t stop a match.{" "}
                 <AmazonSearchLink query="regulation cornhole bags resin filled">Resin-filled regulation cornhole bags on Amazon</AmazonSearchLink>
               </li>
+              <CornholeSetItem />
             </ul>
             <p className="mt-4">
               You don&apos;t need to own everything on day one. Plenty of bar leagues start by asking

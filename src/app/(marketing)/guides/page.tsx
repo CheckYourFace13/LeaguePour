@@ -132,6 +132,18 @@ const categories: Category[] = [
       },
     ],
   },
+  {
+    name: "For players & teams",
+    intro: "For the people playing, not just the people running the night.",
+    guides: [
+      {
+        href: "/guides/how-to-celebrate-the-end-of-a-league-season",
+        title: "How to Celebrate the End of a League Season",
+        description:
+          "Awards that include everyone, food and drink for the whole group, outings, a simple budget, accessibility, and a booking timeline for your season finale.",
+      },
+    ],
+  },
 ];
 
 export default async function GuidesIndexPage() {

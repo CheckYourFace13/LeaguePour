@@ -14,7 +14,7 @@ import {
   cjWebsitePid,
 } from "../src/lib/affiliate-registry";
 import { editorialAdvertiserLinks } from "../src/lib/editorial-advertisers";
-import { AmazonSearchLink, AffiliateDisclosure, CjRecommendation, amazonSearchUrl } from "../src/components/marketing/affiliate";
+import { AmazonSearchLink, AffiliateDisclosure, CjInlineLink, CjRecommendation, amazonSearchUrl } from "../src/components/marketing/affiliate";
 
 const LP_PID = "1111111";
 const VS_PID = "2222222";
@@ -24,7 +24,7 @@ const ENV_KEYS = [
   "CJ_WEBSITE_PID_LEAGUEPOUR", "CJ_WEBSITE_PID_VENUESPROCKET", "CJ_HEIL_SOUND_ENABLED", "CJ_HEIL_SOUND_APPROVAL",
   "CJ_HEIL_SOUND_WEBSITES", "CJ_HEIL_SOUND_TRACKING_URL", "CJ_HEIL_SOUND_TRACKING_URL_LEAGUEPOUR",
   "CJ_HEIL_SOUND_TRACKING_URL_VENUESPROCKET", "CJ_LAWDEPOT_ENABLED", "CJ_LAWDEPOT_TRACKING_URL_VENUESPROCKET",
-  "CJ_LAWDEPOT_TRACKING_URL_LEAGUEPOUR", "CJ_LAWDEPOT_WEBSITES",
+  "CJ_LAWDEPOT_TRACKING_URL_LEAGUEPOUR", "CJ_LAWDEPOT_WEBSITES", "CJ_DAILYSTEALS_CORNHOLE_SET_ENABLED",
 ];
 const reset = () => ENV_KEYS.forEach((k) => delete process.env[k]);
 const render = (website: "leaguepour" | "venuesprocket") =>
@@ -111,23 +111,38 @@ check("each missing piece keeps it dark", () => {
   }
 });
 
-check("LawDepot: real CJ link (LP PID) renders on LP only; VS stays dark", () => {
+check("LawDepot: link kept configured but inactive on both sites", () => {
   const law = (website: "leaguepour" | "venuesprocket") =>
     renderToStaticMarkup(
-      <CjRecommendation advertiserId="lawdepot" website={website} anchor="LawDepot's activity waiver form">
-        It isn&apos;t legal advice.
-      </CjRecommendation>,
+      <CjRecommendation advertiserId="lawdepot" website={website} anchor="x">x</CjRecommendation>,
     );
-  const real = "https://www.jdoqocy.com/click-101904040-16995856-1734590589000";
-  const html = law("leaguepour");
-  assert.ok(html.includes(`href="${real}"`), "CJ-returned LP link");
-  assert.ok(html.includes("LeaguePour may earn") && html.includes("through CJ") && !html.includes("Amazon"));
-  assert.ok(html.indexOf("Disclosure:") < html.indexOf("<a "));
-  assert.ok(html.includes('rel="sponsored nofollow noopener"') && html.includes('target="_blank"'));
-  assert.equal(law("venuesprocket"), "", "not permitted on VS and no VS-PID link");
-  process.env.CJ_LAWDEPOT_TRACKING_URL_VENUESPROCKET = real;
-  process.env.CJ_LAWDEPOT_WEBSITES = "leaguepour,venuesprocket";
-  assert.equal(law("venuesprocket"), "", "an LP-PID link can never render on VS");
+  assert.equal(law("leaguepour"), "");
+  assert.equal(law("venuesprocket"), "");
+  process.env.CJ_LAWDEPOT_ENABLED = "true";
+  assert.ok(law("leaguepour").includes("click-101904040-16995856"), "re-enabling needs no new lookup");
+});
+
+check("player placements: CJ product links render on LP only, carrying LP PID", () => {
+  for (const id of ["dailysteals-cornhole-set", "adrenaline-gift-certificate"]) {
+    const lp = activeAdvertiserFor(id, "leaguepour");
+    assert.ok(lp && cjPidFromUrl(lp.href) === "101904040" && lp.href.includes("?url="), id);
+    assert.equal(activeAdvertiserFor(id, "venuesprocket"), null, `${id} not on VS`);
+  }
+  const link = renderToStaticMarkup(<CjInlineLink advertiserId="dailysteals-cornhole-set">set</CjInlineLink>);
+  assert.ok(link.includes('rel="sponsored nofollow noopener"') && link.includes("cjsku=SKU13099598"));
+  const rec = renderToStaticMarkup(
+    <CjRecommendation advertiserId="adrenaline-gift-certificate" website="leaguepour" anchor="gift">why</CjRecommendation>,
+  );
+  assert.ok(rec.indexOf("Disclosure:") < rec.indexOf("<a ") && rec.includes("cjsku=Flexi"));
+});
+
+check("equipment disclosure names DailySteals only while its link is live", () => {
+  const withCj = renderToStaticMarkup(<AffiliateDisclosure cj={{ advertiserId: "dailysteals-cornhole-set", merchant: "DailySteals" }} />);
+  assert.ok(withCj.includes("Amazon and DailySteals") && withCj.includes("through CJ") && withCj.includes("As an Amazon Associate"));
+  process.env.CJ_DAILYSTEALS_CORNHOLE_SET_ENABLED = "false";
+  const off = renderToStaticMarkup(<AffiliateDisclosure cj={{ advertiserId: "dailysteals-cornhole-set", merchant: "DailySteals" }} />);
+  assert.ok(!off.includes("DailySteals") && off.includes("As an Amazon Associate"));
+  assert.equal(renderToStaticMarkup(<CjInlineLink advertiserId="dailysteals-cornhole-set">set</CjInlineLink>), "");
 });
 
 check("Amazon links and disclosure unchanged", () => {

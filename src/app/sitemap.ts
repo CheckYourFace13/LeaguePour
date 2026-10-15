@@ -97,6 +97,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/guides/round-robin-vs-single-elimination",
     "/guides/how-standings-and-points-work",
     "/guides/managing-no-shows-and-forfeits",
+    "/guides/how-to-celebrate-the-end-of-a-league-season",
     "/history",
     "/history/darts",
     "/history/cornhole",

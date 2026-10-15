@@ -124,8 +124,8 @@ export const ADVERTISER_REGISTRY: AdvertiserRecord[] = [
     advertiserId: "4544498",
     name: "LawDepot",
     approvalStatus: "approved",
-    // Live on one LP guide (bar-competition-ideas) via the Activity Waiver link. The VS cancellation
-    // guide slot stays dark: CJ's Link Search returned no LawDepot event-contract link for VS.
+    // Inactive (2026-10-15): Chris moved LP affiliate focus to players, not legal documents. The
+    // Activity Waiver link stays configured below so it can be re-enabled without another lookup.
     permittedWebsites: ["leaguepour"],
     // Hand-placed only: no auto-match terms now that the row is active.
     categories: [],
@@ -137,7 +137,7 @@ export const ADVERTISER_REGISTRY: AdvertiserRecord[] = [
       leaguepour: "https://www.jdoqocy.com/click-101904040-16995856-1734590589000",
     },
     disclosure: "Optional document service. Paid CJ link. It does not replace this site's own documents or software.",
-    enabled: true,
+    enabled: false,
   },
   {
     id: "chefs-deal",
@@ -231,6 +231,46 @@ export const ADVERTISER_REGISTRY: AdvertiserRecord[] = [
     trackedDestination: null,
     disclosure: "Optional gourmet retailer. Paid CJ link. Not a tasting note or a rank.",
     enabled: false,
+  },
+  {
+    id: "dailysteals-cornhole-set",
+    network: "cj",
+    advertiserId: "6616496",
+    name: "DailySteals",
+    approvalStatus: "approved",
+    permittedWebsites: ["leaguepour"],
+    // Hand-placed in the cornhole guide's equipment list only.
+    categories: [],
+    keywords: [],
+    trackedDestination: null,
+    // CJ Product Feed API: SKU13099598, "Distressed Wood Cornhole Boards - Regulation Size -
+    // 24 x 48 (RESIN Bags)", in stock when checked. Deal-site listing: re-check it periodically.
+    siteTrackedDestinations: {
+      leaguepour:
+        "https://www.kqzyfj.com/click-101904040-15580948?url=https%3A%2F%2Fdailysteals.com%2Fproducts%2Fdistressed-wood-cornhole-boards-with-or-without-bags.html%3Fsku%3DSKU13099598&cjsku=SKU13099598",
+    },
+    disclosure: "Deal retailer. Paid CJ link. Not a product test; price and stock change.",
+    enabled: true,
+  },
+  {
+    id: "adrenaline-gift-certificate",
+    network: "cj",
+    advertiserId: "4851771",
+    name: "Adrenaline",
+    approvalStatus: "approved",
+    permittedWebsites: ["leaguepour"],
+    // Hand-placed in the season-celebration guide only.
+    categories: [],
+    keywords: [],
+    trackedDestination: null,
+    // CJ Product Feed API: product "Flexi" (Adrenaline Gift Certificate, catalog 10146),
+    // destination https://www.adrenaline365.com/gift-certificates/.
+    siteTrackedDestinations: {
+      leaguepour:
+        "https://www.tkqlhce.com/click-101904040-17363168?url=https%3A%2F%2Fwww.adrenaline365.com%2Fgift-certificates%2F&cjsku=Flexi",
+    },
+    disclosure: "Experience gift retailer. Paid CJ link. Availability depends on location.",
+    enabled: true,
   },
   {
     id: "heil-sound",

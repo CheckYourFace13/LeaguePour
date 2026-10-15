@@ -42,13 +42,47 @@ export function AmazonSearchLink({ query, children }: { query: string; children:
   );
 }
 
-export function AffiliateDisclosure() {
+/**
+ * Disclosure for an equipment section. Pass `cj` when the section also has one CJ merchant link:
+ * the merchant is named only if that link is actually live on this site, so the wording always
+ * matches what the reader can see.
+ */
+export function AffiliateDisclosure({ cj }: { cj?: { advertiserId: string; merchant: string } } = {}) {
+  const cjLive = cj ? activeAdvertiserFor(cj.advertiserId, "leaguepour") !== null : false;
   return (
     <p className="mt-4 rounded-lg border border-lp-border bg-lp-surface/50 px-4 py-3 text-sm text-lp-muted">
-      <strong className="text-lp-text">Disclosure:</strong> the Amazon links in this section are
-      affiliate links - if you buy through them, LeaguePour may earn a commission at no extra cost
-      to you. They go to search results, not products we&apos;ve tested. {AMAZON_ASSOCIATE_STATEMENT}
+      <strong className="text-lp-text">Disclosure:</strong>{" "}
+      {cjLive ? (
+        <>
+          the Amazon and {cj!.merchant} links in this section are affiliate links (the {cj!.merchant} link
+          is through CJ) - if you buy through them, LeaguePour may earn a commission at no extra cost
+          to you. The Amazon links go to search results; none of these are products we&apos;ve tested.
+        </>
+      ) : (
+        <>
+          the Amazon links in this section are affiliate links - if you buy through them, LeaguePour
+          may earn a commission at no extra cost to you. They go to search results, not products
+          we&apos;ve tested.
+        </>
+      )}{" "}
+      {AMAZON_ASSOCIATE_STATEMENT}
     </p>
+  );
+}
+
+/** A single CJ link inside an existing equipment list. Renders nothing unless live on LeaguePour. */
+export function CjInlineLink({ advertiserId, children }: { advertiserId: string; children: React.ReactNode }) {
+  const row = activeAdvertiserFor(advertiserId, "leaguepour");
+  if (!row) return null;
+  return (
+    <a
+      href={row.href}
+      target="_blank"
+      rel="sponsored nofollow noopener"
+      className="font-semibold text-lp-accent underline underline-offset-2 hover:no-underline"
+    >
+      {children}
+    </a>
   );
 }
 

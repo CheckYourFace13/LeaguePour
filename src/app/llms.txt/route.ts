@@ -36,6 +36,7 @@ Related product:
 - [How to run a dart league at your bar](https://leaguepour.com/guides/how-to-run-a-dart-league-at-your-bar)
 - [Round robin vs. single elimination](https://leaguepour.com/guides/round-robin-vs-single-elimination)
 - [How standings and points work](https://leaguepour.com/guides/how-standings-and-points-work)
+- [How to celebrate the end of a league season](https://leaguepour.com/guides/how-to-celebrate-the-end-of-a-league-season): awards, food, outings, budget and booking for players and teams
 
 ## Company
 - [About](https://leaguepour.com/about)

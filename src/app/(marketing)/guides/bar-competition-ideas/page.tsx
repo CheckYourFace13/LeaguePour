@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { CjRecommendation } from "@/components/marketing/affiliate";
 
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/guides/bar-competition-ideas", {
@@ -300,11 +299,12 @@ export default function BarCompetitionIdeas() {
             before they play. LeaguePour shows whatever terms you write in a competition&apos;s optional
             waiver field at signup; it doesn&apos;t supply the wording.
           </p>
-          <CjRecommendation advertiserId="lawdepot" website="leaguepour" anchor="LawDepot's activity waiver form">
-            If you want a written waiver, a fill-in-the-blanks document service is one optional way to
-            start a draft. It isn&apos;t legal advice, and enforceability varies by state, so have an
-            attorney review the final version.
-          </CjRecommendation>
+          <p className="mt-3 text-sm leading-relaxed text-lp-muted">
+            Whatever terms you use, the bigger safety wins are physical: clear lanes so nobody walks
+            through a throwing line, enough lighting to see the target, and a firm no-play rule for
+            anyone who&apos;s had too much to drink. Waiver enforceability varies by state, so if you
+            rely on one, have a local attorney review the wording.
+          </p>
         </section>
 
         <div className="mt-14 rounded-2xl bg-lp-accent/10 border border-lp-accent/20 p-8 text-center">
