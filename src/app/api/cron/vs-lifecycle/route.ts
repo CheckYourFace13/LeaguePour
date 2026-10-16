@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { runJob } from "@/lib/job-runs";
 import { getVsNotifyEmail, sendVsNudge } from "@/lib/lifecycle-nudges";
+import { withScheduledSlot } from "@/lib/job-claims";
 
 /**
  * Daily VenueSprocket lifecycle nudges - each check fires an email at most once per subject
@@ -190,7 +191,7 @@ async function checkCompletedFollowUp(): Promise<number> {
   return sent;
 }
 
-export async function GET(request: Request) {
+async function handle(request: Request): Promise<Response> {
   // Sends real emails to real users, and has no time-window gate the way the outreach crons do
   // (there's no equivalent notion of "the scheduled path" here) - always requires CRON_SECRET,
   // same as the DB heartbeat route, rather than leaving it open to anyone who finds the URL.
@@ -236,3 +237,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: "VS lifecycle cron failed." }, { status: 500 });
   }
 }
+
+// Scheduler-triggered runs execute at most once per slot, even if a response is lost - see job-claims.ts.
+export const GET = withScheduledSlot("vs-lifecycle", handle);

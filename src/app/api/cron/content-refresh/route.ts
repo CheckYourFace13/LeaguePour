@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { runJob } from "@/lib/job-runs";
 import { findStaleGuides } from "@/lib/content-engine/refresh";
+import { withScheduledSlot } from "@/lib/job-claims";
 
 // Monthly decay/refresh pass for both brands' auto-generated guides - see refresh.ts's doc
 // comment. Deterministic and report-only: flags guides for human review (by age, or because they
 // now fail a check against current FACTS/FORBIDDEN_CLAIM_PATTERNS), never mutates a live guide.
 // One route for both brands since this is read-only and cheap to run for both in one call.
-export async function GET(request: Request) {
+async function handle(request: Request): Promise<Response> {
   const secret = process.env.CRON_SECRET?.trim();
   if (!secret) {
     return NextResponse.json({ ok: false, error: "CRON_SECRET is not configured on the server." }, { status: 500 });
@@ -26,3 +27,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: "Content refresh run failed." }, { status: 500 });
   }
 }
+
+// Scheduler-triggered runs execute at most once per slot, even if a response is lost - see job-claims.ts.
+export const GET = withScheduledSlot("content-refresh", handle);

@@ -4,6 +4,7 @@ import { getSetting, setSetting } from "@/lib/app-settings";
 import { submitToIndexNow, type IndexNowSubmitResult } from "@/lib/seo/indexnow";
 import lpSitemap from "@/app/sitemap";
 import vsSitemap from "@/app/venuesprocket/sitemap";
+import { withScheduledSlot } from "@/lib/job-claims";
 
 export const runtime = "nodejs";
 
@@ -18,7 +19,7 @@ export const runtime = "nodejs";
  */
 const THROTTLE_HOURS = 20;
 
-export async function GET(request: Request) {
+async function handle(request: Request): Promise<Response> {
   const secret = process.env.CRON_SECRET?.trim();
   if (!secret) {
     return NextResponse.json(
@@ -76,3 +77,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: "IndexNow submission failed." }, { status: 500 });
   }
 }
+
+// Scheduler-triggered runs execute at most once per slot, even if a response is lost - see job-claims.ts.
+export const GET = withScheduledSlot("indexnow-submit", handle);

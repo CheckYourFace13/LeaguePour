@@ -354,7 +354,19 @@ type Lane = {
   brand: "lp" | "vs";
 };
 
-type Pending = { ids: string[]; key: string; at: string };
+/** `payloadHash` pins the exact request body sent under `key`; a retry must reproduce it byte for byte. */
+type Pending = { ids: string[]; key: string; at: string; payloadHash?: string };
+
+type Payload = Parameters<BatchSender>[0];
+
+/** Deterministic payload: recipients ordered by contact id, built only from stored contact fields. */
+function buildPayload(lane: Lane, rows: Candidate[]): Payload {
+  return [...rows].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)).map(lane.build);
+}
+
+function hashPayload(payload: Payload): string {
+  return createHash("sha256").update(JSON.stringify(payload)).digest("hex");
+}
 
 type LaneOpts = {
   send?: BatchSender;
@@ -405,7 +417,8 @@ async function sendLane(
     | { kind: "throttled" }
     | { kind: "empty" }
     | { kind: "inflight" }
-    | { kind: "send"; ids: string[]; key: string; at: Date; retry: boolean };
+    | { kind: "send"; ids: string[]; key: string; at: Date; retry: false; payload: Payload }
+    | { kind: "retry"; ids: string[]; key: string; at: Date; payloadHash?: string };
 
   const plan = await prisma.$transaction(
     async (tx): Promise<Plan> => {
@@ -421,7 +434,7 @@ async function sendLane(
         const age = t.getTime() - new Date(pending.at).getTime();
         if (age < IN_FLIGHT_MS) return { kind: "inflight" };
         if (age < RETRY_WITH_SAME_KEY_MS) {
-          return { kind: "send", ids: pending.ids, key: pending.key, at: new Date(pending.at), retry: true };
+          return { kind: "retry", ids: pending.ids, key: pending.key, at: new Date(pending.at), payloadHash: pending.payloadHash };
         }
         // Too old to retry safely with the same key: assume it may have been delivered, keep the
         // marks (no duplicate), and drop the record.
@@ -450,12 +463,15 @@ async function sendLane(
       const ids = (await lane.claimed(tx, batch.map((c) => c.id), t)).sort();
       if (ids.length === 0) return { kind: "empty" };
       const key = `${lane.name}-outreach-${t.toISOString()}-${createHash("sha256").update(ids.join(",")).digest("hex").slice(0, 32)}`;
+      const idSet = new Set(ids);
+      const payload = buildPayload(lane, batch.filter((c) => idSet.has(c.id)));
+      const record: Pending = { ids, key, at: t.toISOString(), payloadHash: hashPayload(payload) };
       await tx.appSetting.upsert({
         where: { key: lane.pendingKey },
-        create: { key: lane.pendingKey, value: JSON.stringify({ ids, key, at: t.toISOString() } satisfies Pending) },
-        update: { value: JSON.stringify({ ids, key, at: t.toISOString() } satisfies Pending) },
+        create: { key: lane.pendingKey, value: JSON.stringify(record) },
+        update: { value: JSON.stringify(record) },
       });
-      return { kind: "send", ids, key, at: t, retry: false };
+      return { kind: "send", ids, key, at: t, retry: false, payload };
     },
     { timeout: 30_000 },
   );
@@ -468,33 +484,66 @@ async function sendLane(
   }
   if (plan.kind === "empty") return { sent: 0, failed: 0, remaining: await lane.remaining() };
 
-  const rows = await prisma.outreachContact.findMany({
-    where: { id: { in: plan.ids } },
-    select: { id: true, name: true, email: true },
-  });
-  const recipients = rows.filter((r): r is Candidate => !!r.email && isPlausibleEmail(r.email));
-  const result = await send(recipients.map(lane.build), lane.brand, { idempotencyKey: plan.key });
+  let payload: Payload;
+  if (plan.kind === "send") {
+    payload = plan.payload; // exactly what was hashed into the pending record
+  } else {
+    // Retry of an unsettled batch: rebuild from the same contacts in the same order and send only
+    // if it reproduces the original request exactly - Resend's idempotency key covers an identical
+    // request, and a changed body (edited name/email, a contact cleared since) could deliver a
+    // different message. On any mismatch, hold: keep the contacts marked and send nothing.
+    const rows = await prisma.outreachContact.findMany({
+      where: { id: { in: plan.ids } },
+      select: { id: true, name: true, email: true },
+    });
+    const usable = rows.filter((r): r is Candidate => !!r.email && isPlausibleEmail(r.email));
+    payload = buildPayload(lane, usable);
+    if (usable.length !== plan.ids.length || !plan.payloadHash || hashPayload(payload) !== plan.payloadHash) {
+      console.warn(`[outreach:${lane.name}] retry of ${plan.key} would not reproduce the original request - held, not sent`);
+      await clearPending(lane, plan.key);
+      return {
+        sent: 0,
+        failed: 0,
+        remaining: await lane.remaining(),
+        error: "Unsettled batch could not be reproduced exactly - contacts held, nothing sent",
+      };
+    }
+  }
+
+  const result = await send(payload, lane.brand, { idempotencyKey: plan.key });
 
   if (result.ok) {
     await clearPending(lane, plan.key);
-    if (result.sent < recipients.length) {
-      console.warn(`[outreach:${lane.name}] Resend accepted ${result.sent}/${recipients.length}; contacts stay marked (no resend)`);
+    if (result.sent < payload.length) {
+      console.warn(`[outreach:${lane.name}] Resend accepted ${result.sent}/${payload.length}; contacts stay marked (no resend)`);
     }
-    return { sent: recipients.length, failed: 0, remaining: await lane.remaining() };
+    return { sent: payload.length, failed: 0, remaining: await lane.remaining() };
   }
-  if (result.rejected) {
+  if (result.rejected && plan.kind === "send") {
+    // First attempt, definitely refused: nothing went out, so the contacts stay eligible.
     await lane.revert(plan.ids, plan.at);
     await clearPending(lane, plan.key);
     return {
       sent: 0,
-      failed: recipients.length,
+      failed: payload.length,
       remaining: await lane.remaining(),
       error: `Resend rejected the batch${result.status ? ` (HTTP ${result.status})` : ""} - nothing sent, contacts left eligible`,
     };
   }
+  if (result.rejected) {
+    // A retry refused: the ORIGINAL attempt's outcome is still unknown (it may have been delivered,
+    // and an idempotency conflict is itself a 4xx), so never revert here. Hold and stop retrying.
+    await clearPending(lane, plan.key);
+    return {
+      sent: 0,
+      failed: payload.length,
+      remaining: await lane.remaining(),
+      error: `Retry refused${result.status ? ` (HTTP ${result.status})` : ""} - original outcome unknown, contacts held`,
+    };
+  }
   return {
     sent: 0,
-    failed: recipients.length,
+    failed: payload.length,
     remaining: await lane.remaining(),
     error: `Send outcome unknown${result.status ? ` (HTTP ${result.status})` : ""} - contacts held; a later run retries with the same idempotency key`,
   };

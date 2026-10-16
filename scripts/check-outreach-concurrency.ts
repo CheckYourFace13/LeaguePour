@@ -19,6 +19,7 @@ if (!/@(127\.0\.0\.1|localhost)(:\d+)?\//.test(url)) {
 process.env.DATABASE_URL = url;
 delete process.env.RESEND_API_KEY;
 delete process.env.RESEND_VS_API_KEY;
+process.env.CRON_SECRET = "test-cron-secret";
 
 type Email = { to: string | string[] };
 type Call = { brand: string; to: string[]; key?: string };
@@ -210,6 +211,153 @@ async function main() {
     const r = await outreach.sendVsOutreachCore(5, { send: recorder({ ok: false, rejected: true, status: 422 }).send });
     assert.ok(r.error?.includes("rejected"));
     assert.equal(await prisma.outreachContact.count({ where: { vsStatus: null, vsEmailSentAt: null } }), 8);
+  });
+
+  // ---------------------------------------------------------------- lost responses / crash recovery
+  const slotReq = (slot?: string, secret = "test-cron-secret") =>
+    new Request(`http://127.0.0.1/api/cron/x${slot ? `?scheduler_slot=${slot}` : ""}`, {
+      headers: { Authorization: `Bearer ${secret}`, ...(slot ? { "x-scheduler-slot": slot } : {}) },
+    });
+
+  await check("scheduled job completes but its response is lost: the retry does not re-run it", async () => {
+    let sideEffects = 0;
+    const GET = claims.withScheduledSlot("demo-job", async () => {
+      sideEffects++;
+      return Response.json({ ok: true });
+    });
+    const first = await GET(slotReq("2026-10-16"));
+    assert.equal(first.status, 200);
+    // The scheduler never saw that response (timeout / 503), released its own claim and retried -
+    // from this or another instance, possibly several at once.
+    const retries = await Promise.all(Array.from({ length: 6 }, () => GET(slotReq("2026-10-16"))));
+    assert.equal(sideEffects, 1, "side effect ran exactly once");
+    for (const r of retries) assert.ok(((await r.json()) as { skipped?: string }).skipped?.includes("Already executed"));
+    // The next day's slot runs normally (cadence preserved); manual calls without a slot always run.
+    await GET(slotReq("2026-10-17"));
+    await GET(slotReq());
+    await GET(slotReq());
+    assert.equal(sideEffects, 4);
+  });
+
+  await check("unauthenticated slot requests never create a claim", async () => {
+    let ran = 0;
+    const GET = claims.withScheduledSlot("demo-job", async () => {
+      ran++;
+      return Response.json({ ok: false }, { status: 401 });
+    });
+    await GET(slotReq("2026-10-16", "wrong"));
+    assert.equal(await prisma.appSetting.count({ where: { key: { startsWith: "job_claim:exec:" } } }), 0);
+    assert.equal(ran, 1, "the handler still answers (and rejects) it");
+  });
+
+  await check("a job that throws keeps its slot claimed (no duplicate partial work)", async () => {
+    let ran = 0;
+    const GET = claims.withScheduledSlot("demo-job", async () => {
+      ran++;
+      throw new Error("boom");
+    });
+    await assert.rejects(GET(slotReq("2026-10-16")));
+    await GET(slotReq("2026-10-16"));
+    assert.equal(ran, 1);
+  });
+
+  // An idempotent fake provider: stores the first request body per key, answers a different body
+  // under a reused key with a 409 conflict, and counts actual deliveries.
+  const provider = () => {
+    const byKey = new Map<string, string>();
+    const deliveries: string[] = [];
+    let crashAfterAccept = false;
+    const send = (async (emails: Email[], _brand = "lp", o: { idempotencyKey?: string } = {}) => {
+      const body = JSON.stringify(emails);
+      const key = o.idempotencyKey ?? "";
+      const seen = byKey.get(key);
+      if (seen !== undefined && seen !== body) return { ok: false, rejected: true, status: 409, sent: 0, failed: emails.length };
+      if (seen === undefined) {
+        byKey.set(key, body);
+        deliveries.push(...emails.flatMap((e) => (Array.isArray(e.to) ? e.to : [e.to])));
+      }
+      if (crashAfterAccept) {
+        crashAfterAccept = false;
+        throw new Error("process crashed after the provider accepted");
+      }
+      return { ok: true, sent: emails.length, failed: 0 };
+    }) as unknown as typeof import("../src/lib/email").sendEmailBatch;
+    return { send, byKey, deliveries, crashNextAfterAccept: () => (crashAfterAccept = true) };
+  };
+
+  await check("crash after claim, before send: retry sends the exact same batch, payload and key", async () => {
+    await setSetting(outreach.LP_OUTREACH_ENABLED_KEY, "true");
+    await seed(30);
+    const t0 = new Date();
+    let captured: { body: string; key?: string } | null = null;
+    const crashing = (async (emails: Email[], _b = "lp", o: { idempotencyKey?: string } = {}) => {
+      captured = { body: JSON.stringify(emails), key: o.idempotencyKey };
+      throw new Error("crash before the request left the process");
+    }) as unknown as typeof import("../src/lib/email").sendEmailBatch;
+    await assert.rejects(outreach.sendOutreachCore(25, { send: crashing, throttleHours: 20, now: () => t0 }));
+    assert.equal(await prisma.outreachContact.count({ where: { status: "EMAIL_SENT" } }), 25, "held while unsettled");
+
+    const p = provider();
+    await outreach.sendOutreachCore(25, { send: p.send, throttleHours: 20, now: () => new Date(t0.getTime() + 11 * 60_000) });
+    const [key] = [...p.byKey.keys()];
+    const c = captured as { body: string; key?: string } | null;
+    assert.equal(key, c?.key, "same idempotency key");
+    assert.equal(p.byKey.get(key), c?.body, "byte-identical payload");
+    assert.equal(p.deliveries.length, 25);
+    assert.equal(new Set(p.deliveries).size, 25);
+  });
+
+  await check("crash after the provider accepted: retry is deduplicated, exactly one delivery", async () => {
+    await setSetting(outreach.LP_OUTREACH_ENABLED_KEY, "true");
+    await seed(30);
+    const t0 = new Date();
+    const p = provider();
+    p.crashNextAfterAccept();
+    await assert.rejects(outreach.sendOutreachCore(25, { send: p.send, throttleHours: 20, now: () => t0 }));
+    assert.equal(p.deliveries.length, 25, "delivered once before the crash");
+    const r = await outreach.sendOutreachCore(25, { send: p.send, throttleHours: 20, now: () => new Date(t0.getTime() + 11 * 60_000) });
+    assert.equal(p.deliveries.length, 25, "the retry delivered nothing new");
+    assert.equal(r.sent, 25);
+    assert.equal(await prisma.appSetting.count({ where: { key: "outreach_pending_batch:lp" } }), 0, "settled");
+    assert.equal(await prisma.outreachContact.count({ where: { status: "EMAIL_SENT" } }), 25, "no second batch");
+  });
+
+  await check("retry whose payload changed is held, never sent", async () => {
+    await setSetting(outreach.LP_OUTREACH_ENABLED_KEY, "true");
+    await seed(30);
+    const t0 = new Date();
+    await outreach.sendOutreachCore(25, { send: recorder({ ok: false }).send, now: () => t0 });
+    const marked = await prisma.outreachContact.findFirst({ where: { status: "EMAIL_SENT" } });
+    await prisma.outreachContact.update({ where: { id: marked!.id }, data: { name: "Renamed Bar" } });
+    const m = recorder({ ok: true });
+    const r = await outreach.sendOutreachCore(25, { send: m.send, now: () => new Date(t0.getTime() + 11 * 60_000) });
+    assert.equal(m.calls.length, 0);
+    assert.ok(r.error?.includes("could not be reproduced"));
+    assert.equal(await prisma.outreachContact.count({ where: { status: "EMAIL_SENT" } }), 25, "held");
+  });
+
+  await check("a 4xx on retry never reverts (the first attempt may have been delivered)", async () => {
+    await setSetting(outreach.LP_OUTREACH_ENABLED_KEY, "true");
+    await seed(30);
+    const t0 = new Date();
+    await outreach.sendOutreachCore(25, { send: recorder({ ok: false }).send, now: () => t0 });
+    const r = await outreach.sendOutreachCore(25, {
+      send: recorder({ ok: false, rejected: true, status: 409 }).send,
+      now: () => new Date(t0.getTime() + 11 * 60_000),
+    });
+    assert.ok(r.error?.includes("Retry refused"));
+    assert.equal(await prisma.outreachContact.count({ where: { status: "EMAIL_SENT", emailSentAt: t0 } }), 25);
+  });
+
+  await check("VS: crash after the provider accepted -> one delivery per recipient", async () => {
+    await seed(10, { vsEligible: true });
+    const t0 = new Date();
+    const p = provider();
+    p.crashNextAfterAccept();
+    await assert.rejects(outreach.sendVsOutreachCore(5, { send: p.send, now: () => t0 }));
+    await outreach.sendVsOutreachCore(5, { send: p.send, now: () => new Date(t0.getTime() + 11 * 60_000) });
+    assert.equal(p.deliveries.length, 5);
+    assert.equal(await prisma.outreachContact.count({ where: { vsStatus: "EMAIL_SENT" } }), 5);
   });
 
   await prisma.outreachContact.deleteMany({});

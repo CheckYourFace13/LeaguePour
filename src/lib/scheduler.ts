@@ -111,9 +111,18 @@ function isDue(job: ScheduledJob, now: Date): boolean {
 // A gateway error is the hosting edge/proxy answering, not the route - the job didn't run.
 const GATEWAY_STATUSES = new Set([502, 503, 504]);
 
-async function attemptFetch(url: string, secret: string): Promise<{ ok: boolean; summary: string; ran: boolean }> {
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${secret}` },
+async function attemptFetch(
+  url: string,
+  secret: string,
+  slot: string,
+): Promise<{ ok: boolean; summary: string; ran: boolean }> {
+  // The slot lets the route claim this run itself (withScheduledSlot), so a retry after a lost
+  // response can never execute the job twice. Sent as a header and a query param in case a proxy
+  // drops custom headers.
+  const u = new URL(url);
+  u.searchParams.set("scheduler_slot", slot);
+  const res = await fetch(u, {
+    headers: { Authorization: `Bearer ${secret}`, "x-scheduler-slot": slot },
     cache: "no-store",
   });
   const body = await res.json().catch(() => null);
@@ -127,10 +136,11 @@ async function runJob(
   publicBase: string,
   secret: string,
   job: ScheduledJob,
+  slot: string,
 ): Promise<{ responded: boolean; outcome: string }> {
   let outcome = "";
   try {
-    const { ok, summary, ran } = await attemptFetch(`${loopbackBase}${job.path}`, secret);
+    const { ok, summary, ran } = await attemptFetch(`${loopbackBase}${job.path}`, secret, slot);
     outcome = `loopback: ${summary}`;
     if (!ran) throw new Error(`gateway ${summary.slice(0, 40)}`);
     if (ok) {
@@ -150,7 +160,7 @@ async function runJob(
 
   let responded = false;
   try {
-    const { ok, summary, ran } = await attemptFetch(`${publicBase}${job.path}`, secret);
+    const { ok, summary, ran } = await attemptFetch(`${publicBase}${job.path}`, secret, slot);
     responded = ran;
     outcome += ` | public: ${summary}`;
     if (ok) {
@@ -187,12 +197,13 @@ async function tick(loopbackBase: string, publicBase: string, secret: string): P
       console.log(`[scheduler] ${job.path} already claimed for ${slot} by another instance - skipping`);
       continue;
     }
-    const { responded, outcome } = await runJob(loopbackBase, publicBase, secret, job);
+    const { responded, outcome } = await runJob(loopbackBase, publicBase, secret, job, slot);
     try {
       if (responded) {
         await finishScheduledRun(job.path, slot, INSTANCE_ID, outcome);
       } else {
-        // Never reached the route, so the job didn't run: let a later tick/instance retry in-window.
+        // No usable response. The job may or may not have run - safe to retry either way, because
+        // the route's own execution claim for this slot (withScheduledSlot) makes a repeat a no-op.
         await releaseScheduledRun(job.path, slot, INSTANCE_ID);
         firedToday.delete(job.path);
       }

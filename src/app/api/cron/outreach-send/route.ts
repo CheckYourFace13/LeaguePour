@@ -6,6 +6,7 @@ import {
   sendOutreachCore,
 } from "@/lib/outreach-email";
 import { runJob } from "@/lib/job-runs";
+import { withScheduledSlot } from "@/lib/job-claims";
 
 /**
  * Daily outreach batch: harvest emails from more venue websites, backfill VS eligibility
@@ -48,7 +49,7 @@ function chicagoHour(): number {
   );
 }
 
-export async function GET(request: Request) {
+async function handle(request: Request): Promise<Response> {
   const secret = process.env.CRON_SECRET?.trim();
   if (!secret) {
     return NextResponse.json({ ok: false, error: "CRON_SECRET is not configured." }, { status: 500 });
@@ -131,3 +132,6 @@ export async function GET(request: Request) {
     );
   }
 }
+
+// Scheduler-triggered runs execute at most once per slot, even if a response is lost - see job-claims.ts.
+export const GET = withScheduledSlot("outreach-send", handle);

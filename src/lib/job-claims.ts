@@ -63,3 +63,49 @@ export async function pruneScheduledClaims(now = new Date()): Promise<number> {
   });
   return count;
 }
+
+/**
+ * Route-level execution claim for scheduler-triggered runs. The scheduler's own claim (above) only
+ * stops two instances from CALLING a job; it can't tell whether a call whose response was lost (a
+ * timeout, or a 502/503/504 from the hosting edge) actually executed. So the route claims the slot
+ * itself, atomically, before doing any work, and that claim is never released: a retry for the same
+ * slot - after a lost response, from any instance - gets "already executed" instead of re-running
+ * side effects. A crash mid-run leaves the slot claimed (skipped, not duplicated).
+ *
+ * Only applies when the request is authenticated with CRON_SECRET and carries a slot (header
+ * x-scheduler-slot or ?scheduler_slot=YYYY-MM-DD, sent by scheduler.ts). Manual runs and the
+ * GitHub workflows send no slot and behave exactly as before.
+ */
+export const SCHEDULER_SLOT_HEADER = "x-scheduler-slot";
+export const SCHEDULER_SLOT_PARAM = "scheduler_slot";
+
+export function withScheduledSlot(job: string, handler: (request: Request) => Promise<Response>) {
+  return async function GET(request: Request): Promise<Response> {
+    const url = new URL(request.url);
+    const slot = (request.headers.get(SCHEDULER_SLOT_HEADER) ?? url.searchParams.get(SCHEDULER_SLOT_PARAM) ?? "").trim();
+    if (!slot) return handler(request);
+
+    const secret = process.env.CRON_SECRET?.trim();
+    const given = url.searchParams.get("secret") ?? request.headers.get("authorization")?.replace("Bearer ", "");
+    // Unauthenticated: never create a claim (that would let anyone block a job) - the handler's own
+    // auth check rejects it.
+    if (!secret || given !== secret) return handler(request);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(slot)) {
+      return Response.json({ ok: false, error: "Invalid scheduler slot." }, { status: 400 });
+    }
+
+    const execJob = `exec:${job}`;
+    const owner = `${process.pid}-${Math.random().toString(36).slice(2, 10)}`;
+    if (!(await claimScheduledRun(execJob, slot, owner))) {
+      return Response.json({ ok: true, skipped: `Already executed for scheduler slot ${slot}.` });
+    }
+    try {
+      const res = await handler(request);
+      await finishScheduledRun(execJob, slot, owner, `HTTP ${res.status}`).catch(() => {});
+      return res;
+    } catch (err) {
+      await finishScheduledRun(execJob, slot, owner, `threw: ${err instanceof Error ? err.message : String(err)}`).catch(() => {});
+      throw err;
+    }
+  };
+}

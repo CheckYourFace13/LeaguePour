@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { withScheduledSlot } from "@/lib/job-claims";
 
 function getCronSecret(): string | undefined {
   const secret = process.env.CRON_SECRET?.trim();
@@ -17,7 +18,7 @@ function isAuthorized(request: Request, secret: string): boolean {
   return false;
 }
 
-export async function GET(request: Request) {
+async function handle(request: Request): Promise<Response> {
   const secret = getCronSecret();
   if (!secret) {
     return NextResponse.json(
@@ -38,3 +39,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: "Database heartbeat failed." }, { status: 500 });
   }
 }
+
+// Scheduler-triggered runs execute at most once per slot, even if a response is lost - see job-claims.ts.
+export const GET = withScheduledSlot("supabase-heartbeat", handle);

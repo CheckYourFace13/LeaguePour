@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { sendVsOutreachCore, vsOutreachSentWithinHours } from "@/lib/outreach-email";
 import { runJob } from "@/lib/job-runs";
 import { getBoolSetting } from "@/lib/app-settings";
+import { withScheduledSlot } from "@/lib/job-claims";
 
 /**
  * Daily VenueSprocket outreach batch - a separate lane from LeaguePour's (see
@@ -35,7 +36,7 @@ function chicagoHour(): number {
   );
 }
 
-export async function GET(request: Request) {
+async function handle(request: Request): Promise<Response> {
   const secret = process.env.CRON_SECRET?.trim();
   if (!secret) {
     return NextResponse.json({ ok: false, error: "CRON_SECRET is not configured." }, { status: 500 });
@@ -90,3 +91,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: "VS outreach cron failed." }, { status: 500 });
   }
 }
+
+// Scheduler-triggered runs execute at most once per slot, even if a response is lost - see job-claims.ts.
+export const GET = withScheduledSlot("vs-outreach-send", handle);
