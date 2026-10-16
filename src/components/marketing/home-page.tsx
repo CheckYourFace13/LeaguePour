@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, CalendarClock, Megaphone, MapPin, QrCode, Trophy, Users } from "lucide-react";
+import { BrandPeriod } from "@/components/BrandPeriod";
 import { LeaguePourRealVisual } from "@/components/marketing/LeaguePourRealVisual";
 import { MarketingImage } from "@/components/marketing/marketing-image";
 import { VenuePainPoints } from "@/components/marketing/VenuePainPoints";
@@ -88,7 +89,8 @@ export function HomePage() {
             <div>
               <p className="lp-kicker mb-4">Good games. Great times.</p>
               <h1 className="lp-page-title text-5xl md:text-6xl lg:text-7xl">
-                Run bar competitions. Fill more seats.
+                Run bar competitions. Fill more seats
+                <BrandPeriod />
               </h1>
               <p className="mt-5 max-w-xl text-xl text-lp-text-soft leading-relaxed">
                 LeaguePour helps venues manage trivia, darts, cornhole, euchre, pool, poker where legal, and recurring

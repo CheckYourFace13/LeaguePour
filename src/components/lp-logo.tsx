@@ -1,3 +1,5 @@
+import { BrandPeriod } from "@/components/BrandPeriod";
+
 type Props = {
   size?: number;
   showWordmark?: boolean;
@@ -14,6 +16,7 @@ export function LpLogo({ size = 36, showWordmark = true, className }: Props) {
           style={{ fontSize: size * 0.55 }}
         >
           League<span className="text-lp-accent">Pour</span>
+          <BrandPeriod />
         </span>
       )}
     </span>

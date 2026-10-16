@@ -1,3 +1,5 @@
+import { BrandPeriod } from "@/components/BrandPeriod";
+
 type Props = {
   size?: number;
   showWordmark?: boolean;
@@ -14,6 +16,7 @@ export function VsLogo({ size = 36, showWordmark = true, className }: Props) {
           style={{ fontSize: size * 0.55 }}
         >
           Venue<span className="text-[var(--vs-accent)]">Sprocket</span>
+          <BrandPeriod />
         </span>
       )}
     </span>

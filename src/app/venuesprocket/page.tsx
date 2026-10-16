@@ -1,3 +1,4 @@
+import { BrandPeriod } from "@/components/BrandPeriod";
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -165,7 +166,10 @@ export default function VsSprocketHome() {
           <h1 className="vs-page-title text-5xl md:text-6xl lg:text-7xl text-vs-text">
             Book more private events.
             <br />
-            <span className="text-vs-accent">Run them better.</span>
+            <span className="text-vs-accent">
+              Run them better
+              <BrandPeriod />
+            </span>
           </h1>
           <p className="vs-page-sub mx-auto mt-6 text-center text-lg md:text-xl">
             VenueSprocket helps restaurants, breweries, bars, taprooms, and event spaces capture inquiries,
