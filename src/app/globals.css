@@ -6,7 +6,6 @@
 */
 
 :root {
-  --iscream-signature: #ff4d8d;
   --lp-bg: #ffffff;
   --lp-bg-elevated: #f2f6ff;
   --lp-surface: #ffffff;
@@ -150,7 +149,6 @@ h1, h2, h3, h4 {
 */
 
 :root {
-  --iscream-signature: #ff4d8d;
   --vs-bg: #f7f7f6;
   --vs-surface: #ffffff;
   --vs-surface-2: #f0efed;
@@ -277,6 +275,3 @@ h1, h2, h3, h4 {
     word-break: break-all;
   }
 }
-
-
-.brand-period { color: var(--iscream-signature, #ff4d8d); font-weight: inherit; }
