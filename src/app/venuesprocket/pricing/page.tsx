@@ -1,25 +1,16 @@
-import { applyManagedMetadata, VENUESPROCKET_BUSINESS_ID } from "@/lib/gravyblock-managed";
-import { ManagedJsonLd } from "@/lib/gravyblock-jsonld";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { TrackView } from "@/components/analytics/track-view";
 import { PlanSelectLink } from "@/components/analytics/plan-select-link";
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 
-const baseMetadata: Metadata = {
+export const metadata: Metadata = {
   title: { absolute: "Pricing | VenueSprocket" },
   description:
     "VenueSprocket pricing: start free with an inquiry form. Upgrade to Pro for contracts, deposits, BEOs, and a customer directory. Affordable plans for restaurants, bars, and breweries.",
   alternates: { canonical: "https://venuesprocket.com/pricing" },
 };
 
-
-// Re-render periodically so approved metadata overrides reach the live page.
-export const revalidate = 300;
-
-export async function generateMetadata() {
-  return applyManagedMetadata("/pricing", baseMetadata, VENUESPROCKET_BUSINESS_ID);
-}
 const plans = [
   {
     name: "Free",
@@ -145,7 +136,6 @@ const faqJsonLd = {
 export default function VsPricingPage() {
   return (
     <div className="vs-section px-4 md:px-6">
-      <ManagedJsonLd path="/pricing" businessId={VENUESPROCKET_BUSINESS_ID} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }} />
       <TrackView event="pricing_view" params={{ product: "vs" }} />
       <div className="mx-auto max-w-6xl">

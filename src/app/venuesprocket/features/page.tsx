@@ -1,22 +1,13 @@
-import { applyManagedMetadata, VENUESPROCKET_BUSINESS_ID } from "@/lib/gravyblock-managed";
-import { ManagedJsonLd } from "@/lib/gravyblock-jsonld";
 import type { Metadata } from "next";
 import Link from "next/link";
 
-const baseMetadata: Metadata = {
+export const metadata: Metadata = {
   title: { absolute: "Features | VenueSprocket" },
   description:
     "VenueSprocket features: public inquiry page, lead pipeline, proposals, e-signature contracts, Stripe deposits, BEO builder, and a customer directory.",
   alternates: { canonical: "https://venuesprocket.com/features" },
 };
 
-
-// Re-render periodically so approved metadata overrides reach the live page.
-export const revalidate = 300;
-
-export async function generateMetadata() {
-  return applyManagedMetadata("/features", baseMetadata, VENUESPROCKET_BUSINESS_ID);
-}
 const modules = [
   {
     id: "inquiries",
@@ -156,7 +147,6 @@ const modules = [
 export default function VsFeaturesPage() {
   return (
     <div className="vs-section px-4 md:px-6">
-      <ManagedJsonLd path="/features" businessId={VENUESPROCKET_BUSINESS_ID} />
       <div className="mx-auto max-w-5xl">
 
         {/* Hero */}

@@ -1,12 +1,10 @@
-import { applyManagedMetadata, VENUESPROCKET_BUSINESS_ID } from "@/lib/gravyblock-managed";
-import { ManagedJsonLd } from "@/lib/gravyblock-jsonld";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 
 const URL = "https://venuesprocket.com/faq";
 
-const baseMetadata: Metadata = {
+export const metadata: Metadata = {
   title: { absolute: "VenueSprocket FAQ — Private Event Management Questions Answered" },
   description:
     "Straight answers about VenueSprocket: inquiries, proposals, e-signature contracts, Stripe deposits, BEOs, pricing, and what the product does not do yet.",
@@ -19,13 +17,6 @@ const baseMetadata: Metadata = {
   },
 };
 
-
-// Re-render periodically so approved metadata overrides reach the live page.
-export const revalidate = 300;
-
-export async function generateMetadata() {
-  return applyManagedMetadata("/faq", baseMetadata, VENUESPROCKET_BUSINESS_ID);
-}
 type Faq = { q: string; a: string };
 
 // Every answer here is checked against what the product does today (see
@@ -161,7 +152,6 @@ const jsonLd = {
 export default function VsFaqPage() {
   return (
     <>
-      <ManagedJsonLd path="/faq" businessId={VENUESPROCKET_BUSINESS_ID} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
       <div className="vs-section px-4 md:px-6">
         <div className="mx-auto max-w-3xl">
