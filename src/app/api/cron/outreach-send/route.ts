@@ -109,12 +109,12 @@ export async function GET(request: Request) {
         };
         if (h.remaining === 0) break;
       }
-      const send = await sendOutreachCore(SEND_PER_RUN);
+      const send = await sendOutreachCore(SEND_PER_RUN, { throttleHours: THROTTLE_HOURS });
 
       console.log("[outreach cron]", { harvest, send });
       return {
-        status: send.error ? "failure" : "success",
-        detail: `harvested ${harvest.found}/${harvest.checked}, sent ${send.sent}, remaining ${send.remaining}${send.error ? ` - ${send.error}` : ""}`,
+        status: send.error ? "failure" : send.skipped ? "skipped" : "success",
+        detail: `harvested ${harvest.found}/${harvest.checked}, sent ${send.sent}, remaining ${send.remaining}${send.error ? ` - ${send.error}` : ""}${send.skipped ? ` - ${send.skipped}` : ""}`,
         result: { ok: !send.error, harvest, send },
       };
     });

@@ -13,6 +13,7 @@ import {
   getVsOutreachStats,
   sendVsOutreachBatch,
   setVsOutreachEnabled,
+  setLpOutreachEnabled,
 } from "./sweep-actions";
 
 type Contact = {
@@ -45,6 +46,7 @@ type Stats = {
   uncheckedWebsites: number;
   nextCity: { city: string; state: string; country: string; query: string } | null;
   allSwept: boolean;
+  lpEnabled: boolean;
 };
 
 type VsStats = {
@@ -239,6 +241,19 @@ export default function OutreachPage() {
     }
   }
 
+  const [togglingLp, setTogglingLp] = useState(false);
+
+  async function toggleLpEnabled() {
+    if (!stats) return;
+    setTogglingLp(true);
+    try {
+      await setLpOutreachEnabled(!stats.lpEnabled);
+      await loadStats();
+    } finally {
+      setTogglingLp(false);
+    }
+  }
+
   const [togglingVs, setTogglingVs] = useState(false);
 
   async function toggleVsEnabled() {
@@ -370,10 +385,13 @@ export default function OutreachPage() {
               >
                 {harvesting ? "Scanning websites…" : "Find emails (30 sites)"}
               </Button>
+              <Button size="md" variant={stats.lpEnabled ? "secondary" : "primary"} onClick={toggleLpEnabled} disabled={togglingLp}>
+                {togglingLp ? "…" : stats.lpEnabled ? "Pause LP sending" : "LP sending paused - turn on"}
+              </Button>
               <Button
                 size="md"
                 onClick={runSendBatch}
-                disabled={sendingBatch || stats.readyToSend === 0}
+                disabled={sendingBatch || stats.readyToSend === 0 || !stats.lpEnabled}
               >
                 {sendingBatch
                   ? "Sending…"

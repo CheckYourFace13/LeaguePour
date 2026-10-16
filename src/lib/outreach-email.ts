@@ -7,6 +7,7 @@
  */
 
 import { prisma } from "@/lib/db";
+import { createHash } from "node:crypto";
 import { sendEmailBatch } from "@/lib/email";
 import { getPublicSiteUrl } from "@/lib/site-url";
 import { getBoolSetting } from "@/lib/app-settings";
@@ -47,7 +48,12 @@ const EMAIL_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
  * send API rejects the whole batch if even one recipient fails this shape,
  * so this check is the final gate before an email is ever stored or sent.
  */
-const STRICT_EMAIL_RE = /^[A-Z0-9._%+-]+@[A-Z0-9-]+(?:\.[A-Z0-9-]+)*\.[A-Z]{2,}$/i;
+// Conservative, send-safe shape (what an email API will accept, not everything RFC 5322 allows):
+// local part of letters/digits/._+- with no leading, trailing, or doubled dot and no "%" (URL
+// encoding left over from scraped mailto: links, e.g. "%20info@..."); domain labels that don't
+// start or end with "-"; an alphabetic TLD.
+const STRICT_EMAIL_RE =
+  /^[A-Z0-9_+-]+(?:\.[A-Z0-9_+-]+)*@(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,24}$/i;
 
 /** Hosts/patterns that show up in page source but are never a venue's contact address. */
 const JUNK_PATTERNS = [
@@ -61,6 +67,7 @@ const JUNK_PATTERNS = [
 export function isPlausibleEmail(email: string): boolean {
   const trimmed = email.trim();
   if (trimmed.length === 0 || trimmed.length > 254) return false;
+  if (trimmed.split("@")[0].length > 64) return false;
   if (!STRICT_EMAIL_RE.test(trimmed)) return false;
   return !JUNK_PATTERNS.some((re) => re.test(trimmed));
 }
@@ -319,140 +326,270 @@ const VS_OUTREACH_SEND_LOCK_KEY = BigInt(729_312_400_124);
 // cross-brand suppression rules in sendOutreachLocked / sendVsOutreachLocked below.
 const CROSS_BRAND_COOLING_OFF_HOURS = 14 * 24;
 
-export async function sendOutreachCore(limit: number): Promise<{
-  sent: number;
-  failed: number;
-  remaining: number;
-  error?: string;
-}> {
-  await ensureOutreachEmailColumns();
+type BatchSender = typeof sendEmailBatch;
+type Tx = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
+type Candidate = { id: string; name: string; email: string };
+type SendOutcome = { sent: number; failed: number; remaining: number; error?: string; skipped?: string };
 
-  if (!process.env.RESEND_API_KEY?.trim()) {
-    return { sent: 0, failed: 0, remaining: 0, error: "RESEND_API_KEY not configured" };
+/** A batch is "in flight" for this long after it's claimed; after that an unsettled batch is retried. */
+const IN_FLIGHT_MS = 10 * 60 * 1000;
+/** Resend keeps idempotency keys for 24h, so a retry with the same key is only safe inside this. */
+const RETRY_WITH_SAME_KEY_MS = 23 * 60 * 60 * 1000;
+
+type Lane = {
+  name: "lp" | "vs";
+  lockKey: bigint;
+  /** AppSetting key holding the claimed-but-unsettled batch (contact ids only, no addresses). */
+  pendingKey: string;
+  select: (tx: Tx, take: number) => Promise<{ batch: Candidate[]; invalidIds: string[] }>;
+  sentWithin: (tx: Tx, since: Date) => Promise<boolean>;
+  /** Mark the batch sent (the claim). Only rows still unsent are marked. */
+  markSent: (tx: Tx, ids: string[], at: Date) => Promise<void>;
+  /** Ids among `ids` whose sent timestamp is exactly `at` - i.e. rows this caller actually claimed. */
+  claimed: (tx: Tx, ids: string[], at: Date) => Promise<string[]>;
+  /** Undo this claim's marks - rows whose sent timestamp is exactly `at`, nothing else. */
+  revert: (ids: string[], at: Date) => Promise<void>;
+  remaining: () => Promise<number>;
+  build: (c: Candidate) => Parameters<BatchSender>[0][number];
+  brand: "lp" | "vs";
+};
+
+type Pending = { ids: string[]; key: string; at: string };
+
+type LaneOpts = {
+  send?: BatchSender;
+  throttleHours?: number;
+  now?: () => Date;
+  /** Test hook: awaited inside the claim transaction after selection (lets tests force overlap). */
+  afterSelect?: () => Promise<void>;
+};
+
+function readPending(raw: string | null | undefined): Pending | null {
+  if (!raw) return null;
+  try {
+    const p = JSON.parse(raw) as Pending;
+    return Array.isArray(p.ids) && typeof p.key === "string" && typeof p.at === "string" ? p : null;
+  } catch {
+    return null;
   }
-
-  // Observed live in production: this transaction (which holds the advisory lock through the
-  // Resend batch call, not just the DB reads/writes either side of it) timed out at the default
-  // 30s with a real batch of up to SEND_PER_RUN=25 personalized emails. 90s gives the Resend
-  // call real-world headroom without changing the locking/atomicity semantics at all.
-  return prisma.$transaction(
-    async (tx) => sendOutreachLocked(tx, limit),
-    { timeout: 90_000 },
-  );
 }
 
-async function sendOutreachLocked(
-  tx: Parameters<Parameters<typeof prisma.$transaction>[0]>[0],
-  limit: number,
-): Promise<{ sent: number; failed: number; remaining: number; error?: string }> {
-  const [{ locked }] = await tx.$queryRaw<{ locked: boolean }[]>`
-    SELECT pg_try_advisory_xact_lock(${OUTREACH_SEND_LOCK_KEY}) AS locked
-  `;
-  if (!locked) {
-    return { sent: 0, failed: 0, remaining: 0, error: "Another outreach send is already in progress" };
-  }
+async function clearPending(lane: Lane, key: string): Promise<void> {
+  await prisma.appSetting.deleteMany({ where: { key: lane.pendingKey, value: { contains: JSON.stringify(key) } } });
+}
 
+/**
+ * Exactly-once-per-recipient outreach send, safe across concurrent instances and crashes.
+ *
+ * 1. Claim (one transaction, under a transaction-scoped advisory lock): re-check the throttle,
+ *    pick the batch, mark those contacts sent, and record the batch as pending with a stable
+ *    idempotency key. Committing the marks BEFORE the send means no other caller can pick the
+ *    same contacts, and the throttle now sees the batch.
+ * 2. Send with that idempotency key (Resend dedupes a repeated key for 24h).
+ * 3. Settle: accepted -> clear pending. Definitely rejected (4xx) -> revert this claim's marks so
+ *    the contacts stay eligible. Unknown (timeout/5xx/crash) -> keep the marks and the pending
+ *    record; a later run retries the SAME contacts with the SAME key, so it can't double-deliver.
+ *    A pending batch younger than IN_FLIGHT_MS is treated as another sender still in flight.
+ */
+async function sendLane(
+  lane: Lane,
+  limit: number,
+  opts: LaneOpts = {},
+): Promise<SendOutcome> {
+  const send = opts.send ?? sendEmailBatch;
+  const now = opts.now ?? (() => new Date());
   const take = Math.min(Math.max(limit, 1), 50);
 
-  // Pull candidates in pages, screening out any with a malformed email (a
-  // single bad `to` address fails Resend's whole batch call). Bad rows are
-  // self-healed by clearing their email so they never recur; the remainder
-  // is backfilled from the next page until the batch is full or contacts
-  // run out. Capped at a few pages so a corrupted run can't loop forever.
-  const vsCoolingOffSince = new Date(Date.now() - CROSS_BRAND_COOLING_OFF_HOURS * 60 * 60 * 1000);
-  const batch: { id: string; name: string; email: string }[] = [];
-  const invalidIds: string[] = [];
-  for (let page = 0; batch.length < take && page < 5; page++) {
-    // Cross-brand suppression (vsStatus not SIGNED_UP, or never contacted by VS within the
-    // cooling-off window) is filtered in JS below, not in this WHERE clause - Postgres rejects
-    // every enum-comparison form Prisma emits for OutreachStatus here (confirmed live: plain
-    // equality on `status` works fine, but `not`/`notIn`/`in` on this nullable field all throw
-    // "operator does not exist"). Batch sizes are small (take <= 50, a few pages), so filtering
-    // the fetched rows in JS instead of in SQL is cheap and sidesteps the bug entirely.
-    const candidates = await tx.outreachContact
-      .findMany({
-        where: { email: { not: null }, status: "NOT_CONTACTED" },
-        orderBy: { rating: "desc" },
-        skip: page * take,
-        take,
-        select: { id: true, name: true, email: true, vsStatus: true, vsEmailSentAt: true },
-      })
-      .catch((err) => {
-        throw new Error(`[stage:lp-send-candidates-query] ${err instanceof Error ? err.message : String(err)}`);
-      });
-    if (candidates.length === 0) break;
-    for (const c of candidates) {
-      if (batch.length >= take) break;
-      const vsCrossBrandOk =
-        c.vsStatus !== "SIGNED_UP" && (c.vsEmailSentAt === null || c.vsEmailSentAt < vsCoolingOffSince);
-      if (!vsCrossBrandOk) continue;
-      if (c.email && isPlausibleEmail(c.email)) {
-        batch.push({ id: c.id, name: c.name, email: c.email });
-      } else {
-        invalidIds.push(c.id);
+  type Plan =
+    | { kind: "busy" }
+    | { kind: "throttled" }
+    | { kind: "empty" }
+    | { kind: "inflight" }
+    | { kind: "send"; ids: string[]; key: string; at: Date; retry: boolean };
+
+  const plan = await prisma.$transaction(
+    async (tx): Promise<Plan> => {
+      const [{ locked }] = await tx.$queryRaw<{ locked: boolean }[]>`
+        SELECT pg_try_advisory_xact_lock(${lane.lockKey}) AS locked
+      `;
+      if (!locked) return { kind: "busy" };
+
+      const t = now();
+      const pendingRow = await tx.appSetting.findUnique({ where: { key: lane.pendingKey } });
+      const pending = readPending(pendingRow?.value);
+      if (pending) {
+        const age = t.getTime() - new Date(pending.at).getTime();
+        if (age < IN_FLIGHT_MS) return { kind: "inflight" };
+        if (age < RETRY_WITH_SAME_KEY_MS) {
+          return { kind: "send", ids: pending.ids, key: pending.key, at: new Date(pending.at), retry: true };
+        }
+        // Too old to retry safely with the same key: assume it may have been delivered, keep the
+        // marks (no duplicate), and drop the record.
+        console.warn(`[outreach:${lane.name}] dropping stale unsettled batch ${pending.key} (${pending.ids.length} contacts kept marked)`);
+        await tx.appSetting.delete({ where: { key: lane.pendingKey } });
       }
-    }
-    if (candidates.length < take) break;
-  }
 
-  if (invalidIds.length > 0) {
-    console.warn("[outreach] clearing malformed emails", invalidIds);
-    await tx.outreachContact.updateMany({
-      where: { id: { in: invalidIds } },
-      data: { email: null, emailCheckedAt: null },
-    });
-  }
+      if (opts.throttleHours && (await lane.sentWithin(tx, new Date(t.getTime() - opts.throttleHours * 3600_000)))) {
+        return { kind: "throttled" };
+      }
 
-  if (batch.length === 0) {
-    return { sent: 0, failed: 0, remaining: 0 };
-  }
+      const { batch, invalidIds } = await lane.select(tx, take);
+      if (opts.afterSelect) await opts.afterSelect();
+      if (invalidIds.length > 0) {
+        console.warn(`[outreach:${lane.name}] clearing malformed emails`, invalidIds);
+        await tx.outreachContact.updateMany({
+          where: { id: { in: invalidIds } },
+          data: { email: null, emailCheckedAt: null },
+        });
+      }
+      if (batch.length === 0) return { kind: "empty" };
 
-  const result = await sendEmailBatch(
-    batch.map((c) => ({
-      to: c.email as string,
-      subject: outreachEmailSubject(c.name),
-      html: outreachEmailHtml(c.name, c.id),
-      replyTo: "hello@leaguepour.com",
-    })),
+      await lane.markSent(tx, batch.map((c) => c.id), t);
+      // Send only to rows this transaction actually marked (by its own timestamp). With the
+      // advisory lock this is every selected row; it also holds if two claimers ever overlapped.
+      const ids = (await lane.claimed(tx, batch.map((c) => c.id), t)).sort();
+      if (ids.length === 0) return { kind: "empty" };
+      const key = `${lane.name}-outreach-${t.toISOString()}-${createHash("sha256").update(ids.join(",")).digest("hex").slice(0, 32)}`;
+      await tx.appSetting.upsert({
+        where: { key: lane.pendingKey },
+        create: { key: lane.pendingKey, value: JSON.stringify({ ids, key, at: t.toISOString() } satisfies Pending) },
+        update: { value: JSON.stringify({ ids, key, at: t.toISOString() } satisfies Pending) },
+      });
+      return { kind: "send", ids, key, at: t, retry: false };
+    },
+    { timeout: 30_000 },
   );
 
-  // Only mark the batch EMAIL_SENT on a full clean success. Resend's batch response doesn't
-  // reliably tell us *which* recipients failed on a partial success (result.sent < batch.length),
-  // so guessing would risk marking someone EMAIL_SENT who never actually received anything -
-  // silently losing them from the pipeline forever, since retries only target NOT_CONTACTED
-  // contacts. Leaving the whole batch untouched on partial failure risks a few duplicate sends
-  // to whoever *did* succeed on the next run - a much smaller cost than losing a lead outright.
-  if (result.ok && result.sent === batch.length) {
-    await tx.outreachContact.updateMany({
-      where: { id: { in: batch.map((c) => c.id) } },
-      data: { status: "EMAIL_SENT", emailSentAt: new Date() },
-    });
-  } else if (result.ok && result.sent > 0) {
-    console.warn(
-      `[outreach] partial batch send (${result.sent}/${batch.length}) - leaving all contacts NOT_CONTACTED to avoid mismarking`,
-    );
+  if (plan.kind === "busy" || plan.kind === "inflight") {
+    return { sent: 0, failed: 0, remaining: 0, error: "Another outreach send is already in progress" };
   }
+  if (plan.kind === "throttled") {
+    return { sent: 0, failed: 0, remaining: 0, skipped: "Batch already sent within the throttle window." };
+  }
+  if (plan.kind === "empty") return { sent: 0, failed: 0, remaining: await lane.remaining() };
 
-  const remaining = await tx.outreachContact
-    .count({
-      where: { email: { not: null }, status: "NOT_CONTACTED" },
-    })
-    .catch((err) => {
+  const rows = await prisma.outreachContact.findMany({
+    where: { id: { in: plan.ids } },
+    select: { id: true, name: true, email: true },
+  });
+  const recipients = rows.filter((r): r is Candidate => !!r.email && isPlausibleEmail(r.email));
+  const result = await send(recipients.map(lane.build), lane.brand, { idempotencyKey: plan.key });
+
+  if (result.ok) {
+    await clearPending(lane, plan.key);
+    if (result.sent < recipients.length) {
+      console.warn(`[outreach:${lane.name}] Resend accepted ${result.sent}/${recipients.length}; contacts stay marked (no resend)`);
+    }
+    return { sent: recipients.length, failed: 0, remaining: await lane.remaining() };
+  }
+  if (result.rejected) {
+    await lane.revert(plan.ids, plan.at);
+    await clearPending(lane, plan.key);
+    return {
+      sent: 0,
+      failed: recipients.length,
+      remaining: await lane.remaining(),
+      error: `Resend rejected the batch${result.status ? ` (HTTP ${result.status})` : ""} - nothing sent, contacts left eligible`,
+    };
+  }
+  return {
+    sent: 0,
+    failed: recipients.length,
+    remaining: await lane.remaining(),
+    error: `Send outcome unknown${result.status ? ` (HTTP ${result.status})` : ""} - contacts held; a later run retries with the same idempotency key`,
+  };
+}
+
+const LP_LANE: Lane = {
+  name: "lp",
+  lockKey: OUTREACH_SEND_LOCK_KEY,
+  pendingKey: "outreach_pending_batch:lp",
+  brand: "lp",
+  async select(tx, take) {
+    // Cross-brand suppression is filtered in JS - see the note at the top of this file.
+    const vsCoolingOffSince = new Date(Date.now() - CROSS_BRAND_COOLING_OFF_HOURS * 60 * 60 * 1000);
+    const batch: Candidate[] = [];
+    const invalidIds: string[] = [];
+    for (let page = 0; batch.length < take && page < 5; page++) {
+      const candidates = await tx.outreachContact
+        .findMany({
+          where: { email: { not: null }, status: "NOT_CONTACTED" },
+          orderBy: { rating: "desc" },
+          skip: page * take,
+          take,
+          select: { id: true, name: true, email: true, vsStatus: true, vsEmailSentAt: true },
+        })
+        .catch((err) => {
+          throw new Error(`[stage:lp-send-candidates-query] ${err instanceof Error ? err.message : String(err)}`);
+        });
+      if (candidates.length === 0) break;
+      for (const c of candidates) {
+        if (batch.length >= take) break;
+        const vsCrossBrandOk =
+          c.vsStatus !== "SIGNED_UP" && (c.vsEmailSentAt === null || c.vsEmailSentAt < vsCoolingOffSince);
+        if (!vsCrossBrandOk) continue;
+        if (c.email && isPlausibleEmail(c.email)) batch.push({ id: c.id, name: c.name, email: c.email });
+        else invalidIds.push(c.id);
+      }
+      if (candidates.length < take) break;
+    }
+    return { batch, invalidIds };
+  },
+  async sentWithin(tx, since) {
+    return (await tx.outreachContact.count({ where: { emailSentAt: { gte: since } } })) > 0;
+  },
+  async markSent(tx, ids, at) {
+    await tx.outreachContact.updateMany({
+      where: { id: { in: ids }, status: "NOT_CONTACTED" },
+      data: { status: "EMAIL_SENT", emailSentAt: at },
+    });
+  },
+  async claimed(tx, ids, at) {
+    const rows = await tx.outreachContact.findMany({
+      where: { id: { in: ids }, status: "EMAIL_SENT", emailSentAt: at },
+      select: { id: true },
+    });
+    return rows.map((r) => r.id);
+  },
+  async revert(ids, at) {
+    await prisma.outreachContact.updateMany({
+      where: { id: { in: ids }, status: "EMAIL_SENT", emailSentAt: at },
+      data: { status: "NOT_CONTACTED", emailSentAt: null },
+    });
+  },
+  async remaining() {
+    return prisma.outreachContact.count({ where: { email: { not: null }, status: "NOT_CONTACTED" } }).catch((err) => {
       throw new Error(`[stage:lp-send-remaining-count] ${err instanceof Error ? err.message : String(err)}`);
     });
-  const fullSuccess = result.ok && result.sent === batch.length;
-  return {
-    sent: fullSuccess ? batch.length : 0,
-    failed: fullSuccess ? 0 : batch.length,
-    remaining,
-    ...(fullSuccess
-      ? {}
-      : {
-          error: result.ok
-            ? `Resend accepted only ${result.sent}/${batch.length} - batch left unmarked for retry`
-            : "Resend batch send failed - check server logs",
-        }),
-  };
+  },
+  build: (c) => ({
+    to: c.email,
+    subject: outreachEmailSubject(c.name),
+    html: outreachEmailHtml(c.name, c.id),
+    replyTo: "hello@leaguepour.com",
+  }),
+};
+
+/**
+ * LeaguePour outreach on/off switch (AppSetting). Defaults to OFF: the LP lane had been failing
+ * every batch (Resend 422) with a backlog of hundreds of contacts, so it stays paused until the
+ * owner turns it on from /internal/outreach. Checked here so the daily cron and the manual
+ * "Send batch" button are both covered.
+ */
+export const LP_OUTREACH_ENABLED_KEY = "lp_outreach_enabled";
+
+export async function sendOutreachCore(
+  limit: number,
+  opts: LaneOpts = {},
+): Promise<SendOutcome> {
+  if (!(await getBoolSetting(LP_OUTREACH_ENABLED_KEY, false))) {
+    return { sent: 0, failed: 0, remaining: 0, skipped: "LeaguePour outreach is paused (turn it on in /internal/outreach)." };
+  }
+  await ensureOutreachEmailColumns();
+  if (!opts.send && !process.env.RESEND_API_KEY?.trim()) {
+    return { sent: 0, failed: 0, remaining: 0, error: "RESEND_API_KEY not configured" };
+  }
+  return sendLane(LP_LANE, limit, opts);
 }
 
 /** True if an outreach batch already went out within the past `hours`. */
@@ -527,112 +664,79 @@ export async function getVsOutreachPreviewCore(limit = 5): Promise<{
   return { backfillBacklog, vsEligibleTotal, nextBatchCount, killSwitchEnabled };
 }
 
-export async function sendVsOutreachCore(limit: number): Promise<{
-  sent: number;
-  failed: number;
-  remaining: number;
-  error?: string;
-}> {
-  if (!process.env.RESEND_VS_API_KEY?.trim()) {
+const VS_LANE: Lane = {
+  name: "vs",
+  lockKey: VS_OUTREACH_SEND_LOCK_KEY,
+  pendingKey: "outreach_pending_batch:vs",
+  brand: "vs",
+  async select(tx, take) {
+    // Cross-brand suppression filtered in JS - see the note at the top of this file.
+    const lpCoolingOffSince = new Date(Date.now() - CROSS_BRAND_COOLING_OFF_HOURS * 60 * 60 * 1000);
+    const batch: Candidate[] = [];
+    const invalidIds: string[] = [];
+    for (let page = 0; batch.length < take && page < 5; page++) {
+      const candidates = await tx.outreachContact.findMany({
+        where: { email: { not: null }, vsEligible: true, vsStatus: null },
+        orderBy: { rating: "desc" },
+        skip: page * take,
+        take,
+        select: { id: true, name: true, email: true, status: true, emailSentAt: true },
+      });
+      if (candidates.length === 0) break;
+      for (const c of candidates) {
+        if (batch.length >= take) break;
+        const lpCrossBrandOk =
+          c.status !== "SIGNED_UP" && (c.emailSentAt === null || c.emailSentAt < lpCoolingOffSince);
+        if (!lpCrossBrandOk) continue;
+        if (c.email && isPlausibleEmail(c.email)) batch.push({ id: c.id, name: c.name, email: c.email });
+        else invalidIds.push(c.id);
+      }
+      if (candidates.length < take) break;
+    }
+    return { batch, invalidIds };
+  },
+  async sentWithin(tx, since) {
+    return (await tx.outreachContact.count({ where: { vsEmailSentAt: { gte: since } } })) > 0;
+  },
+  async markSent(tx, ids, at) {
+    await tx.outreachContact.updateMany({
+      where: { id: { in: ids }, vsStatus: null },
+      data: { vsStatus: "EMAIL_SENT", vsEmailSentAt: at },
+    });
+  },
+  async claimed(tx, ids, at) {
+    const rows = await tx.outreachContact.findMany({
+      where: { id: { in: ids }, vsStatus: "EMAIL_SENT", vsEmailSentAt: at },
+      select: { id: true },
+    });
+    return rows.map((r) => r.id);
+  },
+  async revert(ids, at) {
+    await prisma.outreachContact.updateMany({
+      where: { id: { in: ids }, vsStatus: "EMAIL_SENT", vsEmailSentAt: at },
+      data: { vsStatus: null, vsEmailSentAt: null },
+    });
+  },
+  async remaining() {
+    return prisma.outreachContact.count({ where: { email: { not: null }, vsEligible: true, vsStatus: null } });
+  },
+  build: (c) => ({
+    to: c.email,
+    subject: vsOutreachEmailSubject(c.name),
+    html: vsOutreachEmailHtml(c.name, c.id),
+    from: "VenueSprocket <hello@venuesprocket.com>",
+    replyTo: "hello@venuesprocket.com",
+  }),
+};
+
+export async function sendVsOutreachCore(
+  limit: number,
+  opts: LaneOpts = {},
+): Promise<SendOutcome> {
+  if (!opts.send && !process.env.RESEND_VS_API_KEY?.trim()) {
     return { sent: 0, failed: 0, remaining: 0, error: "RESEND_VS_API_KEY not configured" };
   }
-  // Same headroom as sendOutreachCore above, for the same reason (the Resend call happens
-  // inside this transaction).
-  return prisma.$transaction(async (tx) => sendVsOutreachLocked(tx, limit), { timeout: 90_000 });
-}
-
-async function sendVsOutreachLocked(
-  tx: Parameters<Parameters<typeof prisma.$transaction>[0]>[0],
-  limit: number,
-): Promise<{ sent: number; failed: number; remaining: number; error?: string }> {
-  const [{ locked }] = await tx.$queryRaw<{ locked: boolean }[]>`
-    SELECT pg_try_advisory_xact_lock(${VS_OUTREACH_SEND_LOCK_KEY}) AS locked
-  `;
-  if (!locked) {
-    return { sent: 0, failed: 0, remaining: 0, error: "Another VenueSprocket outreach send is already in progress" };
-  }
-
-  const take = Math.min(Math.max(limit, 1), 50);
-  const lpCoolingOffSince = new Date(Date.now() - CROSS_BRAND_COOLING_OFF_HOURS * 60 * 60 * 1000);
-
-  const vsBatch: { id: string; name: string; email: string }[] = [];
-  const invalidIds: string[] = [];
-  for (let page = 0; vsBatch.length < take && page < 5; page++) {
-    // Cross-brand suppression (LP status not SIGNED_UP, or never contacted by LP within the
-    // cooling-off window) is filtered in JS below, not in this WHERE clause - see the matching
-    // comment in sendOutreachLocked above for why (every enum-negation/inclusion form Prisma
-    // emits for OutreachStatus fails against Postgres here, but plain equality works fine).
-    const candidates = await tx.outreachContact.findMany({
-      where: { email: { not: null }, vsEligible: true, vsStatus: null },
-      orderBy: { rating: "desc" },
-      skip: page * take,
-      take,
-      select: { id: true, name: true, email: true, status: true, emailSentAt: true },
-    });
-    if (candidates.length === 0) break;
-    for (const c of candidates) {
-      if (vsBatch.length >= take) break;
-      const lpCrossBrandOk =
-        c.status !== "SIGNED_UP" && (c.emailSentAt === null || c.emailSentAt < lpCoolingOffSince);
-      if (!lpCrossBrandOk) continue;
-      if (c.email && isPlausibleEmail(c.email)) {
-        vsBatch.push({ id: c.id, name: c.name, email: c.email });
-      } else {
-        invalidIds.push(c.id);
-      }
-    }
-    if (candidates.length < take) break;
-  }
-
-  if (invalidIds.length > 0) {
-    await tx.outreachContact.updateMany({
-      where: { id: { in: invalidIds } },
-      data: { email: null, emailCheckedAt: null },
-    });
-  }
-
-  if (vsBatch.length === 0) {
-    return { sent: 0, failed: 0, remaining: 0 };
-  }
-
-  const result = await sendEmailBatch(
-    vsBatch.map((c) => ({
-      to: c.email as string,
-      subject: vsOutreachEmailSubject(c.name),
-      html: vsOutreachEmailHtml(c.name, c.id),
-      from: "VenueSprocket <hello@venuesprocket.com>",
-      replyTo: "hello@venuesprocket.com",
-    })),
-    "vs",
-  );
-
-  if (result.ok && result.sent === vsBatch.length) {
-    await tx.outreachContact.updateMany({
-      where: { id: { in: vsBatch.map((c) => c.id) } },
-      data: { vsStatus: "EMAIL_SENT", vsEmailSentAt: new Date() },
-    });
-  } else if (result.ok && result.sent > 0) {
-    console.warn(
-      `[vs-outreach] partial batch send (${result.sent}/${vsBatch.length}) - leaving all contacts unmarked to avoid mismarking`,
-    );
-  }
-
-  const remaining = await tx.outreachContact.count({
-    where: { email: { not: null }, vsEligible: true, vsStatus: null },
-  });
-  const fullSuccess = result.ok && result.sent === vsBatch.length;
-  return {
-    sent: fullSuccess ? vsBatch.length : 0,
-    failed: fullSuccess ? 0 : vsBatch.length,
-    remaining,
-    ...(fullSuccess
-      ? {}
-      : {
-          error: result.ok
-            ? `Resend accepted only ${result.sent}/${vsBatch.length} - batch left unmarked for retry`
-            : "Resend batch send failed - check server logs",
-        }),
-  };
+  return sendLane(VS_LANE, limit, opts);
 }
 
 export function outreachEmailSubject(barName: string): string {

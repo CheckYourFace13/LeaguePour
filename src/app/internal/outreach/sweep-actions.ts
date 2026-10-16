@@ -7,6 +7,7 @@ import {
   ensureOutreachEmailColumns,
   harvestEmailsCore,
   sendOutreachCore,
+  LP_OUTREACH_ENABLED_KEY,
   sendVsOutreachCore,
 } from "@/lib/outreach-email";
 import { runJob } from "@/lib/job-runs";
@@ -78,7 +79,19 @@ export async function getOutreachStats() {
     uncheckedWebsites: unchecked,
     nextCity,
     allSwept: sweptCities >= totalCities,
+    lpEnabled: await getBoolSetting(LP_OUTREACH_ENABLED_KEY, false),
   };
+}
+
+/** LeaguePour outreach on/off - covers both the daily cron and the manual button (see sendOutreachCore). */
+export async function setLpOutreachEnabled(enabled: boolean): Promise<{ ok: boolean }> {
+  try {
+    await requireOwnerSession();
+  } catch {
+    return { ok: false };
+  }
+  await setSetting(LP_OUTREACH_ENABLED_KEY, enabled ? "true" : "false");
+  return { ok: true };
 }
 
 // --- Email harvesting & sending ---

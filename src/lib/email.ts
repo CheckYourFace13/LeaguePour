@@ -81,10 +81,25 @@ export async function sendEmail(opts: SendEmailOpts): Promise<{ ok: boolean; id?
  * Send up to 100 emails in a single Resend batch request, all under one brand's API key/team.
  * Each recipient gets their own personalised email (not a group send).
  */
+export type BatchSendResult = {
+  ok: boolean;
+  sent: number;
+  failed: number;
+  /** HTTP status from Resend, when a response came back. */
+  status?: number;
+  /**
+   * True when Resend definitely did not accept the batch (a 4xx response) - safe to treat as
+   * "nothing was sent". False/undefined on success, a 5xx, or a network error/timeout, where the
+   * outcome is unknown and the caller must not assume nothing went out.
+   */
+  rejected?: boolean;
+};
+
 export async function sendEmailBatch(
   emails: SendEmailOpts[],
   brand: EmailBrand = "lp",
-): Promise<{ ok: boolean; sent: number; failed: number }> {
+  opts: { idempotencyKey?: string } = {},
+): Promise<BatchSendResult> {
   const key = getResendKey(brand);
   if (!key) {
     console.warn(
@@ -92,7 +107,7 @@ export async function sendEmailBatch(
       emails.length,
       "emails",
     );
-    return { ok: false, sent: 0, failed: emails.length };
+    return { ok: false, sent: 0, failed: emails.length, rejected: true };
   }
   if (emails.length === 0) return { ok: true, sent: 0, failed: 0 };
 
@@ -105,21 +120,35 @@ export async function sendEmailBatch(
     ...(e.replyTo ? { reply_to: e.replyTo } : {}),
   }));
 
-  const res = await fetch(`${RESEND_API}/emails/batch`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${RESEND_API}/emails/batch`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${key}`,
+        "Content-Type": "application/json",
+        // Resend dedupes a repeated key for 24h, so retrying an unknown-outcome batch with the
+        // same key can't deliver it twice.
+        ...(opts.idempotencyKey ? { "Idempotency-Key": opts.idempotencyKey } : {}),
+      },
+      body: JSON.stringify(payload),
+      // Bounded so a hung request settles well inside outreach's 10-minute in-flight window.
+      signal: AbortSignal.timeout(60_000),
+    });
+  } catch (err) {
+    console.error("[email] Resend batch request failed (outcome unknown)", err);
+    return { ok: false, sent: 0, failed: emails.length, rejected: false };
+  }
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     console.error("[email] Resend batch error", res.status, text);
-    return { ok: false, sent: 0, failed: emails.length };
+    return { ok: false, sent: 0, failed: emails.length, status: res.status, rejected: res.status >= 400 && res.status < 500 };
   }
 
   const data = await res.json().catch(() => ({ data: [] })) as { data?: { id: string }[] };
   const sent = data.data?.length ?? emails.length;
-  return { ok: true, sent, failed: emails.length - sent };
+  return { ok: true, sent, failed: emails.length - sent, status: res.status };
 }
 
 /**

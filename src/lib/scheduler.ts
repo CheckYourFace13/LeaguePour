@@ -69,8 +69,11 @@ const JOBS: ScheduledJob[] = [
 
 const TICK_MS = 5 * 60 * 1000;
 const WINDOW_MINUTES = 5; // fire if now falls within [target, target + WINDOW_MINUTES)
+// Per-instance short-circuit only. Cross-instance exclusivity comes from the database claim in
+// job-claims.ts: production can run several instances of this app, each with its own scheduler.
 const firedToday = new Map<string, string>(); // job path -> UTC date string ("YYYY-MM-DD") last fired
 let started = false;
+const INSTANCE_ID = `${process.pid}-${Math.random().toString(36).slice(2, 10)}`;
 
 // Status is ALSO persisted to AppSetting (not just kept in this module's own memory) - Next's
 // standalone output bundles each route somewhat independently, so a route handler importing
@@ -105,34 +108,50 @@ function isDue(job: ScheduledJob, now: Date): boolean {
   return minutesNow >= minutesTarget && minutesNow < minutesTarget + WINDOW_MINUTES;
 }
 
-async function attemptFetch(url: string, secret: string): Promise<{ ok: boolean; summary: string }> {
+// A gateway error is the hosting edge/proxy answering, not the route - the job didn't run.
+const GATEWAY_STATUSES = new Set([502, 503, 504]);
+
+async function attemptFetch(url: string, secret: string): Promise<{ ok: boolean; summary: string; ran: boolean }> {
   const res = await fetch(url, {
     headers: { Authorization: `Bearer ${secret}` },
     cache: "no-store",
   });
   const body = await res.json().catch(() => null);
   const ok = res.ok && body?.ok !== false;
-  return { ok, summary: `HTTP ${res.status} ${JSON.stringify(body)}`.slice(0, 500) };
+  return { ok, summary: `HTTP ${res.status} ${JSON.stringify(body)}`.slice(0, 500), ran: !GATEWAY_STATUSES.has(res.status) };
 }
 
-async function runJob(loopbackBase: string, publicBase: string, secret: string, job: ScheduledJob): Promise<void> {
+/** Returns whether any HTTP response came back (i.e. the route actually ran) plus a summary. */
+async function runJob(
+  loopbackBase: string,
+  publicBase: string,
+  secret: string,
+  job: ScheduledJob,
+): Promise<{ responded: boolean; outcome: string }> {
   let outcome = "";
   try {
-    const { ok, summary } = await attemptFetch(`${loopbackBase}${job.path}`, secret);
+    const { ok, summary, ran } = await attemptFetch(`${loopbackBase}${job.path}`, secret);
     outcome = `loopback: ${summary}`;
+    if (!ran) throw new Error(`gateway ${summary.slice(0, 40)}`);
     if (ok) {
       console.log(`[scheduler] ${job.path} ok via loopback`, summary);
       await persistStatus(`scheduler_last_run${job.path.replace(/\//g, "_")}`, `${new Date().toISOString()} ${outcome}`);
-      return;
+      return { responded: true, outcome };
     }
-    console.warn(`[scheduler] ${job.path} loopback returned non-ok, trying public domain`, summary);
+    // The route responded, so it ran. Don't call it again over the public domain - that would run
+    // the job a second time (only a thrown fetch, below, means it never ran).
+    console.warn(`[scheduler] ${job.path} loopback returned non-ok`, summary);
+    await persistStatus(`scheduler_last_run${job.path.replace(/\//g, "_")}`, `${new Date().toISOString()} ${outcome}`.slice(0, 900));
+    return { responded: true, outcome };
   } catch (err) {
     outcome = `loopback threw: ${err instanceof Error ? err.message : String(err)}`.slice(0, 500);
     console.warn(`[scheduler] ${job.path} loopback failed, trying public domain`, err);
   }
 
+  let responded = false;
   try {
-    const { ok, summary } = await attemptFetch(`${publicBase}${job.path}`, secret);
+    const { ok, summary, ran } = await attemptFetch(`${publicBase}${job.path}`, secret);
+    responded = ran;
     outcome += ` | public: ${summary}`;
     if (ok) {
       console.log(`[scheduler] ${job.path} ok via public domain`, summary);
@@ -144,15 +163,42 @@ async function runJob(loopbackBase: string, publicBase: string, secret: string, 
     console.error(`[scheduler] ${job.path} failed on both loopback and public domain`, err);
   }
   await persistStatus(`scheduler_last_run${job.path.replace(/\//g, "_")}`, `${new Date().toISOString()} ${outcome}`.slice(0, 900));
+  return { responded, outcome };
 }
 
 async function tick(loopbackBase: string, publicBase: string, secret: string): Promise<void> {
   const now = new Date();
   await persistStatus("scheduler_last_tick", now.toISOString());
+  const { claimScheduledRun, finishScheduledRun, releaseScheduledRun } = await import("./job-claims");
   for (const job of JOBS) {
     if (!isDue(job, now)) continue;
-    firedToday.set(job.path, utcDateString(now));
-    await runJob(loopbackBase, publicBase, secret, job);
+    const slot = utcDateString(now);
+    let claimed: boolean;
+    try {
+      claimed = await claimScheduledRun(job.path, slot, INSTANCE_ID);
+    } catch (err) {
+      // Can't prove exclusivity, so don't run. firedToday stays unset: the next tick retries
+      // while the window is still open.
+      console.error(`[scheduler] ${job.path} claim failed - not running this tick`, err);
+      continue;
+    }
+    firedToday.set(job.path, slot);
+    if (!claimed) {
+      console.log(`[scheduler] ${job.path} already claimed for ${slot} by another instance - skipping`);
+      continue;
+    }
+    const { responded, outcome } = await runJob(loopbackBase, publicBase, secret, job);
+    try {
+      if (responded) {
+        await finishScheduledRun(job.path, slot, INSTANCE_ID, outcome);
+      } else {
+        // Never reached the route, so the job didn't run: let a later tick/instance retry in-window.
+        await releaseScheduledRun(job.path, slot, INSTANCE_ID);
+        firedToday.delete(job.path);
+      }
+    } catch (err) {
+      console.error(`[scheduler] ${job.path} claim bookkeeping failed`, err);
+    }
   }
 }
 
@@ -176,6 +222,11 @@ export function startInProcessScheduler(): void {
   setTimeout(() => void tick(loopbackBase, publicBase, secret), 30_000);
   setInterval(() => void tick(loopbackBase, publicBase, secret), TICK_MS);
   setTimeout(() => void publishAuthoredOnBoot(), 60_000);
+  setTimeout(() => {
+    void import("./job-claims")
+      .then(({ pruneScheduledClaims }) => pruneScheduledClaims())
+      .catch((err) => console.error("[scheduler] claim prune failed", err));
+  }, 90_000);
   console.log(`[scheduler] in-process cron scheduler started (${JOBS.length} jobs, ${TICK_MS / 60000}min tick)`);
 }
 

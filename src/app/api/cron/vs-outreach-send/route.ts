@@ -75,10 +75,10 @@ export async function GET(request: Request) {
         return { status: "skipped", detail, result: { ok: true, skipped: detail } };
       }
 
-      const send = await sendVsOutreachCore(VS_SEND_PER_RUN);
+      const send = await sendVsOutreachCore(VS_SEND_PER_RUN, { throttleHours: THROTTLE_HOURS });
       console.log("[vs-outreach cron]", { send });
       return {
-        status: send.error ? "failure" : send.sent > 0 ? "success" : "skipped",
+        status: send.error ? "failure" : send.sent > 0 && !send.skipped ? "success" : "skipped",
         detail: `sent ${send.sent}, remaining ${send.remaining}${send.error ? ` - ${send.error}` : ""}`,
         result: { ok: !send.error, send },
       };
