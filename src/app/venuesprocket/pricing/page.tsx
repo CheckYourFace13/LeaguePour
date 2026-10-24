@@ -18,7 +18,7 @@ const plans = [
     period: "/mo",
     tagline: "Start today, no card required",
     cta: "Start Free",
-    ctaHref: "/start",
+    ctaHref: "/signup/venue",
     highlight: false,
     features: [
       "Public inquiry form for your venue",
@@ -36,7 +36,7 @@ const plans = [
     period: "/mo",
     tagline: "For venues getting started with private events",
     cta: "Start Starter",
-    ctaHref: "/start?plan=starter",
+    ctaHref: "/signup/venue?plan=starter",
     highlight: false,
     features: [
       "Everything in Free",
@@ -53,7 +53,7 @@ const plans = [
     period: "/mo",
     tagline: "Full private event management",
     cta: "Start Pro",
-    ctaHref: "/start?plan=pro",
+    ctaHref: "/signup/venue?plan=pro",
     highlight: true,
     badge: "Most Popular",
     features: [
@@ -228,7 +228,7 @@ export default function VsPricingPage() {
           </div>
           <div className="mt-10 text-center">
             <Link
-              href="/start"
+              href="/signup/venue"
               className="inline-flex rounded-xl bg-vs-accent px-8 py-4 text-lg font-bold text-white hover:bg-vs-accent-hover transition-colors"
             >
               Start Free Today

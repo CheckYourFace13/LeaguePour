@@ -43,7 +43,7 @@ const features = [
   {
     icon: "💳",
     title: "Collect deposits through Stripe",
-    body: "Customers pay their deposit immediately after signing. Stripe handles the payment. You see the money in your account. No invoicing, no chasing.",
+    body: "Customers can pay their deposit right after signing. Stripe processes the payment and pays it out to your connected Stripe account on Stripe's payout schedule. No invoicing, no chasing.",
   },
   {
     icon: "📑",
@@ -173,22 +173,16 @@ export default function VsSprocketHome() {
           </p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Link
-              href="/start"
+              href="/signup/venue"
               className="rounded-xl bg-vs-accent px-8 py-4 text-lg font-bold text-white hover:bg-vs-accent-hover transition-colors shadow-lg"
             >
               Start Free
             </Link>
             <Link
-              href="/features"
+              href="/demo"
               className="rounded-xl border border-vs-border-strong bg-vs-surface px-8 py-4 text-lg font-bold text-vs-text hover:border-vs-accent transition-colors"
             >
-              See How It Works
-            </Link>
-            <Link
-              href="/leaguepour"
-              className="text-base font-semibold text-vs-accent hover:underline"
-            >
-              See LeaguePour for game nights →
+              See a sample workflow
             </Link>
           </div>
           <p className="mt-5 text-sm text-vs-muted">
@@ -232,11 +226,12 @@ export default function VsSprocketHome() {
           </p>
           <div className="mt-8 rounded-2xl border border-vs-border bg-vs-surface p-6 text-left">
             <p className="text-sm font-bold text-vs-accent uppercase tracking-widest mb-4">
-              If VenueSprocket helps you book one extra party, it pays for itself.
+              Start free, upgrade when it earns its place
             </p>
             <p className="text-vs-text-soft text-sm leading-relaxed">
-              A single private event booked at $500–$3,000+ covers your monthly plan cost many times
-              over. The inquiry form is free. The leads start immediately.
+              Your inquiry page is free and live as soon as you sign up. Paid plans start at $29/mo.
+              A private event&apos;s booking value is gross revenue, not profit - compare the plan cost
+              with what one extra booking actually leaves you after food, labor, and fees.
             </p>
           </div>
         </div>
@@ -473,7 +468,7 @@ export default function VsSprocketHome() {
           </p>
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link
-              href="/start"
+              href="/signup/venue"
               className="rounded-xl bg-vs-accent px-8 py-4 text-lg font-bold text-white hover:bg-vs-accent-hover transition-colors"
             >
               Start Free

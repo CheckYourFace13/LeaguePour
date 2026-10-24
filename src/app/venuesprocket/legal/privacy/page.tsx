@@ -11,7 +11,7 @@ export default function VsPrivacyPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 md:px-6 md:py-20">
       <h1 className="font-display text-4xl font-extrabold text-[var(--vs-text)]">Privacy Policy</h1>
-      <p className="mt-3 text-sm text-[var(--vs-muted)]">Last updated: June 29, 2026</p>
+      <p className="mt-3 text-sm text-[var(--vs-muted)]">Last updated: October 24, 2026</p>
 
       <div className="mt-10 space-y-8 text-sm text-[var(--vs-text-soft)] leading-relaxed">
 
@@ -45,6 +45,9 @@ export default function VsPrivacyPage() {
             <li><strong className="text-[var(--vs-text)]">Stripe</strong> — for payment processing</li>
             <li><strong className="text-[var(--vs-text)]">Resend</strong> — for transactional email delivery</li>
             <li><strong className="text-[var(--vs-text)]">Supabase</strong> — for secure database hosting</li>
+            <li><strong className="text-[var(--vs-text)]">Our web hosting provider</strong> — to serve the site and app</li>
+            <li><strong className="text-[var(--vs-text)]">Google Analytics</strong> — anonymous usage statistics (see Cookies)</li>
+            <li><strong className="text-[var(--vs-text)]">Google Maps Platform</strong> — only if you use the optional venue address lookup at signup</li>
             <li>Law enforcement when required by valid legal process</li>
           </ul>
         </section>
@@ -61,8 +64,10 @@ export default function VsPrivacyPage() {
         <section className="space-y-3">
           <h2 className="font-display text-lg font-bold text-[var(--vs-text)]">Cookies</h2>
           <p>
-            VenueSprocket uses cookies only for essential functions: keeping you logged in to your venue dashboard.
-            We do not use third-party advertising cookies or tracking pixels.
+            VenueSprocket uses essential cookies to keep you logged in to your venue dashboard, and Google
+            Analytics (GA4) cookies to measure how the site is used - for example, which pages are visited and
+            whether signups complete. We don&apos;t send names, emails, or other personal details to Google
+            Analytics. VenueSprocket doesn&apos;t show ads or use advertising cookies.
           </p>
         </section>
 

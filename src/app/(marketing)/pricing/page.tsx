@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { formatUsdCents, PLAN_DEFINITIONS } from "@/lib/pricing";
 import { TrackView } from "@/components/analytics/track-view";
-import { PlanSelectLink } from "@/components/analytics/plan-select-link";
+import { PricingPlanGrid } from "@/components/marketing/pricing-plan-grid";
 import { ACTIVE_COMPETITION_LIMITS_BY_PLAN } from "@/lib/pricing";
 import { PLATFORM_FEE_BPS, PLAYER_SERVICE_FEE_CENTS } from "@/lib/stripe/connect-fees";
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
@@ -72,7 +70,7 @@ const faqs: { q: string; a: string }[] = [
   },
   {
     q: "What does a paid registration cost?",
-    a: `The venue keeps the entry fee minus a ${PLATFORM_FEE_PCT}% platform fee, and the player pays a ${SERVICE_FEE} service fee on top of the entry price at checkout. On a ${formatUsdCents(EXAMPLE_ENTRY_CENTS)} entry, the player pays ${EXAMPLE_PLAYER_PAYS} and the venue receives ${EXAMPLE_VENUE_GETS}.`,
+    a: `The venue keeps the entry fee minus a ${PLATFORM_FEE_PCT}% platform fee, and the player pays a ${SERVICE_FEE} service fee on top of the entry price at checkout. On a ${formatUsdCents(EXAMPLE_ENTRY_CENTS)} entry, the player pays ${EXAMPLE_PLAYER_PAYS} and the venue receives ${EXAMPLE_VENUE_GETS} before Stripe's card-processing fee. Entry payments are charged on your own Stripe account, so Stripe deducts its processing fee there at Stripe's rates - LeaguePour doesn't add to it or take a cut of it.`,
   },
   {
     q: "Are free events charged anything?",
@@ -80,7 +78,7 @@ const faqs: { q: string; a: string }[] = [
   },
   {
     q: "How does annual billing work?",
-    a: "Annual plans cost ten times the monthly price, so you get two months free (about 17% off). You can choose monthly or annual when you subscribe.",
+    a: "Annual plans cost ten times the monthly price, so you get two months free (about 17% off). Choose Monthly or Annual above before you pick a plan, or switch from your billing settings later.",
   },
   {
     q: "Which tournament formats are included?",
@@ -108,53 +106,23 @@ export default function PricingPage() {
         Every plan has every feature. You pay for how many competitions you run at once - and
         get 2 months free (~17% off) on annual billing.
       </p>
-      <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-4 md:gap-6">
-        {PLAN_DEFINITIONS.map((t) => (
-          <Card
-            key={t.name}
-            className={`lp-pricing-card ${
-              t.featured ? "lp-feature-ring border-lp-accent/40 md:-translate-y-1" : ""
-            }`}
-          >
-            {t.featured ? <p className="lp-kicker text-lp-accent">Most popular</p> : <p className="lp-kicker">Plan</p>}
-            <p className="mt-2 font-display text-[1.85rem] font-extrabold tracking-tight text-lp-text">{t.name}</p>
-            <p className="mt-5 font-display text-4xl font-extrabold tracking-tight text-lp-text md:text-[2.75rem]">
-              {formatUsdCents(t.monthlyCents)}
-              <span className="text-[1.02rem] font-bold text-lp-text-soft"> /mo</span>
-            </p>
-            <p className="mt-1.5 text-base text-lp-text-soft">
-              {formatUsdCents(t.annualCents)} /yr <span className="font-semibold text-lp-accent">2 months free</span>
-            </p>
-            <ul className="mt-8 space-y-2.5 text-[1.02rem] leading-snug text-lp-text-soft">
-              <li className="flex gap-2">
-                <span className="text-lp-accent">|</span>
-                <span>
-                  {Number.isFinite(ACTIVE_COMPETITION_LIMITS_BY_PLAN[t.plan])
-                    ? `Up to ${ACTIVE_COMPETITION_LIMITS_BY_PLAN[t.plan]} competitions at once`
-                    : "Unlimited competitions at once"}
-                </span>
-              </li>
-              <li className="flex gap-2">
-                <span className="text-lp-accent">|</span>
-                <span>Stripe Connect entry fees</span>
-              </li>
-              <li className="flex gap-2">
-                <span className="text-lp-accent">|</span>
-                <span>Campaigns & audience</span>
-              </li>
-            </ul>
-            <Button className="mt-10 w-full text-[1.05rem]" variant={t.featured ? "primary" : "secondary"} asChild>
-              <PlanSelectLink
-                href={`/signup/venue?plan=${t.plan.toLowerCase()}`}
-                plan={t.plan.toLowerCase()}
-                product="lp"
-              >
-                Choose {t.name}
-              </PlanSelectLink>
-            </Button>
-          </Card>
-        ))}
+      <div className="mt-6 max-w-2xl rounded-[10px] border border-lp-border bg-lp-surface/60 px-5 py-4 text-base text-lp-text-soft">
+        <strong className="text-lp-text">Start without a plan:</strong> a new venue can create an account
+        and run up to 2 competitions at once (the Starter limit) before subscribing. Pick a plan when you
+        need more at once.
       </div>
+      <PricingPlanGrid
+        plans={PLAN_DEFINITIONS.map((t) => ({
+          plan: t.plan.toLowerCase(),
+          name: t.name,
+          monthlyCents: t.monthlyCents,
+          annualCents: t.annualCents,
+          featured: t.featured,
+          limitLabel: Number.isFinite(ACTIVE_COMPETITION_LIMITS_BY_PLAN[t.plan])
+            ? `Up to ${ACTIVE_COMPETITION_LIMITS_BY_PLAN[t.plan]} competitions at once`
+            : "Unlimited competitions at once",
+        }))}
+      />
       {/* Full feature comparison */}
       <div className="mt-16">
         <h2 className="font-display text-2xl font-bold text-lp-text text-center">Compare plans</h2>
@@ -208,10 +176,12 @@ export default function PricingPage() {
           <div className="mt-5 rounded-xl border border-lp-border bg-lp-bg px-4 py-3 font-mono text-sm text-lp-text-soft">
             <p>{formatUsdCents(EXAMPLE_ENTRY_CENTS)} entry fee</p>
             <p>Player pays: {EXAMPLE_PLAYER_PAYS}</p>
-            <p>Venue receives: {EXAMPLE_VENUE_GETS}</p>
+            <p>Venue receives: {EXAMPLE_VENUE_GETS}, before Stripe&apos;s processing fee</p>
           </div>
           <p className="mt-3 text-xs text-lp-muted">
-            Entry fees are collected with Stripe Checkout and paid out to your own bank account through Stripe Connect.
+            Entry fees are charged on your own Stripe account through Stripe Connect. Stripe deducts its
+            card-processing fee there at its own rates (it isn&apos;t part of the two fees above), and pays
+            out to your bank on your Stripe payout schedule.
           </p>
         </div>
         <div className="rounded-2xl border border-lp-border bg-lp-surface/50 p-7">

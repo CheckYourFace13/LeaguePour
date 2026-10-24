@@ -210,7 +210,7 @@ export default function VsFeaturesPage() {
           </p>
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link
-              href="/start"
+              href="/signup/venue"
               className="rounded-xl bg-vs-accent px-8 py-4 text-lg font-bold text-white hover:bg-vs-accent-hover transition-colors"
             >
               Start Free

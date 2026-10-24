@@ -104,7 +104,7 @@ export default function RoomRentalCalculatorPage() {
               <div className="flex flex-wrap gap-3 text-sm">
                 <Link href="/tools/event-profit-calculator" className="rounded-lg border border-vs-border-strong bg-vs-bg px-4 py-2 font-semibold text-vs-text hover:border-vs-accent">Event profit calculator →</Link>
                 <Link href="/templates/event-proposal-template" className="rounded-lg border border-vs-border-strong bg-vs-bg px-4 py-2 font-semibold text-vs-text hover:border-vs-accent">Proposal template →</Link>
-                <Link href="/start" className="rounded-lg bg-vs-accent px-4 py-2 font-bold text-white hover:bg-vs-accent-hover">Start free</Link>
+                <Link href="/signup/venue" className="rounded-lg bg-vs-accent px-4 py-2 font-bold text-white hover:bg-vs-accent-hover">Start free</Link>
               </div>
             </section>
           </article>

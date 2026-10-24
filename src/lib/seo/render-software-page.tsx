@@ -88,6 +88,13 @@ export function getAllSoftwareSlugs(): SoftwarePageSlug[] {
   return Object.keys(SOFTWARE) as SoftwarePageSlug[];
 }
 
+/** Slugs permanently redirected to their legacyPath page (next.config.ts) - never list these. */
+export const REDIRECTED_SOFTWARE_SLUGS = new Set<string>([
+  "dart-league-software",
+  "cornhole-tournament-software",
+  "trivia-night-signup-software",
+]);
+
 // dart-league-software, cornhole-tournament-software, and trivia-night-signup-software all cover
 // the exact same topic as their standalone counterpart (the hand-written page at legacyPath) using
 // this file's generic, template-driven content (the same comparison table and format-roadmap

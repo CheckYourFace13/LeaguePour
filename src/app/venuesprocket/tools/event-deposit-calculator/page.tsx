@@ -110,7 +110,7 @@ export default function DepositCalculatorPage() {
                 VenueSprocket.
               </p>
               <div className="flex flex-wrap gap-3 text-sm">
-                <Link href="/start" className="rounded-lg bg-vs-accent px-4 py-2 font-bold text-white hover:bg-vs-accent-hover">Start free</Link>
+                <Link href="/signup/venue" className="rounded-lg bg-vs-accent px-4 py-2 font-bold text-white hover:bg-vs-accent-hover">Start free</Link>
                 <Link href="/tools/food-beverage-minimum-calculator" className="rounded-lg border border-vs-border-strong bg-vs-bg px-4 py-2 font-semibold text-vs-text hover:border-vs-accent">F&amp;B minimum calculator →</Link>
                 <Link href="/templates" className="rounded-lg border border-vs-border-strong bg-vs-bg px-4 py-2 font-semibold text-vs-text hover:border-vs-accent">Contract checklist →</Link>
               </div>

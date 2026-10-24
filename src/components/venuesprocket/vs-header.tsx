@@ -40,7 +40,7 @@ export function VsHeader() {
             Log in
           </Link>
           <Link
-            href="/start"
+            href="/signup/venue"
             className="rounded-lg bg-vs-accent px-4 py-2 text-sm font-bold text-white hover:bg-vs-accent-hover transition-colors"
           >
             Start Free

@@ -163,7 +163,7 @@ export default function VsBundlePage() {
           </section>
 
           <div className="mt-12 flex flex-col gap-3 sm:flex-row">
-            <Link href="/start" className="rounded-xl bg-vs-accent px-6 py-3 text-center font-bold text-white hover:bg-vs-accent-hover transition-colors">
+            <Link href="/signup/venue" className="rounded-xl bg-vs-accent px-6 py-3 text-center font-bold text-white hover:bg-vs-accent-hover transition-colors">
               Start with VenueSprocket
             </Link>
             <Link href="/pricing" className="rounded-xl border border-vs-border-strong bg-vs-bg px-6 py-3 text-center font-bold text-vs-text hover:border-vs-accent transition-colors">

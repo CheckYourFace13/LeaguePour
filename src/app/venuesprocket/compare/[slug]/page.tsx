@@ -256,7 +256,7 @@ export default async function VsComparePage({
               Upgrade when you need contracts, deposits, and BEOs.
             </p>
             <Link
-              href="/start"
+              href="/signup/venue"
               className="inline-flex rounded-xl bg-vs-accent px-8 py-4 text-lg font-bold text-white hover:bg-vs-accent-hover transition-colors"
             >
               {data.cta}

@@ -102,12 +102,21 @@ const nextConfig: NextConfig = {
         ["/templates/proposal", "/templates/event-proposal-template"],
         ["/templates/inquiry-form", "/guides/private-event-inquiry-form-template"],
         ["/templates/run-of-show", "/templates/run-of-show-template"],
+        ["/templates/contract", "/templates/private-event-contract-checklist"],
+        // No generator: the existing guide already gives worked cancellation-policy examples.
+        ["/tools/cancellation-policy", "/guides/event-cancellation-policy-examples-for-restaurants-and-venues"],
       ].map(([source, destination]) => ({
         source,
         destination,
         permanent: true,
         has: [{ type: "host" as const, value: VS_HOST }],
       })),
+      // Duplicate LeaguePour software pages: these /software/* aliases rendered 200 with a canonical
+      // pointing at the established top-level page. One URL per page - send them there for good.
+      // Path-only: the paths don't exist on VenueSprocket (they'd 404 there either way).
+      { source: "/software/dart-league-software", destination: "/dart-league-software", permanent: true },
+      { source: "/software/cornhole-tournament-software", destination: "/cornhole-tournament-software", permanent: true },
+      { source: "/software/trivia-night-signup-software", destination: "/bar-trivia-software", permanent: true },
       // Same alias gap on the LP side itself, found during the customer-facing smoke test:
       // leaguepour.com/privacy and /terms 404'd instead of landing on the real pages at
       // /legal/*. Scoped to the LP host only so this can't affect VS's own routing above.

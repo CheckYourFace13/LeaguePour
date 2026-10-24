@@ -20,7 +20,10 @@ const LP_AD_ELIGIBLE_PREFIXES = ["/guides", "/history", "/rules"];
 // templated variations, and home/pricing/contact/start are pure conversion pages. Same "Needs
 // attention: Low value content" AdSense reasoning as LP above applies here too (both brands share
 // one AdSense publisher account, so a quality flag on one is a shared-account risk for both).
-const VS_AD_ELIGIBLE_PREFIXES = ["/guides"];
+// October 2026: advertising is off on VenueSprocket entirely (owner decision - its guides are a
+// sales path for a B2B product, and the AdSense account's "low value content" review is shared
+// with LeaguePour). Analytics stays on. Re-add "/guides" here to turn VS guide ads back on.
+const VS_AD_ELIGIBLE_PREFIXES: string[] = [];
 
 function isAdEligiblePath(pathname: string, prefixes: string[]): boolean {
   return prefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));

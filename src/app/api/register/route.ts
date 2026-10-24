@@ -4,15 +4,17 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 
 const base = z.object({
-  email: z.string().email(),
+  // Trim before validating: pasted/autofilled addresses often carry whitespace.
+  email: z.string().trim().email(),
   password: z.string().min(8),
   name: z.string().min(1),
 });
 
 const venueSchema = base.extend({
   accountType: z.literal("venue"),
-  venueName: z.string().min(2),
-  venueType: z.string().min(1),
+  venueName: z.string().trim().min(2),
+  // Optional at signup (deferred to the venue profile); stored as a neutral default.
+  venueType: z.string().trim().optional(),
   city: z.string().optional(),
   formattedAddress: z.string().optional(),
   latitude: z.number().optional(),
@@ -52,15 +54,34 @@ export async function POST(req: Request) {
   }
 
   const data = parsed.data;
-  const email = data.email.toLowerCase();
+  const email = data.email.trim().toLowerCase();
 
   const exists = await prisma.user.findUnique({ where: { email } });
   if (exists) {
-    return NextResponse.json({ error: "Email already registered" }, { status: 409 });
+    return NextResponse.json({ error: "Email already registered", code: "email_taken" }, { status: 409 });
   }
 
   const passwordHash = await bcrypt.hash(data.password, 12);
 
+  try {
+    await createAccount(data, email, passwordHash);
+  } catch (err) {
+    // Two simultaneous signups with one email both pass the check above; the unique index on
+    // User.email makes the second fail here. Same answer as the pre-check, not a 500.
+    // Prisma 7's driver adapter reports `meta.modelName` (no `target`) for unique violations.
+    const e = err as { code?: string; message?: string; meta?: { target?: unknown; modelName?: string } };
+    const onUserEmail =
+      e?.meta?.modelName === "User" || JSON.stringify(e?.meta?.target ?? "").includes("email") || /\(`email`\)/.test(e?.message ?? "");
+    if (e?.code === "P2002" && onUserEmail) {
+      return NextResponse.json({ error: "Email already registered", code: "email_taken" }, { status: 409 });
+    }
+    throw err;
+  }
+
+  return NextResponse.json({ ok: true });
+}
+
+async function createAccount(data: z.infer<typeof schema>, email: string, passwordHash: string) {
   if (data.accountType === "venue") {
     let slug = slugify(data.venueName);
     const taken = await prisma.venue.findUnique({ where: { slug } });
@@ -78,7 +99,7 @@ export async function POST(req: Request) {
         data: {
           name: data.venueName,
           slug,
-          venueType: data.venueType,
+          venueType: data.venueType || "Venue",
           description: `${data.venueName} on LeaguePour`,
           city: data.city || null,
           formattedAddress: data.formattedAddress || null,
@@ -134,6 +155,4 @@ export async function POST(req: Request) {
       });
     });
   }
-
-  return NextResponse.json({ ok: true });
 }

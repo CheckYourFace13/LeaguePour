@@ -1,285 +1,40 @@
-"use client";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { auth } from "@/auth";
+import { prisma } from "@/lib/db";
+import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
+import { resolveSelectedPlan, signupBrandFromHost } from "@/lib/signup-plans";
+import { SignupVenueForm } from "@/components/auth/signup-venue-form";
 
-import { Suspense } from "react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
-import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
-import { trackEvent } from "@/lib/analytics";
+// Per-request: brand comes from the Host header and the signed-in state from the session.
+export const dynamic = "force-dynamic";
 
-function SignupVenueForm() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const plan = searchParams.get("plan");
-  const fromVs = searchParams.get("from") === "vs";
-  const [msg, setMsg] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
-  const [matches, setMatches] = useState<
-    Array<{ placeId: string; name: string; formattedAddress: string }>
-  >([]);
-  const [picked, setPicked] = useState<{
-    placeId: string;
-    name: string;
-    formattedAddress: string;
-    latitude: number | null;
-    longitude: number | null;
-    websiteUrl: string | null;
-    phone: string | null;
-  } | null>(null);
-  const [loadingMatches, setLoadingMatches] = useState(false);
-  const [searchMsg, setSearchMsg] = useState<string | null>(null);
+type Search = Record<string, string | string[] | undefined>;
+const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? null;
 
-  // This form is shared by both brands (routing after signup already branches on `from=vs`).
-  // Without this, a visitor arriving from venuesprocket.com sees a browser tab and heading that
-  // both say "LeaguePour" - a confusing "did I click the wrong thing?" moment right at signup.
-  useEffect(() => {
-    if (fromVs) document.title = "Create Your Free Account | VenueSprocket";
-  }, [fromVs]);
+export default async function SignupVenuePage({ searchParams }: { searchParams: Promise<Search> }) {
+  const params = await searchParams;
+  const host = (await headers()).get("host");
+  // Brand from the trustworthy host, not a query flag a link can drop - a direct visit to
+  // venuesprocket.com/signup/venue is VenueSprocket with or without ?from=vs.
+  const brand = signupBrandFromHost(host, one(params.from));
+  const plan = resolveSelectedPlan(brand, one(params.plan), one(params.interval));
 
-  const startedTracked = useRef(false);
-  useEffect(() => {
-    if (startedTracked.current) return;
-    startedTracked.current = true;
-    trackEvent("signup_started", { product: fromVs ? "vs" : "lp", plan: plan ?? undefined });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setMsg(null);
-    const fd = new FormData(e.currentTarget);
-    const body = {
-      accountType: "venue" as const,
-      name: String(fd.get("name")),
-      email: String(fd.get("email")),
-      password: String(fd.get("password")),
-      venueName: String(fd.get("venueName")),
-      venueType: String(fd.get("venueType")),
-      city: String(fd.get("city")),
-      formattedAddress: String(fd.get("formattedAddress") || ""),
-      latitude: Number(fd.get("latitude")) || undefined,
-      longitude: Number(fd.get("longitude")) || undefined,
-      googlePlaceId: String(fd.get("googlePlaceId") || ""),
-      websiteUrl: String(fd.get("websiteUrl") || ""),
-      phone: String(fd.get("phone") || ""),
-    };
-    const res = await fetch("/api/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      setMsg(data.error ?? "Could not create account");
-      return;
-    }
-    const product = fromVs ? "vs" : "lp";
-    trackEvent("account_created", { product });
-    trackEvent("venue_created", { product });
-    const signInResult = await signIn("credentials", {
-      email: body.email,
-      password: body.password,
-      redirect: false,
-    });
-    if (!signInResult?.ok) {
-      setMsg("Account created — please log in to continue.");
-      router.push("/login");
-      return;
-    }
-
-    // If a plan was selected, go straight to Stripe checkout
-    if (plan) {
-      try {
-        const apiPath = fromVs
-          ? "/api/venuesprocket/subscribe"
-          : "/api/venue/stripe/subscribe";
-        const subRes = await fetch(apiPath, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ plan: plan.toUpperCase(), interval: "monthly" }),
-        });
-        const subData = await subRes.json().catch(() => ({}));
-        if (subData.url) {
-          trackEvent("checkout_started", { product, plan: plan.toLowerCase() });
-          window.location.href = subData.url;
-          return;
-        }
-      } catch {
-        // Fall through to dashboard if billing fails
-      }
-    }
-
-    router.push(fromVs ? "/app/dashboard" : "/venue/dashboard");
-    router.refresh();
+  // Already signed in as a venue owner/staff: never offer a second signup.
+  const session = await auth();
+  const access = await resolvePrimaryVenueAccess(session);
+  if (access) {
+    if (!plan) redirect(brand === "vs" ? "/app/dashboard" : "/venue/dashboard");
+    const venue = await prisma.venue.findUnique({ where: { id: access.venueId }, select: { name: true } });
+    return (
+      <SignupVenueForm
+        brand={brand}
+        plan={plan}
+        signedInVenueName={venue?.name ?? "your venue"}
+        checkoutFailed={one(params.checkout) === "failed"}
+      />
+    );
   }
 
-  async function searchPlaces() {
-    const term = search.trim();
-    if (term.length < 3) {
-      setSearchMsg("Type at least 3 characters.");
-      setMatches([]);
-      return;
-    }
-    setLoadingMatches(true);
-    setSearchMsg(null);
-    const res = await fetch(`/api/google/places/search?q=${encodeURIComponent(term)}`);
-    const data = (await res.json().catch(() => ({ results: [] }))) as {
-      results: Array<{ placeId: string; name: string; formattedAddress: string }>;
-      message?: string;
-    };
-    setMatches(data.results ?? []);
-    if (!res.ok) {
-      setSearchMsg(data.message ?? "Location search is unavailable right now.");
-    } else if ((data.results ?? []).length === 0) {
-      setSearchMsg("No matches yet. Try business name + city.");
-    } else {
-      setSearchMsg("Select your location.");
-    }
-    setLoadingMatches(false);
-  }
-
-  async function pickPlace(placeId: string) {
-    setSearchMsg(null);
-    const res = await fetch(`/api/google/places/details?placeId=${encodeURIComponent(placeId)}`);
-    const data = (await res.json().catch(() => ({ place: null }))) as {
-      place: {
-        placeId: string;
-        name: string;
-        formattedAddress: string;
-        latitude: number | null;
-        longitude: number | null;
-        websiteUrl: string | null;
-        phone: string | null;
-      } | null;
-      message?: string;
-    };
-    if (data.place) {
-      setPicked(data.place);
-      setMatches([]);
-      setSearch(data.place.name);
-      setSearchMsg("Location selected.");
-    } else {
-      setSearchMsg(data.message ?? "Could not load that location. Pick another result.");
-    }
-  }
-
-  return (
-    <Card className="w-full max-w-md p-6 md:p-8">
-      <h1 className="lp-page-title text-3xl md:text-4xl">
-        {fromVs ? "Create your VenueSprocket account" : "Venue signup"}
-      </h1>
-      <p className="mt-3 text-lg text-lp-text-soft">
-        {fromVs
-          ? "Free to start. Account + venue in one flow (~2 min)."
-          : "Account + venue in one flow (~2 min)."}
-      </p>
-      {msg ? (
-        <p className="mt-4 rounded-[10px] border border-lp-warning/40 bg-lp-warning/10 px-4 py-3 text-base">{msg}</p>
-      ) : null}
-      <form className="mt-6 space-y-4" onSubmit={onSubmit}>
-        <div className="space-y-2">
-          <Label htmlFor="gm-search">Find your venue</Label>
-          <p className="text-sm text-lp-text-soft">Search your business, then select your location.</p>
-          <div className="flex gap-2">
-            <Input
-              id="gm-search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="min-h-12"
-              placeholder="Search your business"
-              aria-describedby="gm-search-hint"
-            />
-            <Button type="button" variant="secondary" onClick={searchPlaces} disabled={loadingMatches} className="px-5">
-              {loadingMatches ? "Finding..." : "Find"}
-            </Button>
-          </div>
-          <p id="gm-search-hint" className="sr-only">
-            Type at least three characters, then search. Pick one result to lock your venue location.
-          </p>
-          {matches.length > 0 ? (
-            <ul className="max-h-40 space-y-1 overflow-y-auto rounded-[10px] border border-lp-border-strong bg-lp-bg/80 p-2">
-              {matches.map((m) => (
-                <li key={m.placeId}>
-                  <button
-                    type="button"
-                    className="w-full rounded px-2 py-2.5 text-left text-base hover:bg-lp-surface-2"
-                    onClick={() => pickPlace(m.placeId)}
-                  >
-                    <div className="font-semibold text-lp-text">{m.name}</div>
-                    <div className="text-sm text-lp-text-soft">{m.formattedAddress}</div>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-          {searchMsg ? <p className="text-sm text-lp-text-soft">{searchMsg}</p> : null}
-          {picked ? (
-            <p className="text-sm font-medium text-lp-success">
-              Locked: {picked.name} - {picked.formattedAddress}
-            </p>
-          ) : (
-            <p className="text-sm text-lp-text-soft">Skip only if you will add it later in Venue profile.</p>
-          )}
-          <p className="text-[11px] text-lp-muted/80">Powered by Google</p>
-        </div>
-        <div>
-          <Label htmlFor="venueName">Venue name</Label>
-          <Input
-            id="venueName"
-            name="venueName"
-            className="mt-1.5 min-h-12"
-            required
-            placeholder="Northside Tap & Trophy"
-            defaultValue={picked?.name ?? ""}
-          />
-        </div>
-        <div>
-          <Label htmlFor="venueType">Venue type</Label>
-          <Input id="venueType" name="venueType" className="mt-1.5 min-h-12" required placeholder="Brewpub, VFW, Sports bar…" />
-        </div>
-        <div>
-          <Label htmlFor="city">City (optional)</Label>
-          <Input id="city" name="city" className="mt-1.5 min-h-12" placeholder="Indianapolis" />
-        </div>
-        <input type="hidden" name="formattedAddress" value={picked?.formattedAddress ?? ""} />
-        <input type="hidden" name="latitude" value={picked?.latitude ?? ""} />
-        <input type="hidden" name="longitude" value={picked?.longitude ?? ""} />
-        <input type="hidden" name="googlePlaceId" value={picked?.placeId ?? ""} />
-        <input type="hidden" name="websiteUrl" value={picked?.websiteUrl ?? ""} />
-        <input type="hidden" name="phone" value={picked?.phone ?? ""} />
-        <div>
-          <Label htmlFor="name">Your name</Label>
-          <Input id="name" name="name" className="mt-1.5 min-h-12" required autoComplete="name" />
-        </div>
-        <div>
-          <Label htmlFor="email">Work email</Label>
-          <Input id="email" name="email" type="email" className="mt-1.5 min-h-12" required autoComplete="email" />
-        </div>
-        <div>
-          <Label htmlFor="password">Password</Label>
-          <Input id="password" name="password" type="password" className="mt-1.5 min-h-12" required minLength={8} autoComplete="new-password" />
-        </div>
-        <Button type="submit" className="w-full" size="lg">
-          Create account & venue
-        </Button>
-      </form>
-      <p className="mt-6 text-center text-sm text-lp-muted">
-        <Link className="text-lp-accent hover:underline" href="/signup">
-          ← Other account types
-        </Link>
-      </p>
-    </Card>
-  );
-}
-
-export default function SignupVenuePage() {
-  return (
-    <Suspense fallback={<div className="w-full max-w-md p-6" />}>
-      <SignupVenueForm />
-    </Suspense>
-  );
+  return <SignupVenueForm brand={brand} plan={plan} signedInVenueName={null} checkoutFailed={false} />;
 }

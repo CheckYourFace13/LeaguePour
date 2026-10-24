@@ -41,9 +41,9 @@ export const lpEntryFeePricingStrategy: AuthoredBody = {
 <p>If you collect entry fees online, know exactly what you receive. With LeaguePour, for example, the venue keeps the entry fee minus a 5% platform fee, and the player pays a $1.50 service fee on top of the entry price at checkout. On a $10 entry, that's:</p>
 <ul>
 <li>Player pays: $10.00 + $1.50 = $11.50</li>
-<li>Venue receives: $10.00 − $0.50 = $9.50</li>
+<li>Venue receives: $10.00 − $0.50 = $9.50, before Stripe's card-processing fee</li>
 </ul>
-<p>Twenty players at that price is $190 to the venue. If you've promised a $200 pool, you're short - so do this math before you announce the prize, not after.</p>
+<p>Entry payments are charged on the venue's own Stripe account, so Stripe's processing fee comes out of that $9.50 too - check your Stripe rate. Twenty players is under $190 to the venue. If you've promised a $200 pool, you're short - so do this math before you announce the prize, not after.</p>
 
 <h2>Free events have a place</h2>
 <p>A free event (entry fee $0) is the right call when you're starting a new night and need to prove there's a crowd, or when the goal is purely traffic. The trade-off is attendance: free signups no-show more. Two ways to soften that:</p>

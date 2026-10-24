@@ -15,7 +15,7 @@ export default function PrivacyPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 md:px-6 md:py-20">
       <h1 className="font-display text-4xl font-bold">Privacy Policy</h1>
-      <p className="mt-4 text-sm text-lp-muted">Last updated: April 23, 2026</p>
+      <p className="mt-4 text-sm text-lp-muted">Last updated: October 24, 2026</p>
       <div className="prose prose-invert mt-10 max-w-none space-y-6 text-sm text-lp-muted leading-relaxed">
         <p>
           LeaguePour ("we", "us") operates leaguepour.com and provides software for bars and venues to run
@@ -90,9 +90,9 @@ export default function PrivacyPage() {
           <h2 className="font-display text-lg font-bold text-lp-text">Contact</h2>
           <p>
             Privacy questions:{" "}
-            <a href="mailto:hello@leaguepour.com" className="text-lp-accent hover:underline">
-              hello@leaguepour.com
-            </a>
+            <Link href="/contact" className="text-lp-accent hover:underline">
+              use our contact form
+            </Link>
             . See also our{" "}
             <Link href="/legal/terms" className="text-lp-accent hover:underline">
               Terms of Service

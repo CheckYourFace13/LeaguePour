@@ -12,6 +12,7 @@ import { buildQrDataUrl } from "@/lib/qr";
 import { getPublicSiteUrl } from "@/lib/site-url";
 import { formatDate, formatMoney } from "@/lib/utils";
 import { VenueFollowForm } from "./venue-follow-form";
+import { venueHasPublicContent } from "@/lib/seo/venue-public-content";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +30,9 @@ export async function generateMetadata({
   const cityIntent = city ? `${city} bar competitions, trivia tournaments, and dart league signups.` : "Venue competitions and signup.";
   const base = getPublicSiteUrl();
   const pageUrl = `${base}/v/${venue.slug}`;
+  const indexable = await venueHasPublicContent(venue.id);
   return {
+    ...(indexable ? {} : { robots: { index: false, follow: true } }),
     // { absolute } - a plain string here gets the root layout's "%s | LeaguePour" template
     // applied on top of the "| LeaguePour" already in this string, producing a doubled suffix.
     // Same bug found and fixed on the competition page during the customer-facing smoke test.

@@ -21,13 +21,22 @@ const VS_MEASUREMENT_ID = "G-FHCFV1532R";
 export function VenueSprocketGoogleTags() {
   useEffect(() => {
     if (document.getElementById("vs-gtag-src")) return; // already injected (e.g. fast client nav)
+    // Only on venuesprocket.com: shared surfaces (/app, auth) can also be reached on leaguepour.com,
+    // where LeaguePour's own tag is active - never report one visit to both properties.
+    if (window.location.hostname.replace(/^www\./, "") !== "venuesprocket.com") return;
 
     const w = window as unknown as { dataLayer?: unknown[]; gtag?: (...args: unknown[]) => void };
     w.dataLayer = w.dataLayer || [];
+    // Must push the `arguments` object, exactly like Google's snippet. gtag.js only treats
+    // arguments-style dataLayer entries as commands; an Array (what `...args` produces) is
+    // ignored, so the script loaded but no config/event ever reached GA4 - verified live
+    // 2026-10-24: Array entries, no _ga cookie, zero /g/collect requests on venuesprocket.com,
+    // while LeaguePour's arguments-based tag collected normally.
     w.gtag =
       w.gtag ||
-      function gtag(...args: unknown[]) {
-        w.dataLayer!.push(args);
+      function gtag() {
+        // eslint-disable-next-line prefer-rest-params
+        w.dataLayer!.push(arguments);
       };
     w.gtag("js", new Date());
     w.gtag("config", VS_MEASUREMENT_ID);

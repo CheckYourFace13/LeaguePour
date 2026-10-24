@@ -15,10 +15,17 @@ const steps = [
   { n: "4", title: "Upgrade when you're ready", body: "Upgrade to Pro when you need contracts, deposits, and BEOs. No pressure." },
 ];
 
+// Same plans and prices as /pricing. Starter was missing here, so /start?plan=starter showed the
+// free-plan copy while the signup link went to a $29 checkout.
 const plans = [
   { key: "free", name: "Free", price: "$0", highlight: false, features: ["Inquiry form", "Up to 10 leads/mo", "Lead dashboard", "Email notifications"] },
-  { key: "pro", name: "Pro", price: "$79/mo", highlight: true, features: ["Everything in Free", "Unlimited inquiries", "Proposals", "Contracts + e-signature", "Stripe deposits", "BEO builder", "Customer directory"] },
+  { key: "starter", name: "Starter", price: "$29/mo", highlight: false, features: ["Everything in Free", "Unlimited inquiries", "Lead pipeline", "Basic proposal builder", "Customer records"] },
+  { key: "pro", name: "Pro", price: "$79/mo", highlight: true, features: ["Everything in Starter", "Contracts + e-signature", "Stripe deposits", "BEO builder", "Customer directory"] },
 ];
+
+function selectedPlanKey(plan: string | undefined): string | null {
+  return plan && plan !== "free" && plans.some((p) => p.key === plan) ? plan : null;
+}
 
 export default async function VsStartPage({
   searchParams,
@@ -28,9 +35,7 @@ export default async function VsStartPage({
   const { plan } = await searchParams;
 
   // Build the signup URL — always goes to the shared venue signup, tagged for VS context
-  const signupHref = plan && plan !== "free"
-    ? `/signup/venue?from=vs&plan=${plan}`
-    : `/signup/venue?from=vs`;
+  const signupHref = selectedPlanKey(plan) ? `/signup/venue?plan=${selectedPlanKey(plan)}` : `/signup/venue`;
 
   const selectedPlan = plans.find((p) => p.key === plan);
   const selectedLabel = selectedPlan?.name ?? null;
@@ -124,7 +129,7 @@ export default async function VsStartPage({
                   ))}
                 </ul>
                 <Link
-                  href={p.key === "free" ? `/signup/venue?from=vs` : `/start?plan=${p.key}`}
+                  href={p.key === "free" ? `/signup/venue` : `/signup/venue?plan=${p.key}`}
                   className={[
                     "block w-full rounded-lg py-2.5 text-center text-sm font-bold transition-colors",
                     p.highlight
@@ -147,7 +152,7 @@ export default async function VsStartPage({
         {/* Value pitch */}
         <div className="text-center rounded-2xl border border-vs-border bg-vs-surface-2 p-8">
           <p className="font-display text-xl font-bold text-vs-text mb-2">
-            If VenueSprocket helps you book one extra party, it pays for itself.
+            Free to start. Paid plans from $29/mo.
           </p>
           <p className="text-vs-text-soft text-sm">
             Start free. Upgrade when you&apos;re ready to send contracts, collect deposits, and build BEOs.

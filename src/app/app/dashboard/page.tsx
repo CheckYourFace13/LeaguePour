@@ -5,6 +5,7 @@ import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import { redirect } from "next/navigation";
 import { createEventFromLead } from "@/lib/actions/vs";
 import { TrackView } from "@/components/analytics/track-view";
+import { VS_HOST } from "@/lib/vs-routing";
 
 function StatCard({ label, value, href }: { label: string; value: number | string; href?: string }) {
   const inner = (
@@ -29,6 +30,14 @@ export default async function VsDashboardPage({
 
   const { notice } = await searchParams;
   const venueId = access.venueId;
+  const [totalLeads, vsConfig] = await Promise.all([
+    prisma.privateEventLead.count({ where: { venueId } }),
+    prisma.venueVsConfig.findUnique({ where: { venueId }, select: { vsSubscriptionStatus: true } }),
+  ]);
+  // Count a paid conversion only once Stripe's webhook has recorded an active subscription - the
+  // ?notice=vs-subscribed return link alone is not proof of payment.
+  const vsSubscriptionConfirmed = ["active", "trialing"].includes(vsConfig?.vsSubscriptionStatus ?? "");
+  const inquiryUrl = `https://${VS_HOST}/v/${access.slug}/inquire`;
 
   const [
     newLeads,
@@ -72,8 +81,29 @@ export default async function VsDashboardPage({
 
   return (
     <div className="space-y-8">
-      {notice === "vs-subscribed" ? (
+      {notice === "vs-subscribed" && vsSubscriptionConfirmed ? (
         <TrackView event="subscription_activated" params={{ product: "vs" }} />
+      ) : null}
+      {totalLeads === 0 ? (
+        <div className="rounded-xl border border-[var(--vs-accent)]/40 bg-[var(--vs-surface-2)] px-5 py-5">
+          <TrackView event="inquiry_page_ready" params={{ product: "vs" }} />
+          <p className="text-xs font-bold uppercase tracking-widest text-[var(--vs-accent)]">First step</p>
+          <p className="mt-1 font-display text-2xl font-bold text-[var(--vs-text)]">Your inquiry page is live</p>
+          <p className="mt-1.5 text-sm text-[var(--vs-muted)]">
+            Share this link or add it to your website. Every submission shows up here as a lead.
+          </p>
+          <p className="mt-3 break-all rounded-lg border border-[var(--vs-border)] bg-[var(--vs-surface)] px-3 py-2 font-mono text-sm text-[var(--vs-text)]">
+            {inquiryUrl}
+          </p>
+          <div className="mt-3 flex flex-wrap gap-3 text-sm font-semibold">
+            <a href={inquiryUrl} target="_blank" rel="noopener" className="text-[var(--vs-accent)] hover:underline">
+              Open your inquiry page
+            </a>
+            <Link href="/app/settings" className="text-[var(--vs-accent)] hover:underline">
+              Copy the link or website button
+            </Link>
+          </div>
+        </div>
       ) : null}
       {notice === "vs-subscribed" ? (
         <div className="rounded-lg border border-green-600/30 bg-green-600/10 px-4 py-3 text-sm font-semibold text-[var(--vs-text)]">

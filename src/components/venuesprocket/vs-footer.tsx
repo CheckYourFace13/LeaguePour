@@ -7,7 +7,7 @@ const cols = [
     links: [
       { href: "/features", label: "Features" },
       { href: "/pricing", label: "Pricing" },
-      { href: "/start", label: "Start Free" },
+      { href: "/signup/venue", label: "Start Free" },
       { href: "/leaguepour", label: "LeaguePour" },
     ],
   },

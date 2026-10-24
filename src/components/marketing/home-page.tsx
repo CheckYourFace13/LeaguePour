@@ -99,8 +99,8 @@ export function HomePage() {
                   <Link href="/signup/venue">Start hosting events</Link>
                 </Button>
                 <Button size="lg" variant="secondary" className="w-full sm:w-auto" asChild>
-                  <Link href={marketingRoutes.pricing}>
-                    See pricing <ArrowRight className="size-4" />
+                  <Link href="/demo">
+                    See the demo <ArrowRight className="size-4" />
                   </Link>
                 </Button>
               </div>

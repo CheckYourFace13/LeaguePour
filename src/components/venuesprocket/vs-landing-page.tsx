@@ -36,7 +36,7 @@ export function VsLandingPage({ data }: { data: VsLandingData }) {
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Link
-              href="/start"
+              href="/signup/venue"
               className="inline-flex rounded-xl bg-vs-accent px-7 py-4 text-lg font-bold text-white hover:bg-vs-accent-hover transition-colors"
             >
               Start Free
@@ -116,7 +116,7 @@ export function VsLandingPage({ data }: { data: VsLandingData }) {
           </h2>
           <p className="text-vs-text-soft mb-6">{data.ctaSub}</p>
           <Link
-            href="/start"
+            href="/signup/venue"
             className="inline-flex rounded-xl bg-vs-accent px-8 py-4 text-lg font-bold text-white hover:bg-vs-accent-hover transition-colors"
           >
             Get Started Free

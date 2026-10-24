@@ -5,7 +5,8 @@ import { prisma } from "@/lib/db";
 import { getAllCompareSlugs } from "@/lib/seo/compare-pages";
 import { getSitemapCityGamePaths, getSitemapCityOnlyPaths } from "@/lib/seo/discovery-data";
 import { getIndexableFindPaths } from "@/lib/seo/render-find-page";
-import { getAllSoftwareSlugs } from "@/lib/seo/render-software-page";
+import { getAllSoftwareSlugs, REDIRECTED_SOFTWARE_SLUGS } from "@/lib/seo/render-software-page";
+import { PUBLIC_COMPETITION_STATUSES } from "@/lib/seo/venue-public-content";
 import { getAllOutreachCitySlugs } from "@/lib/seo/outreach-city-slugs";
 import { getPublicSiteUrl } from "@/lib/site-url";
 
@@ -32,11 +33,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     [venues, competitions, cityGamePaths, cityDiscoveryPaths] = await Promise.all([
-      prisma.venue.findMany({
-        where: { isDisabled: false },
-        select: { slug: true, updatedAt: true },
-        take: 2000,
-      }),
+      // Only venue hubs with real public competitions (see venue-public-content.ts); empty
+      // profiles stay reachable but noindexed, so they're not listed here either.
+      prisma.venue
+        .findMany({
+          where: { isDisabled: false, competitions: { some: { status: { in: [...PUBLIC_COMPETITION_STATUSES] } } } },
+          select: {
+            slug: true,
+            updatedAt: true,
+            competitions: { where: { status: { in: [...PUBLIC_COMPETITION_STATUSES] } }, select: { title: true, slug: true }, take: 25 },
+          },
+          take: 2000,
+        })
+        .then((rows) =>
+          rows
+            .filter((v) => v.competitions.some((c) => !isPlaceholderCompetition(c)))
+            .map((v) => ({ slug: v.slug, updatedAt: v.updatedAt })),
+        ),
       prisma.competition.findMany({
         where: {
           status: { in: ["SIGNUP_OPEN", "PUBLISHED", "IN_PROGRESS"] },
@@ -78,7 +91,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/poker-tournament-software",
     "/music-bingo-software",
     "/euchre-tournament-software",
-    ...getAllSoftwareSlugs().map((s) => `/software/${s}`),
+    ...getAllSoftwareSlugs().filter((s) => !REDIRECTED_SOFTWARE_SLUGS.has(s)).map((s) => `/software/${s}`),
     ...getAllCompareSlugs().map((s) => `/compare/${s}`),
     // Only /find pages with at least one real listing - empty ones are noindex (render-find-page.tsx).
     ...findPaths,

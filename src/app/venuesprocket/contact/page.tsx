@@ -63,7 +63,7 @@ export default function VsContactPage() {
                 VenueSprocket is a separate subscription from LeaguePour. If your venue has an active
                 LeaguePour subscription, the 50% bundle discount applies automatically when you start one.
               </p>
-              <Link href="/start" className="inline-flex rounded-lg border border-[var(--vs-accent)] px-4 py-2 text-sm font-semibold text-[var(--vs-accent)] hover:bg-[var(--vs-surface-2)]">
+              <Link href="/signup/venue" className="inline-flex rounded-lg border border-[var(--vs-accent)] px-4 py-2 text-sm font-semibold text-[var(--vs-accent)] hover:bg-[var(--vs-surface-2)]">
                 Start VenueSprocket →
               </Link>
             </div>

@@ -143,7 +143,7 @@ export default function SampleProposalContractGuide() {
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Link
-                href="/start"
+                href="/signup/venue"
                 className="inline-flex rounded-xl bg-vs-accent px-6 py-3 text-base font-bold text-white hover:bg-vs-accent-hover transition-colors"
               >
                 Start Free

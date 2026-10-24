@@ -149,7 +149,7 @@ export default async function GeneratedVsGuidePage({ params }: Props) {
           <div className="mt-14 rounded-2xl border border-vs-border bg-vs-surface p-8">
             <h2 className="font-display text-2xl font-bold text-vs-text">Run your private events with VenueSprocket</h2>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Link href="/start" className="rounded-lg bg-vs-accent px-5 py-3 text-center text-sm font-bold text-white hover:bg-vs-accent-hover">
+              <Link href="/signup/venue" className="rounded-lg bg-vs-accent px-5 py-3 text-center text-sm font-bold text-white hover:bg-vs-accent-hover">
                 Start Free
               </Link>
               <Link href="/guides" className="rounded-lg border border-vs-border-strong bg-vs-bg px-5 py-3 text-center text-sm font-bold text-vs-text hover:border-vs-accent hover:text-vs-accent">

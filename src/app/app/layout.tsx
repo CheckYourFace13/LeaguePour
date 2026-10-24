@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import { VsAppShell } from "@/components/venuesprocket/vs-app-shell";
+import { VenueSprocketGoogleTags } from "@/components/venuesprocket/vs-google-tags";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -40,6 +41,9 @@ export default async function VsAppLayout({ children }: { children: React.ReactN
 
   return (
     <VsAppShell venueName={venue.name}>
+      {/* The signed-in VS app had no analytics tag at all on venuesprocket.com (LP's root tag skips
+          that host), so subscription/pipeline events were never recorded. Host-guarded inside. */}
+      <VenueSprocketGoogleTags />
       {children}
     </VsAppShell>
   );

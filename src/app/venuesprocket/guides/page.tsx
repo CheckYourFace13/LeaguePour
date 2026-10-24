@@ -173,7 +173,7 @@ export default async function VsGuidesIndexPage() {
             workflow - no more piecing it together from email and Word documents.
           </p>
           <Link
-            href="/start"
+            href="/signup/venue"
             className="inline-flex rounded-xl bg-vs-accent px-8 py-4 text-lg font-bold text-white hover:bg-vs-accent-hover transition-colors"
           >
             Start free

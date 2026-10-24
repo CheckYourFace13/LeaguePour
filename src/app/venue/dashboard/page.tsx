@@ -57,6 +57,7 @@ export default async function VenueDashboardPage({
   const stripeConnectReady = connectDashboardStatus === "ready";
   const connectBannerCopy = CONNECT_STATUS_COPY[connectDashboardStatus];
 
+  const totalCompetitions = await prisma.competition.count({ where: { venueId: access.venueId } });
   const [openCount, regCount, campaignDrafts, pendingPayments, upcoming, activeCount] = await Promise.all([
     prisma.competition.count({
       where: { venueId: access.venueId, status: { in: ["SIGNUP_OPEN", "PUBLISHED"] } },
@@ -98,9 +99,27 @@ export default async function VenueDashboardPage({
   const nextLimit = nextPlan ? ACTIVE_COMPETITION_LIMITS_BY_PLAN[nextPlan.plan] : undefined;
   const showCapNote = canCreate && Number.isFinite(planLimit) && activeCount >= planLimit - 1 && !!nextPlan;
 
+  // First run: the first job is a competition, not payments. Free ($0) competitions need no Stripe
+  // setup at all (competition creation never checks Connect), so payments are framed as "when you
+  // charge entry fees" rather than a blocker.
+  const firstRun = totalCompetitions === 0;
+
   return (
     <div className="space-y-10 md:space-y-12">
-      {!stripeConnectReady && connectDashboardStatus !== "restricted" ? (
+      {firstRun && canCreate ? (
+        <div className="rounded-[10px] border border-lp-accent/40 bg-lp-accent/10 px-5 py-5">
+          <p className="lp-kicker text-lp-accent">First step</p>
+          <p className="mt-1 font-display text-2xl font-bold text-lp-text">Create your first competition</p>
+          <p className="mt-1.5 text-sm text-lp-text-soft">
+            Pick a game and format, set a date, and publish a signup page you can share or show as a QR
+            code. Free entry works right away; to charge entry fees, connect Stripe whenever you&apos;re ready.
+          </p>
+          <Button asChild size="lg" className="mt-4 w-full sm:w-auto">
+            <Link href={venueAppRoutes.createCompetition}>Create a competition</Link>
+          </Button>
+        </div>
+      ) : null}
+      {!firstRun && !stripeConnectReady && connectDashboardStatus !== "restricted" ? (
         <div className="flex flex-col gap-3 rounded-[10px] border border-amber-500/40 bg-amber-500/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="font-semibold text-lp-text">{connectBannerCopy.label}: entry fee payments aren&apos;t live yet</p>
@@ -110,6 +129,15 @@ export default async function VenueDashboardPage({
             <Link href={venueAppRoutes.profile}>{connectDashboardStatus === "not_connected" ? "Set up payments" : "Manage Stripe setup"}</Link>
           </Button>
         </div>
+      ) : null}
+      {firstRun && !stripeConnectReady && connectDashboardStatus !== "restricted" ? (
+        <p className="text-sm text-lp-muted">
+          Charging entry fees later?{" "}
+          <Link className="font-semibold text-lp-accent hover:underline" href={venueAppRoutes.profile}>
+            Set up Stripe payments
+          </Link>{" "}
+          - not needed for free competitions.
+        </p>
       ) : null}
       {connectDashboardStatus === "restricted" ? (
         <div className="flex flex-col gap-3 rounded-[10px] border border-red-500/40 bg-red-500/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">

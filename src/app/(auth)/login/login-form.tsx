@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { PasswordInput } from "@/components/auth/password-input";
 
 function safePostLoginPath(callbackUrl: string | null): string {
   if (!callbackUrl) return "/";
@@ -136,7 +137,9 @@ export function LoginForm({ callbackUrl, registered, reset }: LoginFormProps) {
         </div>
         <div>
           <Label htmlFor="password">Password</Label>
-          <Input id="password" name="password" type="password" required className="mt-1.5" autoComplete="current-password" />
+          <div className="mt-1.5">
+            <PasswordInput id="password" name="password" required autoComplete="current-password" />
+          </div>
         </div>
         <div className="text-right">
           <Link className="text-sm font-semibold text-lp-accent hover:underline" href="/forgot-password">

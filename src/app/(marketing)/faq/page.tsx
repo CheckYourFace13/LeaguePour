@@ -68,7 +68,7 @@ const faqs = [
   },
   {
     q: "How do I contact LeaguePour?",
-    a: "Email hello@leaguepour.com or use the contact form at leaguepour.com/contact. We typically reply within 1-2 business days.",
+    a: "Use the contact form at leaguepour.com/contact. We typically reply within 1-2 business days.",
   },
 ];
 
