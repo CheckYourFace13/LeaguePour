@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { runJob } from "@/lib/job-runs";
 import { getVsNotifyEmail, sendVsNudge } from "@/lib/lifecycle-nudges";
 import { withScheduledSlot } from "@/lib/job-claims";
+import { getVsEntitlements } from "@/lib/entitlements/vs";
 
 /**
  * Daily VenueSprocket lifecycle nudges - each check fires an email at most once per subject
@@ -51,7 +52,14 @@ async function checkLeadUntouched(): Promise<number> {
     take: 200,
   });
   let sent = 0;
+  // Untouched-lead reminders are a Pro feature (venues that already had them keep them - see
+  // lib/entitlements/vs.ts). The other nudges below are about documents already issued.
+  const followUps = new Map<string, boolean>();
   for (const l of leads) {
+    if (!followUps.has(l.venueId)) {
+      followUps.set(l.venueId, (await getVsEntitlements(l.venueId)).features.followUps);
+    }
+    if (!followUps.get(l.venueId)) continue;
     const email = await getVsNotifyEmail(l.venueId);
     if (!email) continue;
     const ok = await sendVsNudge({

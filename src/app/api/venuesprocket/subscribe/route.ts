@@ -16,6 +16,7 @@ import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import {
   createSubscriptionCheckoutUrl,
   getOrCreateBillingCustomer,
+  holdsSubscription,
   subscriptionIsActive,
 } from "@/lib/stripe/billing";
 import { isStripePaymentsConfigured } from "@/lib/stripe/env";
@@ -79,10 +80,20 @@ export async function POST(req: Request) {
       name: true,
       stripeBillingCustomerId: true,
       subscriptionStatus: true,
-      vsConfig: { select: { id: true } },
+      vsConfig: { select: { id: true, vsSubscriptionId: true, vsSubscriptionStatus: true } },
     },
   });
   if (!venue) return NextResponse.json({ error: "Venue not found" }, { status: 404 });
+  if (holdsSubscription(venue.vsConfig?.vsSubscriptionId, venue.vsConfig?.vsSubscriptionStatus)) {
+    return NextResponse.json(
+      {
+        error: "You already have a VenueSprocket subscription. Change plans from Billing in your dashboard.",
+        code: "already_subscribed",
+        manageUrl: "/app/settings",
+      },
+      { status: 409 },
+    );
+  }
 
   const userEmail = session?.user?.email ?? "";
   let customerId = venue.stripeBillingCustomerId;

@@ -371,7 +371,7 @@ export function LeaguePourDiscoveryLanding({
         <div className="mt-10 rounded-2xl border border-lp-accent/20 bg-lp-accent/10 p-8 text-center">
           <h2 className="font-display text-2xl font-bold">Run your next league night on LeaguePour</h2>
           <p className="mt-2 text-lp-muted">
-            Signups, payments, standings, and repeat players - with bracket automation improving on the roadmap.
+            Signups, payments, standings, and repeat players in one place.
           </p>
           <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Button asChild size="lg">

@@ -68,8 +68,8 @@ export const BRING_PLAYERS_BACK_PROMO = {
 };
 
 export const UPGRADE_PROMO = {
-  title: "Want more visibility for every league night?",
-  copy: "Paid venue plans help events get found, promoted, and repeated - while bracket automation continues to improve.",
+  title: "Running more than one night at a time?",
+  copy: "Every plan has every feature - plans differ only by how many competitions run at once, and a new venue's first one is free.",
   ctaHref: "/pricing",
   ctaLabel: "Compare plans",
 };
@@ -84,7 +84,7 @@ export const ROADMAP_ITEMS = [...BRACKET_ENGINE_ROADMAP];
 export const DEFAULT_FORMAT_SECTION = {
   title: "Established tournament formats",
   intro:
-    "Single elimination and round robin generate brackets/schedules automatically from your registrations. Custom keeps you in manual control for anything else. Other formats are on the roadmap - see status labels below.",
+    "Single elimination and round robin generate brackets/schedules automatically from your registrations. Custom keeps you in manual control for anything else. Other formats aren't automated - see the status labels below.",
   ctaHref: "/features/tournaments",
   ctaLabel: "Full format & bracket guide",
   formats: formatsWithPickerLabels().map((f) => ({

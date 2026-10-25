@@ -1,6 +1,9 @@
 import type { AuthoredBody } from "./types";
 
 export const lpEntryFeePricingStrategy: AuthoredBody = {
+  // 2026-10-25: corrected what the venue actually receives (Stripe's processing fee comes out of
+  // the venue's share on direct charges) and how payouts reach the bank.
+  revisedAt: "2026-10-25T00:00:00Z",
   description:
     "How to set an entry fee for a bar league or tournament: what the fee should cover, how to work backward from prizes and costs, and the mistakes that empty a bracket.",
   faq: [
@@ -73,6 +76,6 @@ export const lpEntryFeePricingStrategy: AuthoredBody = {
 <p>For more on picking a format to go with the price, see <a href="/guides/round-robin-vs-single-elimination">round robin vs. single elimination</a>.</p>
 
 <h2>Where LeaguePour fits</h2>
-<p>In LeaguePour you set an entry fee (or $0) on each competition, players pay when they register from their phone, and the money is paid out to your own bank account through Stripe Connect. See <a href="/pricing">pricing</a> for how the plans and fees work.</p>
+<p>In LeaguePour you set an entry fee (or $0) on each competition, players pay when they register from their phone, and the payments land in your own Stripe account (connected through Stripe Connect), which pays out to your bank on your Stripe payout schedule. See <a href="/pricing">pricing</a> for how the plans and fees work.</p>
 `.trim(),
 };

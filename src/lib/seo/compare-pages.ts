@@ -21,7 +21,6 @@ const VENUE_ROWS: DiscoveryComparisonRow[] = [
   { feature: "Local SEO event pages", generic: false, leaguepour: true },
   { feature: "City/game discovery", generic: false, leaguepour: true },
   { feature: "Repeat-player email campaigns", generic: false, leaguepour: true },
-  { feature: "Sponsor & food/drink promo", generic: "Limited", leaguepour: true },
   { feature: "Purpose-built for bars & breweries", generic: false, leaguepour: true },
 ];
 
@@ -35,13 +34,13 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
     heroIntro:
       "Challonge is strong for general tournaments and brackets. LeaguePour is purpose-built for bars, breweries, restaurants, taprooms, and local venues that need signups, payments, and repeat customers, not just a bracket draw.",
     theirStrength:
-      "Challonge is a mature bracket platform with deep tournament formats, seeding tools, and a large community of organizers.",
+      "Challonge is a dedicated, widely used bracket and tournament tool. Its formats, features, and pricing change, so check its own site for what it offers today.",
     leaguePourFocus:
-      "LeaguePour focuses on paid signups, QR codes, venue hubs, local event discovery, repeat-player campaigns, sponsor/prize promotion, food/drink specials, and venue revenue - with automatic bracket generation for single elimination and round robin, and more bracket depth on the roadmap.",
+      "LeaguePour focuses on paid signups, QR codes, venue hubs, local event discovery, and repeat-player email campaigns - with automatic bracket generation for single elimination and round robin.",
     rows: [
       ...VENUE_ROWS,
-      { feature: "Bulk import & drag-drop seeding", generic: true, leaguepour: "Roadmap" },
-      { feature: "Embeddable bracket widgets", generic: true, leaguepour: "Roadmap" },
+      { feature: "Bulk import & drag-drop seeding", generic: "Check their site", leaguepour: false },
+      { feature: "Embeddable bracket widgets", generic: "Check their site", leaguepour: false },
     ],
     faqs: [
       {
@@ -50,7 +49,7 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
       },
       {
         q: "Does LeaguePour replace Challonge's bracket depth?",
-        a: "Challonge leads on seeding depth and exotic formats today. LeaguePour auto-generates Single elimination brackets and Round robin schedules from your registrations, with Custom for manual formats and double elimination, pool play, and Swiss on the roadmap - while signups, payments, venue hubs, and player discovery are live.",
+        a: "Not for every format. LeaguePour auto-generates Single elimination brackets and Round robin schedules from your registrations, and Custom lets you run any other format by hand. If you need other formats or advanced seeding, check what a dedicated bracket tool like Challonge offers today - LeaguePour's strength is the venue side: signups, payments, venue hubs, and player discovery.",
       },
     ],
   },
@@ -136,12 +135,11 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
       { feature: "Team & captain signup", generic: "Limited", leaguepour: true },
       { feature: "Bracket management", generic: false, leaguepour: true },
       { feature: "Venue competition hub", generic: false, leaguepour: true },
-      { feature: "Lower fees on bar entry", generic: "Varies", leaguepour: true },
     ],
     faqs: [
       {
         q: "Does LeaguePour sell general admission tickets?",
-        a: "LeaguePour focuses on competition registration and entry fees, not broad event ticketing. Merch add-ons are on the roadmap.",
+        a: "LeaguePour focuses on competition registration and entry fees, not broad event ticketing.",
       },
     ],
   },

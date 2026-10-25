@@ -49,11 +49,11 @@ export const VS_COMPARE_FAQS: Record<string, CompareFaq[]> = {
   caterease: [
     {
       q: "Does VenueSprocket handle catering production?",
-      a: "No. VenueSprocket has no catering production sheets, kitchen workflow tools, or recipe and dietary tracking. Its BEO has free-text sections for food, beverage, allergies, staffing, and timeline that you fill in per event.",
+      a: "No. VenueSprocket has no catering production sheets, kitchen workflow tools, or recipe and dietary tracking. Its BEO has free-text sections for room setup, food, beverage, allergies, staffing, AV and special instructions that you fill in per event.",
     },
     {
       q: "Who should stay with catering-focused software?",
-      a: "Catering companies and operations where kitchen production is as important as the booking - off-premise catering, multiple simultaneous events, or detailed dietary and production tracking.",
+      a: "Catering companies and operations where kitchen production is as important as the booking - off-premise catering, multiple simultaneous events, or kitchen orders, recipes and packing lists run through the same system.",
     },
     {
       q: "Who is VenueSprocket a better fit for?",
@@ -79,7 +79,7 @@ export const VS_COMPARE_FAQS: Record<string, CompareFaq[]> = {
     },
     {
       q: "What does VenueSprocket do that's specific to venues?",
-      a: "Proposals built around a room fee and a food and beverage minimum, a BEO that starts from the event record with sections for food, beverage, setup, staffing, AV, allergies, and timeline, and a public inquiry page that asks for event type, date, guest count, and budget.",
+      a: "Proposals built around a room fee and a food and beverage minimum, a BEO that starts from the event record with sections for food, beverage, setup, staffing, AV, allergies, and special instructions, and a public inquiry page that asks for event type, date, guest count, and budget.",
     },
     {
       q: "Does VenueSprocket send automated follow-up emails to clients?",

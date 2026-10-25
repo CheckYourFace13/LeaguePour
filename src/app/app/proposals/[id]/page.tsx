@@ -3,6 +3,8 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
+import { getVsEntitlements } from "@/lib/entitlements/vs";
+import { VsLockedFeature } from "@/components/venuesprocket/vs-locked-feature";
 import { sendProposal } from "@/lib/actions/vs";
 import { TrackClick } from "@/components/analytics/track-click";
 import { VS_HOST } from "@/lib/vs-routing";
@@ -22,6 +24,7 @@ export default async function VsProposalPage({ params }: { params: Promise<{ id:
     },
   });
   if (!proposal) notFound();
+  const { features } = await getVsEntitlements(access.venueId);
 
   const event = proposal.privateEvent;
   const customerName = event.lead?.customerName ?? event.vsCustomer?.name ?? "Customer";
@@ -122,7 +125,10 @@ export default async function VsProposalPage({ params }: { params: Promise<{ id:
 
       {/* Actions */}
       <div className="flex flex-wrap gap-3">
-        {proposal.status === "DRAFT" && (
+        {proposal.status === "DRAFT" && !features.proposals && (
+          <VsLockedFeature feature="proposals" from={`/app/proposals/${proposal.id}`} />
+        )}
+        {proposal.status === "DRAFT" && features.proposals && (
           <form action={sendProposal.bind(null, proposal.id)}>
             <TrackClick event="proposal_sent" params={{ product: "vs", proposalId: proposal.id }}>
               <button type="submit" className="rounded-lg bg-[var(--vs-accent)] px-5 py-2.5 text-sm font-bold text-white hover:bg-[var(--vs-accent-hover)]">

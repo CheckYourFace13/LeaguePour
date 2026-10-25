@@ -8,8 +8,9 @@ import {
   RegistrationFormat,
   ScheduleKind,
 } from "@/generated/prisma/enums";
+import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
-import { ACTIVE_COMPETITION_LIMITS_BY_PLAN } from "@/lib/pricing";
+import { withActiveCompetitionSlot } from "@/lib/entitlements/lp-capacity";
 import { resolvePrimaryVenueAccess, venueStaffCanCreateAndPublish } from "@/lib/venue-permissions";
 import { pingIndexNow } from "@/lib/seo/indexnow";
 import { getPublicSiteUrl } from "@/lib/site-url";
@@ -82,74 +83,63 @@ export async function createCompetitionAction(formData: FormData) {
   const publish = formData.get("publishNow") === "on";
   const status = publish ? CompetitionStatus.SIGNUP_OPEN : CompetitionStatus.DRAFT;
 
-  const venueForPlan = await prisma.venue.findUnique({
-    where: { id: access.venueId },
-    select: { billingPlan: true },
-  });
-  if (!venueForPlan) redirect("/signup/venue");
-
-  // The plan limit is a concurrent-active-events cap ("Starter: 1-2 events" means 1-2 running
-  // at once, not 2 ever) - counting DRAFT or COMPLETED competitions against it was a real bug
-  // that could permanently gridlock a venue the moment they experimented with 3 drafts, or
-  // simply ran their 3rd tournament ever. Only competitions that are actually live/using
-  // capacity right now count: published-but-not-yet-open, open for signup, closed-but-not-
-  // started, and in progress. Drafts never count; completed/archived history never counts.
-  const activeCompetitionCount = await prisma.competition.count({
-    where: {
-      venueId: access.venueId,
-      status: {
-        in: [
-          CompetitionStatus.PUBLISHED,
-          CompetitionStatus.SIGNUP_OPEN,
-          CompetitionStatus.SIGNUP_CLOSED,
-          CompetitionStatus.IN_PROGRESS,
-        ],
+  const data = {
+    venueId: access.venueId,
+    title,
+    slug,
+    kind,
+    description,
+    signupOpenAt,
+    signupCloseAt,
+    startAt,
+    endAt,
+    entryFeeCents,
+    teamFormat,
+    teamSize,
+    captainRequired,
+    participantCap,
+    waitlistEnabled,
+    rules,
+    waiverText,
+    scheduleKind,
+    bracketKind,
+    recurringRule,
+    status,
+    publishedAt: publish ? new Date() : null,
+    prizeStructure: {
+      create: {
+        summary: prizeSummary,
+        payoutNotes,
       },
     },
-  });
+  } satisfies Prisma.CompetitionUncheckedCreateInput;
 
-  const planLimit = ACTIVE_COMPETITION_LIMITS_BY_PLAN[venueForPlan.billingPlan];
-  // The limit only ever blocks PUBLISHING - a venue can always draft freely regardless of plan,
-  // so setup/experimentation is never what gridlocks them.
-  if (publish && Number.isFinite(planLimit) && activeCompetitionCount >= planLimit) {
-    redirect("/venue/competitions/new?error=upgrade-plan");
+  // Drafts are always free to create. Publishing takes an active slot - checked and created under
+  // one per-venue lock (see lp-capacity.ts) so simultaneous publishes can't overshoot the limit.
+  // At capacity, the work isn't thrown away: it's saved as a draft the venue can publish once a
+  // slot frees up or after upgrading.
+  let comp: { id: string; slug: string };
+  let published = false;
+  if (publish) {
+    const result = await withActiveCompetitionSlot(access.venueId, {}, (tx) =>
+      tx.competition.create({ data, select: { id: true, slug: true } }),
+    );
+    if (result.ok) {
+      comp = result.value;
+      published = true;
+    } else {
+      comp = await prisma.competition.create({
+        data: { ...data, status: CompetitionStatus.DRAFT, publishedAt: null },
+        select: { id: true, slug: true },
+      });
+    }
+  } else {
+    comp = await prisma.competition.create({ data, select: { id: true, slug: true } });
   }
-
-  const comp = await prisma.competition.create({
-    data: {
-      venueId: access.venueId,
-      title,
-      slug,
-      kind,
-      description,
-      signupOpenAt,
-      signupCloseAt,
-      startAt,
-      endAt,
-      entryFeeCents,
-      teamFormat,
-      teamSize,
-      captainRequired,
-      participantCap,
-      waitlistEnabled,
-      rules,
-      waiverText,
-      scheduleKind,
-      bracketKind,
-      recurringRule,
-      status,
-      publishedAt: publish ? new Date() : null,
-      prizeStructure: {
-        create: {
-          summary: prizeSummary,
-          payoutNotes,
-        },
-      },
-    },
-  });
 
   revalidatePath("/venue/dashboard");
   revalidatePath("/venue/competitions");
-  if (publish) pingIndexNow(`${getPublicSiteUrl()}/c/${access.slug}/${comp.slug}`);
-  redirect(`/venue/competitions/${comp.id}?created=1${publish ? "&published=1" : ""}`);
+  if (published) pingIndexNow(`${getPublicSiteUrl()}/c/${access.slug}/${comp.slug}`);
+  const suffix = published ? "&published=1" : publish ? "&notice=at-capacity" : "";
+  redirect(`/venue/competitions/${comp.id}?created=1${suffix}`);
 }

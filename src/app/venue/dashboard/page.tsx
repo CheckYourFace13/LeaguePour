@@ -17,6 +17,7 @@ import { redirect } from "next/navigation";
 import { EmbedCopyButton } from "./embed-copy-button";
 import { CONNECT_STATUS_COPY, deriveConnectStatus } from "@/lib/stripe/connect-status";
 import { ACTIVE_COMPETITION_LIMITS_BY_PLAN, PLAN_DEFINITIONS } from "@/lib/pricing";
+import { activeCompetitionLimit, hasPaidCapacity, isLegacyFreeAllowance } from "@/lib/entitlements/lp-capacity";
 
 export default async function VenueDashboardPage({
   searchParams,
@@ -39,6 +40,8 @@ export default async function VenueDashboardPage({
       stripeChargesEnabled: true,
       stripePayoutsEnabled: true,
       stripeDetailsSubmitted: true,
+      createdAt: true,
+      subscriptionStatus: true,
       billingPlan: true,
     },
   });
@@ -90,14 +93,18 @@ export default async function VenueDashboardPage({
   ]);
 
   // Contextual upgrade note: only shown to people who can publish, only when the venue is at or
-  // one away from its plan's active-competition cap. Informational - doesn't change entitlements.
-  const plan = venueRow?.billingPlan;
-  const planLimit = plan ? ACTIVE_COMPETITION_LIMITS_BY_PLAN[plan] : Number.POSITIVE_INFINITY;
-  const planIndex = PLAN_DEFINITIONS.findIndex((d) => d.plan === plan);
-  const currentPlanName = planIndex >= 0 ? PLAN_DEFINITIONS[planIndex].name : null;
-  const nextPlan = planIndex >= 0 ? PLAN_DEFINITIONS[planIndex + 1] : undefined;
+  // one away from its active-competition capacity (lp-capacity.ts - the same rule the publish gate
+  // enforces). Informational - doesn't change entitlements.
+  const capacityLimit = venueRow ? activeCompetitionLimit(venueRow) : Number.POSITIVE_INFINITY;
+  const onFreeAllowance =
+    !!venueRow && !isLegacyFreeAllowance(venueRow) && !hasPaidCapacity(venueRow.subscriptionStatus);
+  const planIndex = onFreeAllowance ? -1 : PLAN_DEFINITIONS.findIndex((d) => d.plan === venueRow?.billingPlan);
+  const currentPlanName = onFreeAllowance ? "free plan" : planIndex >= 0 ? PLAN_DEFINITIONS[planIndex].name : null;
+  const nextPlan = PLAN_DEFINITIONS[planIndex + 1];
   const nextLimit = nextPlan ? ACTIVE_COMPETITION_LIMITS_BY_PLAN[nextPlan.plan] : undefined;
-  const showCapNote = canCreate && Number.isFinite(planLimit) && activeCount >= planLimit - 1 && !!nextPlan;
+  const showCapNote =
+    canCreate && Number.isFinite(capacityLimit) && activeCount >= capacityLimit - 1 && !!nextPlan && !!currentPlanName;
+  const competitionsWord = (n: number) => (n === 1 ? "active competition" : "active competitions");
 
   // First run: the first job is a competition, not payments. Free ($0) competitions need no Stripe
   // setup at all (competition creation never checks Connect), so payments are framed as "when you
@@ -154,9 +161,9 @@ export default async function VenueDashboardPage({
         <div className="flex flex-col gap-3 rounded-[10px] border border-lp-border bg-lp-surface/60 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="font-semibold text-lp-text">
-              {activeCount >= planLimit
-                ? `You're at your ${currentPlanName} limit of ${planLimit} active competitions`
-                : `${activeCount} of ${planLimit} active competitions on ${currentPlanName}`}
+              {activeCount >= capacityLimit
+                ? `You're at your ${currentPlanName} limit of ${capacityLimit} ${competitionsWord(capacityLimit)}`
+                : `${activeCount} of ${capacityLimit} ${competitionsWord(capacityLimit)} on ${onFreeAllowance ? "the free plan" : currentPlanName}`}
             </p>
             <p className="mt-0.5 text-sm text-lp-muted">
               Drafts never count, and finished events free up a slot.{" "}

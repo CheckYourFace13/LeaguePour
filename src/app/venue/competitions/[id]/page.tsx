@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { TrackView } from "@/components/analytics/track-view";
+import { TrackOnce } from "@/components/analytics/track-once";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,6 +41,8 @@ const RUNNABLE_BRACKET_KINDS: BracketKind[] = [BracketKind.SINGLE_ELIMINATION, B
 const notices: Record<string, string> = {
   duplicated: "Duplicate created as a draft with fresh signup dates - review and publish when ready.",
   saved: "Competition saved.",
+  "at-capacity":
+    "Saved as a draft: publishing it would go over your plan's active-competition limit. Finish or archive a live event, or upgrade in Settings → Billing, then publish.",
   "match-saved": "Match scores saved. Bracket view on Standings updates from these rows.",
   "match-added": "Match added - enter the score once it's played.",
   "match-label-required": "Add a short matchup label (e.g. \"Team A vs Team B\") before saving.",
@@ -137,7 +140,7 @@ export default async function CompetitionDetailPage({
         <TrackView event="competition_created" params={{ product: "lp", competitionId: comp.id, kind: comp.kind }} />
       ) : null}
       {published === "1" ? (
-        <TrackView event="competition_published" params={{ product: "lp", competitionId: comp.id, kind: comp.kind }} />
+        <TrackOnce event="competition_published" subject={comp.id} params={{ product: "lp", competitionId: comp.id, kind: comp.kind }} />
       ) : null}
       {notice && notices[notice] ? (
         <div

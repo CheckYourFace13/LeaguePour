@@ -11,6 +11,7 @@ import {
 import { revalidateRegistrationPaymentPaths } from "@/lib/stripe/revalidate-payment-paths";
 import { getStripe } from "@/lib/stripe/server";
 import { runJob } from "@/lib/job-runs";
+import { markConversionPending } from "@/lib/conversions";
 import { ownerEmails } from "@/lib/admin-auth";
 import { sendConnectReadyEmail, sendVsDepositReceiptEmail } from "@/lib/email";
 
@@ -23,6 +24,27 @@ function parseBillingPlan(raw: string | null | undefined): BillingPlan | null {
   if (Object.values(BillingPlan).includes(upper as BillingPlan)) return upper as BillingPlan;
   return null;
 }
+
+/**
+ * The plan the subscription is actually billing for, read from its price's lookup key
+ * (leaguepour_<plan>_<interval>). A plan change made in the Stripe billing portal swaps the price
+ * but leaves the metadata written at checkout untouched, so the price wins over metadata.plan.
+ */
+function planFromPriceLookupKey(sub: Stripe.Subscription): BillingPlan | null {
+  const key = sub.items?.data?.[0]?.price?.lookup_key ?? "";
+  const m = /^leaguepour_([a-z]+)_(monthly|annual)$/.exec(key);
+  return m ? parseBillingPlan(m[1]) : null;
+}
+
+// VenueSprocket tiers sell on the same price catalog (see api/venuesprocket/subscribe).
+const VS_PLAN_BY_PRICE_TIER: Partial<Record<BillingPlan, VsPlan>> = {
+  [BillingPlan.STARTER]: VsPlan.VS_STARTER,
+  [BillingPlan.GROWTH]: VsPlan.VS_PRO,
+  [BillingPlan.PRO]: VsPlan.VS_GROWTH,
+};
+
+/** A subscription in one of these states is still the venue's subscription of record. */
+const CURRENT_SUBSCRIPTION_STATUSES = new Set(["active", "trialing", "past_due", "unpaid"]);
 
 function parseVsPlan(raw: string | null | undefined): VsPlan | null {
   if (!raw) return null;
@@ -86,8 +108,26 @@ async function handleSubscriptionUpsert(sub: Stripe.Subscription) {
           ? "monthly"
           : null;
 
+  const pricePlan = planFromPriceLookupKey(sub);
+  const isCurrent = CURRENT_SUBSCRIPTION_STATUSES.has(sub.status);
+
   if (product === "vs") {
-    const vsPlan = parseVsPlan(sub.metadata?.vsPlan);
+    // An event for an older, no-longer-current subscription (e.g. one replaced by a newer
+    // checkout) must not overwrite the subscription the venue is actually on.
+    const existing = await prisma.venueVsConfig.findUnique({
+      where: { venueId },
+      select: { vsSubscriptionId: true, vsSubscriptionStatus: true },
+    });
+    if (
+      existing?.vsSubscriptionId &&
+      existing.vsSubscriptionId !== sub.id &&
+      CURRENT_SUBSCRIPTION_STATUSES.has(existing.vsSubscriptionStatus ?? "") &&
+      !isCurrent
+    ) {
+      console.warn("[stripe webhook] ignoring stale VS subscription event", sub.id);
+      return;
+    }
+    const vsPlan = (pricePlan ? VS_PLAN_BY_PRICE_TIER[pricePlan] : null) ?? parseVsPlan(sub.metadata?.vsPlan);
     await prisma.venueVsConfig.upsert({
       where: { venueId },
       create: {
@@ -117,7 +157,20 @@ async function handleSubscriptionUpsert(sub: Stripe.Subscription) {
     return;
   }
 
-  const plan = parseBillingPlan(sub.metadata?.plan);
+  const current = await prisma.venue.findUnique({
+    where: { id: venueId },
+    select: { subscriptionId: true, subscriptionStatus: true },
+  });
+  if (
+    current?.subscriptionId &&
+    current.subscriptionId !== sub.id &&
+    CURRENT_SUBSCRIPTION_STATUSES.has(current.subscriptionStatus ?? "") &&
+    !isCurrent
+  ) {
+    console.warn("[stripe webhook] ignoring stale LP subscription event", sub.id);
+    return;
+  }
+  const plan = pricePlan ?? parseBillingPlan(sub.metadata?.plan);
   await prisma.venue.updateMany({
     where: { id: venueId },
     data: {
@@ -128,7 +181,9 @@ async function handleSubscriptionUpsert(sub: Stripe.Subscription) {
       ...(periodEnd ? { subscriptionPeriodEnd: periodEnd } : {}),
       ...(interval ? { subscriptionInterval: interval } : {}),
       ...(customerId ? { stripeBillingCustomerId: customerId } : {}),
-      ...(plan ? { billingPlan: plan } : {}),
+      // Only a paid/grace subscription sets the plan. An incomplete first payment must not grant
+      // paid capacity (pre-cutover venues' capacity follows billingPlan - lp-capacity.ts).
+      ...(plan && isCurrent ? { billingPlan: plan } : {}),
     },
   });
 }
@@ -139,9 +194,12 @@ async function handleSubscriptionDeleted(sub: Stripe.Subscription) {
 
   const product = sub.metadata?.product === "vs" ? "vs" : "lp";
 
+  // Only the subscription of record ends access. Deleting an older/duplicate subscription
+  // must not reset a venue that is paying on a newer one. (A null id of record still resets -
+  // that's a venue whose id was never captured.)
   if (product === "vs") {
     await prisma.venueVsConfig.updateMany({
-      where: { venueId },
+      where: { venueId, OR: [{ vsSubscriptionId: sub.id }, { vsSubscriptionId: null }] },
       data: {
         vsSubscriptionId: null,
         vsSubscriptionStatus: "canceled",
@@ -153,7 +211,7 @@ async function handleSubscriptionDeleted(sub: Stripe.Subscription) {
   }
 
   await prisma.venue.updateMany({
-    where: { id: venueId },
+    where: { id: venueId, OR: [{ subscriptionId: sub.id }, { subscriptionId: null }] },
     data: {
       subscriptionId: null,
       subscriptionStatus: "canceled",
@@ -197,6 +255,15 @@ export async function POST(request: Request) {
               sub.metadata = { ...sub.metadata, ...session.metadata };
             }
             await handleSubscriptionUpsert(sub);
+            // A new paid subscription from our Checkout: arm its one-time conversion report
+            // (lib/conversions.ts). Insert-only, so a redelivered event can't re-arm it.
+            if ((sub.status === "active" || sub.status === "trialing") && sub.metadata?.venueId) {
+              await markConversionPending(sub.id, {
+                product: sub.metadata.product === "vs" ? "vs" : "lp",
+                plan: sub.metadata.vsPlan ?? sub.metadata.plan,
+                interval: sub.metadata.interval,
+              });
+            }
           }
         } else if (session.metadata?.type === "vs_deposit") {
           // VenueSprocket private event deposit - no Stripe API call needed here, everything
@@ -313,6 +380,9 @@ export async function POST(request: Request) {
       }
 
       // --- SaaS subscription lifecycle ---
+      // created: a subscription started outside our Checkout (e.g. in the Stripe dashboard) is
+      // otherwise invisible until its first update. Same guarded upsert as updated.
+      case "customer.subscription.created":
       case "customer.subscription.updated": {
         await handleSubscriptionUpsert(event.data.object as Stripe.Subscription);
         break;

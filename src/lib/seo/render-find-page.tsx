@@ -6,6 +6,7 @@ import { DISCOVERY_GAMES, getDiscoveryGameBySlug } from "@/lib/seo/discovery-gam
 import {
   fetchDiscoveryCompetitionsForKind,
   fetchDiscoveryVenuesForKind,
+  hasIndexableListings,
 } from "@/lib/seo/discovery-data";
 import {
   buildBreadcrumbJsonLd,
@@ -24,7 +25,6 @@ import {
   UPGRADE_PROMO,
   VENUE_WHY_ITEMS,
 } from "@/lib/seo/discovery-shared";
-import { discoveryRobots } from "@/lib/seo/should-index-discovery-page";
 
 const FIND_SLUG_MAP: Record<string, string> = {
   "dart-leagues": "darts",
@@ -50,10 +50,7 @@ export async function buildFindMetadata(findSlug: string): Promise<Metadata> {
   const game = resolveFindGame(findSlug);
   if (!game) return {};
   const path = game.findPath;
-  const [venues, competitions] = await Promise.all([
-    fetchDiscoveryVenuesForKind(game.kind, 1),
-    fetchDiscoveryCompetitionsForKind(game.kind, 1),
-  ]);
+  const indexable = await hasIndexableListings({ kind: game.kind });
   const title = `${game.patronHeadline} | LeaguePour`;
   const description = `Discover real ${game.pluralLabel.toLowerCase()} at partner bars. Bar tournament software with paid signups, QR codes, venue hubs, and local event discovery.`;
 
@@ -64,11 +61,9 @@ export async function buildFindMetadata(findSlug: string): Promise<Metadata> {
     openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }], title, description, url: path },
     // Index only once there's at least one real listing. The page's copy and FAQ are the same
     // template across every game, so on its own it's a thin page that promises "real venues" and
-    // shows none - noindex,follow until a venue or competition exists, then it flips automatically.
-    robots: discoveryRobots({
-      venueCount: venues.length,
-      competitionCount: competitions.length,
-    }),
+    // shows none - noindex,follow until a real upcoming competition exists (discovery-data.ts
+    // hasIndexableListings), then it flips automatically.
+    robots: { index: indexable, follow: true },
   };
 }
 
@@ -179,11 +174,7 @@ export async function getIndexableFindPaths(): Promise<string[]> {
     getAllFindSlugs().map(async (slug) => {
       const game = resolveFindGame(slug);
       if (!game) return null;
-      const [venues, competitions] = await Promise.all([
-        fetchDiscoveryVenuesForKind(game.kind, 1),
-        fetchDiscoveryCompetitionsForKind(game.kind, 1),
-      ]);
-      return venues.length > 0 || competitions.length > 0 ? `/find/${slug}` : null;
+      return (await hasIndexableListings({ kind: game.kind })) ? `/find/${slug}` : null;
     }),
   );
   return results.filter((p): p is string => p !== null);

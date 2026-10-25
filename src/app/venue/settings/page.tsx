@@ -8,7 +8,10 @@ import { marketingRoutes, venueAppRoutes } from "@/lib/routes";
 import { resolvePrimaryVenueAccess, venueStaffCanManageStaff } from "@/lib/venue-permissions";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
-import { TrackView } from "@/components/analytics/track-view";
+import { SubscriptionConversion } from "@/components/analytics/subscription-conversion";
+import { hasPendingConversion } from "@/lib/conversions";
+import { LP_FREE_ACTIVE_COMPETITIONS, isLegacyFreeAllowance } from "@/lib/entitlements/lp-capacity";
+import { ACTIVE_COMPETITION_LIMITS_BY_PLAN } from "@/lib/pricing";
 
 const notices: Record<string, string> = {
   subscribed: "Subscription activated - welcome aboard!",
@@ -33,9 +36,12 @@ export default async function VenueSettingsPage({
       subscriptionStatus: true,
       subscriptionPeriodEnd: true,
       stripeBillingCustomerId: true,
+      subscriptionId: true,
+      createdAt: true,
     },
   });
   if (!venue) redirect("/signup/venue");
+  const conversionPending = await hasPendingConversion(venue.subscriptionId);
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
@@ -44,10 +50,10 @@ export default async function VenueSettingsPage({
         <p className="mt-2 text-lp-muted">Core controls for profile, staff, billing, and competition defaults.</p>
       </div>
 
-      {/* Paid conversion only after Stripe's webhook has recorded the subscription, not on the
-          return link alone. */}
-      {notice === "subscribed" && ["active", "trialing"].includes(venue.subscriptionStatus ?? "") ? (
-        <TrackView event="subscription_activated" params={{ product: "lp" }} />
+      {/* Paid conversion: reported once per Stripe subscription, only after the webhook armed it
+          (lib/conversions.ts). Polls briefly right after Checkout in case the webhook is late. */}
+      {notice === "subscribed" || conversionPending ? (
+        <SubscriptionConversion product="lp" poll={notice === "subscribed"} />
       ) : null}
       {notice && notices[notice] ? (
         <div className="rounded-[10px] border border-lp-accent/35 bg-lp-accent/10 px-4 py-3 text-sm font-medium text-lp-text">
@@ -91,6 +97,9 @@ export default async function VenueSettingsPage({
           subscriptionStatus={venue.subscriptionStatus}
           subscriptionPeriodEnd={venue.subscriptionPeriodEnd}
           hasBillingCustomer={Boolean(venue.stripeBillingCustomerId)}
+          freeActiveLimit={
+            isLegacyFreeAllowance(venue) ? ACTIVE_COMPETITION_LIMITS_BY_PLAN[venue.billingPlan] : LP_FREE_ACTIVE_COMPETITIONS
+          }
         />
       </Card>
 

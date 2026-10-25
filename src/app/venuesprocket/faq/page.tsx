@@ -49,7 +49,7 @@ const groups: { title: string; faqs: Faq[] }[] = [
       },
       {
         q: "What happens if I forget to answer an inquiry?",
-        a: "If a new inquiry sits untouched for a couple of days, VenueSprocket emails your venue a reminder. The same daily check reminds you about proposals that haven't been accepted, contracts that haven't been signed, and deposits that haven't been paid.",
+        a: "On the Pro plan, if a new inquiry sits untouched for a couple of days, VenueSprocket emails your venue a reminder. On every plan, the same daily check reminds you about proposals that haven't been accepted, contracts that haven't been signed, and deposits that haven't been paid.",
       },
       {
         q: "Does VenueSprocket send automatic follow-up emails to my customers?",

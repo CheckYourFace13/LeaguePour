@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: { absolute: "Private Event Inquiry Form Template | VenueSprocket" },
+  title: { absolute: "Private Event Inquiry Form Template (Copy-Ready Fields) | VenueSprocket" },
   description:
-    "The fields every private event inquiry form needs, a filled-out example, required vs. optional fields, and what to do in the first hour after a lead comes in.",
+    "A copy-ready private event inquiry form template: the 13 fields to ask, which are required, a filled-out example, and what to do in the first hour after a lead comes in.",
   alternates: { canonical: "https://venuesprocket.com/guides/private-event-inquiry-form-template" },
   openGraph: {
     siteName: "VenueSprocket", images: [{ url: "/venuesprocket/opengraph-image", alt: "VenueSprocket - private event management software" }],
@@ -36,12 +36,28 @@ const jsonLd = {
       publisher: { "@type": "Organization", name: "VenueSprocket", url: "https://venuesprocket.com" },
       url: "https://venuesprocket.com/guides/private-event-inquiry-form-template",
       datePublished: "2026-08-19",
-      dateModified: "2026-08-19",
+      dateModified: "2026-10-25",
     },
   ],
 };
 
 type Field = { label: string; required: boolean; note?: string };
+
+const FIELD_TYPE: Record<string, string> = {
+  "Full name": "short text",
+  "Email address": "email",
+  "Phone number": "phone",
+  "Event type": "dropdown",
+  "Preferred event date": "date",
+  "Date flexibility": "multiple choice: exact date only / flexible within a week / flexible within a month",
+  "Estimated guest count": "number",
+  "Preferred time / duration": "short text",
+  "Space or room preference": "dropdown of your rooms",
+  "Budget range": "dropdown: under $1,000 / $1,000-2,500 / $2,500-5,000 / $5,000+",
+  "Catering / beverage needs": "paragraph",
+  "How did you hear about us?": "dropdown",
+  "Additional details / special requests": "paragraph",
+};
 
 const fields: Field[] = [
   { label: "Full name", required: true },
@@ -58,6 +74,11 @@ const fields: Field[] = [
   { label: "How did you hear about us?", required: false, note: "Useful for tracking what's actually generating leads" },
   { label: "Additional details / special requests", required: false },
 ];
+
+const copyReady = fields
+  .map((f, i) => `${i + 1}. ${f.label}${f.required ? " *" : ""} [${FIELD_TYPE[f.label] ?? "short text"}]`)
+  .concat(["", "* = required"])
+  .join("\n");
 
 export default function InquiryFormTemplateGuide() {
   return (
@@ -114,6 +135,17 @@ export default function InquiryFormTemplateGuide() {
           </section>
 
           <section className="mb-10">
+            <h2 className="font-display text-2xl font-bold text-vs-text mb-4">Copy-ready version</h2>
+            <p className="text-vs-text-soft leading-relaxed mb-5">
+              Paste this into Google Forms, your website builder&apos;s form block, or a printed sheet for the host
+              stand. The field type in brackets tells you which input to pick.
+            </p>
+            <div className="rounded-2xl border border-vs-border-strong bg-vs-surface-2 p-6 font-mono text-sm text-vs-text-soft leading-relaxed whitespace-pre-wrap">
+{copyReady}
+            </div>
+          </section>
+
+          <section className="mb-10">
             <h2 className="font-display text-2xl font-bold text-vs-text mb-4">Example: a filled-out inquiry</h2>
             <p className="text-vs-text-soft leading-relaxed mb-5">
               Here's what a completed inquiry looks like using the fields above, for a corporate
@@ -121,7 +153,7 @@ export default function InquiryFormTemplateGuide() {
             </p>
             <div className="rounded-2xl border border-vs-border-strong bg-vs-surface-2 p-6 font-mono text-sm text-vs-text-soft leading-relaxed whitespace-pre-wrap">
 {`NAME: Rachel Kim
-EMAIL: rachel.kim@brightpath-consulting.com
+EMAIL: rachel.kim@example.com
 PHONE: (555) 402-8871
 EVENT TYPE: Corporate holiday party
 PREFERRED DATE: December 12
@@ -164,24 +196,34 @@ holiday parties at [competitor] the last two years and want to try somewhere new
 
           <div className="mt-14 rounded-2xl border border-vs-border-strong bg-vs-surface-2 p-8">
             <h2 className="font-display text-xl font-bold text-vs-text mb-3">
-              Skip the manual form and follow-up
+              Use this form without building it
             </h2>
             <p className="text-vs-text-soft mb-5">
-              VenueSprocket gives your venue a public inquiry page with these fields built in - every
-              submission lands in a lead pipeline automatically, with follow-up reminders so inquiries
-              don't sit unanswered.
+              VenueSprocket gives your venue a free public inquiry page with the core fields built in -
+              name, email, phone, event type, date, guest count, budget and notes. Every submission shows up
+              in your dashboard, you get an email, and the customer gets a confirmation. (Untouched-lead
+              reminders are on the Pro plan.)
             </p>
-            <Link
-              href="/private-event-booking-software"
-              className="inline-flex rounded-xl bg-vs-accent px-6 py-3 text-base font-bold text-white hover:bg-vs-accent-hover transition-colors"
-            >
-              See private event booking software →
-            </Link>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/signup/venue"
+                className="inline-flex rounded-xl bg-vs-accent px-6 py-3 text-base font-bold text-white hover:bg-vs-accent-hover transition-colors"
+              >
+                Create your free inquiry page →
+              </Link>
+              <Link
+                href="/private-event-booking-software"
+                className="inline-flex rounded-xl border border-vs-border-strong px-6 py-3 text-base font-semibold text-vs-text hover:border-vs-accent transition-colors"
+              >
+                How the booking workflow works
+              </Link>
+            </div>
           </div>
 
           <div className="mt-10 flex flex-wrap gap-4 text-sm">
             <Link href="/guides" className="font-semibold text-vs-accent hover:underline">← All guides</Link>
             <Link href="/private-event-booking-software" className="font-semibold text-vs-accent hover:underline">Private event booking software →</Link>
+            <Link href="/guides/how-to-structure-a-private-event-proposal-that-gets-signed-faster" className="font-semibold text-vs-accent hover:underline">Next: structure the proposal →</Link>
             <Link href="/guides/what-is-a-beo" className="font-semibold text-vs-accent hover:underline">What is a BEO? →</Link>
           </div>
         </div>

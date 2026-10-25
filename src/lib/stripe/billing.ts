@@ -149,9 +149,13 @@ export async function createSubscriptionCheckoutUrl(opts: {
 }
 
 /** Create a Stripe Customer Portal session for self-service plan management. */
-export async function createBillingPortalUrl(customerId: string, returnPath = "/venue/settings"): Promise<string> {
+export async function createBillingPortalUrl(
+  customerId: string,
+  returnPath = "/venue/settings",
+  returnOrigin?: string,
+): Promise<string> {
   const stripe = getStripe();
-  const base = getAppBaseUrl();
+  const base = (returnOrigin ?? getAppBaseUrl()).replace(/\/$/, "");
   const session = await stripe.billingPortal.sessions.create({
     customer: customerId,
     return_url: `${base}${returnPath}`,
@@ -183,4 +187,13 @@ export function subscriptionStatusLabel(status: string | null | undefined): stri
 
 export function subscriptionIsActive(status: string | null | undefined): boolean {
   return status === "active" || status === "trialing";
+}
+
+/**
+ * True while a venue already has a subscription of record for a product - paid, trialing, or in
+ * Stripe's payment-failure grace. A second Checkout would start a second, separately billed
+ * subscription, so plan changes for these venues go through the billing portal instead.
+ */
+export function holdsSubscription(subscriptionId: string | null | undefined, status: string | null | undefined): boolean {
+  return Boolean(subscriptionId) && ["active", "trialing", "past_due", "unpaid"].includes(status ?? "");
 }

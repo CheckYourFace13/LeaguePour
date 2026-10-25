@@ -4,8 +4,13 @@ import { prisma } from "@/lib/db";
 import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import { redirect } from "next/navigation";
 import { createEventFromLead } from "@/lib/actions/vs";
-import { TrackView } from "@/components/analytics/track-view";
+import { TrackOnce } from "@/components/analytics/track-once";
 import { VS_HOST } from "@/lib/vs-routing";
+import { VsPlan } from "@/generated/prisma/enums";
+import { effectiveVsPlan, planIncludes } from "@/lib/entitlements/vs";
+import { hasPendingConversion } from "@/lib/conversions";
+import { SubscriptionConversion } from "@/components/analytics/subscription-conversion";
+import { VS_PLAN_NAME } from "@/components/venuesprocket/vs-billing-panel";
 
 function StatCard({ label, value, href }: { label: string; value: number | string; href?: string }) {
   const inner = (
@@ -32,11 +37,15 @@ export default async function VsDashboardPage({
   const venueId = access.venueId;
   const [totalLeads, vsConfig] = await Promise.all([
     prisma.privateEventLead.count({ where: { venueId } }),
-    prisma.venueVsConfig.findUnique({ where: { venueId }, select: { vsSubscriptionStatus: true } }),
+    prisma.venueVsConfig.findUnique({
+      where: { venueId },
+      select: { vsSubscriptionStatus: true, vsSubscriptionId: true, vsPlan: true },
+    }),
   ]);
-  // Count a paid conversion only once Stripe's webhook has recorded an active subscription - the
-  // ?notice=vs-subscribed return link alone is not proof of payment.
-  const vsSubscriptionConfirmed = ["active", "trialing"].includes(vsConfig?.vsSubscriptionStatus ?? "");
+  // Paid conversion: reported once per Stripe subscription, only after the webhook armed it
+  // (lib/conversions.ts) - never from the ?notice=vs-subscribed return link alone.
+  const conversionPending = await hasPendingConversion(vsConfig?.vsSubscriptionId);
+  const vsPlanNow = effectiveVsPlan(vsConfig ?? null);
   const inquiryUrl = `https://${VS_HOST}/v/${access.slug}/inquire`;
 
   const [
@@ -81,12 +90,12 @@ export default async function VsDashboardPage({
 
   return (
     <div className="space-y-8">
-      {notice === "vs-subscribed" && vsSubscriptionConfirmed ? (
-        <TrackView event="subscription_activated" params={{ product: "vs" }} />
+      {notice === "vs-subscribed" || conversionPending ? (
+        <SubscriptionConversion product="vs" poll={notice === "vs-subscribed"} />
       ) : null}
       {totalLeads === 0 ? (
         <div className="rounded-xl border border-[var(--vs-accent)]/40 bg-[var(--vs-surface-2)] px-5 py-5">
-          <TrackView event="inquiry_page_ready" params={{ product: "vs" }} />
+          <TrackOnce event="inquiry_page_ready" subject={venueId} params={{ product: "vs" }} />
           <p className="text-xs font-bold uppercase tracking-widest text-[var(--vs-accent)]">First step</p>
           <p className="mt-1 font-display text-2xl font-bold text-[var(--vs-text)]">Your inquiry page is live</p>
           <p className="mt-1.5 text-sm text-[var(--vs-muted)]">
@@ -107,7 +116,11 @@ export default async function VsDashboardPage({
       ) : null}
       {notice === "vs-subscribed" ? (
         <div className="rounded-lg border border-green-600/30 bg-green-600/10 px-4 py-3 text-sm font-semibold text-[var(--vs-text)]">
-          You&apos;re subscribed — proposals, contracts, deposits, and BEOs are unlocked.
+          {vsPlanNow === VsPlan.VS_FREE
+            ? "Thanks - we're confirming your payment with Stripe. Your plan updates here within a minute."
+            : planIncludes(vsPlanNow, "contracts")
+              ? `You're on ${VS_PLAN_NAME[vsPlanNow]} - proposals, deposits, contracts and BEOs are unlocked.`
+              : `You're on ${VS_PLAN_NAME[vsPlanNow]} - unlimited inquiries, the lead pipeline and proposals are unlocked.`}
         </div>
       ) : null}
       <div>

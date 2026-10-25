@@ -8,6 +8,7 @@ import { DISCOVERY_GAMES, getDiscoveryGameBySlug } from "@/lib/seo/discovery-gam
 import {
   fetchDiscoveryCompetitionsForCity,
   fetchDiscoveryVenuesForCity,
+  hasIndexableListings,
 } from "@/lib/seo/discovery-data";
 import {
   buildBreadcrumbJsonLd,
@@ -34,7 +35,6 @@ import {
   VENUE_WHY_ITEMS,
   type DiscoveryRoutePrefix,
 } from "@/lib/seo/discovery-shared";
-import { discoveryRobots } from "@/lib/seo/should-index-discovery-page";
 
 const PREFIX_COPY: Record<
   DiscoveryRoutePrefix,
@@ -88,20 +88,15 @@ export async function buildCityDiscoveryMetadata(
     ? `Find ${game.pluralLabel.toLowerCase()} at ${bars}. Real venue listings and upcoming signups on LeaguePour - bar tournament software with paid signups, QR codes, and local discovery.`
     : `Find dart leagues, cornhole tournaments, trivia nights, and pool leagues at ${bars}. Bar tournament software, league management, paid signups, QR codes, venue hubs, and local event discovery.`;
 
-  const [venues, competitions] = await Promise.all([
-    fetchDiscoveryVenuesForCity(city, game?.kind, 1),
-    fetchDiscoveryCompetitionsForCity(city, game?.kind, 1),
-  ]);
+  const indexable = await hasIndexableListings({ city, kind: game?.kind });
 
   return {
     title: { absolute: title },
     description,
     alternates: { canonical: path },
     openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }], title, description, url: path },
-    robots: discoveryRobots({
-      venueCount: venues.length,
-      competitionCount: competitions.length,
-    }),
+    // Content-based: indexed only while it lists a real upcoming competition (discovery-data.ts).
+    robots: { index: indexable, follow: true },
   };
 }
 

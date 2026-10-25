@@ -30,7 +30,7 @@ export default function SignContractForm({ token, venueName }: { token: string; 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-2xl border border-[var(--vs-border)] bg-[var(--vs-surface)] p-7 space-y-5">
+    <form method="post" onSubmit={handleSubmit} className="rounded-2xl border border-[var(--vs-border)] bg-[var(--vs-surface)] p-7 space-y-5">
       <div>
         <p className="text-sm font-bold text-[var(--vs-text)] mb-1">Sign this contract</p>
         <p className="text-sm text-[var(--vs-muted)]">

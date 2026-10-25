@@ -25,7 +25,7 @@ function toDatetimeLocalValue(d: Date) {
 const builderErrorMessages: Record<string, string> = {
   title: "Add a title so players know which night this is.",
   dates: "Use valid dates for signup open/close and start/end.",
-  "upgrade-plan": "Publishing this would put you over your plan's active-events limit. Archive or wrap up another event first, or upgrade your plan.",
+  "upgrade-plan": "Publishing this would put you over your plan's active-competition limit. Finish or archive a live event, or upgrade in Settings → Billing, then publish.",
 };
 
 const kinds = [

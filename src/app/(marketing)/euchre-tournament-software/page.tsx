@@ -8,7 +8,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/euchre-tournament-software", {
   title: { absolute: "Euchre Tournament Software for Bars | LeaguePour" },
   description:
-    "Run euchre tournaments and euchre leagues at your bar with LeaguePour. Online signup, entry fees via Stripe, standings, and bracket management - no spreadsheets.",
+    "Euchre tournament software for bars: pair signup, Stripe entry fees, automatic round robin or bracket for fixed partners, season standings, and a worked 8-team example. Free to start.",
   alternates: { canonical: "/euchre-tournament-software" },
   keywords: [
     "euchre tournament software",
@@ -40,7 +40,7 @@ const jsonLd = {
         "Euchre tournament and league management software for bars. Run euchre events with team signup, entry fees, standings, and bracket generation.",
       offers: {
         "@type": "AggregateOffer",
-        lowPrice: "29",
+        lowPrice: "0",
         highPrice: "299",
         priceCurrency: "USD",
         offerCount: "4",
@@ -94,7 +94,7 @@ const features = [
   },
   {
     title: "Entry fees via Stripe",
-    body: "Collect tournament buy-ins automatically. Funds go directly to your venue's bank account - no cash envelopes, no end-of-night reconciliation headaches.",
+    body: "Collect tournament buy-ins automatically. Payments are charged on your own connected Stripe account - no cash envelopes, no end-of-night reconciliation headaches.",
   },
   {
     title: "Season standings",
@@ -167,7 +167,7 @@ export default function EuchreTournamentSoftwarePage() {
               {
                 n: 3,
                 title: "Run the event",
-                body: "Check in registered players, then press Start Tournament to generate the bracket or schedule automatically. Enter scores each round - standings and advancement update automatically.",
+                body: "Close signup, then press Start Tournament to generate the bracket or schedule automatically. Enter scores each round - standings and advancement update automatically.",
               },
               {
                 n: 4,
@@ -186,6 +186,44 @@ export default function EuchreTournamentSoftwarePage() {
               </li>
             ))}
           </ol>
+        </div>
+
+        <div className="mt-20">
+          <h2 className="font-display text-2xl font-bold">Worked example: an 8-team fixed-partner euchre night</h2>
+          <p className="mt-3 text-lp-muted leading-relaxed">Eight pairs, four tables, one evening. Here is what LeaguePour generates and what the night looks like. Timings are examples.</p>
+          <div className="mt-6 overflow-hidden rounded-xl border border-lp-border">
+            <table className="w-full text-sm">
+              <tbody>
+                {[
+                  ["Teams (fixed partners)", "8 pairs = 16 players"],
+                  ["Round robin: every team plays every other team", "28 games"],
+                  ["Tables needed per round", "4"],
+                  ["Rounds", "7"],
+                  ["At ~25 minutes a round", "About 3 hours"],
+                  ["Single elimination instead (8 teams)", "7 games over 3 rounds"],
+                ].map(([k, v], i) => (
+                  <tr key={k} className={i % 2 === 0 ? "bg-lp-surface/40" : ""}>
+                    <th scope="row" className="px-4 py-3 text-left font-medium text-lp-text-soft">{k}</th>
+                    <td className="px-4 py-3 text-right font-semibold text-lp-text">{v}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <ul className="mt-5 list-disc space-y-2 pl-5 text-sm text-lp-muted leading-relaxed">
+            <li>
+              <strong className="text-lp-text">Running progressive (rotating partners)?</strong> LeaguePour doesn&apos;t rotate partners for you. Create the night with the Custom format, take signups and entry fees as usual, and record each player&apos;s total by hand.
+            </li>
+            <li>
+              <strong className="text-lp-text">A season instead of one night?</strong> Keep one round robin competition for the season and enter each week&apos;s results; standings accumulate on the public page.
+            </li>
+            <li>
+              <strong className="text-lp-text">Odd number of pairs?</strong> Round robin gives one team a bye each round; in single elimination, byes go to the first teams in registration order.
+            </li>
+          </ul>
+          <p className="mt-5 text-sm">
+            <Link href="/guides/how-standings-and-points-work" className="font-semibold text-lp-accent hover:underline">How standings and points work</Link>{" · "}<Link href="/tools/round-robin-schedule-generator" className="font-semibold text-lp-accent hover:underline">Free round robin generator</Link>
+          </p>
         </div>
 
         <div className="mt-20">

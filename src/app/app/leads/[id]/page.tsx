@@ -4,6 +4,8 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import { updateLeadStatus, createEventFromLead } from "@/lib/actions/vs";
+import { getVsEntitlements } from "@/lib/entitlements/vs";
+import { VsLockedFeature } from "@/components/venuesprocket/vs-locked-feature";
 
 const STATUSES = ["NEW", "CONTACTED", "PROPOSAL_SENT", "CONTRACT_SENT", "DEPOSIT_PENDING", "BOOKED", "COMPLETED", "LOST"];
 
@@ -18,6 +20,7 @@ export default async function VsLeadDetailPage({ params }: { params: Promise<{ i
     include: { privateEvent: true },
   });
   if (!lead) notFound();
+  const { features } = await getVsEntitlements(access.venueId);
 
   return (
     <div className="space-y-6 max-w-2xl">
@@ -116,7 +119,8 @@ export default async function VsLeadDetailPage({ params }: { params: Promise<{ i
         {/* Update status */}
         <div>
           <p className="mb-2 text-sm font-medium text-[var(--vs-text)]">Update pipeline status</p>
-          <div className="flex flex-wrap gap-2">
+          {!features.pipeline ? <VsLockedFeature feature="pipeline" from={`/app/leads/${lead.id}`} /> : null}
+          <div className={features.pipeline ? "flex flex-wrap gap-2" : "hidden"}>
             {STATUSES.filter((s) => s !== lead.status).map((s) => (
               <form key={s} action={updateLeadStatus.bind(null, lead.id, s)}>
                 <button

@@ -140,7 +140,7 @@ export default function VsDemoPage() {
                     contacted, proposal sent, contract sent, deposit pending, booked.
                   </p>
                   <p>
-                    If a new lead sits untouched for a couple of days, VenueSprocket emails you a
+                    On Pro, if a new lead sits untouched for a couple of days, VenueSprocket emails you a
                     reminder. (Reminders go to your venue - VenueSprocket doesn&apos;t send automatic
                     follow-ups to the customer.)
                   </p>

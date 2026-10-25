@@ -9,7 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/dart-league-software", {
   title: { absolute: "Bar Dart League Management Software | LeaguePour" },
   description:
-    "Run dart leagues at your bar with LeaguePour. Online signup, team registration, entry fees via Stripe, standings, and bracket management - no spreadsheets needed.",
+    "Dart league software for bars: team signup by link or QR code, Stripe entry fees, an automatic round robin season schedule, standings, and a worked 6-team example. Free to start.",
   alternates: { canonical: "/dart-league-software" },
   keywords: [
     "dart league software",
@@ -42,7 +42,7 @@ const jsonLd = {
         "Dart league management software for bars. Run weekly dart leagues with team signup, entry fees, standings, and automatic bracket generation.",
       offers: {
         "@type": "AggregateOffer",
-        lowPrice: "29",
+        lowPrice: "0",
         highPrice: "299",
         priceCurrency: "USD",
         offerCount: "4",
@@ -83,7 +83,7 @@ const jsonLd = {
 
 const features = [
   { title: "Online team signup", body: "Solo, doubles, or captain-led teams - players register from their phone before they walk in." },
-  { title: "Entry fees via Stripe", body: "Collect league buy-ins automatically. Funds go directly to your venue's bank account." },
+  { title: "Entry fees via Stripe", body: "Collect league buy-ins automatically. Payments are charged on your own connected Stripe account and paid out on your Stripe schedule." },
   { title: "Standings & scoring", body: "Update scores after each round. Standings refresh automatically and display on your public page." },
   { title: "Bracket management", body: "Single elimination or round-robin - set it once when you create the league, and LeaguePour builds the bracket or schedule automatically." },
   { title: "Email alerts", body: "Notify registered players about schedule changes, results, and the next league night." },
@@ -131,7 +131,7 @@ export default function DartLeagueSoftwarePage() {
             {[
               { n: 1, title: "Create your dart league", body: "Pick darts as your format, set team size, entry fee, max teams, and signup deadline." },
               { n: 2, title: "Share the signup link", body: "Post it on social, your bar TV, or print a QR code. Players register and pay online before league night." },
-              { n: 3, title: "Run the league", body: "Check in teams, enter scores each round, and let standings auto-update for all to see." },
+              { n: 3, title: "Run the league", body: "Start the league to generate the schedule, enter scores each round, and let standings auto-update for all to see." },
               { n: 4, title: "Fill the next season", body: "Email your opted-in players about the next league, and duplicate this one to re-open signup without rebuilding it." },
             ].map((s) => (
               <li key={s.n} className="flex gap-4">
@@ -147,6 +147,44 @@ export default function DartLeagueSoftwarePage() {
 
         {/* Conservative, sourced only from DartConnect's own public site (Oct 2026) - no pricing or
             feature claims we couldn't verify. Update or remove if their offering changes. */}
+        <div className="mt-20">
+          <h2 className="font-display text-2xl font-bold">Worked example: a 6-team, 10-week dart league</h2>
+          <p className="mt-3 text-lp-muted leading-relaxed">A Tuesday-night league on two boards. Here is what the schedule and money look like. The fee is an example.</p>
+          <div className="mt-6 overflow-hidden rounded-xl border border-lp-border">
+            <table className="w-full text-sm">
+              <tbody>
+                {[
+                  ["Teams", "6 teams of 4"],
+                  ["Round robin (everyone plays everyone once)", "15 matches over 5 weeks"],
+                  ["Play it twice for a 10-week season", "30 matches"],
+                  ["Matches per night", "3, across your 2 boards"],
+                  ["Season entry per team", "$80.00"],
+                  ["Venue receives per team ($80 minus the 5% platform fee)", "$76.00, before Stripe processing"],
+                ].map(([k, v], i) => (
+                  <tr key={k} className={i % 2 === 0 ? "bg-lp-surface/40" : ""}>
+                    <th scope="row" className="px-4 py-3 text-left font-medium text-lp-text-soft">{k}</th>
+                    <td className="px-4 py-3 text-right font-semibold text-lp-text">{v}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <ul className="mt-5 list-disc space-y-2 pl-5 text-sm text-lp-muted leading-relaxed">
+            <li>
+              <strong className="text-lp-text">Scoring</strong> Enter each match result (for example, legs won) after the night; standings recalculate automatically. LeaguePour doesn&apos;t do throw-by-throw scoring.
+            </li>
+            <li>
+              <strong className="text-lp-text">Playoffs</strong> When the regular season ends, create a single-elimination competition for the top teams - the bracket is generated for you.
+            </li>
+            <li>
+              <strong className="text-lp-text">Next season</strong> Duplicate the league to reopen signup with fresh dates instead of rebuilding it.
+            </li>
+          </ul>
+          <p className="mt-5 text-sm">
+            <Link href="/guides/how-to-run-a-dart-league-at-your-bar" className="font-semibold text-lp-accent hover:underline">How to run a dart league at your bar</Link>{" · "}<Link href="/guides/how-to-price-entry-fees-for-a-bar-league-or-tournament" className="font-semibold text-lp-accent hover:underline">How to price entry fees</Link>
+          </p>
+        </div>
+
         <div className="mt-20 rounded-2xl border border-lp-border bg-lp-surface p-7">
           <h2 className="font-display text-2xl font-bold">LeaguePour or DartConnect?</h2>
           <p className="mt-3 text-lp-muted leading-relaxed">
@@ -172,7 +210,7 @@ export default function DartLeagueSoftwarePage() {
               { q: "Can LeaguePour handle weekly dart leagues?", a: "Yes. Create a recurring dart league with set signup windows, team formats, and entry fees collected via Stripe - standings update each week." },
               { q: "How do players sign up?", a: "Players visit your public page, select the league, pay the entry fee, and get a confirmation email. No app download required." },
               { q: "Does it support doubles and team dart?", a: "Yes - solo, doubles with captain-led signup, or full roster invites for larger formats." },
-              { q: "What entry fees can I charge?", a: "Any amount. Stripe deposits funds directly to your venue's bank account. LeaguePour takes 5% of the entry fee plus $1.50 per player service fee." },
+              { q: "What entry fees can I charge?", a: "Any amount. Payments are charged on your own connected Stripe account. LeaguePour keeps 5% of the entry fee, the player pays a $1.50 service fee per registration at checkout, and Stripe's processing fee comes out of your share." },
             ].map((f) => (
               <details key={f.q} className="rounded-xl border border-lp-border bg-lp-surface/40 px-5 py-4">
                 <summary className="cursor-pointer list-none font-semibold text-lp-text [&::-webkit-details-marker]:hidden">{f.q}</summary>

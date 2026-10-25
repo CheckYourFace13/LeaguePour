@@ -7,7 +7,7 @@ import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 export const metadata: Metadata = {
   title: { absolute: "Pricing | VenueSprocket" },
   description:
-    "VenueSprocket pricing: start free with an inquiry form. Upgrade to Pro for contracts, deposits, BEOs, and a customer directory. Affordable plans for restaurants, bars, and breweries.",
+    "VenueSprocket pricing: start free with an inquiry form. Starter adds proposals and the lead pipeline; Pro adds contracts, deposits and BEOs. Affordable plans for restaurants, bars, and breweries.",
   alternates: { canonical: "https://venuesprocket.com/pricing" },
 };
 
@@ -62,7 +62,6 @@ const plans = [
       "Online contract with typed e-signature",
       "Stripe deposit collection",
       "BEO builder with print-ready view",
-      "Customer directory",
       "Untouched-lead follow-up reminders",
       "Mobile-friendly BEO view",
       "Deposit status tracking",

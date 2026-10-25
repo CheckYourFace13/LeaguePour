@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import { resolveSelectedPlan, signupBrandFromHost } from "@/lib/signup-plans";
+import { holdsSubscription } from "@/lib/stripe/billing";
 import { SignupVenueForm } from "@/components/auth/signup-venue-form";
 
 // Per-request: brand comes from the Host header and the signed-in state from the session.
@@ -25,7 +26,21 @@ export default async function SignupVenuePage({ searchParams }: { searchParams: 
   const access = await resolvePrimaryVenueAccess(session);
   if (access) {
     if (!plan) redirect(brand === "vs" ? "/app/dashboard" : "/venue/dashboard");
-    const venue = await prisma.venue.findUnique({ where: { id: access.venueId }, select: { name: true } });
+    const venue = await prisma.venue.findUnique({
+      where: { id: access.venueId },
+      select: {
+        name: true,
+        subscriptionId: true,
+        subscriptionStatus: true,
+        vsConfig: { select: { vsSubscriptionId: true, vsSubscriptionStatus: true } },
+      },
+    });
+    // Already paying for this product: plan changes happen in billing, never a second Checkout.
+    const subscribed =
+      brand === "vs"
+        ? holdsSubscription(venue?.vsConfig?.vsSubscriptionId, venue?.vsConfig?.vsSubscriptionStatus)
+        : holdsSubscription(venue?.subscriptionId, venue?.subscriptionStatus);
+    if (subscribed) redirect(brand === "vs" ? "/app/settings#billing" : "/venue/settings#billing");
     return (
       <SignupVenueForm
         brand={brand}

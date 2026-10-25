@@ -4,6 +4,8 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import { createProposal, createContract, createBeo } from "@/lib/actions/vs";
+import { getVsEntitlements } from "@/lib/entitlements/vs";
+import { VsLockedFeature } from "@/components/venuesprocket/vs-locked-feature";
 
 export default async function VsEventDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -24,6 +26,8 @@ export default async function VsEventDetailPage({ params }: { params: Promise<{ 
     },
   });
   if (!event) notFound();
+  const { features } = await getVsEntitlements(access.venueId);
+  const from = `/app/events/${event.id}`;
 
   const latestProposal = event.proposals[0];
   const latestContract = event.contracts[0];
@@ -93,7 +97,9 @@ export default async function VsEventDetailPage({ params }: { params: Promise<{ 
 
         {/* Step 1: Proposal */}
         <Step n="1" title="Proposal" done={!!latestProposal} href={latestProposal ? `/app/proposals/${latestProposal.id}` : undefined}>
-          {!latestProposal ? (
+          {!latestProposal && !features.proposals ? (
+            <VsLockedFeature feature="proposals" from={from} />
+          ) : !latestProposal ? (
             <form action={createProposal.bind(null, event.id)}>
               <div className="space-y-3">
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -105,11 +111,14 @@ export default async function VsEventDetailPage({ params }: { params: Promise<{ 
                     <label className="text-xs text-[var(--vs-muted)]">Food/bev minimum ($)</label>
                     <input name="minimumSpend" type="number" step="0.01" defaultValue="0" className="mt-1 w-full rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-3 py-2 text-sm" />
                   </div>
-                  <div>
-                    <label className="text-xs text-[var(--vs-muted)]">Deposit amount ($)</label>
-                    <input name="depositAmount" type="number" step="0.01" defaultValue="250" className="mt-1 w-full rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-3 py-2 text-sm" />
-                  </div>
+                  {features.deposits ? (
+                    <div>
+                      <label className="text-xs text-[var(--vs-muted)]">Deposit amount ($)</label>
+                      <input name="depositAmount" type="number" step="0.01" defaultValue="250" className="mt-1 w-full rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-3 py-2 text-sm" />
+                    </div>
+                  ) : null}
                 </div>
+                {!features.deposits ? <VsLockedFeature feature="deposits" from={from} /> : null}
                 <button type="submit" className="rounded-lg bg-[var(--vs-accent)] px-4 py-2 text-sm font-bold text-white hover:bg-[var(--vs-accent-hover)]">
                   Create proposal →
                 </button>
@@ -126,7 +135,9 @@ export default async function VsEventDetailPage({ params }: { params: Promise<{ 
 
         {/* Step 2: Contract */}
         <Step n="2" title="Contract" done={latestContract?.status === "SIGNED"} href={latestContract ? `/app/contracts/${latestContract.id}` : undefined}>
-          {!latestContract ? (
+          {!latestContract && !features.contracts ? (
+            <VsLockedFeature feature="contracts" from={from} />
+          ) : !latestContract ? (
             latestProposal ? (
               <form action={createContract.bind(null, event.id, latestProposal.id)}>
                 <button type="submit" className="rounded-lg bg-[var(--vs-accent)] px-4 py-2 text-sm font-bold text-white hover:bg-[var(--vs-accent-hover)]">
@@ -166,7 +177,9 @@ export default async function VsEventDetailPage({ params }: { params: Promise<{ 
 
         {/* Step 4: BEO */}
         <Step n="4" title="BEO" done={latestBeo?.status === "FINAL"} href={latestBeo ? `/app/beos/${latestBeo.id}` : undefined}>
-          {!latestBeo ? (
+          {!latestBeo && !features.beos ? (
+            <VsLockedFeature feature="beos" from={from} />
+          ) : !latestBeo ? (
             <form action={createBeo.bind(null, event.id)}>
               <button type="submit" className="rounded-lg bg-[var(--vs-accent)] px-4 py-2 text-sm font-bold text-white hover:bg-[var(--vs-accent-hover)]">
                 Create BEO →

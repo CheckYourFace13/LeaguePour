@@ -250,8 +250,17 @@ export function startInProcessScheduler(): void {
  */
 async function publishAuthoredOnBoot(): Promise<void> {
   try {
-    const { publishAuthoredNow } = await import("./content-engine/publish");
+    const { publishAuthoredNow, applyAuthoredRevisions } = await import("./content-engine/publish");
     for (const brand of ["VS", "LP"] as const) {
+      // Editorial corrections to live guides arrive with a deploy too (authored revisedAt).
+      const revisions = await applyAuthoredRevisions(brand);
+      if (revisions.length) {
+        const text = revisions
+          .map((r) => (r.status === "revised" ? `revised: ${r.slug}` : `needs-revision: ${r.slug} (${r.failures.join(" ")})`))
+          .join("; ");
+        console.log(`[scheduler] boot revisions ${brand}: ${text}`);
+        await persistStatus(`content_engine_boot_revisions_${brand}`, `${new Date().toISOString()} ${text}`.slice(0, 900));
+      }
       const outcomes = await publishAuthoredNow(brand);
       const summary = outcomes
         .map((o) => (o.status === "skipped" ? `skipped (${o.reason})` : `${o.status}: ${o.title}`))

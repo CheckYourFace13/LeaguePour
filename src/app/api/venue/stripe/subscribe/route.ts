@@ -6,6 +6,7 @@ import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import {
   createSubscriptionCheckoutUrl,
   getOrCreateBillingCustomer,
+  holdsSubscription,
   subscriptionIsActive,
   type BillingInterval,
 } from "@/lib/stripe/billing";
@@ -38,11 +39,22 @@ export async function POST(req: Request) {
       id: true,
       name: true,
       stripeBillingCustomerId: true,
+      subscriptionId: true,
       subscriptionStatus: true,
       vsConfig: { select: { vsSubscriptionStatus: true } },
     },
   });
   if (!venue) return NextResponse.json({ error: "Venue not found" }, { status: 404 });
+  if (holdsSubscription(venue.subscriptionId, venue.subscriptionStatus)) {
+    return NextResponse.json(
+      {
+        error: "You already have a LeaguePour subscription. Change plans from Manage subscription in Settings.",
+        code: "already_subscribed",
+        manageUrl: "/venue/settings#billing",
+      },
+      { status: 409 },
+    );
+  }
 
   const userEmail = session?.user?.email ?? "";
 

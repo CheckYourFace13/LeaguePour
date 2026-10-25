@@ -87,8 +87,8 @@ const venueTypes = [
 ];
 
 // Answers must match visible copy exactly - the FAQPage schema below is generated straight
-// from this array. Keep these in sync with actual plan gating on /pricing (Free plan doesn't
-// include proposals/contracts/deposits/BEOs; those start on Pro).
+// from this array. Keep these in sync with actual plan gating (lib/entitlements/vs.ts): proposals
+// and the pipeline start on Starter; deposits, contracts and BEOs start on Pro.
 const homeFaqs = [
   {
     q: "What does VenueSprocket manage?",
@@ -463,8 +463,8 @@ export default function VsSprocketHome() {
             Start free. Upgrade when you need contracts, deposits, and BEOs.
           </h2>
           <p className="text-vs-text-soft mb-8">
-            The free plan gets your inquiry form live. Upgrade to Pro for proposals, contracts,
-            Stripe deposits, BEOs, and a customer directory. No surprise fees.
+            The free plan gets your inquiry form live. Starter adds the lead pipeline and proposals;
+            Pro adds deposits, e-signature contracts and BEOs. No surprise fees.
           </p>
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link

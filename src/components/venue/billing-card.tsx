@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { PLAN_DEFINITIONS, formatUsdCents } from "@/lib/pricing";
+import { ACTIVE_COMPETITION_LIMITS_BY_PLAN, PLAN_DEFINITIONS, formatUsdCents } from "@/lib/pricing";
 import { subscriptionStatusLabel, subscriptionIsActive } from "@/lib/stripe/billing";
 import type { BillingPlan } from "@/generated/prisma/enums";
 
@@ -11,11 +11,13 @@ type Props = {
   subscriptionStatus: string | null;
   subscriptionPeriodEnd: Date | null;
   hasBillingCustomer: boolean;
+  /** Active competitions this venue can run without a subscription (lib/entitlements/lp-capacity.ts). */
+  freeActiveLimit: number;
 };
 
 type Interval = "monthly" | "annual";
 
-export function BillingCard({ currentPlan, subscriptionStatus, subscriptionPeriodEnd, hasBillingCustomer }: Props) {
+export function BillingCard({ currentPlan, subscriptionStatus, subscriptionPeriodEnd, hasBillingCustomer, freeActiveLimit }: Props) {
   const [interval, setInterval] = useState<Interval>("monthly");
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -62,7 +64,9 @@ export function BillingCard({ currentPlan, subscriptionStatus, subscriptionPerio
       <div>
         <p className="lp-kicker text-lp-accent">Subscription</p>
         <div className="mt-2 flex flex-wrap items-center gap-3">
-          <p className="font-display text-xl font-bold text-lp-text capitalize">{currentPlan.toLowerCase()} plan</p>
+          <p className="font-display text-xl font-bold text-lp-text capitalize">
+            {isActive || needsPaymentFix ? `${currentPlan.toLowerCase()} plan` : "No subscription"}
+          </p>
           <span
             className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
               isActive
@@ -100,9 +104,9 @@ export function BillingCard({ currentPlan, subscriptionStatus, subscriptionPerio
       ) : (
         <div className="space-y-5">
           <p className="text-sm text-lp-muted">
-            {subscriptionStatus === "canceled"
-              ? "Your subscription has ended. Choose a plan below to reactivate."
-              : "Choose a plan to start your subscription and access all features."}
+            {subscriptionStatus === "canceled" ? "Your subscription has ended. " : ""}
+            Without a subscription you can run {freeActiveLimit} competition{freeActiveLimit === 1 ? "" : "s"} at a time,
+            with every feature. A plan raises how many run at once; nothing already live is ever unpublished.
           </p>
 
           <div className="flex gap-2">
@@ -129,7 +133,6 @@ export function BillingCard({ currentPlan, subscriptionStatus, subscriptionPerio
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {PLAN_DEFINITIONS.map((p) => {
               const price = interval === "monthly" ? p.monthlyCents : Math.round(p.annualCents / 12);
-              const isCurrent = p.plan === currentPlan;
               return (
                 <div
                   key={p.plan}
@@ -142,16 +145,20 @@ export function BillingCard({ currentPlan, subscriptionStatus, subscriptionPerio
                     <p className="font-mono text-lg font-bold text-lp-text">
                       {formatUsdCents(price)}<span className="text-xs font-normal text-lp-muted">/mo</span>
                     </p>
-                    <p className="text-xs text-lp-muted">{p.eventLimitLabel}</p>
+                    <p className="text-xs text-lp-muted">
+                      {Number.isFinite(ACTIVE_COMPETITION_LIMITS_BY_PLAN[p.plan])
+                        ? `Up to ${ACTIVE_COMPETITION_LIMITS_BY_PLAN[p.plan]} at once`
+                        : "Unlimited at once"}
+                    </p>
                   </div>
                   <Button
                     size="md"
-                    variant={isCurrent ? "secondary" : p.featured ? "primary" : "secondary"}
+                    variant={p.featured ? "primary" : "secondary"}
                     className="w-full"
                     onClick={() => subscribe(p.plan)}
                     disabled={loading !== null}
                   >
-                    {loading === p.plan ? "Loading…" : isCurrent ? "Current plan" : "Subscribe"}
+                    {loading === p.plan ? "Loading…" : "Subscribe"}
                   </Button>
                 </div>
               );

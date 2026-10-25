@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
@@ -13,6 +14,7 @@ import {
 } from "@/lib/email";
 import { VS_HOST } from "@/lib/vs-routing";
 import { logOperationalFailure } from "@/lib/operational-failure";
+import { getVsEntitlements, vsUpgradePath, type VsFeature } from "@/lib/entitlements/vs";
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -21,6 +23,16 @@ async function requireVenueAccess() {
   const access = await resolvePrimaryVenueAccess(session);
   if (!access) throw new Error("Unauthorized");
   return access;
+}
+
+/**
+ * Server-side plan gate for venue actions (see lib/entitlements/vs.ts). Runs inside the action, so
+ * a direct request to the action is gated exactly like the button. Guest-side actions below
+ * (acceptProposal, markProposalViewed, signContract) are deliberately never gated.
+ */
+async function requireVsFeature(venueId: string, feature: VsFeature, from: string) {
+  const { features } = await getVsEntitlements(venueId);
+  if (!features[feature]) redirect(vsUpgradePath(feature, from));
 }
 
 async function ensureVsConfig(venueId: string) {
@@ -119,6 +131,7 @@ export async function createPrivateEventLeadPublic(formData: FormData) {
 
 export async function updateLeadStatus(leadId: string, status: string) {
   const access = await requireVenueAccess();
+  await requireVsFeature(access.venueId, "pipeline", `/app/leads/${leadId}`);
   await prisma.privateEventLead.updateMany({
     where: { id: leadId, venueId: access.venueId },
     data: { status: status as never },
@@ -168,6 +181,8 @@ export async function createProposal(eventId: string, formData: FormData) {
   if (!event) throw new Error("Event not found");
 
   const depositAmount = Math.round(Number(formData.get("depositAmount") || 0) * 100);
+  await requireVsFeature(access.venueId, "proposals", `/app/events/${eventId}`);
+  if (depositAmount > 0) await requireVsFeature(access.venueId, "deposits", `/app/events/${eventId}`);
   const roomFee = Math.round(Number(formData.get("roomFee") || 0) * 100);
   const minimumSpend = Math.round(Number(formData.get("minimumSpend") || 0) * 100);
 
@@ -212,6 +227,7 @@ export async function createProposal(eventId: string, formData: FormData) {
 
 export async function sendProposal(proposalId: string) {
   const access = await requireVenueAccess();
+  await requireVsFeature(access.venueId, "proposals", `/app/proposals/${proposalId}`);
   const proposal = await prisma.vsProposal.findFirst({
     where: { id: proposalId, privateEvent: { venueId: access.venueId } },
     include: {
@@ -284,6 +300,7 @@ export async function markProposalViewed(token: string) {
 
 export async function createContract(eventId: string, proposalId?: string) {
   const access = await requireVenueAccess();
+  await requireVsFeature(access.venueId, "contracts", `/app/events/${eventId}`);
   const event = await prisma.privateEvent.findFirst({
     where: { id: eventId, venueId: access.venueId },
     include: { lead: true, vsCustomer: true },
@@ -342,6 +359,7 @@ ${vsConfig.contractTemplate ?? ""}`;
 
 export async function sendContract(contractId: string) {
   const access = await requireVenueAccess();
+  await requireVsFeature(access.venueId, "contracts", `/app/contracts/${contractId}`);
   const contract = await prisma.vsContract.findFirst({
     where: { id: contractId, privateEvent: { venueId: access.venueId } },
     include: {
@@ -396,6 +414,12 @@ export async function signContract(token: string, formData: FormData) {
     return { error: "All fields are required and you must agree to the terms." };
   }
 
+  // Recorded with the signature as the features page describes (the columns existed but were
+  // never written). First x-forwarded-for hop is the client behind the hosting proxy.
+  const h = await headers();
+  const ipAddress = h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || null;
+  const userAgent = h.get("user-agent")?.slice(0, 500) || null;
+
   try {
     await prisma.vsContract.update({
       where: { id: contract.id },
@@ -405,6 +429,8 @@ export async function signContract(token: string, formData: FormData) {
         signerEmail,
         typedSignature,
         signedAt: new Date(),
+        ipAddress,
+        userAgent,
       },
     });
 
@@ -431,6 +457,7 @@ export async function signContract(token: string, formData: FormData) {
 
 export async function createBeo(eventId: string) {
   const access = await requireVenueAccess();
+  await requireVsFeature(access.venueId, "beos", `/app/events/${eventId}`);
   const event = await prisma.privateEvent.findFirst({
     where: { id: eventId, venueId: access.venueId },
     include: { lead: true, vsCustomer: true, eventSpace: true },

@@ -4,8 +4,9 @@ import { prisma } from "@/lib/db";
 import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import { createBillingPortalUrl } from "@/lib/stripe/billing";
 import { isStripePaymentsConfigured } from "@/lib/stripe/env";
+import { LP_HOST, VS_HOST } from "@/lib/vs-routing";
 
-export async function POST() {
+export async function POST(req: Request) {
   if (!isStripePaymentsConfigured()) {
     return NextResponse.json({ error: "Stripe not configured" }, { status: 503 });
   }
@@ -24,7 +25,18 @@ export async function POST() {
   }
 
   try {
-    const url = await createBillingPortalUrl(venue.stripeBillingCustomerId);
+    // VenueSprocket's billing lives in /app on the domain the venue is signed in on (session
+    // cookies are per-domain); LeaguePour's stays on /venue/settings.
+    const body = (await req.json().catch(() => ({}))) as { product?: string };
+    const host = req.headers.get("host")?.split(":")[0]?.toLowerCase();
+    const url =
+      body.product === "vs"
+        ? await createBillingPortalUrl(
+            venue.stripeBillingCustomerId,
+            "/app/settings#billing",
+            host === LP_HOST ? `https://${LP_HOST}` : `https://${VS_HOST}`,
+          )
+        : await createBillingPortalUrl(venue.stripeBillingCustomerId);
     return NextResponse.json({ url });
   } catch (err) {
     console.error("[billing portal]", err);

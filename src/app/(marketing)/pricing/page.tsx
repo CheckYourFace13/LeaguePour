@@ -6,6 +6,7 @@ import { formatUsdCents, PLAN_DEFINITIONS } from "@/lib/pricing";
 import { TrackView } from "@/components/analytics/track-view";
 import { PricingPlanGrid } from "@/components/marketing/pricing-plan-grid";
 import { ACTIVE_COMPETITION_LIMITS_BY_PLAN } from "@/lib/pricing";
+import { LP_FREE_ACTIVE_COMPETITIONS } from "@/lib/entitlements/lp-capacity";
 import { PLATFORM_FEE_BPS, PLAYER_SERVICE_FEE_CENTS } from "@/lib/stripe/connect-fees";
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 
@@ -37,7 +38,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/pricing", {
   title: { absolute: "LeaguePour Pricing | Bar Event Registration Software Plans" },
   description:
-    "LeaguePour pricing: four plans that differ only by how many competitions you run at once, 2 months free on annual billing, and a clear breakdown of fees on paid registrations.",
+    "LeaguePour pricing: start free with one competition at a time, four plans that differ only by how many competitions you run at once, 2 months free on annual billing, and a clear fee breakdown.",
   alternates: { canonical: "/pricing" },
   openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
     title: "LeaguePour Pricing | Bar Event Registration Software",
@@ -63,6 +64,10 @@ const faqs: { q: string; a: string }[] = [
   {
     q: "What is the difference between the plans?",
     a: "Only how many competitions you can have running at the same time: up to 2 on Starter, 9 on Growth, 19 on Pro, and unlimited on Elite. Every feature - entry fees, QR signup, brackets, standings, email campaigns, staff accounts - is on every plan.",
+  },
+  {
+    q: "What can I do without a plan?",
+    a: "Everything, one competition at a time: a new venue can have 1 competition running at once without subscribing, plus unlimited drafts and finished events. Starter raises that to 2 at once. If a subscription ends, nothing already running is unpublished or deleted - the limit only applies when you publish another competition.",
   },
   {
     q: "What counts as a competition running at once?",
@@ -107,9 +112,10 @@ export default function PricingPage() {
         get 2 months free (~17% off) on annual billing.
       </p>
       <div className="mt-6 max-w-2xl rounded-[10px] border border-lp-border bg-lp-surface/60 px-5 py-4 text-base text-lp-text-soft">
-        <strong className="text-lp-text">Start without a plan:</strong> a new venue can create an account
-        and run up to 2 competitions at once (the Starter limit) before subscribing. Pick a plan when you
-        need more at once.
+        <strong className="text-lp-text">Start free:</strong> a new venue can run {LP_FREE_ACTIVE_COMPETITIONS}{" "}
+        competition at a time without a plan, with every feature, drafts unlimited. Subscribe when you want
+        more running at once - Starter runs {ACTIVE_COMPETITION_LIMITS_BY_PLAN.STARTER}. Venues that signed up
+        before October 26, 2026 keep the free allowance they started with.
       </div>
       <PricingPlanGrid
         plans={PLAN_DEFINITIONS.map((t) => ({

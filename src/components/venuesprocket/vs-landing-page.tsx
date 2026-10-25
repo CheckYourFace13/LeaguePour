@@ -76,6 +76,43 @@ export function VsLandingPage({ data }: { data: VsLandingData }) {
           </div>
         </div>
 
+        {data.example ? (
+          <div className="mb-16">
+            <h2 className="font-display text-2xl font-bold text-vs-text mb-3">{data.example.title}</h2>
+            <p className="text-vs-text-soft leading-relaxed mb-6">{data.example.intro}</p>
+            <div className="overflow-hidden rounded-2xl border border-vs-border mb-6">
+              <table className="w-full text-sm">
+                <tbody>
+                  {data.example.rows.map((r, i) => (
+                    <tr key={r.label} className={i % 2 === 0 ? "bg-vs-surface" : "bg-vs-bg"}>
+                      <th scope="row" className="px-5 py-3 text-left font-medium text-vs-text-soft">{r.label}</th>
+                      <td className="px-5 py-3 text-right font-semibold text-vs-text tabular-nums">{r.value}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <ol className="list-decimal space-y-2 pl-5 text-vs-text-soft leading-relaxed">
+              {data.example.steps.map((s) => (
+                <li key={s}>{s}</li>
+              ))}
+            </ol>
+            {data.example.note ? <p className="mt-4 text-sm text-vs-muted">{data.example.note}</p> : null}
+          </div>
+        ) : null}
+
+        {/* Plans - matches the server-side gates in lib/entitlements/vs.ts */}
+        <div className="mb-16 rounded-2xl border border-vs-border bg-vs-surface-2 p-6 text-sm text-vs-text-soft leading-relaxed">
+          <p className="font-semibold text-vs-text mb-2">Which plan includes what</p>
+          <p>
+            <strong className="text-vs-text">Free:</strong> public inquiry page, lead dashboard, customer records and
+            inquiry notifications. <strong className="text-vs-text">Starter ($29/mo):</strong> adds the lead pipeline
+            and proposals. <strong className="text-vs-text">Pro ($79/mo):</strong> adds deposits, e-signature
+            contracts and BEOs. Every inquiry is received on every plan.{" "}
+            <Link href="/pricing" className="font-semibold text-vs-accent hover:underline">See pricing</Link>
+          </p>
+        </div>
+
         {/* Use cases */}
         <div className="mb-16">
           <h2 className="font-display text-2xl font-bold text-vs-text mb-5">

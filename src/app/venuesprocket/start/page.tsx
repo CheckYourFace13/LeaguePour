@@ -20,7 +20,7 @@ const steps = [
 const plans = [
   { key: "free", name: "Free", price: "$0", highlight: false, features: ["Inquiry form", "Up to 10 leads/mo", "Lead dashboard", "Email notifications"] },
   { key: "starter", name: "Starter", price: "$29/mo", highlight: false, features: ["Everything in Free", "Unlimited inquiries", "Lead pipeline", "Basic proposal builder", "Customer records"] },
-  { key: "pro", name: "Pro", price: "$79/mo", highlight: true, features: ["Everything in Starter", "Contracts + e-signature", "Stripe deposits", "BEO builder", "Customer directory"] },
+  { key: "pro", name: "Pro", price: "$79/mo", highlight: true, features: ["Everything in Starter", "Contracts + e-signature", "Stripe deposits", "BEO builder"] },
 ];
 
 function selectedPlanKey(plan: string | undefined): string | null {

@@ -8,7 +8,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/shuffleboard-league-software", {
   title: { absolute: "Shuffleboard League Software for Bars | LeaguePour" },
   description:
-    "Run shuffleboard leagues and tournaments at your bar with LeaguePour. Online signup, entry fees via Stripe, standings, and bracket management - no spreadsheets needed.",
+    "Shuffleboard league software for bars: singles or doubles signup, Stripe entry fees, an automatic round robin schedule, standings, and a worked one-table example. Free to start.",
   alternates: { canonical: "/shuffleboard-league-software" },
   keywords: [
     "shuffleboard league software",
@@ -40,7 +40,7 @@ const jsonLd = {
         "Shuffleboard league management software for bars. Run weekly shuffleboard leagues with team signup, entry fees, standings, and automatic bracket generation.",
       offers: {
         "@type": "AggregateOffer",
-        lowPrice: "29",
+        lowPrice: "0",
         highPrice: "299",
         priceCurrency: "USD",
         offerCount: "4",
@@ -79,7 +79,7 @@ const jsonLd = {
           name: "What entry fees can I charge for a shuffleboard league?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "You can set any entry fee amount. Stripe deposits the money directly to your venue's bank account. LeaguePour charges a 5% platform fee plus $1.50 per player service fee, which can be passed to players or absorbed by the venue.",
+            text: "You can set any entry fee amount. Payments are charged on your own connected Stripe account. LeaguePour keeps 5% of the entry fee, the player pays a $1.50 service fee per registration at checkout, and Stripe's processing fee comes out of your share.",
           },
         },
       ],
@@ -94,7 +94,7 @@ const features = [
   },
   {
     title: "Entry fees via Stripe",
-    body: "Collect league buy-ins automatically. Funds go directly to your venue's bank account within 2 business days.",
+    body: "Collect league buy-ins automatically. Payments are charged on your own connected Stripe account and paid out to your bank on your Stripe payout schedule.",
   },
   {
     title: "Standings & scoring",
@@ -167,7 +167,7 @@ export default function ShuffleboardLeagueSoftwarePage() {
               {
                 n: 3,
                 title: "Run the league",
-                body: "Check in teams on league night, enter scores round by round, and let standings auto-update for all players to see in real time.",
+                body: "Start the league to generate the schedule, enter scores round by round, and let standings auto-update for all players to see.",
               },
               {
                 n: 4,
@@ -186,6 +186,44 @@ export default function ShuffleboardLeagueSoftwarePage() {
               </li>
             ))}
           </ol>
+        </div>
+
+        <div className="mt-20">
+          <h2 className="font-display text-2xl font-bold">Worked example: a doubles league on one table</h2>
+          <p className="mt-3 text-lp-muted leading-relaxed">Most bars have one shuffleboard table, so the schedule is the constraint. Here is how a league fits. Timings are examples.</p>
+          <div className="mt-6 overflow-hidden rounded-xl border border-lp-border">
+            <table className="w-full text-sm">
+              <tbody>
+                {[
+                  ["Doubles teams", "8"],
+                  ["Round robin", "28 games"],
+                  ["Games per night on one table (~20 minutes each, 2.5 hours)", "About 7"],
+                  ["Weeks to play the full round robin", "4"],
+                  ["Entry per team for the season", "$40.00"],
+                  ["Venue receives per team ($40 minus the 5% platform fee)", "$38.00, before Stripe processing"],
+                ].map(([k, v], i) => (
+                  <tr key={k} className={i % 2 === 0 ? "bg-lp-surface/40" : ""}>
+                    <th scope="row" className="px-4 py-3 text-left font-medium text-lp-text-soft">{k}</th>
+                    <td className="px-4 py-3 text-right font-semibold text-lp-text">{v}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <ul className="mt-5 list-disc space-y-2 pl-5 text-sm text-lp-muted leading-relaxed">
+            <li>
+              <strong className="text-lp-text">Only one table?</strong> Cap the league at the number of games you can fit per night times the weeks you want to run - signup closes automatically at the cap.
+            </li>
+            <li>
+              <strong className="text-lp-text">End-of-season finals</strong> Create a single-elimination competition for the top four teams; the bracket is generated for you.
+            </li>
+            <li>
+              <strong className="text-lp-text">Double elimination</strong> Not automated - use the Custom format and record results by hand.
+            </li>
+          </ul>
+          <p className="mt-5 text-sm">
+            <Link href="/guides/round-robin-vs-single-elimination" className="font-semibold text-lp-accent hover:underline">Round robin vs. single elimination</Link>{" · "}<Link href="/tools/standings-calculator" className="font-semibold text-lp-accent hover:underline">Free standings calculator</Link>
+          </p>
         </div>
 
         <div className="mt-20">
@@ -235,7 +273,7 @@ export default function ShuffleboardLeagueSoftwarePage() {
               },
               {
                 q: "What entry fees can I charge?",
-                a: "Any amount. Stripe deposits funds directly to your venue's bank account. LeaguePour takes a 5% platform fee plus $1.50 per player service fee.",
+                a: "Any amount. Payments are charged on your own connected Stripe account. LeaguePour keeps 5% of the entry fee, the player pays a $1.50 service fee per registration at checkout, and Stripe's processing fee comes out of your share.",
               },
             ].map((f) => (
               <details key={f.q} className="rounded-xl border border-lp-border bg-lp-surface/40 px-5 py-4">

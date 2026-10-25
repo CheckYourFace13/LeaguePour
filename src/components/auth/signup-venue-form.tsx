@@ -43,12 +43,18 @@ async function postJson(url: string, body: unknown): Promise<{ status: number; d
   }
 }
 
-/** Starts the brand's Stripe Checkout. Returns the checkout URL, or null if it couldn't start. */
+/**
+ * Starts the brand's Stripe Checkout. Returns the checkout URL, a same-site manage path when the
+ * venue already has a subscription for that product (409 - plan changes go through billing, never
+ * a second Checkout), or null if it couldn't start.
+ */
 async function startCheckout(brand: SignupBrand, plan: SelectedPlan): Promise<string | null> {
   const res = await postJson(brand === "vs" ? "/api/venuesprocket/subscribe" : "/api/venue/stripe/subscribe", {
     plan: plan.key.toUpperCase(),
     interval: plan.interval,
   });
+  const manage = res?.data?.manageUrl;
+  if (res?.status === 409 && typeof manage === "string" && manage.startsWith("/")) return manage;
   const url = res?.data?.url;
   return typeof url === "string" && url.startsWith("https://") ? url : null;
 }
@@ -75,7 +81,7 @@ function ContinueToCheckout({ brand, plan, venueName, failed }: { brand: SignupB
     setError(null);
     const url = await startCheckout(brand, plan);
     if (url) {
-      trackEvent("checkout_started", { product: brand, plan: plan.key, interval: plan.interval });
+      if (url.startsWith("https://")) trackEvent("checkout_started", { product: brand, plan: plan.key, interval: plan.interval });
       window.location.href = url;
       return;
     }

@@ -37,6 +37,13 @@ const NO = "no" as const;
 const PARTIAL = "partial" as const;
 /** Competitor plan/pricing details change often and we haven't verified them - say so instead of guessing. */
 const CHECK = "Check current pricing";
+/**
+ * Competitor cells are only "yes" when the competitor's own website says so (checked 2026-10-25,
+ * see VS_COMPARE_CHECKED_ON). Anything their site doesn't describe is shown as not listed rather
+ * than guessed either way.
+ */
+const NOT_LISTED = "Not listed on their site";
+export const VS_COMPARE_CHECKED_ON = "October 25, 2026";
 
 export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
   tripleseat: {
@@ -53,16 +60,16 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       "VenueSprocket is designed to get a small restaurant, brewery, bar, taproom, or event space up and running with private event management in one afternoon — not one week. It focuses on the core workflow: inquiry, proposal, contract, deposit, and BEO.",
     featureRows: [
       { feature: "Public inquiry form", vs: YES, competitor: YES },
-      { feature: "Lead pipeline", vs: YES, competitor: YES },
-      { feature: "Proposal builder", vs: YES, competitor: YES },
-      { feature: "E-signature contracts", vs: YES, competitor: YES },
-      { feature: "Stripe deposit collection", vs: YES, competitor: YES },
-      { feature: "BEO builder", vs: YES, competitor: YES },
-      { feature: "Print-ready BEO (print or save as PDF from the browser)", vs: YES, competitor: YES },
-      { feature: "Customer directory", vs: YES, competitor: YES },
+      { feature: "Lead pipeline", vs: "Starter plan", competitor: YES },
+      { feature: "Proposal builder", vs: "Starter plan", competitor: YES },
+      { feature: "E-signature contracts", vs: "Pro plan", competitor: YES },
+      { feature: "Online deposit collection", vs: "Pro plan", competitor: YES },
+      { feature: "BEO builder", vs: "Pro plan", competitor: YES },
+      { feature: "Print-ready BEO (print or save as PDF from the browser)", vs: "Pro plan", competitor: NOT_LISTED },
+      { feature: "Customer directory", vs: YES, competitor: NOT_LISTED },
       { feature: "Companion product for leagues & game nights (LeaguePour)", vs: "Separate product, 50% off", competitor: NO },
-      { feature: "Automatic reminders to your team (stale leads, unsigned contracts, unpaid deposits)", vs: YES, competitor: YES },
-      { feature: "Automated follow-up email sequences to customers", vs: NO, competitor: YES },
+      { feature: "Automatic reminders to your team (stale leads, unsigned contracts, unpaid deposits)", vs: YES, competitor: NOT_LISTED },
+      { feature: "Automated follow-up email sequences to customers", vs: NO, competitor: NOT_LISTED },
       { feature: "Free plan", vs: YES, competitor: CHECK },
     ],
     vsBestFor: [
@@ -95,20 +102,19 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       "VenueSprocket covers the same core private event workflow. Venues that also want to run leagues and game nights to fill slow nights can add LeaguePour, a separate companion product, at a discount.",
     featureRows: [
       { feature: "Public inquiry form", vs: YES, competitor: YES },
-      { feature: "Lead pipeline", vs: YES, competitor: YES },
-      { feature: "Proposal builder", vs: YES, competitor: YES },
-      { feature: "E-signature contracts", vs: YES, competitor: YES },
-      { feature: "Deposit collection", vs: YES, competitor: YES },
-      { feature: "BEO builder", vs: YES, competitor: YES },
+      { feature: "Lead pipeline", vs: "Starter plan", competitor: YES },
+      { feature: "Proposal builder", vs: "Starter plan", competitor: YES },
+      { feature: "E-signature contracts", vs: "Pro plan", competitor: YES },
+      { feature: "Deposit collection", vs: "Pro plan", competitor: YES },
+      { feature: "BEO builder", vs: "Pro plan", competitor: YES },
       { feature: "Customer directory", vs: YES, competitor: YES },
       { feature: "Companion product for leagues & game nights (LeaguePour)", vs: "Separate product, 50% off", competitor: NO },
-      { feature: "Free plan", vs: YES, competitor: CHECK },
+      { feature: "Free plan", vs: YES, competitor: YES },
     ],
     vsBestFor: [
       "Restaurants, bars, breweries, and taprooms needing private event management",
       "Venues that also run leagues or trivia nights (via LeaguePour, a separate product)",
-      "Venues that want a simple free plan to start immediately",
-    ],
+          ],
     competitorBestFor2: [
       "Restaurants and bars that specifically want a purpose-built event management tool",
       "Venues familiar with or preferring Perfect Venue's existing interface",
@@ -130,11 +136,11 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       "VenueSprocket is narrower and faster to start. It focuses on the private event booking workflow that most restaurants, bars, and breweries actually need: inquiry form, pipeline, proposal, contract, deposit, and BEO — without the full event-planning toolkit that's often overkill for a local venue.",
     featureRows: [
       { feature: "Public inquiry form", vs: YES, competitor: YES },
-      { feature: "Lead pipeline", vs: YES, competitor: YES },
-      { feature: "Proposal builder", vs: YES, competitor: YES },
-      { feature: "E-signature contracts", vs: YES, competitor: YES },
-      { feature: "Deposit collection", vs: YES, competitor: YES },
-      { feature: "BEO builder", vs: YES, competitor: YES },
+      { feature: "Lead pipeline", vs: "Starter plan", competitor: YES },
+      { feature: "Proposal builder", vs: "Starter plan", competitor: YES },
+      { feature: "E-signature contracts", vs: "Pro plan", competitor: YES },
+      { feature: "Deposit collection", vs: "Pro plan", competitor: YES },
+      { feature: "BEO builder", vs: "Pro plan", competitor: YES },
       { feature: "Customer directory", vs: YES, competitor: YES },
       { feature: "Seating charts / floor plans", vs: NO, competitor: YES },
       { feature: "Companion product for leagues & game nights (LeaguePour)", vs: "Separate product, 50% off", competitor: NO },
@@ -163,18 +169,18 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
     summary:
       "Caterease is a long-established catering and event management platform with deep features for complex catering operations. VenueSprocket is a simpler, faster-to-start alternative built specifically for local venues — restaurants, bars, breweries, and taprooms — that don't need full catering management software.",
     competitorSummary:
-      "Caterease is a feature-rich catering and event management platform with decades of history. It covers catering-specific needs like production sheets, dietary tracking, and kitchen workflow alongside event management.",
+      "Caterease is a feature-rich catering and event management platform with decades of history. Alongside event management it covers catering-specific needs such as a kitchen display of the day's orders, recipes and packing lists.",
     vsSummary:
       "VenueSprocket skips catering-specific complexity and focuses on what local venues need: capturing private event inquiries, sending proposals, signing contracts, collecting deposits, and generating BEOs.",
     featureRows: [
       { feature: "Public inquiry form", vs: YES, competitor: YES },
-      { feature: "Lead pipeline", vs: YES, competitor: YES },
-      { feature: "Proposal builder", vs: YES, competitor: YES },
-      { feature: "E-signature contracts", vs: YES, competitor: YES },
-      { feature: "Deposit collection", vs: YES, competitor: YES },
-      { feature: "BEO builder", vs: YES, competitor: YES },
-      { feature: "Catering production sheets", vs: NO, competitor: YES },
-      { feature: "Kitchen workflow tools", vs: NO, competitor: YES },
+      { feature: "Lead pipeline", vs: "Starter plan", competitor: NOT_LISTED },
+      { feature: "Proposal builder", vs: "Starter plan", competitor: YES },
+      { feature: "E-signature contracts", vs: "Pro plan", competitor: YES },
+      { feature: "Online payment collection", vs: "Pro plan (deposits)", competitor: YES },
+      { feature: "BEO builder", vs: "Pro plan", competitor: YES },
+      { feature: "Kitchen display of the day's orders", vs: NO, competitor: YES },
+      { feature: "Recipes and packing lists", vs: NO, competitor: YES },
       { feature: "Companion product for leagues & game nights (LeaguePour)", vs: "Separate product, 50% off", competitor: NO },
       { feature: "Free plan", vs: YES, competitor: CHECK },
     ],
@@ -185,8 +191,8 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
       "Smaller operations where one person manages events",
     ],
     competitorBestFor2: [
-      "Catering companies with complex kitchen and production workflows",
-      "Hotels and large catering operations with dietary and production tracking needs",
+      "Catering companies that run kitchen orders, recipes and packing lists through the same system",
+      "Larger catering operations with many orders a day",
       "Operations where catering management is as important as event management",
     ],
     cta: "Try VenueSprocket free",
@@ -205,15 +211,15 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
     vsSummary:
       "VenueSprocket is built for local independent venues, not hotel property teams. It gets a small venue's private event booking page live quickly and manages the inquiry-to-BEO workflow — without hotel-specific complexity.",
     featureRows: [
-      { feature: "Public inquiry form", vs: YES, competitor: YES },
-      { feature: "Lead pipeline", vs: YES, competitor: YES },
-      { feature: "Proposal builder", vs: YES, competitor: YES },
-      { feature: "E-signature contracts", vs: YES, competitor: YES },
-      { feature: "Deposit collection", vs: YES, competitor: YES },
-      { feature: "BEO builder", vs: YES, competitor: YES },
+      { feature: "Public inquiry form", vs: YES, competitor: NOT_LISTED },
+      { feature: "Lead pipeline", vs: "Starter plan", competitor: YES },
+      { feature: "Proposal builder", vs: "Starter plan", competitor: YES },
+      { feature: "E-signature contracts", vs: "Pro plan", competitor: NOT_LISTED },
+      { feature: "Online payments", vs: "Pro plan (deposits)", competitor: YES },
+      { feature: "BEO builder", vs: "Pro plan", competitor: NOT_LISTED },
       { feature: "Hotel property management integration", vs: NO, competitor: YES },
       { feature: "Companion product for leagues & game nights (LeaguePour)", vs: "Separate product, 50% off", competitor: NO },
-      { feature: "Free plan", vs: YES, competitor: CHECK },
+      { feature: "Free plan", vs: YES, competitor: "No - free trial" },
     ],
     vsBestFor: [
       "Independent restaurants, bars, breweries, taprooms, and event spaces",
@@ -242,15 +248,14 @@ export const VS_COMPARE_DATA: Record<string, VsCompareData> = {
     vsSummary:
       "VenueSprocket is purpose-built for the venue and hospitality market. It's built around the language of private event booking — inquiries, proposals with room fees and minimum spends, deposits, and BEOs — with a mobile-friendly, print-ready BEO your team can pull up on event day. Venues that also want league and game-night tools can add LeaguePour, a separate companion product, at a discount.",
     featureRows: [
-      { feature: "Proposals and contracts", vs: YES, competitor: YES },
-      { feature: "Online payment collection", vs: YES, competitor: YES },
+      { feature: "Proposals and contracts", vs: "Starter / Pro", competitor: YES },
+      { feature: "Online payment collection", vs: "Pro plan (deposits)", competitor: YES },
       { feature: "Client/customer records", vs: YES, competitor: YES },
-      { feature: "Automated follow-up email sequences to customers", vs: NO, competitor: YES },
-      { feature: "BEO builder", vs: YES, competitor: NO },
-      { feature: "Venue-specific inquiry form", vs: YES, competitor: PARTIAL },
+      { feature: "Workflow automations", vs: "Reminders to your venue only", competitor: YES },
+      { feature: "BEO builder", vs: "Pro plan", competitor: NOT_LISTED },
       { feature: "Companion product for leagues & game nights (LeaguePour)", vs: "Separate product, 50% off", competitor: NO },
-      { feature: "Mobile-friendly, print-ready BEO for event day", vs: YES, competitor: NO },
-      { feature: "Purpose-built for hospitality venues", vs: YES, competitor: NO },
+      { feature: "Mobile-friendly, print-ready BEO for event day", vs: "Pro plan", competitor: NOT_LISTED },
+      { feature: "Who it's built for", vs: "Restaurants, bars and event venues", competitor: "Independent service businesses, venues among them" },
       { feature: "Free plan", vs: YES, competitor: CHECK },
     ],
     vsBestFor: [

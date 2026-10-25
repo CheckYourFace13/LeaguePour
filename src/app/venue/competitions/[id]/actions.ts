@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { BracketKind, CompetitionKind, CompetitionStatus, RegistrationFormat, ScheduleKind } from "@/generated/prisma/enums";
-import { ACTIVE_COMPETITION_LIMITS_BY_PLAN } from "@/lib/pricing";
+import { withActiveCompetitionSlot } from "@/lib/entitlements/lp-capacity";
 import {
   resolvePrimaryVenueAccess,
   venueStaffCanCreateAndPublish,
@@ -432,38 +432,10 @@ export async function updateCompetitionAction(formData: FormData) {
   // status only moves forward via the real lifecycle (signup close, in-progress, completed).
   const status = existing.status === CompetitionStatus.DRAFT && !publish ? CompetitionStatus.DRAFT : publish ? CompetitionStatus.SIGNUP_OPEN : existing.status;
 
-  // Same concurrent-active-events cap as creation (see new/actions.ts) - only enforced when
-  // this edit would newly publish a still-draft competition, and only counts other
-  // competitions (this one is excluded so re-saving an already-published event never
-  // double-counts itself against its own limit).
-  if (existing.status === CompetitionStatus.DRAFT && publish) {
-    const venueForPlan = await prisma.venue.findUnique({
-      where: { id: access.venueId },
-      select: { billingPlan: true },
-    });
-    if (venueForPlan) {
-      const activeCount = await prisma.competition.count({
-        where: {
-          venueId: access.venueId,
-          id: { not: competitionId },
-          status: {
-            in: [
-              CompetitionStatus.PUBLISHED,
-              CompetitionStatus.SIGNUP_OPEN,
-              CompetitionStatus.SIGNUP_CLOSED,
-              CompetitionStatus.IN_PROGRESS,
-            ],
-          },
-        },
-      });
-      const planLimit = ACTIVE_COMPETITION_LIMITS_BY_PLAN[venueForPlan.billingPlan];
-      if (Number.isFinite(planLimit) && activeCount >= planLimit) {
-        redirect(`/venue/competitions/${competitionId}/edit?error=upgrade-plan`);
-      }
-    }
-  }
-
-  await prisma.competition.update({
+  // Same active-competition capacity as creation (lp-capacity.ts) - only enforced when this edit
+  // newly publishes a still-draft competition, and it never counts this competition against
+  // itself, so re-saving an already-published event is never blocked.
+  const updateArgs = {
     where: { id: competitionId },
     data: {
       title,
@@ -499,13 +471,30 @@ export async function updateCompetitionAction(formData: FormData) {
         },
       },
     },
-  });
+  };
+  if (existing.status === CompetitionStatus.DRAFT && publish) {
+    const result = await withActiveCompetitionSlot(access.venueId, { excludeCompetitionId: competitionId }, (tx) =>
+      tx.competition.update(updateArgs),
+    );
+    if (!result.ok) {
+      // Keep the edits; it just stays a draft until a slot frees up or the venue upgrades.
+      await prisma.competition.update({
+        where: updateArgs.where,
+        data: { ...updateArgs.data, status: CompetitionStatus.DRAFT, publishedAt: null },
+      });
+      revalidatePath(`/venue/competitions/${competitionId}`);
+      redirect(`/venue/competitions/${competitionId}?notice=at-capacity`);
+    }
+  } else {
+    await prisma.competition.update(updateArgs);
+  }
 
   revalidatePath("/venue/competitions");
   revalidatePath(`/venue/competitions/${competitionId}`);
   revalidatePath("/venue/dashboard");
   revalidatePath(`/c/${access.slug}/${slug}`);
-  redirect(`/venue/competitions/${competitionId}?notice=saved`);
+  const newlyPublished = existing.status === CompetitionStatus.DRAFT && publish;
+  redirect(`/venue/competitions/${competitionId}?notice=saved${newlyPublished ? "&published=1" : ""}`);
 }
 
 /**

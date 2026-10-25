@@ -280,8 +280,8 @@ const faqs = [
     a: "The competition builder offers Single elimination and Round robin, both with automatic bracket/schedule generation and automatic standings, plus Custom for manual control of any other format. Double elimination, ladder, season, points, Swiss, pool play, best-of series, and consolation brackets are on the roadmap. See the format guide on this page for Live vs Roadmap labels.",
   },
   {
-    q: "Will LeaguePour match Challonge-style bracket depth?",
-    a: "That is the goal. LeaguePour already leads on venue signups, payments, discovery, and repeat-player marketing. The bracket engine roadmap covers auto-generated trees, seeding, pool play, Swiss, and best-of series - without sacrificing the bar-first workflow.",
+    q: "Is LeaguePour a replacement for a dedicated bracket tool?",
+    a: "For bar nights run as single elimination or round robin, yes: brackets, schedules, and standings are generated from your registrations. For other formats, run them by hand with Custom, or use a dedicated bracket tool alongside LeaguePour's signups and payments.",
   },
   {
     q: "Do entry fees go to LeaguePour or my venue?",
@@ -300,8 +300,8 @@ const faqs = [
     a: "No. LeaguePour handles competition signup, payments for entry fees, brackets, and player communication - not table reservations or kitchen tickets.",
   },
   {
-    q: "Does LeaguePour have every feature Challonge offers today?",
-    a: "Not yet. LeaguePour leads on venue operations - paid signups, QR codes, venue hubs, local discovery, and repeat-player campaigns. Bulk import, drag-and-drop seeding, station queues, and API access are on the roadmap. Check the comparison table for what is live vs planned.",
+    q: "What doesn't LeaguePour do that dedicated bracket tools might?",
+    a: "LeaguePour has no bulk import, drag-and-drop seeding, station queues, or public API, and it automates only single elimination and round robin. If those matter, check what a dedicated bracket tool such as Challonge offers today. LeaguePour's focus is venue operations: paid signups, QR codes, venue hubs, local discovery, and repeat-player campaigns.",
   },
   {
     q: "What do I need to get started?",
@@ -634,7 +634,7 @@ export default function TournamentsFeaturePage() {
             LeaguePour vs generic tournament software
           </h2>
           <p className="mt-3 max-w-2xl text-lp-muted leading-relaxed">
-            Challonge-style tools excel at drawing brackets for hobby tournaments. LeaguePour is venue-first: paid
+            Dedicated bracket tools like Challonge focus on drawing and running brackets. LeaguePour is venue-first: paid
             signups to your Stripe account, public event pages, staff score entry, and marketing that fills the next
             league night - not just tonight&apos;s final.
           </p>

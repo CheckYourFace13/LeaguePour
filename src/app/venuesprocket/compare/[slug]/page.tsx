@@ -2,7 +2,7 @@ import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { VS_COMPARE_DATA, type FeatureRow } from "@/lib/seo/vs-compare-data";
+import { VS_COMPARE_CHECKED_ON, VS_COMPARE_DATA, type FeatureRow } from "@/lib/seo/vs-compare-data";
 import { VS_COMPARE_FAQS } from "@/lib/seo/vs-compare-faqs";
 
 export async function generateStaticParams() {
@@ -173,8 +173,10 @@ export default async function VsComparePage({
               </table>
             </div>
             <p className="mt-3 text-xs text-vs-muted">
-              Feature availability subject to plan. Competitor features based on publicly available
-              information and may change. Verify with each vendor before making a purchasing decision.
+              VenueSprocket cells show the plan that includes each feature. {data.competitorName} cells
+              reflect what {data.competitorName}&apos;s own website described when we checked on{" "}
+              {VS_COMPARE_CHECKED_ON}; &quot;Not listed on their site&quot; means we couldn&apos;t confirm it there, not
+              that it doesn&apos;t exist. Features and pricing change - verify with each vendor before deciding.
             </p>
           </div>
 

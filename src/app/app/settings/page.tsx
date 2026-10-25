@@ -5,6 +5,7 @@ import { VS_HOST } from "@/lib/vs-routing";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { InquiryButtonSnippet } from "@/components/venuesprocket/inquiry-button-snippet";
+import { VsBillingPanel } from "@/components/venuesprocket/vs-billing-panel";
 
 async function saveVsSettings(formData: FormData) {
   "use server";
@@ -61,6 +62,8 @@ export default async function VsSettingsPage() {
         <h1 className="font-display text-3xl font-extrabold text-[var(--vs-text)]">Settings</h1>
         <p className="mt-1 text-[var(--vs-muted)]">VenueSprocket configuration for {venue?.name}</p>
       </div>
+
+      <VsBillingPanel venueId={access.venueId} />
 
       {/* Inquiry page link */}
       <div className="rounded-xl border border-[var(--vs-border-strong)] bg-[var(--vs-surface-2)] p-5">

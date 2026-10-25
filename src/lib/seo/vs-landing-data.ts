@@ -15,6 +15,14 @@ export type VsLandingData = {
   ctaSub: string;
   relatedLinks?: { slug: string; label: string }[];
   guideLinks?: { href: string; label: string }[];
+  /** A worked example using only what the product actually does (see content-engine/facts.ts). */
+  example?: {
+    title: string;
+    intro: string;
+    rows: { label: string; value: string }[];
+    steps: string[];
+    note?: string;
+  };
 };
 
 export const VS_LANDING_DATA: Record<string, VsLandingData> = {
@@ -236,13 +244,13 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
   "event-deposit-software": {
     slug: "event-deposit-software",
     title: "Event Deposit Software for Venues",
-    metaTitle: "Event Deposit & Payment Software for Private Events — VenueSprocket",
+    metaTitle: "Event Deposit Software: Collect Private Event Deposits Online | VenueSprocket",
     metaDescription:
-      "Collect private event deposits through Stripe without chasing checks. VenueSprocket makes deposit collection a one-step process after contract signing for restaurants, bars, and venues.",
+      "Event deposit software for restaurants, bars and venues: set the deposit on the proposal, the customer signs and pays by card, and the money lands in your own Stripe account. No VenueSprocket cut.",
     kicker: "Deposit collection",
     hero: "Collect deposits online. Stop chasing checks.",
     heroSub:
-      "VenueSprocket connects Stripe to your event workflow. After a customer signs the contract, they pay the deposit immediately through a Stripe payment link. No invoices, no checks, no chasing.",
+      "VenueSprocket connects Stripe to your event workflow. After a customer signs the contract, they get a link to pay the deposit by card through Stripe Checkout. No invoices, no checks, no chasing.",
     icon: "💳",
     why: "Collecting a deposit by check is a full-stop in the booking flow. Customers say they'll drop it off and then don't come back. Requiring an in-person payment loses bookings. VenueSprocket makes deposit payment a single step that happens right after contract signing, from the customer's phone.",
     features: [
@@ -256,7 +264,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
       },
       {
         title: "One-click payment after signing",
-        body: "After the customer signs the contract, they see the deposit payment step immediately. Most customers pay within the same session.",
+        body: "After the customer signs the contract, the deposit payment step comes next, on the same phone or laptop they signed on.",
       },
       {
         title: "Payment status in your dashboard",
@@ -280,7 +288,15 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     faqs: [
       {
         q: "Does VenueSprocket take a cut of the deposit?",
-        a: "No. VenueSprocket charges a flat monthly plan fee. Stripe charges their standard processing fee (typically 2.9% + $0.30 per transaction) directly. VenueSprocket takes no percentage of your event revenue.",
+        a: "No. VenueSprocket charges a flat monthly plan fee and takes no percentage of deposits or event revenue. The deposit is charged on your own connected Stripe account, so Stripe's processing fee for your account comes out of it - check your rate in Stripe.",
+      },
+      {
+        q: "Can I refund a deposit?",
+        a: "Yes, in full. An owner or manager can refund a paid deposit from the Payments page; it's refunded through Stripe and the customer gets a refund notice. Partial deposit refunds aren't supported in VenueSprocket - do those in your Stripe dashboard.",
+      },
+      {
+        q: "Which plan includes deposits?",
+        a: "Pro ($79/mo). Deposits come after a signed contract, which is also a Pro feature. A customer can always pay a deposit on a contract you already sent, even if your plan changes later.",
       },
       {
         q: "Do I need a Stripe account?",
@@ -291,8 +307,33 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
         a: "Not today. VenueSprocket collects the deposit online; the remaining balance is settled however you normally take final payment (at the event, invoice, or your POS).",
       },
     ],
+    example: {
+      title: "Worked example: a $500 deposit on a $2,000 event",
+      intro:
+        "A brewery books a 40-guest company party. Here's what the deposit looks like from proposal to bank. The amounts are examples.",
+      rows: [
+        { label: "Estimated event total on the proposal", value: "$2,000" },
+        { label: "Deposit you enter on the proposal", value: "$500" },
+        { label: "VenueSprocket fee on the deposit", value: "$0" },
+        { label: "Stripe processing", value: "Your Stripe rate" },
+        { label: "Balance due later (collected your usual way)", value: "$1,500" },
+      ],
+      steps: [
+        "Enter the $500 deposit when you build the proposal, so the customer sees it before they agree to anything.",
+        "The customer accepts the proposal, then signs the contract generated from it.",
+        "Right after signing they pay the $500 by card through Stripe Checkout, charged on your connected Stripe account.",
+        "The event shows the deposit as paid as soon as Stripe confirms it, and the customer gets a receipt email.",
+        "If the event falls through under your policy, you can refund the full deposit from the Payments page.",
+      ],
+      note: "VenueSprocket collects the deposit only - the remaining balance is settled at the event, by invoice, or through your POS.",
+    },
+    guideLinks: [
+      { href: "/guides/private-event-deposit-policies-that-protect-your-venue", label: "Private event deposit policies that protect your venue" },
+      { href: "/guides/event-cancellation-policy-examples-for-restaurants-and-venues", label: "Event cancellation policy examples" },
+      { href: "/guides/sample-proposal-and-contract", label: "Sample proposal and contract" },
+    ],
     cta: "Start collecting deposits online",
-    ctaSub: "Connect Stripe and receive your first deposit in the same session.",
+    ctaSub: "Start free with an inquiry page; deposits are on the Pro plan.",
     relatedLinks: [
       { slug: "event-contract-software", label: "Event contract software" },
       { slug: "beo-software", label: "BEO software" },
@@ -366,9 +407,9 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
   "restaurant-event-management-software": {
     slug: "restaurant-event-management-software",
     title: "Restaurant Event Management Software",
-    metaTitle: "Restaurant Event Management Software — Private Dining & Events — VenueSprocket",
+    metaTitle: "Restaurant Event Management Software for Private Dining | VenueSprocket",
     metaDescription:
-      "VenueSprocket helps restaurants manage private dining inquiries, send proposals, sign contracts, collect deposits, and create BEOs for birthday parties, corporate events, and private rooms.",
+      "Restaurant event management software for private dining: an inquiry page, proposals with a room fee and F&B minimum, e-signature contracts, deposits and a kitchen BEO. Free to start.",
     kicker: "For restaurants",
     hero: "Manage restaurant private events without the spreadsheet mess",
     heroSub:
@@ -394,7 +435,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
       },
       {
         title: "Kitchen-ready BEO",
-        body: "The BEO goes to your kitchen team with guest count, food and beverage details, course timing, allergies, and setup notes — generated from the same event record.",
+        body: "The BEO starts from the same event record (guest count, date, time, contact) and you add the food and beverage details, allergies, room setup, staffing and AV notes. Your kitchen works from the print-ready view.",
       },
       {
         title: "LeaguePour for slow nights",
@@ -421,6 +462,34 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
         q: "Is LeaguePour included?",
         a: "No. LeaguePour is a separate product with its own subscription at leaguepour.com. Active VenueSprocket subscribers get 50% off it.",
       },
+    ],
+    example: {
+      title: "Worked example: a 30-guest birthday dinner in your private room",
+      intro:
+        "Here is how one real-sized booking moves through VenueSprocket, using the numbers a restaurant would actually put on the proposal. The amounts are examples - you set your own.",
+      rows: [
+        { label: "Room fee", value: "$150" },
+        { label: "Food & beverage minimum", value: "$1,500" },
+        { label: "Estimated total on the proposal (room fee + minimum)", value: "$1,650" },
+        { label: "Deposit requested on the proposal", value: "$400" },
+        { label: "VenueSprocket fee on the deposit", value: "$0" },
+        { label: "Stripe card processing on the deposit", value: "Stripe's standard rate" },
+      ],
+      steps: [
+        "The guest fills in your inquiry page (event type, date, guest count, budget). The lead appears in your dashboard, you get an email, and the guest gets a confirmation.",
+        "You mark the lead Contacted, then convert it to an event - the date, times and guest count carry over.",
+        "You build the proposal with the room fee, food & beverage minimum and deposit, and send the link. The guest reviews and accepts it on their phone.",
+        "You generate the contract from the proposal and activate it for signing. The guest types their name to sign; the time, IP address and browser are recorded with it.",
+        "The guest pays the $400 deposit by card. It's charged on your own connected Stripe account, so the money is yours, minus Stripe's processing fee.",
+        "You create the BEO for the kitchen and floor: menu choices, drinks package, allergies, room setup and staffing, with a print-ready view for the night.",
+      ],
+      note: "Steps 2-3 need the Starter plan; the deposit, contract and BEO steps need Pro. There's no itemized menu builder - menu choices go on the BEO.",
+    },
+    guideLinks: [
+      { href: "/guides/how-to-structure-a-private-event-proposal-that-gets-signed-faster", label: "How to structure a private event proposal" },
+      { href: "/guides/private-event-deposit-policies-that-protect-your-venue", label: "Deposit policies that protect your venue" },
+      { href: "/guides/private-event-inquiry-form-template", label: "Private event inquiry form template" },
+      { href: "/guides/beo-template", label: "BEO template" },
     ],
     cta: "Start managing restaurant events",
     ctaSub: "Your inquiry form can be live today.",

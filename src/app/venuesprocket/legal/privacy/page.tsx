@@ -11,7 +11,7 @@ export default function VsPrivacyPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 md:px-6 md:py-20">
       <h1 className="font-display text-4xl font-extrabold text-[var(--vs-text)]">Privacy Policy</h1>
-      <p className="mt-3 text-sm text-[var(--vs-muted)]">Last updated: October 24, 2026</p>
+      <p className="mt-3 text-sm text-[var(--vs-muted)]">Last updated: October 25, 2026</p>
 
       <div className="mt-10 space-y-8 text-sm text-[var(--vs-text-soft)] leading-relaxed">
 
@@ -22,6 +22,9 @@ export default function VsPrivacyPage() {
           <p><strong className="text-[var(--vs-text)]">Event customers:</strong> When a customer submits an inquiry
           through your venue's inquiry page, we collect the information they provide (name, email, phone, event details).
           This data belongs to you as the venue and is used only to deliver the service.</p>
+          <p><strong className="text-[var(--vs-text)]">Contract signatures:</strong> When a customer signs a contract,
+          we store the name and typed signature they enter, the time of signing, and the IP address and browser
+          (user agent) the signature came from, as a record of the signature for the venue.</p>
           <p><strong className="text-[var(--vs-text)]">Usage data:</strong> We collect standard server logs and
           anonymized analytics to improve the platform. We do not sell this data.</p>
         </section>

@@ -11,7 +11,7 @@ Key facts:
 - Entry fees are collected with Stripe Checkout through Stripe Connect and paid out to the venue's own bank account, minus a platform fee. Free ($0) events are supported.
 - Staff enter scores from the venue dashboard; standings (3 points win / 1 tie / 0 loss) update automatically, with a fullscreen scoreboard view for a bar TV.
 - Email campaigns to a venue's opted-in player audience. SMS sending is not available.
-- Plans (Starter, Growth, Pro, Elite) differ only by how many competitions run at once (2, 9, 19, unlimited); staff accounts are unlimited. See https://leaguepour.com/pricing.
+- A new venue can run 1 competition at a time free, without a plan. Paid plans (Starter, Growth, Pro, Elite) differ only by how many competitions run at once (2, 9, 19, unlimited); staff accounts are unlimited. See https://leaguepour.com/pricing.
 - On paid entries the venue keeps the entry fee minus a 5% platform fee and the player pays a $1.50 service fee. Entry payments are charged on the venue's own Stripe account, so Stripe's card-processing fee is also deducted there. LeaguePour is not fee-free.
 - There is no waitlist (signup closes at the cap) and no check-in feature; bracket seeding is signup order.
 

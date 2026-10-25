@@ -225,6 +225,53 @@ export async function runContentEngine(
   return { status: "queued", slug, title: topic.title };
 }
 
+export type RevisionOutcome =
+  | { status: "revised"; slug: string }
+  | { status: "needs-revision"; slug: string; failures: string[] };
+
+/**
+ * Editorial corrections to guides that are already live. For each PUBLISHED row whose authored
+ * body declares `revisedAt` (authored/types.ts) and whose live copy was last modified before that
+ * date, re-run the full quality gate on the corrected body and, if it passes, replace the body,
+ * description and FAQ in place (slug, title and datePublished unchanged). The conditional update
+ * makes this safe when several instances boot at once: only one write lands, and a later boot is a
+ * no-op. Respects the kill switch; never touches guides without a `revisedAt`.
+ */
+export async function applyAuthoredRevisions(brand: Brand): Promise<RevisionOutcome[]> {
+  if (!(await getBoolSetting(KILL_SWITCH_KEY, true))) return [];
+  const authored = AUTHORED_BODIES[brand];
+  const keys = Object.keys(authored).filter((k) => authored[k].revisedAt);
+  if (keys.length === 0) return [];
+  const rows = await prisma.guide.findMany({
+    where: { brand, status: "PUBLISHED", topicKey: { in: keys } },
+    select: { id: true, slug: true, title: true, category: true, topicKey: true, bodyHtml: true, dateModified: true },
+  });
+  const outcomes: RevisionOutcome[] = [];
+  for (const row of rows) {
+    const a = authored[row.topicKey];
+    const revisedAt = new Date(a.revisedAt!);
+    if (row.dateModified && row.dateModified >= revisedAt) continue;
+    if (row.bodyHtml === a.bodyHtml) continue;
+    const otherTitles = (await allKnownTitles(brand)).filter((t) => t !== row.title);
+    const check = runQualityChecks(
+      brand,
+      { title: row.title, description: a.description, category: row.category, bodyHtml: a.bodyHtml, faq: a.faq ?? null },
+      otherTitles,
+      await internalPathsForBrand(brand),
+    );
+    if (!check.passed) {
+      outcomes.push({ status: "needs-revision", slug: row.slug, failures: check.failures });
+      continue;
+    }
+    const { count } = await prisma.guide.updateMany({
+      where: { id: row.id, OR: [{ dateModified: null }, { dateModified: { lt: revisedAt } }] },
+      data: { bodyHtml: a.bodyHtml, description: a.description, faq: a.faq ?? undefined, dateModified: new Date() },
+    });
+    if (count === 1) outcomes.push({ status: "revised", slug: row.slug });
+  }
+  return outcomes;
+}
+
 /**
  * Publishes every repo-authored article that's ready for `brand`, one runContentEngine() step at a
  * time - so every quality-gate check, the weekly cap, and the kill switch apply exactly as on a

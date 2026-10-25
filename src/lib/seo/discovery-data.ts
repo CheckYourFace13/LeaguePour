@@ -2,6 +2,7 @@ import type { CompetitionKind } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/db";
 import { getPublicSiteUrl } from "@/lib/site-url";
 import type { OutreachCityRecord } from "@/lib/seo/outreach-city-slugs";
+import { isPlaceholderCompetition } from "@/lib/seo/is-placeholder-competition";
 
 const ACTIVE_STATUSES = ["SIGNUP_OPEN", "PUBLISHED", "IN_PROGRESS"] as const;
 
@@ -37,6 +38,38 @@ function cityWhere(city: OutreachCityRecord) {
     city: { contains: city.name, mode: "insensitive" as const },
     state: { equals: city.state, mode: "insensitive" as const },
   };
+}
+
+/**
+ * Content-based indexing for discovery pages (city, city+game, /find/<game>): a page is worth
+ * indexing only when it actually lists something a player can sign up for - at least one active,
+ * upcoming competition at an enabled venue that isn't a placeholder ("Test", "Demo"...). A venue
+ * profile with nothing coming up, or a placeholder event, doesn't make a city page useful. Pages
+ * stay reachable either way (noindex,follow); nothing is hidden from venues or players, and the
+ * page flips to indexable on its own as soon as a real listing appears. The sitemap uses the same
+ * rule so it never lists a URL the page itself marks noindex.
+ */
+async function indexableCompetitions(where: { city?: OutreachCityRecord; kind?: CompetitionKind } = {}) {
+  const now = new Date();
+  const rows = await prisma.competition.findMany({
+    where: {
+      status: { in: [...ACTIVE_STATUSES] },
+      OR: [{ signupCloseAt: { gte: now } }, { startAt: { gte: now } }],
+      ...(where.kind ? { kind: where.kind } : {}),
+      venue: where.city ? cityWhere(where.city) : { isDisabled: false },
+    },
+    select: { title: true, slug: true, kind: true, venue: { select: { city: true, state: true } } },
+    take: 5000,
+  });
+  return rows.filter((c) => !isPlaceholderCompetition(c));
+}
+
+export async function hasIndexableListings(where: { city?: OutreachCityRecord; kind?: CompetitionKind }): Promise<boolean> {
+  try {
+    return (await indexableCompetitions(where)).length > 0;
+  } catch {
+    return false;
+  }
 }
 
 export async function fetchDiscoveryVenuesForCity(
@@ -242,28 +275,12 @@ export async function fetchDiscoveryVenuesForKind(
   }
 }
 
-/** Cities with at least one real (non-disabled) venue or active competition, regardless of game. */
+/** Cities with at least one indexable listing (see indexableCompetitions), regardless of game. */
 export async function getCitySlugsWithRealData(): Promise<Set<string>> {
   const { getOutreachCitySlug } = await import("@/lib/seo/outreach-city-slugs");
   const slugs = new Set<string>();
   try {
-    const [venues, competitions] = await Promise.all([
-      prisma.venue.findMany({
-        where: { isDisabled: false, city: { not: null }, state: { not: null } },
-        select: { city: true, state: true },
-      }),
-      prisma.competition.findMany({
-        where: {
-          status: { in: [...ACTIVE_STATUSES] },
-          venue: { isDisabled: false, city: { not: null }, state: { not: null } },
-        },
-        select: { venue: { select: { city: true, state: true } } },
-      }),
-    ]);
-    for (const v of venues) {
-      if (v.city && v.state) slugs.add(getOutreachCitySlug(v.city, v.state));
-    }
-    for (const c of competitions) {
+    for (const c of await indexableCompetitions()) {
       if (c.venue.city && c.venue.state) slugs.add(getOutreachCitySlug(c.venue.city, c.venue.state));
     }
   } catch {
@@ -272,7 +289,7 @@ export async function getCitySlugsWithRealData(): Promise<Set<string>> {
   return slugs;
 }
 
-/** Sitemap helper: discovery paths for city-only pages with real venue or competition data. */
+/** Sitemap helper: city-only discovery paths that pass the indexing rule. */
 export async function getSitemapCityOnlyPaths(
   prefixes: ("bar-leagues" | "events" | "bars")[],
   citySlugs: string[],
@@ -286,7 +303,7 @@ export async function getSitemapCityOnlyPaths(
   return paths;
 }
 
-/** Sitemap helper: discovery paths for city+game pairs with real venue or competition data. */
+/** Sitemap helper: city+game discovery paths that pass the indexing rule. */
 export async function getSitemapCityGamePaths(
   prefixes: ("bar-leagues" | "events" | "bars")[],
 ): Promise<string[]> {
@@ -295,47 +312,16 @@ export async function getSitemapCityGamePaths(
 
   const paths = new Set<string>();
   try {
-    const [venues, competitions] = await Promise.all([
-      prisma.venue.findMany({
-        where: { isDisabled: false, city: { not: null }, state: { not: null } },
-        select: { city: true, state: true, competitions: { select: { kind: true }, take: 1 } },
-        take: 2000,
-      }),
-      prisma.competition.findMany({
-        where: {
-          status: { in: [...ACTIVE_STATUSES] },
-          venue: { isDisabled: false, city: { not: null }, state: { not: null } },
-        },
-        select: { kind: true, venue: { select: { city: true, state: true } } },
-        take: 5000,
-      }),
-    ]);
-
-    const addPair = (city: string, state: string, kind?: CompetitionKind) => {
-      const citySlug = getOutreachCitySlug(city, state);
+    for (const c of await indexableCompetitions()) {
+      if (!c.venue.city || !c.venue.state) continue;
+      const citySlug = getOutreachCitySlug(c.venue.city, c.venue.state);
       // City pages only exist for the fixed outreach-city list (render-city-discovery.tsx 404s
       // anything else), so a venue in an unlisted city (e.g. Carmel, IN) must not add sitemap
       // URLs - they were 404s that Search Console reported as "Not found (404)".
-      if (!getOutreachCityBySlug(citySlug)) return;
-      const kinds = kind ? [kind] : [];
-      for (const k of kinds.length ? kinds : []) {
-        const game = getDiscoveryGameByKind(k);
-        if (!game) continue;
-        for (const prefix of prefixes) {
-          paths.add(`/${prefix}/${citySlug}/${game.slug}`);
-        }
-      }
-    };
-
-    for (const v of venues) {
-      if (!v.city || !v.state) continue;
-      for (const c of v.competitions) {
-        addPair(v.city, v.state, c.kind);
-      }
-    }
-
-    for (const c of competitions) {
-      if (c.venue.city && c.venue.state) addPair(c.venue.city, c.venue.state, c.kind);
+      if (!getOutreachCityBySlug(citySlug)) continue;
+      const game = getDiscoveryGameByKind(c.kind);
+      if (!game) continue;
+      for (const prefix of prefixes) paths.add(`/${prefix}/${citySlug}/${game.slug}`);
     }
   } catch {
     return [];

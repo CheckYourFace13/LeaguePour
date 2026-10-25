@@ -3,6 +3,8 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
+import { getVsEntitlements } from "@/lib/entitlements/vs";
+import { VsLockedFeature } from "@/components/venuesprocket/vs-locked-feature";
 import { sendContract } from "@/lib/actions/vs";
 import { TrackClick } from "@/components/analytics/track-click";
 import { VS_HOST } from "@/lib/vs-routing";
@@ -20,6 +22,7 @@ export default async function VsContractPage({ params }: { params: Promise<{ id:
     },
   });
   if (!contract) notFound();
+  const { features } = await getVsEntitlements(access.venueId);
 
   const event = contract.privateEvent;
   const customerName = event.lead?.customerName ?? event.vsCustomer?.name ?? "Customer";
@@ -78,14 +81,17 @@ export default async function VsContractPage({ params }: { params: Promise<{ id:
             {publicUrl}
           </code>
           <p className="mt-2 text-xs text-[var(--vs-muted)]">
-            Customers sign from this link — no account required. Their signature is recorded with timestamp and IP.
+            Customers sign from this link — no account required. Their typed signature is recorded with the time, IP address and browser.
           </p>
         </div>
       )}
 
       {/* Actions */}
       <div className="flex flex-wrap gap-3">
-        {contract.status === "DRAFT" && (
+        {contract.status === "DRAFT" && !features.contracts && (
+          <VsLockedFeature feature="contracts" from={`/app/contracts/${contract.id}`} />
+        )}
+        {contract.status === "DRAFT" && features.contracts && (
           <form action={sendContract.bind(null, contract.id)}>
             <TrackClick event="contract_sent" params={{ product: "vs", contractId: contract.id }}>
               <button type="submit" className="rounded-lg bg-[var(--vs-accent)] px-5 py-2.5 text-sm font-bold text-white hover:bg-[var(--vs-accent-hover)]">
