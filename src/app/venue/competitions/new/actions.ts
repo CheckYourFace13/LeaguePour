@@ -71,7 +71,6 @@ export async function createCompetitionAction(formData: FormData) {
   const captainRequired = formData.get("captainRequired") === "on";
   const participantCapRaw = String(formData.get("participantCap") ?? "").trim();
   const participantCap = participantCapRaw ? Math.max(1, Number(participantCapRaw)) : null;
-  const waitlistEnabled = formData.get("waitlistEnabled") === "on";
   const rules = String(formData.get("rules") ?? "").trim() || "House rules posted night-of.";
   const waiverText = String(formData.get("waiverText") ?? "").trim() || null;
   const scheduleKind = parseEnum(String(formData.get("scheduleKind")), schedules, ScheduleKind.ONE_TIME);
@@ -98,7 +97,6 @@ export async function createCompetitionAction(formData: FormData) {
     teamSize,
     captainRequired,
     participantCap,
-    waitlistEnabled,
     rules,
     waiverText,
     scheduleKind,

@@ -229,18 +229,9 @@ export default async function EditCompetitionPage({
                 defaultValue={comp.participantCap ?? ""}
                 placeholder="16"
               />
-              <FieldHint>Leave empty for open field.</FieldHint>
+              <FieldHint>Leave empty for open field. Signup closes automatically when the cap is reached.</FieldHint>
             </div>
           </div>
-          <label className="flex items-center gap-3 text-sm font-medium">
-            <input
-              type="checkbox"
-              name="waitlistEnabled"
-              defaultChecked={comp.waitlistEnabled}
-              className="size-4 rounded border-lp-border"
-            />
-            Enable waitlist when cap is hit
-          </label>
         </Card>
 
         <Card className="space-y-5">

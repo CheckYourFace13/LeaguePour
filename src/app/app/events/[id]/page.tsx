@@ -26,7 +26,11 @@ export default async function VsEventDetailPage({ params }: { params: Promise<{ 
     },
   });
   if (!event) notFound();
-  const { features } = await getVsEntitlements(access.venueId);
+  const [{ features }, vsConfig] = await Promise.all([
+    getVsEntitlements(access.venueId),
+    prisma.venueVsConfig.findUnique({ where: { venueId: access.venueId }, select: { defaultDepositPct: true } }),
+  ]);
+  const defaultDepositPct = vsConfig?.defaultDepositPct ?? 25;
   const from = `/app/events/${event.id}`;
 
   const latestProposal = event.proposals[0];
@@ -113,8 +117,22 @@ export default async function VsEventDetailPage({ params }: { params: Promise<{ 
                   </div>
                   {features.deposits ? (
                     <div>
-                      <label className="text-xs text-[var(--vs-muted)]">Deposit amount ($)</label>
-                      <input name="depositAmount" type="number" step="0.01" defaultValue="250" className="mt-1 w-full rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-3 py-2 text-sm" />
+                      <label htmlFor="depositAmount" className="text-xs text-[var(--vs-muted)]">Deposit amount ($)</label>
+                      <input
+                        id="depositAmount"
+                        name="depositAmount"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder={`Default: ${defaultDepositPct}%`}
+                        aria-describedby="depositAmountHelp"
+                        className="mt-1 w-full rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-3 py-2 text-sm"
+                      />
+                      <p id="depositAmountHelp" className="mt-1 text-xs text-[var(--vs-muted)]">
+                        Leave blank to ask for your default {defaultDepositPct}% of the room fee + minimum (change it in{" "}
+                        <Link href="/app/settings" className="underline">Settings</Link>). Enter an amount, or 0 for no deposit,
+                        to override it.
+                      </p>
                     </div>
                   ) : null}
                 </div>

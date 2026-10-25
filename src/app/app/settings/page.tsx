@@ -14,7 +14,10 @@ async function saveVsSettings(formData: FormData) {
   const access = await resolvePrimaryVenueAccess(session);
   if (!access) return;
 
-  const depositPct = Math.min(100, Math.max(0, Number(formData.get("defaultDepositPct")) || 25));
+  // Blank or invalid keeps the 25% default; an explicit 0 means "no deposit by default".
+  const rawPct = String(formData.get("defaultDepositPct") ?? "").trim();
+  const parsedPct = Number(rawPct);
+  const depositPct = rawPct === "" || !Number.isFinite(parsedPct) ? 25 : Math.min(100, Math.max(0, Math.round(parsedPct)));
 
   await prisma.venueVsConfig.upsert({
     where: { venueId: access.venueId },
@@ -124,7 +127,10 @@ export default async function VsSettingsPage() {
               defaultValue={vsConfig?.defaultDepositPct ?? 25}
               className="w-32 rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-3 py-2.5 text-sm focus:border-[var(--vs-accent)] focus:outline-none"
             />
-            <p className="mt-1 text-xs text-[var(--vs-muted)]">Used as the suggested deposit when building proposals.</p>
+            <p className="mt-1 text-xs text-[var(--vs-muted)]">
+              Applied to the room fee + food &amp; beverage minimum when you leave a proposal&apos;s deposit blank. An amount
+              you type on the proposal (including 0) always wins. Deposits are on the Pro plan.
+            </p>
           </div>
 
           <div>

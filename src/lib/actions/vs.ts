@@ -15,6 +15,7 @@ import {
 import { VS_HOST } from "@/lib/vs-routing";
 import { logOperationalFailure } from "@/lib/operational-failure";
 import { getVsEntitlements, vsUpgradePath, type VsFeature } from "@/lib/entitlements/vs";
+import { parseDepositField, resolveProposalDepositCents } from "@/lib/vs-proposal-deposit";
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -180,11 +181,28 @@ export async function createProposal(eventId: string, formData: FormData) {
   });
   if (!event) throw new Error("Event not found");
 
-  const depositAmount = Math.round(Number(formData.get("depositAmount") || 0) * 100);
   await requireVsFeature(access.venueId, "proposals", `/app/events/${eventId}`);
-  if (depositAmount > 0) await requireVsFeature(access.venueId, "deposits", `/app/events/${eventId}`);
   const roomFee = Math.round(Number(formData.get("roomFee") || 0) * 100);
   const minimumSpend = Math.round(Number(formData.get("minimumSpend") || 0) * 100);
+
+  // Blank deposit -> the venue's default % of room fee + minimum (Pro only); a typed amount,
+  // including 0, always wins. A typed deposit > 0 still needs the deposits feature.
+  const rawDeposit = formData.get("depositAmount");
+  const typed = parseDepositField(rawDeposit);
+  if (!typed.blank && typed.cents > 0) {
+    await requireVsFeature(access.venueId, "deposits", `/app/events/${eventId}`);
+  }
+  const [{ features }, vsConfig] = await Promise.all([
+    getVsEntitlements(access.venueId),
+    ensureVsConfig(access.venueId),
+  ]);
+  const { cents: depositAmount } = resolveProposalDepositCents({
+    raw: rawDeposit,
+    roomFeeCents: roomFee,
+    minimumSpendCents: minimumSpend,
+    defaultPct: vsConfig.defaultDepositPct,
+    depositsAllowed: features.deposits,
+  });
 
   const lineItems: { description: string; qty: number; unitCents: number }[] = [];
   const descriptions = formData.getAll("itemDesc");

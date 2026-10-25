@@ -225,6 +225,26 @@ async function main() {
     assert.equal(await prisma.privateEventLead.count({ where: { venueId: v.id } }), 13, "nothing over the allowance was dropped");
   });
 
+  // ── Proposal deposit default (pure) ─────────────────────────────────────────
+  const dep = await import("../src/lib/vs-proposal-deposit");
+  await check("VS deposit: blank uses the default % of room fee + minimum (Pro)", async () => {
+    const r = dep.resolveProposalDepositCents({ raw: "", roomFeeCents: 15000, minimumSpendCents: 150000, defaultPct: 25, depositsAllowed: true });
+    assert.deepEqual(r, { cents: 41250, usedDefault: true });
+    assert.equal(dep.resolveProposalDepositCents({ raw: null, roomFeeCents: 10001, minimumSpendCents: 0, defaultPct: 33, depositsAllowed: true }).cents, 3300, "rounds to the cent");
+    assert.equal(dep.resolveProposalDepositCents({ raw: "   ", roomFeeCents: 10000, minimumSpendCents: 0, defaultPct: 0, depositsAllowed: true }).cents, 0, "0% default");
+  });
+  await check("VS deposit: an explicit amount wins, including $0", async () => {
+    const base = { roomFeeCents: 15000, minimumSpendCents: 150000, defaultPct: 25, depositsAllowed: true };
+    assert.deepEqual(dep.resolveProposalDepositCents({ ...base, raw: "0" }), { cents: 0, usedDefault: false });
+    assert.deepEqual(dep.resolveProposalDepositCents({ ...base, raw: "0.00" }), { cents: 0, usedDefault: false });
+    assert.deepEqual(dep.resolveProposalDepositCents({ ...base, raw: "275.50" }), { cents: 27550, usedDefault: false });
+    assert.deepEqual(dep.resolveProposalDepositCents({ ...base, raw: "-40" }), { cents: 0, usedDefault: false }, "negative clamps to 0");
+  });
+  await check("VS deposit: no default for a plan without deposits", async () => {
+    assert.deepEqual(dep.resolveProposalDepositCents({ raw: "", roomFeeCents: 15000, minimumSpendCents: 150000, defaultPct: 25, depositsAllowed: false }), { cents: 0, usedDefault: false });
+    assert.deepEqual(dep.parseDepositField("50"), { blank: false, cents: 5000 }, "typed amount is still reported so the caller can gate it");
+  });
+
   // ── Conversion dedup ───────────────────────────────────────────────────────
   await check("conversion: no marker (pre-existing subscriber) -> never reported", async () => {
     assert.equal(await conv.claimConversion("sub_existing"), null);
