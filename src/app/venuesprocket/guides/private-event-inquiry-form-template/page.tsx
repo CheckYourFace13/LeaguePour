@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: { absolute: "Private Event Inquiry Form Template (Copy-Ready Fields) | VenueSprocket" },
+  title: { absolute: "Private Event Inquiry Form Template | VenueSprocket" },
   description:
     "A copy-ready private event inquiry form template: the 13 fields to ask, which are required, a filled-out example, and what to do in the first hour after a lead comes in.",
   alternates: { canonical: "https://venuesprocket.com/guides/private-event-inquiry-form-template" },
@@ -153,8 +153,8 @@ export default function InquiryFormTemplateGuide() {
             </p>
             <div className="rounded-2xl border border-vs-border-strong bg-vs-surface-2 p-6 font-mono text-sm text-vs-text-soft leading-relaxed whitespace-pre-wrap">
 {`NAME: Rachel Kim
-EMAIL: rachel.kim@example.com
-PHONE: (555) 402-8871
+EMAIL: [Guest email]
+PHONE: [Guest phone]
 EVENT TYPE: Corporate holiday party
 PREFERRED DATE: December 12
 DATE FLEXIBILITY: Could also do Dec 5 or Dec 19 if 12th isn't available
@@ -192,6 +192,46 @@ holiday parties at [competitor] the last two years and want to try somewhere new
                 </li>
               ))}
             </ul>
+          </section>
+
+          <section className="mb-10">
+            <h2 className="font-display text-2xl font-bold text-vs-text mb-4">A first reply you can adapt</h2>
+            <p className="text-vs-text-soft leading-relaxed mb-5">
+              Short, specific, and ending with one next step. Swap the bracketed parts for the details from the
+              inquiry - for the example above, that&apos;s December 12, about 35 guests, heavy apps and an open bar.
+            </p>
+            <div className="rounded-2xl border border-vs-border-strong bg-vs-surface-2 p-6 font-mono text-sm text-vs-text-soft leading-relaxed whitespace-pre-wrap">
+{`Subject: Your [event type] on [date] at [venue name]
+
+Hi [guest first name],
+
+Thanks for thinking of us for your [event type]. [Date] is open for
+about [guest count] guests in [room name], [time window].
+
+For a group your size, private events here start with a [room fee] room
+fee and a [food & beverage minimum] food and beverage minimum. [One line
+on how you'd handle their catering request.]
+
+Two quick questions so I can send a proposal:
+1. [Question - e.g. seated dinner or standing reception?]
+2. [Question - e.g. tab open the whole night, or a set bar package?]
+
+I'll have a proposal to you by [day]. We hold the date once the deposit
+is in.
+
+[Your name], [venue name]`}
+            </div>
+            <p className="mt-3 text-sm text-vs-muted">
+              If the date is taken, lead with the closest open dates instead of a no. Then use the{" "}
+              <Link href="/guides/how-to-structure-a-private-event-proposal-that-gets-signed-faster" className="font-semibold text-vs-accent hover:underline">
+                proposal structure guide
+              </Link>{" "}
+              and the{" "}
+              <Link href="/tools/food-beverage-minimum-calculator" className="font-semibold text-vs-accent hover:underline">
+                food &amp; beverage minimum calculator
+              </Link>{" "}
+              to put numbers on it.
+            </p>
           </section>
 
           <div className="mt-14 rounded-2xl border border-vs-border-strong bg-vs-surface-2 p-8">

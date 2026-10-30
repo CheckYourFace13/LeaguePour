@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/guides/round-robin-vs-single-elimination", {
-  title: { absolute: "Round Robin vs. Single Elimination for Bars | LeaguePour Guide" },
+  title: { absolute: "Round Robin vs. Single Elimination | LeaguePour" },
   description:
     "Round robin vs single elimination for bar tournaments: which keeps players (and their tabs) in the room longer, how long each takes to run, and how to pick between them.",
   alternates: { canonical: "/guides/round-robin-vs-single-elimination" },
@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "tournament format for bars",
   ],
   openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
-    title: "Round Robin vs. Single Elimination for Bars | LeaguePour Guide",
+    title: "Round Robin vs. Single Elimination | LeaguePour",
     description:
       "Which tournament format actually keeps a bar full - round robin or single elimination - and how to choose.",
     url: "/guides/round-robin-vs-single-elimination",

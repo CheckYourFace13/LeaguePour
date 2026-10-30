@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/history/shuffleboard", {
-  title: { absolute: "History of Shuffleboard | Five Centuries at the Table | LeaguePour" },
+  title: { absolute: "History of Shuffleboard: Five Centuries | LeaguePour" },
   description:
     "Shuffleboard has been a tavern game since Tudor England - Henry VIII banned it in 1532 and people kept playing anyway. The full history from 'shovelboard' to bar staple.",
   alternates: { canonical: "/history/shuffleboard" },
@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "bar shuffleboard history",
   ],
   openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
-    title: "History of Shuffleboard | Five Centuries at the Table | LeaguePour",
+    title: "History of Shuffleboard: Five Centuries | LeaguePour",
     description:
       "Henry VIII banned it. Tudor tavern-keepers kept running it anyway. Five centuries of shuffleboard history.",
     url: "/history/shuffleboard",

@@ -7,7 +7,7 @@ const DESCRIPTION =
   "VenueSprocket and LeaguePour are separate products with separate subscriptions. Add the second while subscribed to the first and it's 50% off - here's how the discount works.";
 
 export const metadata: Metadata = {
-  title: { absolute: "VenueSprocket + LeaguePour: 50% Off the Second Product | VenueSprocket" },
+  title: { absolute: "VenueSprocket + LeaguePour Bundle: 50% Off" },
   description: DESCRIPTION,
   alternates: { canonical: URL },
   openGraph: { siteName: "VenueSprocket", images: [{ url: "/venuesprocket/opengraph-image", alt: "VenueSprocket - private event management software" }], title: "VenueSprocket + LeaguePour bundle discount", description: DESCRIPTION, url: URL },

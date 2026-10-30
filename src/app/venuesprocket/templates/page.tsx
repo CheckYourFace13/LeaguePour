@@ -5,7 +5,7 @@ import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 const URL = "https://venuesprocket.com/templates";
 
 export const metadata: Metadata = {
-  title: { absolute: "Free Private Event Templates: Proposal, Contract, BEO, Run of Show | VenueSprocket" },
+  title: { absolute: "Free Proposal, Contract & BEO Templates | VenueSprocket" },
   description:
     "Free, ungated private event templates for restaurants, bars, and event spaces: proposal, contract checklist, BEO, inquiry form, and run of show. Copy or print - no email required.",
   alternates: { canonical: URL },

@@ -8,7 +8,7 @@ const DESCRIPTION =
   "Free room rental pricing calculator for restaurants, bars, and event spaces: find the break-even room fee from what the space normally earns plus the costs a booking adds. Method and formulas shown.";
 
 export const metadata: Metadata = {
-  title: { absolute: "Room Rental Pricing Calculator for Private Events | VenueSprocket" },
+  title: { absolute: "Room Rental Pricing Calculator | VenueSprocket" },
   description: DESCRIPTION,
   alternates: { canonical: URL },
   openGraph: { siteName: "VenueSprocket", images: [{ url: "/venuesprocket/opengraph-image", alt: "VenueSprocket - private event management software" }], title: "Room rental pricing calculator", description: DESCRIPTION, url: URL },

@@ -62,14 +62,13 @@ export default function SampleProposalContractGuide() {
             <span className="text-vs-text-soft font-medium">Sample Proposal & Contract</span>
           </nav>
 
-          <p className="vs-kicker mb-3">Sample - not a real customer</p>
+          <p className="vs-kicker mb-3">Demo</p>
           <h1 className="vs-page-title text-4xl md:text-5xl mb-6">
             What a proposal and contract look like
           </h1>
           <p className="text-vs-text-soft text-lg leading-relaxed mb-10">
-            Below is a made-up example - a fictional birthday buyout for a fictional customer - so
-            you can see what your own customers would see, without creating a real account. Nothing
-            on this page is a working form; it&apos;s a preview only.
+            A fictional birthday buyout, shown the way your customer sees the proposal and signs the
+            contract - no account needed to look.
           </p>
 
           {/* Sample proposal */}
@@ -82,7 +81,7 @@ export default function SampleProposalContractGuide() {
                   <p className="text-sm text-vs-muted">Saturday, October 17 · The Blue Line Taproom</p>
                 </div>
                 <span className="rounded-full bg-vs-accent/15 px-3 py-1 text-xs font-bold uppercase tracking-wider text-vs-accent">
-                  Sample
+                  Demo
                 </span>
               </div>
               <div className="space-y-2 mb-6">
@@ -101,13 +100,13 @@ export default function SampleProposalContractGuide() {
                 ))}
               </div>
               <p className="text-xs text-vs-muted mb-4">
-                Prepared for Dana Marino (dana.marino@email.com) · Sample data for illustration only
+                Prepared for Dana Marino · [Guest email]
               </p>
               <span
                 aria-disabled="true"
                 className="inline-flex cursor-default select-none rounded-xl bg-vs-accent/40 px-6 py-3 text-base font-bold text-white"
               >
-                Accept Proposal (preview only)
+                Accept Proposal
               </span>
             </div>
           </section>
@@ -127,7 +126,7 @@ export default function SampleProposalContractGuide() {
                   Dana Marino
                 </p>
                 <p className="text-xs text-vs-muted">
-                  Signed October 2, 2026 · 3:14 PM · Sample IP and device recorded for real signatures
+                  Signed October 2, 2026 · 3:14 PM · IP address and browser are recorded with each real signature
                 </p>
               </div>
             </div>

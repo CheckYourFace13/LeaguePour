@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/history/darts", {
-  title: { absolute: "History of Darts | From English Pubs to World Sport | LeaguePour" },
+  title: { absolute: "History of Darts: Pubs to World Sport | LeaguePour" },
   description:
     "The real history of darts - medieval English origins, how elm tree cross-sections became boards, Brian Gamlin's number arrangement in 1896, the rise of the WDF, and the Phil Taylor era.",
   alternates: { canonical: "/history/darts" },
@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "World Darts Federation history",
   ],
   openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
-    title: "History of Darts | From English Pubs to World Sport | LeaguePour",
+    title: "History of Darts: Pubs to World Sport | LeaguePour",
     description:
       "From medieval English pubs to packed arenas - the real story of how darts became a world sport.",
     url: "/history/darts",

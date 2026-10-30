@@ -5,7 +5,8 @@
 Content mirrors the pages it belongs to - keep them in sync when either changes:
   BEO      -> src/app/venuesprocket/guides/beo-template/page.tsx
   Proposal -> src/app/venuesprocket/templates/event-proposal-template/page.tsx
-Every name, number, and email in the examples is fictional (555 numbers, example.com).
+Example names are fictional; contact fields are left as blank labels ([Guest phone], [Guest email]) -
+never put a real or realistic phone number or email address in a public download.
 """
 from pathlib import Path
 
@@ -20,7 +21,7 @@ from reportlab.platypus import Flowable, KeepTogether, PageBreak, Paragraph, Sim
 
 OUT = Path(__file__).resolve().parent.parent / "public" / "downloads"
 FOOTER = "Free template from VenueSprocket - venuesprocket.com"
-SAMPLE_NOTE = "Sample only: the venue, host, and contact details below are fictional."
+SAMPLE_NOTE = "Example - fictional venue and host."
 
 # ---------------------------------------------------------------------------------------- BEO
 BEO_TITLE = "Banquet Event Order (BEO)"
@@ -69,7 +70,7 @@ BEO_EXAMPLE = [
         ("Room", "Taproom back patio (full buyout)"), ("Guest count", "45 confirmed"),
     ]),
     ("Contact", [
-        ("Client", "Dana Marino  |  (555) 019-2244  |  dana.marino@example.com"),
+        ("Client", "Dana Marino  |  [Guest phone]  |  [Guest email]"),
         ("Day-of contact", "Same as client"), ("Event manager", "James (assistant manager)"),
     ]),
     ("Food & beverage", [
@@ -136,7 +137,7 @@ PROP_CLOSE = ["Full terms are in the event contract.",
               "Next step: reply to accept, sign the contract, and pay the deposit."]
 PROP_EXAMPLE = [
     ("Prepared for / by", [
-        ("Prepared for", "Sam Rivera  |  (555) 010-4477  |  sam.rivera@example.com"),
+        ("Prepared for", "Sam Rivera  |  [Guest phone]  |  [Guest email]"),
         ("Prepared by", "The Juniper Room  |  Alex, events  |  March 3"),
     ]),
     ("The event", [

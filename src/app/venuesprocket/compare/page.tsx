@@ -6,7 +6,7 @@ import { VS_COMPARE_DATA } from "@/lib/seo/vs-compare-data";
 const URL = "https://venuesprocket.com/compare";
 
 export const metadata: Metadata = {
-  title: { absolute: "Compare VenueSprocket to Other Private Event Software | VenueSprocket" },
+  title: { absolute: "Compare Private Event Software | VenueSprocket" },
   description:
     "Honest side-by-side comparisons of VenueSprocket with Tripleseat, Perfect Venue, Planning Pod, Caterease, Event Temple, HoneyBook, and spreadsheet-and-email planning - including where another tool is the better fit.",
   alternates: { canonical: URL },

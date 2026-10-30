@@ -29,7 +29,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
   "private-event-booking-software": {
     slug: "private-event-booking-software",
     title: "Private Event Booking Software",
-    metaTitle: "Private Event Booking Software for Restaurants, Bars & Venues — VenueSprocket",
+    metaTitle: "Private Event Booking Software | VenueSprocket",
     metaDescription:
       "VenueSprocket makes private event booking simple. Capture inquiries, send proposals, sign contracts, collect deposits, and build BEOs — all in one place for restaurants, bars, and breweries.",
     kicker: "Private event booking",
@@ -101,7 +101,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
   "beo-software": {
     slug: "beo-software",
     title: "BEO Software for Venues",
-    metaTitle: "BEO Software for Restaurants, Bars & Event Venues — VenueSprocket",
+    metaTitle: "BEO Software for Restaurants & Venues | VenueSprocket",
     metaDescription:
       "Create Banquet Event Orders (BEOs) without starting from scratch. VenueSprocket starts each BEO from your event record and gives you a mobile-friendly, print-ready view for event day.",
     kicker: "BEO builder",
@@ -174,7 +174,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
   "event-contract-software": {
     slug: "event-contract-software",
     title: "Event Contract Software for Venues",
-    metaTitle: "Event Contract Software — Sign Private Event Contracts Online — VenueSprocket",
+    metaTitle: "Event Contract Software: Sign Online | VenueSprocket",
     metaDescription:
       "Get private event contracts signed online without DocuSign. VenueSprocket includes typed e-signature contract signing built for restaurants, bars, and event venues.",
     kicker: "Event contracts",
@@ -244,7 +244,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
   "event-deposit-software": {
     slug: "event-deposit-software",
     title: "Event Deposit Software for Venues",
-    metaTitle: "Event Deposit Software: Collect Private Event Deposits Online | VenueSprocket",
+    metaTitle: "Event Deposit Software for Venues | VenueSprocket",
     metaDescription:
       "Event deposit software for restaurants, bars and venues: set the deposit on the proposal, the customer signs and pays by card, and the money lands in your own Stripe account. No VenueSprocket cut.",
     kicker: "Deposit collection",
@@ -344,7 +344,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
   "venue-marketing-software": {
     slug: "venue-marketing-software",
     title: "Venue Marketing Software",
-    metaTitle: "Venue Marketing Software — Get More Private Event Inquiries — VenueSprocket",
+    metaTitle: "Venue Marketing Software for Event Inquiries | VenueSprocket",
     metaDescription:
       "VenueSprocket gives your venue a public inquiry page so customers can request birthday parties, corporate events, and private rooms in your city - and every inquiry lands straight in your pipeline.",
     kicker: "Venue marketing",
@@ -407,7 +407,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
   "restaurant-event-management-software": {
     slug: "restaurant-event-management-software",
     title: "Restaurant Event Management Software",
-    metaTitle: "Restaurant Event Management Software for Private Dining | VenueSprocket",
+    metaTitle: "Restaurant Event & Private Dining Software | VenueSprocket",
     metaDescription:
       "Restaurant event management software for private dining: an inquiry page, proposals with a room fee and F&B minimum, e-signature contracts, deposits and a kitchen BEO. Free to start.",
     kicker: "For restaurants",
@@ -503,7 +503,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
   "brewery-event-management-software": {
     slug: "brewery-event-management-software",
     title: "Brewery Event Management Software",
-    metaTitle: "Brewery Event Management Software — Private Events & Taproom Bookings — VenueSprocket",
+    metaTitle: "Brewery Event Management Software | VenueSprocket",
     metaDescription:
       "VenueSprocket helps breweries and taprooms book more private events, corporate tastings, birthday parties, and buyouts with inquiry forms, proposals, contracts, deposits, and BEOs.",
     kicker: "For breweries",
@@ -566,7 +566,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
   "bar-event-management-software": {
     slug: "bar-event-management-software",
     title: "Bar Event Management Software",
-    metaTitle: "Bar Event Management Software — Private Parties & Game Nights — VenueSprocket",
+    metaTitle: "Bar Event Management Software | VenueSprocket",
     metaDescription:
       "VenueSprocket helps bars book private parties, birthday events, and corporate buyouts - inquiries, proposals, contracts, deposits, and BEOs in one place.",
     kicker: "For bars",
@@ -630,7 +630,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
   "taproom-event-management-software": {
     slug: "taproom-event-management-software",
     title: "Taproom Event Management Software",
-    metaTitle: "Taproom Event Management Software — Bookings, Leagues & Events — VenueSprocket",
+    metaTitle: "Taproom Event Management Software | VenueSprocket",
     metaDescription:
       "VenueSprocket helps taprooms book private events and buyouts - inquiries, proposals, contracts, deposits, and BEOs without enterprise software.",
     kicker: "For taprooms",
@@ -693,7 +693,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
   "banquet-hall-software": {
     slug: "banquet-hall-software",
     title: "Banquet Hall Software",
-    metaTitle: "Banquet Hall Software — Private Events, BEOs & Deposits — VenueSprocket",
+    metaTitle: "Banquet Hall Software: BEOs & Deposits | VenueSprocket",
     metaDescription:
       "VenueSprocket helps banquet halls and event spaces manage private event inquiries, proposals, contracts, deposits, and BEOs without enterprise-priced software.",
     kicker: "For banquet halls & event spaces",

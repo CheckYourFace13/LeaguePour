@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   // (the root layout's "%s | LeaguePour"), which is what any VS page without its own title -
   // including the [...missing] 404 after hydration - showed as its tab title and og:title.
   title: {
-    absolute: "VenueSprocket — Private Event Booking & Venue Management Software",
+    absolute: "VenueSprocket | Private Event Booking Software for Venues",
     template: "%s | VenueSprocket",
   },
   description:

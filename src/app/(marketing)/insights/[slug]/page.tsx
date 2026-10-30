@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { brandedTitle } from "@/lib/seo/title";
 import { notFound } from "next/navigation";
 import { getManagedFeed } from "@/lib/gravyblock-managed";
 
@@ -10,7 +11,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const item = (await getManagedFeed())?.items.find((i) => i.slug === slug);
   if (!item) return { title: "Not found", robots: { index: false, follow: false } };
-  return { title: { absolute: `${item.title} | LeaguePour` }, description: item.description ?? item.title, alternates: { canonical: `/insights/${slug}` } };
+  return { title: { absolute: brandedTitle(item.title, "LeaguePour") }, description: item.description ?? item.title, alternates: { canonical: `/insights/${slug}` } };
 }
 
 export default async function InsightPage({ params }: Props) {

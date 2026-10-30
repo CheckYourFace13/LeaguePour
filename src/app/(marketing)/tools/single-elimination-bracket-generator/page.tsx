@@ -6,7 +6,7 @@ const PATH = "/tools/single-elimination-bracket-generator";
 
 export const metadata = toolMetadata({
   path: PATH,
-  title: "Free Single Elimination Bracket Generator (2-64 Teams) | LeaguePour",
+  title: "Free Single Elimination Bracket Generator | LeaguePour",
   ogTitle: "Free single elimination bracket generator",
   description:
     "Paste your teams and get a printable single elimination bracket with byes placed automatically. Free, no signup, works on a phone - 2 to 64 entrants.",

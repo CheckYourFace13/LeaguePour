@@ -6,7 +6,7 @@ const PATH = "/tools/standings-calculator";
 
 export const metadata = toolMetadata({
   path: PATH,
-  title: "Free League Standings Calculator (Win-Loss-Tie & Points) | LeaguePour",
+  title: "Free League Standings Calculator | LeaguePour",
   ogTitle: "Free league standings calculator",
   description:
     "Enter match scores and get a ranked standings table with wins, losses, ties, score difference, and points (3 for a win, 1 for a tie). Free, printable, no signup.",

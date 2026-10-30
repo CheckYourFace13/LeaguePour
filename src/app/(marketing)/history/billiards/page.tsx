@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/history/billiards", {
-  title: { absolute: "History of Billiards & Pool | From Kings to Corner Bars | LeaguePour" },
+  title: { absolute: "History of Pool: From Kings to Corner Bars | LeaguePour" },
   description:
     "How billiards went from a 15th-century French lawn game to a royal pastime to every dive bar in America - including the story of why we call it 'pool' and when 8-ball became standard.",
   alternates: { canonical: "/history/billiards" },
@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "bar pool league history",
   ],
   openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
-    title: "History of Billiards & Pool | From Kings to Corner Bars | LeaguePour",
+    title: "History of Pool: From Kings to Corner Bars | LeaguePour",
     description:
       "A French lawn game, King Louis XI, a mace that became a cue, horse-racing betting pools, and eventually your bar's back room. The full story.",
     url: "/history/billiards",

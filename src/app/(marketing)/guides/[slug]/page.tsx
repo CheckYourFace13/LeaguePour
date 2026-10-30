@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { brandedTitle } from "@/lib/seo/title";
 import { notFound } from "next/navigation";
 import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import { prisma } from "@/lib/db";
@@ -25,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: "Not found", robots: { index: false, follow: false } };
   }
   return applyManagedMetadata(`/guides/${slug}`, {
-    title: { absolute: `${guide.title} | LeaguePour` },
+    title: { absolute: brandedTitle(guide.title, "LeaguePour") },
     description: guide.description,
     alternates: { canonical: `/guides/${slug}` },
     openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }], title: guide.title, description: guide.description, url: `/guides/${slug}` },

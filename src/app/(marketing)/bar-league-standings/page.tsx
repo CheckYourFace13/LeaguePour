@@ -7,7 +7,7 @@ import { getPublicSiteUrl } from "@/lib/site-url";
 
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/bar-league-standings", {
-  title: { absolute: "Bar League Standings Software | Live Scoreboards | LeaguePour" },
+  title: { absolute: "Bar League Standings & Live Scoreboards | LeaguePour" },
   description:
     "Keep bar league standings live and public. LeaguePour updates standings automatically as scores come in and displays them on a shareable page or a TV behind the bar.",
   alternates: { canonical: "/bar-league-standings" },

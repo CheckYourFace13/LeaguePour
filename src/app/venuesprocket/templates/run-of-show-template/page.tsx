@@ -9,7 +9,7 @@ const DESCRIPTION =
   "A free run-of-show template for private events at restaurants, bars, and event spaces: a printable timeline with owners for each step, plus a filled-in example for a four-hour party.";
 
 export const metadata: Metadata = {
-  title: { absolute: "Run of Show Template for Private Events (Free, Printable) | VenueSprocket" },
+  title: { absolute: "Run of Show Template for Private Events | VenueSprocket" },
   description: DESCRIPTION,
   alternates: { canonical: URL },
   openGraph: { siteName: "VenueSprocket", images: [{ url: "/venuesprocket/opengraph-image", alt: "VenueSprocket - private event management software" }], title: "Run of show template for private events", description: DESCRIPTION, url: URL },

@@ -27,7 +27,7 @@ const VENUE_ROWS: DiscoveryComparisonRow[] = [
 export const COMPARE_PAGES: ComparePageConfig[] = [
   {
     slug: "challonge",
-    title: "LeaguePour vs Challonge for Bar Tournaments | LeaguePour",
+    title: "LeaguePour vs Challonge for Bar Tournaments",
     description:
       "Challonge excels at brackets. LeaguePour is venue-first bar tournament software with paid signups, QR codes, venue hubs, and local discovery.",
     heroTitle: "LeaguePour vs Challonge for bars & breweries",
@@ -55,7 +55,7 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
   },
   {
     slug: "generic-bracket-generators",
-    title: "LeaguePour vs Generic Bracket Generators | LeaguePour",
+    title: "LeaguePour vs Generic Bracket Generators",
     description:
       "Generic bracket generators draw matchups. LeaguePour helps bars fill the room with paid signups, venue hubs, and repeat-player marketing.",
     heroTitle: "LeaguePour vs generic bracket generators",
@@ -74,7 +74,7 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
   },
   {
     slug: "spreadsheets",
-    title: "LeaguePour vs Spreadsheets for Bar Leagues | LeaguePour",
+    title: "LeaguePour vs Spreadsheets for Bar Leagues",
     description:
       "Stop running bar leagues on spreadsheets. LeaguePour handles signups, payments, standings, and player communication.",
     heroTitle: "LeaguePour vs spreadsheets",
@@ -98,7 +98,7 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
   },
   {
     slug: "facebook-events",
-    title: "LeaguePour vs Facebook Events for Bar Leagues | LeaguePour",
+    title: "LeaguePour vs Facebook Events for Bar Leagues",
     description:
       "Facebook Events promote a night. LeaguePour runs signups, entry fees, brackets, and repeat-player lists for bar competitions.",
     heroTitle: "LeaguePour vs Facebook Events",
@@ -122,7 +122,7 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
   },
   {
     slug: "eventbrite",
-    title: "LeaguePour vs Eventbrite for Bar Tournaments | LeaguePour",
+    title: "LeaguePour vs Eventbrite for Bar Tournaments",
     description:
       "Eventbrite sells tickets to events. LeaguePour runs ongoing bar leagues with brackets, teams, standings, and venue hubs.",
     heroTitle: "LeaguePour vs Eventbrite",
@@ -145,7 +145,7 @@ export const COMPARE_PAGES: ComparePageConfig[] = [
   },
   {
     slug: "tournament-software",
-    title: "LeaguePour vs Generic Tournament Software | LeaguePour",
+    title: "LeaguePour vs Generic Tournament Software",
     description:
       "Compare venue-first bar tournament software with generic tournament platforms. Paid signups, QR codes, local discovery, and repeat players.",
     heroTitle: "LeaguePour vs generic tournament software",

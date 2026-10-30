@@ -1,4 +1,5 @@
 import { safeJsonLd, buildBreadcrumbJsonLd } from "@/lib/seo/json-ld-builders";
+import { brandedTitle } from "@/lib/seo/title";
 import type { Metadata } from "next";
 import { applyManagedMetadata } from "@/lib/gravyblock-managed";
 import Link from "next/link";
@@ -11,7 +12,7 @@ const DESCRIPTION =
 
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata(PATH, {
-    title: { absolute: `${TITLE} | LeaguePour Guide` },
+    title: { absolute: brandedTitle(TITLE, "LeaguePour") },
     description: DESCRIPTION,
     alternates: { canonical: PATH },
     keywords: [

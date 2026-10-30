@@ -5,13 +5,13 @@ import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 const URL = "https://venuesprocket.com/demo";
 
 export const metadata: Metadata = {
-  title: { absolute: "Sample Workflow Demo — Inquiry to BEO | VenueSprocket" },
+  title: { absolute: "Workflow Demo: Inquiry to BEO | VenueSprocket" },
   description:
     "Walk through a sample private event booking in VenueSprocket: inquiry, lead, proposal, e-signature contract, Stripe deposit, and BEO. Fictional venue and customer, no login required.",
   alternates: { canonical: URL },
   openGraph: {
     siteName: "VenueSprocket", images: [{ url: "/venuesprocket/opengraph-image", alt: "VenueSprocket - private event management software" }],
-    title: "VenueSprocket sample workflow: inquiry to BEO",
+    title: "VenueSprocket workflow demo: inquiry to BEO",
     description: "A fictional booking walked through every step VenueSprocket handles today.",
     url: URL,
   },
@@ -22,7 +22,7 @@ const jsonLd = {
   "@type": "BreadcrumbList",
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "VenueSprocket", item: "https://venuesprocket.com" },
-    { "@type": "ListItem", position: 2, name: "Sample workflow", item: URL },
+    { "@type": "ListItem", position: 2, name: "Workflow demo", item: URL },
   ],
 };
 
@@ -34,7 +34,7 @@ const SAMPLE_CUSTOMER = "Jordan Reyes";
 function SampleBadge() {
   return (
     <span className="rounded-full bg-vs-accent/15 px-3 py-1 text-[0.6875rem] font-bold uppercase tracking-wider text-vs-accent">
-      Sample
+      Demo
     </span>
   );
 }
@@ -87,14 +87,13 @@ export default function VsDemoPage() {
       <div className="vs-section px-4 md:px-6">
         <div className="mx-auto max-w-5xl">
           <div className="mb-14 max-w-3xl">
-            <p className="vs-kicker mb-3">Sample workflow - fictional venue and customer</p>
+            <p className="vs-kicker mb-3">Demo workflow</p>
             <h1 className="vs-page-title text-4xl md:text-5xl mb-5">
               One private event, from inquiry to BEO
             </h1>
             <p className="text-vs-text-soft text-lg leading-relaxed">
-              Follow a made-up birthday buyout at a made-up brewery through every step VenueSprocket
-              handles today. Nothing on this page is a working form or a real account - it&apos;s a
-              preview of what you and your customer would see.
+              Follow a birthday buyout at a fictional brewery through every step VenueSprocket handles
+              today - what you see, and what your customer sees.
             </p>
           </div>
 
@@ -198,7 +197,7 @@ export default function VsDemoPage() {
                 aria-disabled="true"
                 className="mt-4 block cursor-default select-none rounded-xl bg-vs-accent/40 py-3 text-center text-sm font-bold text-white"
               >
-                Accept this proposal (preview only)
+                Accept this proposal
               </span>
             </Step>
 

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: { absolute: "LeaguePour: Companion Product for Leagues & Game Nights | VenueSprocket" },
+  title: { absolute: "LeaguePour for Leagues & Game Nights | VenueSprocket" },
   description:
     "LeaguePour is a separate companion product to VenueSprocket for leagues, tournaments, and trivia nights. Subscribe to one and get 50% off the other.",
   alternates: { canonical: "https://venuesprocket.com/leaguepour" },

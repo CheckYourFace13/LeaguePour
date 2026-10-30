@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "VenueSprocket — Private Event Booking & Venue Management Software";
+export const alt = "VenueSprocket | Private Event Booking Software for Venues";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

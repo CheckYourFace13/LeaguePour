@@ -1,4 +1,3 @@
-import { Quote } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 const painPointCards = [
@@ -20,12 +19,6 @@ const painPointCards = [
   },
 ] as const;
 
-const venuePainQuotes = [
-  "We need a better way to collect signups before league night.",
-  "We want players to find our events without digging through Facebook posts.",
-  "We need standings, payments, and promotion in one place.",
-] as const;
-
 export function VenuePainPoints() {
   return (
     <section className="border-y border-lp-border bg-lp-surface/30" aria-labelledby="venue-pain-points">
@@ -34,8 +27,8 @@ export function VenuePainPoints() {
           Built around the problems venues already have
         </h2>
         <p className="mt-3 max-w-2xl text-lp-muted leading-relaxed">
-          Not customer testimonials - these are the operational headaches LeaguePour is built to solve for bars,
-          breweries, and taprooms.
+          The everyday headaches of running league and tournament nights at a bar, brewery, or taproom - and
+          what LeaguePour does about each.
         </p>
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           {painPointCards.map((card) => (
@@ -44,20 +37,6 @@ export function VenuePainPoints() {
               <p className="mt-2 text-sm text-lp-muted leading-relaxed">{card.body}</p>
             </Card>
           ))}
-        </div>
-        <div className="mt-12">
-          <p className="text-xs font-bold uppercase tracking-wider text-lp-accent">What LeaguePour is built to solve</p>
-          <div className="mt-4 grid gap-3 md:grid-cols-3">
-            {venuePainQuotes.map((quote) => (
-              <div
-                key={quote}
-                className="flex gap-3 rounded-xl border border-lp-border bg-lp-bg/60 px-4 py-4 text-sm text-lp-muted leading-relaxed"
-              >
-                <Quote className="mt-0.5 size-4 shrink-0 text-lp-accent" aria-hidden />
-                <span>{quote}</span>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </section>

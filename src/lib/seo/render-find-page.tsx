@@ -6,6 +6,8 @@ import { DISCOVERY_GAMES, getDiscoveryGameBySlug } from "@/lib/seo/discovery-gam
 import {
   fetchDiscoveryCompetitionsForKind,
   fetchDiscoveryVenuesForKind,
+  getCitySlugsWithRealData,
+  getListableKinds,
   hasIndexableListings,
 } from "@/lib/seo/discovery-data";
 import {
@@ -13,7 +15,7 @@ import {
   buildFaqPageJsonLd,
   buildItemListJsonLd,
 } from "@/lib/seo/json-ld-builders";
-import { getAllOutreachCitySlugs } from "@/lib/seo/outreach-city-slugs";
+import { getAllOutreachCityRecords } from "@/lib/seo/outreach-city-slugs";
 import {
   BRACKET_ROADMAP_SECTION,
   BRING_PLAYERS_BACK_PROMO,
@@ -76,8 +78,11 @@ export async function FindDiscoveryPage({ findSlug }: { findSlug: string }) {
     fetchDiscoveryCompetitionsForKind(game.kind),
   ]);
 
-  const citySlugs = getAllOutreachCitySlugs().slice(0, 8);
-  const gameLinks = DISCOVERY_GAMES.filter((g) => g.slug !== game.slug).map((g) => ({
+  // Recommend only other games and cities that actually have listings (discovery-data.ts
+  // listableIds), so these links never lead to an empty page.
+  const [listableKinds, citiesWithListings] = await Promise.all([getListableKinds(), getCitySlugsWithRealData(game.kind)]);
+  const cityRecords = getAllOutreachCityRecords().filter((c) => citiesWithListings.has(c.slug)).slice(0, 8);
+  const gameLinks = DISCOVERY_GAMES.filter((g) => g.slug !== game.slug && listableKinds.has(g.kind)).map((g) => ({
     href: g.findPath,
     label: g.patronHeadline,
   }));
@@ -137,10 +142,11 @@ export async function FindDiscoveryPage({ findSlug }: { findSlug: string }) {
       faqs={faqs}
       gameLinks={gameLinks}
       relatedLinks={[
-        ...citySlugs.map((s) => ({
-          href: `/bar-leagues/${s}/${game.slug}`,
-          label: `${game.pluralLabel} by city`,
+        ...cityRecords.map((c) => ({
+          href: `/bar-leagues/${c.slug}/${game.slug}`,
+          label: `${game.pluralLabel} in ${c.name}`,
         })),
+        { href: "/find", label: "All game nights" },
         { href: game.softwarePath, label: `${game.label} software for venues` },
         { href: "/player/discover", label: "Player discover" },
       ]}

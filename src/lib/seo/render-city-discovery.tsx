@@ -8,6 +8,8 @@ import { DISCOVERY_GAMES, getDiscoveryGameBySlug } from "@/lib/seo/discovery-gam
 import {
   fetchDiscoveryCompetitionsForCity,
   fetchDiscoveryVenuesForCity,
+  getCitySlugsWithRealData,
+  getListableKinds,
   hasIndexableListings,
 } from "@/lib/seo/discovery-data";
 import {
@@ -123,13 +125,15 @@ export async function CityDiscoveryPage({
     fetchDiscoveryCompetitionsForCity(city, game?.kind),
   ]);
 
-  const gameLinks = DISCOVERY_GAMES.map((g) => ({
+  // Only recommend games/cities with listings (discovery-data.ts listableIds) - no empty pages.
+  const [cityKinds, citiesWithListings] = await Promise.all([getListableKinds({ city }), getCitySlugsWithRealData()]);
+  const gameLinks = DISCOVERY_GAMES.filter((g) => cityKinds.has(g.kind)).map((g) => ({
     href: discoveryPath(prefix, citySlug, g.slug),
     label: g.pluralLabel,
   }));
 
   const otherCities = getAllOutreachCityRecords()
-    .filter((c) => c.slug !== citySlug)
+    .filter((c) => c.slug !== citySlug && citiesWithListings.has(c.slug))
     .slice(0, 8);
 
   const faqs = [
@@ -219,6 +223,7 @@ export async function CityDiscoveryPage({
         href: discoveryPath(prefix, c.slug),
         label: `${c.name} bar leagues`,
       })),
+      { href: "/find", label: "All game nights" },
       { href: "/features/tournaments", label: "Tournament features" },
       { href: "/pricing", label: "Pricing" },
     ],

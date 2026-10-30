@@ -1,4 +1,5 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
+import { brandedTitle } from "@/lib/seo/title";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -18,7 +19,7 @@ export async function generateMetadata({
   const data = VS_COMPARE_DATA[slug];
   if (!data) return {};
   return {
-    title: { absolute: `VenueSprocket vs ${data.competitorName} — Private Event Software Comparison | VenueSprocket` },
+    title: { absolute: brandedTitle(`VenueSprocket vs ${data.competitorName}`, "Private Event Software") },
     description: `How VenueSprocket compares to ${data.competitorName} for private event booking, BEOs, contracts, and deposits. Built for restaurants, bars, breweries, and taprooms.`,
     alternates: { canonical: `https://venuesprocket.com/compare/${slug}` },
     openGraph: {

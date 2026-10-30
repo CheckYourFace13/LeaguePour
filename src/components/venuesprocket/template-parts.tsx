@@ -74,7 +74,7 @@ export function TemplateFooterLinks() {
       <div className="flex flex-wrap gap-3 text-sm">
         <Link href="/templates" className="rounded-lg border border-vs-border-strong bg-vs-bg px-4 py-2 font-semibold text-vs-text hover:border-vs-accent">All templates →</Link>
         <Link href="/tools" className="rounded-lg border border-vs-border-strong bg-vs-bg px-4 py-2 font-semibold text-vs-text hover:border-vs-accent">Free calculators →</Link>
-        <Link href="/demo" className="rounded-lg border border-vs-border-strong bg-vs-bg px-4 py-2 font-semibold text-vs-text hover:border-vs-accent">Sample workflow →</Link>
+        <Link href="/demo" className="rounded-lg border border-vs-border-strong bg-vs-bg px-4 py-2 font-semibold text-vs-text hover:border-vs-accent">Workflow demo →</Link>
         <Link href="/signup/venue" className="rounded-lg bg-vs-accent px-4 py-2 font-bold text-white hover:bg-vs-accent-hover">Start free</Link>
       </div>
     </section>
@@ -100,8 +100,8 @@ export function TemplateDownloads({ file, docxKb, pdfKb }: { file: string; docxK
         </a>
       </div>
       <p className="mt-3 text-xs leading-relaxed text-vs-muted">
-        Each file has the blank template plus a filled-in example. The names and contact details in
-        the example are fictional.
+        Each file has the blank template plus a filled-in example with fictional names; contact
+        fields are left blank.
       </p>
     </div>
   );

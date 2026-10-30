@@ -10,7 +10,7 @@ const DESCRIPTION =
   "A free private event contract checklist for venues: every topic your contract should cover, plus sample deposit, cancellation, and guest-count wording to adapt with your attorney.";
 
 export const metadata: Metadata = {
-  title: { absolute: "Private Event Contract Checklist & Sample Clauses | VenueSprocket" },
+  title: { absolute: "Private Event Contract Checklist & Clauses | VenueSprocket" },
   description: DESCRIPTION,
   alternates: { canonical: URL },
   openGraph: { siteName: "VenueSprocket", images: [{ url: "/venuesprocket/opengraph-image", alt: "VenueSprocket - private event management software" }], title: "Private event contract checklist", description: DESCRIPTION, url: URL },

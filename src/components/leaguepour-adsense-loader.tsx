@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 
 const VS_HOST = "venuesprocket.com";
+const LP_HOST = "leaguepour.com";
 const ADSENSE_CLIENT_ID = "ca-pub-9572509189594279";
 
 // Only these path prefixes are substantial, original editorial content - the guides hub and
@@ -25,6 +26,8 @@ const LP_AD_ELIGIBLE_PREFIXES = ["/guides", "/history", "/rules"];
 // with LeaguePour). Analytics stays on. Re-add "/guides" here to turn VS guide ads back on.
 const VS_AD_ELIGIBLE_PREFIXES: string[] = [];
 
+const noopSubscribe = () => () => {};
+
 function isAdEligiblePath(pathname: string, prefixes: string[]): boolean {
   return prefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
@@ -43,14 +46,28 @@ function isAdEligiblePath(pathname: string, prefixes: string[]): boolean {
  */
 export function LeaguePourAdsenseLoader() {
   const pathname = usePathname();
-  const [isEligibleHost, setIsEligibleHost] = useState<"lp" | "vs" | null>(null);
-
-  useEffect(() => {
-    setIsEligibleHost(window.location.hostname.replace(/^www\./, "") === VS_HOST ? "vs" : "lp");
-  }, []);
+  // Production hosts only: localhost, preview and QA hosts never load the ad script. Read on the
+  // client (null while server rendering) so layouts stay statically prerenderable.
+  const host = useSyncExternalStore(
+    noopSubscribe,
+    () => window.location.hostname.replace(/^www\./, ""),
+    () => null,
+  );
+  const isEligibleHost = host === VS_HOST ? "vs" : host === LP_HOST ? "lp" : null;
+  const adsLoaded = useRef(false);
 
   const prefixes = isEligibleHost === "vs" ? VS_AD_ELIGIBLE_PREFIXES : LP_AD_ELIGIBLE_PREFIXES;
-  if (!isEligibleHost || !isAdEligiblePath(pathname, prefixes)) return null;
+  const eligible = !!isEligibleHost && isAdEligiblePath(pathname, prefixes);
+
+  // Once adsbygoogle.js has run it stays in the page across client-side navigation, and Auto ads
+  // kept placing slots after a guide -> /pricing link click (seen live). Leaving the editorial
+  // pages after ads loaded therefore does one full page load, which starts ad-free.
+  useEffect(() => {
+    if (eligible) adsLoaded.current = true;
+    else if (adsLoaded.current) window.location.reload();
+  }, [eligible, pathname]);
+
+  if (!eligible) return null;
 
   return (
     <script

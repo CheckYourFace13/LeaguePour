@@ -5,7 +5,7 @@ import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 const URL = "https://venuesprocket.com/faq";
 
 export const metadata: Metadata = {
-  title: { absolute: "VenueSprocket FAQ — Private Event Management Questions Answered" },
+  title: { absolute: "VenueSprocket FAQ: Private Event Software Questions" },
   description:
     "Straight answers about VenueSprocket: inquiries, proposals, e-signature contracts, Stripe deposits, BEOs, pricing, and what the product does not do yet.",
   alternates: { canonical: URL },

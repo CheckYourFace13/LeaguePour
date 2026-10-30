@@ -12,7 +12,6 @@ import {
   buildFaqPageJsonLd,
   buildSoftwareApplicationJsonLd,
 } from "@/lib/seo/json-ld-builders";
-import { getDiscoveryGameBySlug } from "@/lib/seo/discovery-games";
 import { marketingImages } from "@/lib/marketing-images";
 import {
   BRACKET_ROADMAP_SECTION,
@@ -127,7 +126,6 @@ export async function SoftwareDiscoveryPage({ slug }: { slug: SoftwarePageSlug }
   if (!page) notFound();
 
   const path = `/software/${slug}`;
-  const game = page.gameSlug ? getDiscoveryGameBySlug(page.gameSlug) : null;
 
   const [venues, competitions] = page.kind
     ? await Promise.all([
@@ -195,7 +193,8 @@ export async function SoftwareDiscoveryPage({ slug }: { slug: SoftwarePageSlug }
       relatedLinks={[
         { href: page.legacyPath, label: "Full product page" },
         { href: "/features/tournaments", label: "Tournament features" },
-        ...(game ? [{ href: game.findPath, label: game.patronHeadline }] : []),
+        // The directory index only links games with live listings, so it's never an empty page.
+        { href: "/find", label: "Find game nights" },
         { href: "/compare/challonge", label: "vs Challonge" },
       ]}
       sponsorPromo={FEATURE_SPONSOR_PROMO}

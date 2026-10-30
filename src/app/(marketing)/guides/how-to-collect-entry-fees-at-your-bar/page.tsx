@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/guides/how-to-collect-entry-fees-at-your-bar", {
-  title: { absolute: "How to Collect Entry Fees at Your Bar (The Right Way) | LeaguePour" },
+  title: { absolute: "How to Collect Entry Fees at Your Bar | LeaguePour" },
   description:
     "Learn why cash entry fees create problems, how online payments via Stripe work for bar competitions, legal considerations, how to communicate fees to players, and how to handle refunds.",
   alternates: { canonical: "/guides/how-to-collect-entry-fees-at-your-bar" },
@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "refund policy bar tournament",
   ],
   openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
-    title: "How to Collect Entry Fees at Your Bar (The Right Way) | LeaguePour",
+    title: "How to Collect Entry Fees at Your Bar | LeaguePour",
     description:
       "Cash is a headache. Learn how online payments solve entry fee collection for bar leagues and tournaments.",
     url: "/guides/how-to-collect-entry-fees-at-your-bar",

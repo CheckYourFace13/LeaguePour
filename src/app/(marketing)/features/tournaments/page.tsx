@@ -18,7 +18,7 @@ import {
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/features/tournaments", {
   title: {
-    absolute: "Tournament & League Management for Bars & Breweries | LeaguePour",
+    absolute: "Tournament & League Software for Bars | LeaguePour",
   },
   description:
     "Bar tournament software, league management, paid signups, QR codes, venue event hubs, and local event discovery - plus brackets and venue-first operations for dart, cornhole, trivia, and brewery events.",

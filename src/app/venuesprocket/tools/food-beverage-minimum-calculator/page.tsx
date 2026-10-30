@@ -6,7 +6,7 @@ import { FbMinimumCalculator } from "@/components/venuesprocket/tools/fb-minimum
 const URL = "https://venuesprocket.com/tools/food-beverage-minimum-calculator";
 
 export const metadata: Metadata = {
-  title: { absolute: "Food & Beverage Minimum Calculator for Private Events | VenueSprocket" },
+  title: { absolute: "Food & Beverage Minimum Calculator | VenueSprocket" },
   description:
     "Free food and beverage minimum calculator: projected spend, shortfall, service charge, tax, and the guest count or per-guest spend needed to hit a minimum. Shows every step of the math.",
   alternates: { canonical: URL },

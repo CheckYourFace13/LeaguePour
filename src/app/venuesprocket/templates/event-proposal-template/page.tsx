@@ -20,7 +20,7 @@ const DESCRIPTION =
   "A free private event proposal template for restaurants, bars, and event spaces: a copy-and-fill proposal, a filled-in example, and a checklist of what to include.";
 
 export const metadata: Metadata = {
-  title: { absolute: "Private Event Proposal Template (Free, Copy & Fill) | VenueSprocket" },
+  title: { absolute: "Free Private Event Proposal Template | VenueSprocket" },
   description: DESCRIPTION,
   alternates: { canonical: URL },
   openGraph: { siteName: "VenueSprocket", images: [{ url: "/venuesprocket/opengraph-image", alt: "VenueSprocket - private event management software" }], title: "Private event proposal template", description: DESCRIPTION, url: URL },
@@ -59,7 +59,7 @@ Next step: reply to accept, sign the contract, and pay the deposit.`;
 
 const EXAMPLE = `PRIVATE EVENT PROPOSAL
 
-Prepared for:      Sam Rivera  ·  (555) 010-4477  ·  sam.rivera@example.com
+Prepared for:      Sam Rivera  ·  [Guest phone]  ·  [Guest email]
 Prepared by:       The Juniper Room  ·  Alex, events  ·  March 3
 
 THE EVENT
@@ -134,7 +134,7 @@ export default function ProposalTemplatePage() {
               <h2 className="font-display text-2xl font-bold text-vs-text">The template</h2>
               <PrintButton />
             </div>
-            <TemplateDownloads file="venuesprocket-event-proposal-template" docxKb={38} pdfKb={7} />
+            <TemplateDownloads file="venuesprocket-event-proposal-template" docxKb={38} pdfKb={6} />
             <TemplateText>{BLANK}</TemplateText>
           </section>
 

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/about", {
-  title: { absolute: "About LeaguePour | Bar League & Tournament Management Platform" },
+  title: { absolute: "About LeaguePour | Bar League & Tournament Software" },
   description:
     "LeaguePour helps bars and venues run dart leagues, cornhole tournaments, trivia nights, and pool leagues — with online signup, Stripe payments, standings, and player marketing built in.",
   alternates: { canonical: "/about" },

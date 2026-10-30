@@ -331,10 +331,10 @@ export function HomePage() {
             League management software for bars
           </Link>
           <Link
-            href="/find/dart-leagues"
+            href="/find"
             className="rounded-[10px] border border-lp-border bg-lp-surface/40 px-4 py-3 hover:text-lp-text"
           >
-            Find local dart leagues
+            Find a game night near you
           </Link>
           <Link
             href="/software/bar-tournament-software"

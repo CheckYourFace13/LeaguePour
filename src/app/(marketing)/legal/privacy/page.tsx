@@ -15,7 +15,7 @@ export default function PrivacyPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 md:px-6 md:py-20">
       <h1 className="font-display text-4xl font-bold">Privacy Policy</h1>
-      <p className="mt-4 text-sm text-lp-muted">Last updated: October 24, 2026</p>
+      <p className="mt-4 text-sm text-lp-muted">Last updated: October 29, 2026</p>
       <div className="prose prose-invert mt-10 max-w-none space-y-6 text-sm text-lp-muted leading-relaxed">
         <p>
           LeaguePour ("we", "us") operates leaguepour.com and provides software for bars and venues to run
@@ -73,8 +73,10 @@ export default function PrivacyPage() {
         <section className="space-y-3">
           <h2 className="font-display text-lg font-bold text-lp-text">Cookies and advertising</h2>
           <p>
-            LeaguePour uses cookies for authentication and analytics. Google AdSense may serve ads on public pages using
-            cookies per Google&apos;s policies. You can manage ad personalization through Google&apos;s ad settings.
+            LeaguePour uses cookies for authentication and analytics. Google AdSense may show ads, using cookies under
+            Google&apos;s policies, on our guide, rules and game-history pages only - never on sign-up, checkout, account
+            or competition pages. Where the law requires it, Google asks for your consent before personalized ads, and
+            you can manage ad personalization in Google&apos;s ad settings.
           </p>
         </section>
 

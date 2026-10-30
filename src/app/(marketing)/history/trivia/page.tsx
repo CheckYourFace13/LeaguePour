@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/history/trivia", {
-  title: { absolute: "History of Pub Trivia | How Quiz Night Conquered the Bar | LeaguePour" },
+  title: { absolute: "History of Pub Trivia and Quiz Night | LeaguePour" },
   description:
     "How pub trivia went from a British pub format in the 1970s to one of the most profitable recurring bar events in the world - the real history of quiz night.",
   alternates: { canonical: "/history/trivia" },
@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "Sharon Burns Tom Porter pub quiz",
   ],
   openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
-    title: "History of Pub Trivia | How Quiz Night Conquered the Bar | LeaguePour",
+    title: "History of Pub Trivia and Quiz Night | LeaguePour",
     description:
       "The real history of pub trivia - from 1970s Britain through Trivial Pursuit to packed bar nights every Tuesday across America.",
     url: "/history/trivia",

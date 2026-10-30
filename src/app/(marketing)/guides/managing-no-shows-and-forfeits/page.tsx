@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/guides/managing-no-shows-and-forfeits", {
-  title: { absolute: "Managing No-Shows and Forfeits in Bar Leagues | LeaguePour Guide" },
+  title: { absolute: "Managing No-Shows and Forfeits in Bar Leagues | LeaguePour" },
   description:
     "A practical forfeit policy for bar leagues: how to define a no-show, what counts as fair notice, how entry fees reduce no-shows, and how to keep the schedule fair when a team doesn't come.",
   alternates: { canonical: "/guides/managing-no-shows-and-forfeits" },
@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "bar league attendance policy",
   ],
   openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
-    title: "Managing No-Shows and Forfeits in Bar Leagues | LeaguePour Guide",
+    title: "Managing No-Shows and Forfeits in Bar Leagues | LeaguePour",
     description: "A fair, written forfeit policy that protects the teams who actually show up.",
     url: "/guides/managing-no-shows-and-forfeits",
   },

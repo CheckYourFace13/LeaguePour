@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/guides/how-standings-and-points-work", {
-  title: { absolute: "How Standings and Points Systems Work for Bar Leagues | LeaguePour Guide" },
+  title: { absolute: "How Bar League Standings and Points Work | LeaguePour" },
   description:
     "How points, wins, losses, and ties translate into league standings - the standard 3-1-0 system, tiebreakers, and why visible standings keep players coming back.",
   alternates: { canonical: "/guides/how-standings-and-points-work" },
@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "tiebreaker rules bar league",
   ],
   openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
-    title: "How Standings and Points Systems Work for Bar Leagues | LeaguePour Guide",
+    title: "How Bar League Standings and Points Work | LeaguePour",
     description: "The points system behind league standings, and why visible standings drive attendance.",
     url: "/guides/how-standings-and-points-work",
   },

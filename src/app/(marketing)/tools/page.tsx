@@ -5,7 +5,7 @@ import { toolMetadata } from "@/components/marketing/tools/tool-page";
 
 export const metadata = toolMetadata({
   path: "/tools",
-  title: "Free Bracket, Round Robin & Standings Tools for Bar Leagues | LeaguePour",
+  title: "Free Bracket & Standings Tools for Bar Leagues | LeaguePour",
   ogTitle: "Free bracket, round robin, and standings tools",
   description:
     "Free tools for bar leagues and tournaments: a single elimination bracket generator, a round robin schedule generator, and a standings calculator. No signup, printable.",

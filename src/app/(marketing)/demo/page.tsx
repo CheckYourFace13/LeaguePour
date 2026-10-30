@@ -83,9 +83,8 @@ export default async function DemoPage() {
         <Badge variant="accent" className="mx-auto">Demo</Badge>
         <h1 className="lp-page-title mt-4 text-4xl md:text-5xl">See a LeaguePour venue in action</h1>
         <p className="lp-page-sub mx-auto mt-5 max-w-2xl text-lg text-lp-text-soft">
-          Below is a sample competition page showing standings, results, and signup - the same
-          kind of public page your venue gets on LeaguePour. All names and scores here are made up
-          for illustration; this isn&apos;t a real venue or a real competition.
+          Below are two demo competition pages - standings, results, a bracket, and QR signup - the
+          same kind of public page your venue gets on LeaguePour. Teams and scores are made up.
         </p>
       </div>
 
@@ -93,11 +92,11 @@ export default async function DemoPage() {
       <div className="mt-14 rounded-2xl border border-lp-border bg-lp-surface/40 p-6 md:p-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="lp-kicker">Sample venue</p>
+            <p className="lp-kicker">Demo league</p>
             <p className="mt-1 font-display text-2xl font-extrabold tracking-tight text-lp-text">The Alley House</p>
             <p className="mt-1 text-sm text-lp-text-soft">Wednesday Night Pool League - Round Robin</p>
           </div>
-          <Badge variant="success">Signup open (demo)</Badge>
+          <Badge variant="success">Signup open</Badge>
         </div>
 
         {/* Standings */}
@@ -149,8 +148,8 @@ export default async function DemoPage() {
         </div>
 
         <p className="mt-6 text-center text-xs text-lp-muted">
-          Sample data shown for demonstration only. This page updates automatically and can be
-          displayed on a TV behind the bar as a live scoreboard.
+          On a real competition this page updates as scores are entered, and can run on a TV behind the
+          bar as a live scoreboard.
         </p>
       </div>
 
@@ -158,17 +157,17 @@ export default async function DemoPage() {
       <div className="mt-8 rounded-2xl border border-lp-border bg-lp-surface/40 p-6 md:p-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="lp-kicker">Sample venue</p>
+            <p className="lp-kicker">Demo league</p>
             <p className="mt-1 font-display text-2xl font-extrabold tracking-tight text-lp-text">The Alley House</p>
             <p className="mt-1 text-sm text-lp-text-soft">Friday Night Darts Shootout - Single Elimination</p>
           </div>
-          <Badge variant="accent">8-team bracket (demo)</Badge>
+          <Badge variant="accent">8-team bracket</Badge>
         </div>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_auto]">
           <div>
             <h2 className="mb-3 text-sm font-bold uppercase tracking-widest text-lp-muted">Tournament bracket</h2>
-            <BracketPreview title="Sample bracket" matches={bracketRows.map((r) => ({ ...r, homeScore: null, awayScore: null, completed: false }))} />
+            <BracketPreview title="8-team single elimination" matches={bracketRows.map((r) => ({ ...r, homeScore: null, awayScore: null, completed: false }))} />
           </div>
           <div className="flex flex-col items-center gap-3 lg:w-48">
             <h2 className="text-sm font-bold uppercase tracking-widest text-lp-muted">Scan to sign up</h2>
@@ -181,8 +180,7 @@ export default async function DemoPage() {
         </div>
 
         <p className="mt-6 text-center text-xs text-lp-muted">
-          Sample bracket for illustration only - built with the same bracket logic every single-elimination
-          competition uses, with placeholder team names.
+          Built with the same bracket logic every single-elimination competition uses.
         </p>
       </div>
 

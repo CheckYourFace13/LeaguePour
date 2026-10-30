@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/history/cornhole", {
-  title: { absolute: "History of Cornhole | The Origin of America's Backyard Game | LeaguePour" },
+  title: { absolute: "History of Cornhole: America's Backyard Game | LeaguePour" },
   description:
     "The disputed origins of cornhole - Ohio vs Wisconsin claims, German immigrant theories, 19th century rural roots, the ACA's founding in 2005, and how it became a bar league staple.",
   alternates: { canonical: "/history/cornhole" },
@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "bar cornhole league",
   ],
   openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
-    title: "History of Cornhole | The Origin of America's Backyard Game | LeaguePour",
+    title: "History of Cornhole: America's Backyard Game | LeaguePour",
     description:
       "Ohio says they invented it. Wisconsin disagrees. The real story of how cornhole went from rural pastime to American institution.",
     url: "/history/cornhole",

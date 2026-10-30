@@ -151,7 +151,7 @@ export default function BeoTemplateGuide() {
 
           <section className="mb-10">
             <h2 className="font-display text-2xl font-bold text-vs-text mb-4">The template</h2>
-            <TemplateDownloads file="venuesprocket-beo-template" docxKb={39} pdfKb={8} />
+            <TemplateDownloads file="venuesprocket-beo-template" docxKb={39} pdfKb={7} />
             <p className="text-vs-text-soft leading-relaxed mb-6">
               Fields marked <span className="font-semibold text-vs-accent">Required</span> should be
               filled in for every event, no exceptions - staff will look for these first. Fields marked{" "}
@@ -199,7 +199,7 @@ SETUP START: 5:00 PM | GUEST ARRIVAL: 7:00 PM | EVENT END: 11:00 PM
 ROOM: Taproom back patio (full buyout)
 GUEST COUNT: 45 confirmed
 
-CLIENT: Dana Marino | (555) 019-2244 | dana.marino@example.com
+CLIENT: Dana Marino | [Guest phone] | [Guest email]
 DAY-OF CONTACT: same as client
 EVENT MANAGER: James (assistant manager)
 

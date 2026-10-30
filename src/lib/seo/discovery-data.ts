@@ -58,10 +58,30 @@ async function indexableCompetitions(where: { city?: OutreachCityRecord; kind?: 
       ...(where.kind ? { kind: where.kind } : {}),
       venue: where.city ? cityWhere(where.city) : { isDisabled: false },
     },
-    select: { title: true, slug: true, kind: true, venue: { select: { city: true, state: true } } },
+    select: { id: true, venueId: true, title: true, slug: true, kind: true, venue: { select: { city: true, state: true } } },
     take: 5000,
   });
   return rows.filter((c) => !isPlaceholderCompetition(c));
+}
+
+/**
+ * The directory's single eligibility rule, also used for its navigation and indexing: a
+ * competition is listed only if it passes indexableCompetitions(), and a venue only if it has at
+ * least one such competition. Drafts, finished/past events, placeholders and disabled venues never
+ * appear; a venue's own pages are unaffected.
+ */
+async function listableIds(where: { city?: OutreachCityRecord; kind?: CompetitionKind }) {
+  const rows = await indexableCompetitions(where);
+  return { competitionIds: rows.map((c) => c.id), venueIds: [...new Set(rows.map((c) => c.venueId))] };
+}
+
+/** Game kinds that currently have at least one listable competition (for discovery navigation). */
+export async function getListableKinds(where: { city?: OutreachCityRecord } = {}): Promise<Set<CompetitionKind>> {
+  try {
+    return new Set((await indexableCompetitions(where)).map((c) => c.kind));
+  } catch {
+    return new Set();
+  }
 }
 
 export async function hasIndexableListings(where: { city?: OutreachCityRecord; kind?: CompetitionKind }): Promise<boolean> {
@@ -79,20 +99,9 @@ export async function fetchDiscoveryVenuesForCity(
 ): Promise<DiscoveryVenueRow[]> {
   const base = getPublicSiteUrl();
   try {
+    const { venueIds } = await listableIds({ city, kind });
     const venues = await prisma.venue.findMany({
-      where: {
-        ...cityWhere(city),
-        ...(kind
-          ? {
-              competitions: {
-                some: {
-                  kind,
-                  status: { in: [...ACTIVE_STATUSES] },
-                },
-              },
-            }
-          : {}),
-      },
+      where: { ...cityWhere(city), id: { in: venueIds } },
       select: {
         id: true,
         name: true,
@@ -136,8 +145,10 @@ export async function fetchDiscoveryCompetitionsForCity(
   const base = getPublicSiteUrl();
   const now = new Date();
   try {
+    const { competitionIds } = await listableIds({ city, kind });
     const rows = await prisma.competition.findMany({
       where: {
+        id: { in: competitionIds },
         status: { in: [...ACTIVE_STATUSES] },
         venue: cityWhere(city),
         ...(kind ? { kind } : {}),
@@ -179,7 +190,7 @@ export async function fetchDiscoveryCompetitionsForCity(
   }
 }
 
-/** Nationwide patron discovery - real published rows only. */
+/** Nationwide patron discovery - listable rows only (see listableIds). */
 export async function fetchDiscoveryCompetitionsForKind(
   kind: CompetitionKind,
   take = 32,
@@ -187,8 +198,10 @@ export async function fetchDiscoveryCompetitionsForKind(
   const base = getPublicSiteUrl();
   const now = new Date();
   try {
+    const { competitionIds } = await listableIds({ kind });
     const rows = await prisma.competition.findMany({
       where: {
+        id: { in: competitionIds },
         kind,
         status: { in: [...ACTIVE_STATUSES] },
         venue: { isDisabled: false },
@@ -236,13 +249,9 @@ export async function fetchDiscoveryVenuesForKind(
 ): Promise<DiscoveryVenueRow[]> {
   const base = getPublicSiteUrl();
   try {
+    const { venueIds } = await listableIds({ kind });
     const venues = await prisma.venue.findMany({
-      where: {
-        isDisabled: false,
-        competitions: {
-          some: { kind, status: { in: [...ACTIVE_STATUSES] } },
-        },
-      },
+      where: { isDisabled: false, id: { in: venueIds } },
       select: {
         id: true,
         name: true,
@@ -275,12 +284,12 @@ export async function fetchDiscoveryVenuesForKind(
   }
 }
 
-/** Cities with at least one indexable listing (see indexableCompetitions), regardless of game. */
-export async function getCitySlugsWithRealData(): Promise<Set<string>> {
+/** Cities with at least one indexable listing (see indexableCompetitions), optionally for one game. */
+export async function getCitySlugsWithRealData(kind?: CompetitionKind): Promise<Set<string>> {
   const { getOutreachCitySlug } = await import("@/lib/seo/outreach-city-slugs");
   const slugs = new Set<string>();
   try {
-    for (const c of await indexableCompetitions()) {
+    for (const c of await indexableCompetitions(kind ? { kind } : {})) {
       if (c.venue.city && c.venue.state) slugs.add(getOutreachCitySlug(c.venue.city, c.venue.state));
     }
   } catch {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { brandedTitle } from "@/lib/seo/title";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
@@ -45,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: "Not found", robots: { index: false, follow: false } };
   }
   return {
-    title: { absolute: `${guide.title} | VenueSprocket` },
+    title: { absolute: brandedTitle(guide.title, "VenueSprocket") },
     description: guide.description,
     alternates: { canonical: `https://venuesprocket.com/guides/${slug}` },
     openGraph: {

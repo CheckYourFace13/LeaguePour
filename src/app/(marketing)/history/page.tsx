@@ -6,7 +6,7 @@ import { PagePrintButton } from "@/components/marketing/print-button";
 
 export async function generateMetadata(): Promise<Metadata> {
   return applyManagedMetadata("/history", {
-  title: { absolute: "Bar Game History | How Your Favorite Bar Games Came to Be | LeaguePour" },
+  title: { absolute: "Bar Game History: How Your Favorite Games Began | LeaguePour" },
   description:
     "The real history behind the games your bar runs every week - darts, cornhole, billiards, trivia, and shuffleboard. Where they started, how they spread, and why they stuck.",
   alternates: { canonical: "/history" },
@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "shuffleboard history",
   ],
   openGraph: { siteName: "LeaguePour", images: [{ url: "/opengraph-image", alt: "LeaguePour - venue competition software for bars" }],
-    title: "Bar Game History | How Your Favorite Bar Games Came to Be | LeaguePour",
+    title: "Bar Game History: How Your Favorite Games Began | LeaguePour",
     description:
       "The real history behind darts, cornhole, billiards, trivia, and shuffleboard - where they came from and why they're still packing bars.",
     url: "/history",
