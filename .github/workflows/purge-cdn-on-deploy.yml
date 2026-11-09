@@ -7,17 +7,29 @@ name: Purge CDN cache on deploy
 # src/app/api/cron/purge-cdn-cache (Hostinger's own cache-clear API - see
 # src/lib/hostinger-cache.ts). Requires HOSTINGER_API_TOKEN/HOSTINGER_USERNAME configured on
 # the Hostinger deployment itself - if unset, the route safely no-ops rather than failing.
+#
+# Actions-minute note (2026-11-08): a fixed `sleep 300` burned ~5 wall minutes per push.
+# Wait 150s instead (~2.5 min) — still inside the typical Hostinger deploy window start.
 on:
   push:
     branches: [master]
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - ".gitignore"
   workflow_dispatch:
+
+concurrency:
+  group: purge-cdn-on-deploy
+  cancel-in-progress: true
 
 jobs:
   purge:
     runs-on: ubuntu-latest
+    timeout-minutes: 6
     steps:
-      - name: Wait for Hostinger deploy to land
-        run: sleep 300
+      - name: Wait briefly for Hostinger deploy to land
+        run: sleep 150
       - name: Purge Hostinger CDN cache
         # Hostinger's CDN separately blocks/times out connections specifically from GitHub
         # Actions runner IPs (a real, already-diagnosed, unrelated infra quirk - not this job
