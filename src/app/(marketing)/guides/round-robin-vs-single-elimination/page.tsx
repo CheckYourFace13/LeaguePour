@@ -190,7 +190,9 @@ export default function RoundRobinVsSingleEliminationGuide() {
               team gets a second chance in a losers&apos; bracket before elimination - isn&apos;t an
               auto-generated format yet. Run it today with the Custom format, adding each match
               manually and tracking the winners/losers brackets yourself; note the format in your
-              event&apos;s house rules so players know what to expect.
+              event&apos;s house rules so players know what to expect. The free{" "}
+              <Link href="/tools/double-elimination-bracket-generator" className="font-semibold text-lp-accent hover:underline">double elimination bracket generator</Link>{" "}
+              maps out every match for you to print or share.
             </p>
           </section>
 

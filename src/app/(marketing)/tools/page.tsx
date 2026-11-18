@@ -8,7 +8,7 @@ export const metadata = toolMetadata({
   title: "Free Bracket & Standings Tools for Bar Leagues | LeaguePour",
   ogTitle: "Free bracket, round robin, and standings tools",
   description:
-    "Free tools for bar leagues and tournaments: a single elimination bracket generator, a round robin schedule generator, and a standings calculator. No signup, printable.",
+    "Free tools for bar leagues and tournaments: single and double elimination bracket generators, a round robin schedule generator, and a standings calculator. No signup.",
 });
 
 const tools = [
@@ -17,6 +17,12 @@ const tools = [
     title: "Single elimination bracket generator",
     body: "Paste 2 to 64 teams and get the full bracket, with byes placed automatically and every later round mapped out.",
     best: "One-night tournaments",
+  },
+  {
+    href: "/tools/double-elimination-bracket-generator",
+    title: "Double elimination bracket generator",
+    body: "Build winners and losers brackets for 4 to 64 teams, enter results through the grand final, then print or share a link.",
+    best: "Two-loss tournaments",
   },
   {
     href: "/tools/round-robin-schedule-generator",
@@ -57,11 +63,12 @@ export default function LpToolsPage() {
       <p className="lp-kicker">Free tools · no signup</p>
       <h1 className="lp-page-title mt-2 text-4xl md:text-5xl">Free bracket and league tools</h1>
       <p className="mt-4 max-w-3xl text-lg leading-relaxed text-lp-text-soft">
-        Build a bracket, schedule a league, or work out the standings in your browser. They use the
-        same rules LeaguePour runs live, they print cleanly, and they don&apos;t save or send anything.
+        Build a bracket, schedule a league, or work out the standings in your browser. They print
+        cleanly and don&apos;t save anything. The double elimination generator is planning-only; the
+        others use the same rules LeaguePour runs live.
       </p>
 
-      <div className="mt-10 grid gap-5 md:grid-cols-3">
+      <div className="mt-10 grid gap-5 md:grid-cols-2">
         {tools.map((t) => (
           <Link key={t.href} href={t.href} className="group flex flex-col rounded-2xl border border-lp-border bg-lp-surface/50 p-6 transition-colors hover:border-lp-accent">
             <p className="lp-kicker">{t.best}</p>
@@ -78,7 +85,9 @@ export default function LpToolsPage() {
           A <strong className="text-lp-text">single elimination bracket</strong> needs the fewest matches -
           one fewer than the number of entrants - so it fits a big field into one night. A{" "}
           <strong className="text-lp-text">round robin</strong> gives everyone the same number of games and
-          suits a weekly league, but the match count grows quickly: 8 teams is 28 matches. Our guide to{" "}
+          suits a weekly league, but the match count grows quickly: 8 teams is 28 matches.{" "}
+          <strong className="text-lp-text">Double elimination</strong> gives everyone a second chance for
+          about twice the matches of single elimination. Our guide to{" "}
           <Link href="/guides/round-robin-vs-single-elimination" className="font-semibold text-lp-accent hover:underline">round robin vs. single elimination</Link>{" "}
           walks through the choice.
         </p>
@@ -88,8 +97,8 @@ export default function LpToolsPage() {
         <p className="font-display text-xl font-bold text-lp-text">Run it live with LeaguePour</p>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-lp-text-soft">
           These tools are calculators - nothing is saved. LeaguePour runs the real thing: QR code
-          signup, entry fees, brackets and schedules generated from actual registrations, staff score
-          entry, and standings on a public page.
+          signup, entry fees, single elimination brackets and round robin schedules generated from
+          actual registrations, staff score entry, and standings on a public page.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <Button asChild>

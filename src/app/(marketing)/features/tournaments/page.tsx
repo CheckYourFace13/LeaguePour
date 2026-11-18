@@ -495,6 +495,11 @@ export default function TournamentsFeaturePage() {
                   <div className="rounded-lg border border-lp-border/80 bg-lp-bg/50 p-4">
                     <p className="text-xs font-bold uppercase tracking-wider text-lp-success">Today</p>
                     <p className="mt-2 text-sm text-lp-muted leading-relaxed">{f.liveToday}</p>
+                    {f.id === "double-elimination" ? (
+                      <Link href="/tools/double-elimination-bracket-generator" className="mt-2 inline-block text-sm font-semibold text-lp-accent hover:underline">
+                        Plan one with the free bracket generator →
+                      </Link>
+                    ) : null}
                   </div>
                   <div className="rounded-lg border border-lp-border/80 bg-lp-bg/50 p-4">
                     <p className="text-xs font-bold uppercase tracking-wider text-lp-accent">Bracket engine next</p>

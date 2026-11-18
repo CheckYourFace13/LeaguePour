@@ -28,6 +28,7 @@ Related product:
 
 ## Free tools (no signup, nothing saved)
 - [Single elimination bracket generator](https://leaguepour.com/tools/single-elimination-bracket-generator)
+- [Double elimination bracket generator](https://leaguepour.com/tools/double-elimination-bracket-generator): planning tool; double elimination is not a live LeaguePour format
 - [Round robin schedule generator](https://leaguepour.com/tools/round-robin-schedule-generator)
 - [Standings calculator](https://leaguepour.com/tools/standings-calculator)
 

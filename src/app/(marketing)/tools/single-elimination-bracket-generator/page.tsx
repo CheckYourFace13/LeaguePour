@@ -62,7 +62,9 @@ export default function BracketGeneratorPage() {
               The trade-off: half the field plays once and goes home. If you want everyone to get
               several games - a weekly league, or a small field - use a{" "}
               <Link href="/tools/round-robin-schedule-generator" className="font-semibold text-lp-accent hover:underline">round robin schedule</Link>{" "}
-              instead. Our guide compares{" "}
+              instead, or give everyone a second chance with a{" "}
+              <Link href="/tools/double-elimination-bracket-generator" className="font-semibold text-lp-accent hover:underline">double elimination bracket</Link>.
+              Our guide compares{" "}
               <Link href="/guides/round-robin-vs-single-elimination" className="font-semibold text-lp-accent hover:underline">round robin vs. single elimination</Link>{" "}
               in detail.
             </p>

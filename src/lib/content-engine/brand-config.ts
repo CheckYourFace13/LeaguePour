@@ -45,7 +45,7 @@ export const BRANDS: Record<Brand, BrandConfig> = {
     staticKnownPaths: [
       "/", "/guides", "/pricing", "/demo", "/features", "/features/tournaments", "/for-venues", "/for-players",
       "/signup/venue", "/faq", "/how-it-works", "/contact",
-      "/tools", "/tools/single-elimination-bracket-generator", "/tools/round-robin-schedule-generator", "/tools/standings-calculator",
+      "/tools", "/tools/single-elimination-bracket-generator", "/tools/double-elimination-bracket-generator", "/tools/round-robin-schedule-generator", "/tools/standings-calculator",
       "/guides/bar-competition-ideas", "/guides/bar-trivia-night-guide", "/guides/cornhole-tournament-ideas-for-bars",
       "/guides/how-standings-and-points-work", "/guides/how-to-collect-entry-fees-at-your-bar",
       "/guides/how-to-increase-bar-traffic-on-slow-nights", "/guides/how-to-run-a-dart-league-at-your-bar",

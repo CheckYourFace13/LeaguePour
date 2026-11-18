@@ -143,7 +143,9 @@ export default function CornholeTournamentIdeas() {
               bracket, and the whole event creates more matches, more play time, and more bar spend per
               team. It's the format to reach for once it's available - LeaguePour's automatic bracket
               engine covers Single elimination and Round robin today, so run double elimination manually
-              with Custom in the meantime.
+              with Custom in the meantime. Our free{" "}
+              <Link href="/tools/double-elimination-bracket-generator" className="font-semibold text-lp-accent hover:underline">double elimination bracket generator</Link>{" "}
+              lays out the matches.
             </p>
             <p className="mt-4">
               <strong>Single elimination</strong> is faster and easier to manage, and LeaguePour generates

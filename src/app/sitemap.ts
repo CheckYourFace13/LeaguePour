@@ -97,6 +97,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...findPaths,
     "/tools",
     "/tools/single-elimination-bracket-generator",
+    "/tools/double-elimination-bracket-generator",
     "/tools/round-robin-schedule-generator",
     "/tools/standings-calculator",
     "/guides",

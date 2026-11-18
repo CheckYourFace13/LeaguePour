@@ -24,6 +24,7 @@ export function ToolPage({
   children,
   article,
   faqs,
+  cta,
 }: {
   path: string;
   name: string;
@@ -32,6 +33,8 @@ export function ToolPage({
   children: React.ReactNode;
   article: React.ReactNode;
   faqs: { q: string; a: string }[];
+  /** Replaces the default "run this live" pitch for tools whose format isn't live in the product. */
+  cta?: { title: string; body: string; secondaryHref: string; secondaryLabel: string };
 }) {
   const jsonLd = {
     "@context": "https://schema.org",
@@ -75,18 +78,17 @@ export function ToolPage({
       <div className="mt-10">{children}</div>
 
       <div className="mt-12 rounded-2xl border-2 border-lp-accent/30 bg-lp-surface/60 p-7 print:hidden">
-        <p className="font-display text-xl font-bold text-lp-text">Run this live with LeaguePour</p>
+        <p className="font-display text-xl font-bold text-lp-text">{cta?.title ?? "Run this live with LeaguePour"}</p>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-lp-text-soft">
-          This page doesn&apos;t save or publish anything - it&apos;s a calculator. LeaguePour does the
-          live version: players sign up from a QR code, the bracket or schedule is generated from
-          real registrations, staff enter scores, and standings update on a public page.
+          {cta?.body ??
+            "This page doesn't save or publish anything - it's a calculator. LeaguePour does the live version: players sign up from a QR code, the bracket or schedule is generated from real registrations, staff enter scores, and standings update on a public page."}
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <Button asChild>
             <Link href="/signup/venue">Set up your venue</Link>
           </Button>
           <Button asChild variant="secondary">
-            <Link href="/demo">See the demo</Link>
+            <Link href={cta?.secondaryHref ?? "/demo"}>{cta?.secondaryLabel ?? "See the demo"}</Link>
           </Button>
         </div>
       </div>
