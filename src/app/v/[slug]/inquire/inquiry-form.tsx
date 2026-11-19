@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createPrivateEventLeadPublic } from "@/lib/actions/vs";
 import { trackEvent } from "@/lib/analytics";
 
@@ -21,12 +21,30 @@ export default function InquirePageClient({
   venueId,
   venueName,
   venueCity,
+  embed = false,
 }: {
   venueId: string;
   venueName: string;
   venueCity?: string | null;
+  /** Rendered inside an <iframe> on the venue's own website (?embed=1). */
+  embed?: boolean;
 }) {
   const [submitted, setSubmitted] = useState(false);
+
+  // Embedded: tell the host page our height so its iframe can grow/shrink with the form (the
+  // snippet's listener only accepts messages from this origin). Height is the only data sent.
+  useEffect(() => {
+    if (!embed || typeof window === "undefined" || window.parent === window) return;
+    const post = () =>
+      window.parent.postMessage(
+        { type: "venuesprocket:inquiry-height", height: Math.ceil(document.documentElement.scrollHeight) },
+        "*",
+      );
+    post();
+    const ro = new ResizeObserver(post);
+    ro.observe(document.body);
+    return () => ro.disconnect();
+  }, [embed, submitted]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -36,19 +54,20 @@ export default function InquirePageClient({
     setError(null);
     const fd = new FormData(e.currentTarget);
     fd.set("venueId", venueId);
+    if (embed) fd.set("source", "website_embed");
     const result = await createPrivateEventLeadPublic(fd);
     setLoading(false);
     if (result && "error" in result) {
       setError(result.error ?? "Something went wrong");
     } else {
-      trackEvent("inquiry_received", { product: "vs", venueId });
+      trackEvent("inquiry_received", { product: "vs", venueId, source: embed ? "website_embed" : "inquiry_form" });
       setSubmitted(true);
     }
   }
 
   if (submitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--vs-bg)] px-4">
+      <div className={`${embed ? "py-8" : "min-h-screen"} flex items-center justify-center bg-[var(--vs-bg)] px-4`}>
         <div className="max-w-md w-full text-center rounded-2xl border border-[var(--vs-accent)]/30 bg-[var(--vs-surface)] p-10">
           <div className="text-5xl mb-4">🎉</div>
           <h2 className="font-display text-2xl font-bold text-[var(--vs-text)] mb-3">
@@ -59,7 +78,7 @@ export default function InquirePageClient({
             be in touch shortly to discuss the details of your event.
           </p>
           <p className="mt-4 text-sm text-[var(--vs-muted)]">
-            Keep an eye on your inbox — we'll follow up soon.
+            Keep an eye on your inbox — we&apos;ll follow up soon.
           </p>
         </div>
       </div>
@@ -67,21 +86,21 @@ export default function InquirePageClient({
   }
 
   return (
-    <div className="min-h-screen bg-[var(--vs-bg)] px-4 py-12">
+    <div className={`bg-[var(--vs-bg)] px-4 ${embed ? "py-4" : "min-h-screen py-12"}`}>
       <div className="mx-auto max-w-lg">
         {/* Header */}
-        <div className="mb-8 text-center">
+        <div className={`${embed ? "mb-5" : "mb-8"} text-center`}>
           <p className="text-xs font-bold uppercase tracking-widest text-[var(--vs-muted)] mb-1">
             Private event inquiry
           </p>
-          <h1 className="font-display text-3xl font-extrabold text-[var(--vs-text)]">
+          <h1 className={`font-display ${embed ? "text-2xl" : "text-3xl"} font-extrabold text-[var(--vs-text)]`}>
             {venueName}
           </h1>
           {venueCity && (
             <p className="mt-1 text-[var(--vs-muted)]">{venueCity}</p>
           )}
           <p className="mt-3 text-[var(--vs-text-soft)]">
-            Tell us about your event and we'll get back to you quickly.
+            Tell us about your event and we&apos;ll get back to you quickly.
           </p>
         </div>
 

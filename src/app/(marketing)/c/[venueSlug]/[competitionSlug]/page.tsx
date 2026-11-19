@@ -192,6 +192,14 @@ export default async function PublicCompetitionPage({
             <Link href={`/c/${venueSlug}/${competitionSlug}/scoreboard`}>Live scoreboard</Link>
           </Button>
         )}
+        {comp.status !== "DRAFT" && comp.status !== "ARCHIVED" && comp.status !== "COMPLETED" ? (
+          <a
+            href={`/c/${venueSlug}/${competitionSlug}/calendar`}
+            className="inline-flex min-h-10 items-center text-sm font-semibold text-lp-accent hover:underline"
+          >
+            Add to calendar
+          </a>
+        ) : null}
       </div>
 
       <Card className="mt-8 space-y-4 p-5 md:p-6">

@@ -33,10 +33,13 @@ export async function generateMetadata({
 
 export default async function InquireServerPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ embed?: string }>;
 }) {
   const { slug } = await params;
+  const { embed } = await searchParams;
   const venue = await prisma.venue.findUnique({
     where: { slug, isDisabled: false },
     select: { id: true, name: true, city: true, state: true },
@@ -48,6 +51,7 @@ export default async function InquireServerPage({
       venueId={venue.id}
       venueName={venue.name}
       venueCity={venue.city}
+      embed={embed === "1"}
     />
   );
 }

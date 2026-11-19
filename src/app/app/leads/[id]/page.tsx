@@ -6,6 +6,7 @@ import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import { updateLeadStatus, createEventFromLead } from "@/lib/actions/vs";
 import { getVsEntitlements } from "@/lib/entitlements/vs";
 import { VsLockedFeature } from "@/components/venuesprocket/vs-locked-feature";
+import { mailtoHref, replyTemplates } from "@/lib/vs-reply-templates";
 
 const STATUSES = ["NEW", "CONTACTED", "PROPOSAL_SENT", "CONTRACT_SENT", "DEPOSIT_PENDING", "BOOKED", "COMPLETED", "LOST"];
 
@@ -20,7 +21,11 @@ export default async function VsLeadDetailPage({ params }: { params: Promise<{ i
     include: { privateEvent: true },
   });
   if (!lead) notFound();
-  const { features } = await getVsEntitlements(access.venueId);
+  const [{ features }, venue] = await Promise.all([
+    getVsEntitlements(access.venueId),
+    prisma.venue.findUnique({ where: { id: access.venueId }, select: { name: true } }),
+  ]);
+  const templates = replyTemplates(lead, venue?.name ?? "our venue");
 
   return (
     <div className="space-y-6 max-w-2xl">
@@ -84,6 +89,16 @@ export default async function VsLeadDetailPage({ params }: { params: Promise<{ i
             <p className="text-xs text-[var(--vs-muted)] uppercase tracking-wide mb-1">Budget</p>
             <p className="font-medium text-[var(--vs-text)]">{lead.budgetRange ?? "Not specified"}</p>
           </div>
+          <div>
+            <p className="text-xs text-[var(--vs-muted)] uppercase tracking-wide mb-1">Came from</p>
+            <p className="font-medium text-[var(--vs-text)]">
+              {lead.source === "website_embed"
+                ? "Form on your website"
+                : lead.source === "inquiry_form"
+                  ? "Your inquiry page"
+                  : lead.source ?? "Not recorded"}
+            </p>
+          </div>
         </div>
         {lead.notes && (
           <div>
@@ -134,14 +149,24 @@ export default async function VsLeadDetailPage({ params }: { params: Promise<{ i
           </div>
         </div>
 
-        {/* Quick reply */}
+        {/* Quick reply templates: open in the venue's own email app, prefilled */}
         <div>
-          <a
-            href={`mailto:${lead.customerEmail}?subject=Re: Your private event inquiry&body=Hi ${lead.customerName},%0D%0A%0D%0AThank you for reaching out about your upcoming ${lead.eventType.toLowerCase().replace(/_/g, " ")}. We'd love to help you plan a great event.%0D%0A%0D%0ACould we schedule a quick call to go over the details?%0D%0A%0D%0ABest,%0D%0A`}
-            className="block w-full text-center rounded-lg border border-[var(--vs-border)] bg-[var(--vs-surface)] px-4 py-2.5 text-sm font-semibold text-[var(--vs-text)] hover:border-[var(--vs-accent)] transition-colors"
-          >
-            Reply by email ↗
-          </a>
+          <p className="mb-2 text-sm font-medium text-[var(--vs-text)]">Reply by email</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {templates.map((t) => (
+              <a
+                key={t.key}
+                href={mailtoHref(lead.customerEmail, t)}
+                className="block text-center rounded-lg border border-[var(--vs-border)] bg-[var(--vs-surface)] px-4 py-2.5 text-sm font-semibold text-[var(--vs-text)] hover:border-[var(--vs-accent)] transition-colors"
+              >
+                {t.label} ↗
+              </a>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-[var(--vs-muted)]">
+            Opens a prefilled draft in your email app, so you can edit it before sending. Remember to move the lead
+            to Contacted afterwards.
+          </p>
         </div>
       </div>
     </div>

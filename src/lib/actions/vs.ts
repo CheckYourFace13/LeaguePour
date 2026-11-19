@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
+import { after } from "next/server";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
@@ -16,6 +17,10 @@ import { VS_HOST } from "@/lib/vs-routing";
 import { logOperationalFailure } from "@/lib/operational-failure";
 import { getVsEntitlements, vsUpgradePath, type VsFeature } from "@/lib/entitlements/vs";
 import { parseDepositField, resolveProposalDepositCents } from "@/lib/vs-proposal-deposit";
+import { sendVenueWebhook } from "@/lib/integrations/webhooks";
+
+/** Lead sources a public form may claim; anything else is recorded as the plain inquiry form. */
+const PUBLIC_LEAD_SOURCES = new Set(["inquiry_form", "website_embed"]);
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -69,6 +74,8 @@ export async function createPrivateEventLeadPublic(formData: FormData) {
   const guestCount = formData.get("guestCount") ? Number(formData.get("guestCount")) : null;
   const budgetRange = String(formData.get("budgetRange") || "") || null;
   const notes = String(formData.get("notes") || "") || null;
+  const claimedSource = String(formData.get("source") || "");
+  const source = PUBLIC_LEAD_SOURCES.has(claimedSource) ? claimedSource : "inquiry_form";
 
   const lead = await prisma.privateEventLead.create({
     data: {
@@ -81,9 +88,32 @@ export async function createPrivateEventLeadPublic(formData: FormData) {
       guestCount,
       budgetRange,
       notes,
-      source: "inquiry_form",
+      source,
     },
   });
+
+  // Venue-configured outbound webhook (Zapier/Make/n8n/CRM). Runs after the response so a slow or
+  // failing endpoint never delays the guest; failures land in OperationalFailure.
+  after(() =>
+    sendVenueWebhook(venueId, "lead.created", {
+      lead: {
+        id: lead.id,
+        status: lead.status,
+        source,
+        event_type: lead.eventType,
+        preferred_date: lead.preferredDate ? lead.preferredDate.toISOString().slice(0, 10) : null,
+        guest_count: lead.guestCount,
+        budget_range: lead.budgetRange,
+        customer_name: lead.customerName,
+        customer_email: lead.customerEmail,
+        customer_phone: lead.customerPhone,
+        notes: lead.notes,
+        created_at: lead.createdAt.toISOString(),
+        // Same origin the lead-notification email links to (sign-in works there).
+        dashboard_url: `${process.env.NEXTAUTH_URL ?? "https://leaguepour.com"}/app/leads/${lead.id}`,
+      },
+    }),
+  );
 
   // Fetch venue contact info for notification email
   const venue = await prisma.venue.findUnique({

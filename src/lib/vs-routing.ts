@@ -47,6 +47,7 @@ const exactRules: VsPathRule[] = [
   { source: "/tools/event-profit-calculator", destination: "/venuesprocket/tools/event-profit-calculator" },
   { source: "/tools/room-rental-pricing-calculator", destination: "/venuesprocket/tools/room-rental-pricing-calculator" },
   { source: "/bundle", destination: "/venuesprocket/bundle" },
+  { source: "/integrations", destination: "/venuesprocket/integrations" },
   { source: "/llms.txt", destination: "/venuesprocket/llms.txt" },
   // The root app/manifest.ts file convention emits <link rel="manifest" href="/manifest.webmanifest">
   // on every page, which takes precedence over venuesprocket/layout.tsx's own metadata.manifest -

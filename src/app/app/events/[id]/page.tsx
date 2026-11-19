@@ -79,6 +79,12 @@ export default async function VsEventDetailPage({ params }: { params: Promise<{ 
           {event.startTime} – {event.endTime}
           {event.guestCountEstimated ? ` · ~${event.guestCountEstimated} guests` : ""}
         </p>
+        <a
+          href={`/app/events/${event.id}/calendar`}
+          className="mt-2 inline-flex text-sm font-semibold text-[var(--vs-accent)] hover:underline"
+        >
+          Add to calendar (.ics)
+        </a>
       </div>
 
       {/* Customer */}

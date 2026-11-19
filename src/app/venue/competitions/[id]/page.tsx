@@ -355,7 +355,68 @@ export default async function CompetitionDetailPage({
           )}
         </div>
       </div>
-      <img src={qr} alt="Competition signup QR code" className="h-24 w-24 rounded border border-lp-border bg-lp-bg p-1" />
+      <Card className="flex flex-col gap-5 md:flex-row md:items-start">
+        <img
+          src={qr}
+          alt="Competition signup QR code"
+          className="h-28 w-28 shrink-0 rounded border border-lp-border bg-white p-1"
+        />
+        <div className="min-w-0 flex-1 space-y-3">
+          <div>
+            <p className="lp-kicker">Share &amp; display</p>
+            <p className="mt-1 text-sm text-lp-muted">
+              Print the QR for tables and the bar, put the scoreboard on a TV, and let players save the date.
+            </p>
+          </div>
+          <ul className="grid gap-2 text-sm sm:grid-cols-2">
+            <li>
+              <Link
+                href={`/c/${comp.venue.slug}/${comp.slug}/scoreboard?tv=1`}
+                target="_blank"
+                className="font-semibold text-lp-accent hover:underline"
+              >
+                TV scoreboard ↗
+              </Link>
+              <span className="block text-xs text-lp-muted">
+                Open this link in the TV&apos;s browser (or bookmark it). Big-screen layout, refreshes every 30 seconds, shows the signup QR.
+              </span>
+            </li>
+            <li>
+              <a href={qr} download={`${comp.slug}-signup-qr.png`} className="font-semibold text-lp-accent hover:underline">
+                Signup QR (PNG)
+              </a>
+              <span className="block text-xs text-lp-muted">Players scan it to open the signup page. No app needed.</span>
+            </li>
+            <li>
+              <a href={`/c/${comp.venue.slug}/${comp.slug}/calendar`} className="font-semibold text-lp-accent hover:underline">
+                Add-to-calendar file (.ics)
+              </a>
+              <span className="block text-xs text-lp-muted">Also linked on the public page for players.</span>
+            </li>
+            {canEditResults ? (
+              <li>
+                <span className="font-semibold text-lp-text">Export CSV:</span>{" "}
+                {canDuplicate ? (
+                  <>
+                    <a href={`/venue/competitions/${comp.id}/export/registrations`} className="text-lp-accent hover:underline">
+                      registrations
+                    </a>
+                    {" · "}
+                  </>
+                ) : null}
+                <a href={`/venue/competitions/${comp.id}/export/standings`} className="text-lp-accent hover:underline">
+                  standings
+                </a>
+                {" · "}
+                <a href={`/venue/competitions/${comp.id}/export/results`} className="text-lp-accent hover:underline">
+                  results
+                </a>
+                <span className="block text-xs text-lp-muted">Opens in Excel or Google Sheets.</span>
+              </li>
+            ) : null}
+          </ul>
+        </div>
+      </Card>
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>

@@ -27,10 +27,13 @@ export async function generateMetadata({
 
 export default async function ScoreboardPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ venueSlug: string; competitionSlug: string }>;
+  searchParams: Promise<{ tv?: string }>;
 }) {
   const { venueSlug, competitionSlug } = await params;
+  const { tv } = await searchParams;
 
   const comp = await prisma.competition.findFirst({
     where: { slug: competitionSlug, venue: { slug: venueSlug } },
@@ -119,6 +122,7 @@ export default async function ScoreboardPage({
       venueSlug={venueSlug}
       competitionSlug={competitionSlug}
       qrDataUrl={qrDataUrl}
+      initialTvMode={tv === "1"}
     />
   );
 }

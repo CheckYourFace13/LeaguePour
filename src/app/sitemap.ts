@@ -81,6 +81,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/demo",
     "/faq",
     "/how-it-works",
+    "/integrations",
     "/contact",
     "/dart-league-software",
     "/cornhole-tournament-software",

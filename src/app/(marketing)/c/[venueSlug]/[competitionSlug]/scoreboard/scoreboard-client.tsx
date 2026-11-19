@@ -51,6 +51,9 @@ export type ScoreboardClientProps = {
   venueSlug: string;
   competitionSlug: string;
   qrDataUrl: string;
+  /** ?tv=1 - open straight in the large TV layout (for a bookmarked link on a bar TV, where
+   * clicking a button with a remote is awkward). Fullscreen still needs a click/keypress. */
+  initialTvMode?: boolean;
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -89,9 +92,10 @@ export function ScoreboardClient({
   venueSlug,
   competitionSlug,
   qrDataUrl,
+  initialTvMode = false,
 }: ScoreboardClientProps) {
   const router = useRouter();
-  const [tvMode, setTvMode] = useState(false);
+  const [tvMode, setTvMode] = useState(initialTvMode);
 
   // Auto-refresh every 30 seconds
   useEffect(() => {

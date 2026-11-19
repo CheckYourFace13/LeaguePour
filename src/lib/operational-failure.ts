@@ -15,7 +15,8 @@ export type OperationalFailureCategory =
   | "connect-onboarding"
   | "vs-deposit-checkout"
   | "vs-deposit-refund"
-  | "vs-contract-sign";
+  | "vs-contract-sign"
+  | "vs-webhook";
 
 export async function logOperationalFailure(opts: {
   category: OperationalFailureCategory;

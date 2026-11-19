@@ -10,6 +10,7 @@ const cols = [
       { href: marketingRoutes.features, label: "Features" },
       { href: marketingRoutes.howItWorks, label: "How it works" },
       { href: marketingRoutes.pricing, label: "Pricing" },
+      { href: "/integrations", label: "Integrations" },
       { href: marketingRoutes.faq, label: "FAQ" },
       { href: "/guides", label: "Guides" },
       { href: "/tools", label: "Free tools" },

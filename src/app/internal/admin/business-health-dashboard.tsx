@@ -139,6 +139,7 @@ const FAILURE_CATEGORY_LABELS: Record<string, string> = {
   "email-send": "Email failed to send",
   "tournament-start": "Tournament failed to start",
   "tournament-results": "Bracket result failed to save",
+  "vs-webhook": "Venue webhook was not delivered",
   "lp-checkout": "Entry-fee checkout failed",
   "lp-refund": "Refund failed",
   "connect-onboarding": "Stripe Connect onboarding failed",

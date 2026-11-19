@@ -109,9 +109,15 @@ export default async function VsDashboardPage({
               Open your inquiry page
             </a>
             <Link href="/app/settings" className="text-[var(--vs-accent)] hover:underline">
-              Copy the link or website button
+              Put the form on your website
+            </Link>
+            <Link href="/app/settings#calendar" className="text-[var(--vs-accent)] hover:underline">
+              Show events in Google or Outlook Calendar
             </Link>
           </div>
+          <p className="mt-3 text-xs text-[var(--vs-muted)]">
+            Tip: send yourself a test inquiry from the page to see exactly what a guest sees and what lands here.
+          </p>
         </div>
       ) : null}
       {notice === "vs-subscribed" ? (
