@@ -12,9 +12,14 @@ import {
 import {
   buildRoundRobinSchedule,
   buildSingleEliminationRound1,
-  pairNextRound,
   type Participant,
 } from "@/lib/tournament";
+import {
+  advanceSingleEliminationRound,
+  saveSingleEliminationScore,
+  type AdvanceResult,
+  type SaveScoreResult,
+} from "@/lib/single-elimination-results";
 import { logOperationalFailure } from "@/lib/operational-failure";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -188,6 +193,60 @@ export async function updateMatchScoreFormAction(formData: FormData) {
     parsed.data.homeScore === parsed.data.awayScore
   ) {
     redirect(`/venue/competitions/${competitionId}?notice=elimination-tie`);
+  }
+
+  if (match.competition.bracketKind === BracketKind.SINGLE_ELIMINATION) {
+    const page = `/venue/competitions/${competitionId}`;
+    const correctionQuery = `correct=${matchId}&home=${parsed.data.homeScore}&away=${parsed.data.awayScore}`;
+    const confirmFingerprint = String(formData.get("confirmFingerprint") ?? "") || null;
+
+    // Kept apart from the redirects below - redirect() works by throwing and must not be caught.
+    let result: SaveScoreResult;
+    try {
+      result = await saveSingleEliminationScore({
+        competitionId,
+        venueId: access.venueId,
+        matchId,
+        homeScore: parsed.data.homeScore,
+        awayScore: parsed.data.awayScore,
+        confirmFingerprint,
+      });
+    } catch (err) {
+      console.error("[bracket result] failed", competitionId, matchId, err);
+      await logOperationalFailure({
+        category: "tournament-results",
+        summary: `Bracket result failed to save for competition ${competitionId}`,
+        venueId: access.venueId,
+        detail: err instanceof Error ? err.message : String(err),
+        retryable: true,
+      });
+      redirect(`${page}?notice=correction-failed`);
+    }
+
+    switch (result.kind) {
+      case "needs-confirmation":
+        redirect(`${page}?${correctionQuery}#bracket-correction`);
+      case "changed":
+        redirect(`${page}?notice=bracket-changed&${correctionQuery}#bracket-correction`);
+      case "not-found":
+        redirect(page);
+      case "not-ready":
+        redirect(`${page}?notice=match-not-ready`);
+      case "unsupported":
+        redirect(`${page}?notice=bracket-unsupported`);
+      case "locked":
+        redirect(`${page}?notice=bracket-locked`);
+      case "corrected":
+        revalidatePath(page);
+        revalidatePath("/venue/standings");
+        revalidatePath("/venue/competitions");
+        revalidatePath(`/c/${access.slug}/${result.competitionSlug}`);
+        redirect(`${page}?notice=bracket-corrected`);
+      case "saved":
+        revalidatePath(page);
+        revalidatePath("/venue/standings");
+        redirect(`${page}?notice=match-saved`);
+    }
   }
 
   await prisma.match.update({
@@ -650,10 +709,9 @@ export async function startTournamentFormAction(formData: FormData) {
 }
 
 /**
- * Single-elimination only. Requires every match in the current round to be complete and refuses
- * to run if the next round already exists (blocks accidental double-advance/duplication). If the
- * round just finished was the final (exactly one match), declares the winner and completes the
- * competition instead of generating another round.
+ * Single-elimination only. Requires every match in the latest round to be complete and the bracket
+ * to agree with its saved results. If that round was the final (exactly one match), declares the
+ * winner and completes the competition instead of generating another round.
  */
 export async function advanceRoundFormAction(formData: FormData) {
   const competitionId = String(formData.get("competitionId") ?? "");
@@ -664,70 +722,13 @@ export async function advanceRoundFormAction(formData: FormData) {
   if (!access) redirect("/signup/venue");
   if (!venueStaffCanEditCompetitionResults(access.role)) redirect(`/venue/competitions/${competitionId}?notice=read-only`);
 
-  const existing = await prisma.competition.findFirst({
-    where: { id: competitionId, venueId: access.venueId },
-    select: { id: true, status: true, bracketKind: true },
-  });
-  if (!existing) redirect("/venue/competitions");
-  if (existing.status !== CompetitionStatus.IN_PROGRESS || existing.bracketKind !== BracketKind.SINGLE_ELIMINATION) {
-    redirect(`/venue/competitions/${competitionId}?notice=cannot-advance`);
-  }
-
-  const allMatches = await prisma.match.findMany({
-    where: { competitionId },
-    orderBy: [{ round: "asc" }, { id: "asc" }],
-    include: { homeTeam: { select: { id: true, name: true } }, awayTeam: { select: { id: true, name: true } } },
-  });
-  if (allMatches.length === 0) redirect(`/venue/competitions/${competitionId}?notice=not-started`);
-
-  const currentRound = Math.max(...allMatches.map((m) => m.round));
-  const currentRoundMatches = allMatches.filter((m) => m.round === currentRound);
-  const nextRoundExists = allMatches.some((m) => m.round === currentRound + 1);
-  if (nextRoundExists) redirect(`/venue/competitions/${competitionId}?notice=already-advanced`);
-
-  const incomplete = currentRoundMatches.some((m) => !m.completedAt || m.homeScore == null || m.awayScore == null);
-  if (incomplete) redirect(`/venue/competitions/${competitionId}?notice=round-not-complete`);
-
-  const winners: Participant[] = currentRoundMatches.map((m) => {
-    const homeWins = m.awayTeamId === null || (m.homeScore ?? 0) > (m.awayScore ?? 0);
-    const winnerTeam = homeWins ? m.homeTeam : m.awayTeam;
-    return { id: winnerTeam!.id, name: winnerTeam!.name };
-  });
-
-  if (currentRoundMatches.length === 1) {
-    const champion = winners[0];
-    const finalMatch = currentRoundMatches[0];
-    const runnerUpTeam = finalMatch.homeTeamId === champion.id ? finalMatch.awayTeam : finalMatch.homeTeam;
-
-    const upsertRank = async (teamId: string, rank: number) => {
-      const row = await prisma.standing.findFirst({ where: { competitionId, teamId } });
-      if (row) await prisma.standing.update({ where: { id: row.id }, data: { rank } });
-      else await prisma.standing.create({ data: { competitionId, teamId, rank, wins: rank === 1 ? 1 : 0 } });
-    };
-    await upsertRank(champion.id, 1);
-    if (runnerUpTeam) await upsertRank(runnerUpTeam.id, 2);
-
-    await prisma.competition.update({ where: { id: competitionId }, data: { status: CompetitionStatus.COMPLETED } });
+  const result: AdvanceResult = await advanceSingleEliminationRound(competitionId, access.venueId);
+  if (result === "not-found") redirect("/venue/competitions");
+  if (result === "tournament-completed" || result === "round-advanced") {
     revalidatePath(`/venue/competitions/${competitionId}`);
     revalidatePath("/venue/standings");
-    redirect(`/venue/competitions/${competitionId}?notice=tournament-completed`);
   }
-
-  const nextPairings = pairNextRound(winners);
-  for (const pairing of nextPairings) {
-    await prisma.match.create({
-      data: {
-        competitionId,
-        round: currentRound + 1,
-        homeTeamId: pairing.home.id,
-        awayTeamId: pairing.away?.id ?? null,
-      },
-    });
-  }
-
-  revalidatePath(`/venue/competitions/${competitionId}`);
-  revalidatePath("/venue/standings");
-  redirect(`/venue/competitions/${competitionId}?notice=round-advanced`);
+  redirect(`/venue/competitions/${competitionId}?notice=${result}`);
 }
 
 export async function deleteCompetitionAction(formData: FormData) {

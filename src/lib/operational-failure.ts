@@ -9,6 +9,7 @@ import { prisma } from "@/lib/db";
 export type OperationalFailureCategory =
   | "email-send"
   | "tournament-start"
+  | "tournament-results"
   | "lp-checkout"
   | "lp-refund"
   | "connect-onboarding"

@@ -35,6 +35,12 @@ import { FormatGuide } from "@/components/app/format-guide";
 import { SampleBracketPreview } from "@/components/app/sample-bracket-preview";
 import { BracketKind, CompetitionStatus } from "@/generated/prisma/enums";
 import { describeBracket } from "@/lib/tournament";
+import {
+  findBracketMismatches,
+  isSingleEliminationBye,
+  planSingleEliminationScore,
+  type ScorePlan,
+} from "@/lib/single-elimination-results";
 
 const RUNNABLE_BRACKET_KINDS: BracketKind[] = [BracketKind.SINGLE_ELIMINATION, BracketKind.ROUND_ROBIN];
 
@@ -68,17 +74,130 @@ const notices: Record<string, string> = {
   "not-started": "Start the tournament first to generate matches.",
   "already-advanced": "The next round already exists.",
   "round-not-complete": "Every match in the current round needs a score before you can advance.",
+  "bracket-corrected": "Result corrected. The bracket, standings and competition status now match it.",
+  "bracket-changed": "The bracket changed since that review, so nothing was saved. Check the updated details below.",
+  "bracket-out-of-sync": "A saved result doesn't match the later rounds. Review the flagged match below before advancing.",
+  "bracket-locked": "This competition is archived, so a correction that changes its bracket can't be made.",
+  "bracket-unsupported":
+    "This bracket wasn't generated automatically, so a changed winner can't be carried through it. Nothing was saved.",
+  "match-not-ready": "This match is waiting on an earlier result, so it can't be scored yet.",
+  "correction-failed": "Something went wrong saving that result - nothing was changed. Try again.",
 };
+
+type SavePlan = Extract<ScorePlan, { kind: "save" }>;
+
+function parseScoreParam(value: string | undefined): number | null {
+  return value && /^\d{1,3}$/.test(value) ? Number(value) : null;
+}
+
+function BracketCorrectionPanel({
+  competitionId,
+  plan,
+  teamName,
+}: {
+  competitionId: string;
+  plan: SavePlan;
+  teamName: (teamId: string | null) => string;
+}) {
+  const { match, ranksBefore, ranksAfter } = plan;
+  const reopens = plan.statusAfter !== plan.statusBefore;
+  const ranksChange =
+    ranksBefore.championId !== ranksAfter.championId || ranksBefore.runnerUpId !== ranksAfter.runnerUpId;
+  return (
+    <div id="bracket-correction" className="scroll-mt-24">
+      <Card className="space-y-4 border-lp-accent/50 p-5 md:p-6">
+        <CardHeader className="p-0">
+          <CardTitle>Confirm this result correction</CardTitle>
+          <CardDescription>Nothing has been saved yet. Review what this changes first.</CardDescription>
+        </CardHeader>
+        <div className="space-y-1 text-sm text-lp-text">
+          <p className="font-semibold">
+            Round {match.round}: {teamName(match.homeTeamId)} vs {teamName(match.awayTeamId)}
+          </p>
+          <p>
+            Score {match.homeScore ?? "-"}–{match.awayScore ?? "-"} becomes {plan.homeScore}–{plan.awayScore}.
+          </p>
+          <p>
+            {plan.winnerBefore === plan.winnerAfter
+              ? `${teamName(plan.winnerAfter)} still wins, but later rounds don't match this result yet.`
+              : `Winner changes from ${teamName(plan.winnerBefore)} to ${teamName(plan.winnerAfter)}.`}
+          </p>
+        </div>
+        {plan.laterChanges.length > 0 ? (
+          <div>
+            <p className="text-sm font-semibold text-lp-text">Later matches affected</p>
+            <ul className="mt-2 space-y-2">
+              {plan.laterChanges.map((change) => (
+                <li
+                  key={change.id}
+                  className="rounded-[10px] border border-lp-border bg-lp-bg/40 px-3 py-2 text-sm text-lp-text"
+                >
+                  <span className="font-medium">Round {change.round}:</span> {teamName(change.homeBefore)} vs{" "}
+                  {teamName(change.awayBefore)} becomes {teamName(change.homeAfter)} vs {teamName(change.awayAfter)}.
+                  {change.clearsResult ? (
+                    <span className="text-lp-muted">
+                      {" "}
+                      Its recorded result
+                      {change.scoreBefore ? ` (${change.scoreBefore.home}–${change.scoreBefore.away})` : ""} will be
+                      cleared and must be entered again.
+                    </span>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+        {reopens ? (
+          <p className="text-sm text-lp-text">
+            The competition goes back to in progress
+            {ranksBefore.championId
+              ? `, and ${teamName(ranksBefore.championId)} is no longer shown as the winner until the bracket is finished again`
+              : ""}
+            .
+          </p>
+        ) : ranksChange ? (
+          <p className="text-sm text-lp-text">
+            The winner becomes {teamName(ranksAfter.championId)} and the runner-up becomes{" "}
+            {teamName(ranksAfter.runnerUpId)}.
+          </p>
+        ) : null}
+        <p className="text-sm text-lp-muted">Registrations, payments and every other match result stay as they are.</p>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <form action={updateMatchScoreFormAction}>
+            <input type="hidden" name="competitionId" value={competitionId} />
+            <input type="hidden" name="matchId" value={match.id} />
+            <input type="hidden" name="homeScore" value={plan.homeScore} />
+            <input type="hidden" name="awayScore" value={plan.awayScore} />
+            <input type="hidden" name="confirmFingerprint" value={plan.fingerprint} />
+            <Button type="submit" size="lg" className="w-full sm:w-auto">
+              Confirm correction
+            </Button>
+          </form>
+          <Button variant="secondary" size="lg" asChild>
+            <Link href={`${venueAppRoutes.competitions}/${competitionId}`}>Keep current results</Link>
+          </Button>
+        </div>
+      </Card>
+    </div>
+  );
+}
 
 export default async function CompetitionDetailPage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ notice?: string; created?: string; published?: string }>;
+  searchParams: Promise<{
+    notice?: string;
+    created?: string;
+    published?: string;
+    correct?: string;
+    home?: string;
+    away?: string;
+  }>;
 }) {
   const { id } = await params;
-  const { notice, created, published } = await searchParams;
+  const { notice, created, published, correct, home, away } = await searchParams;
   const session = await auth();
   const access = await resolvePrimaryVenueAccess(session);
   if (!access) redirect("/signup/venue");
@@ -122,11 +241,37 @@ export default async function CompetitionDetailPage({
   });
   const isRunnableFormat = RUNNABLE_BRACKET_KINDS.includes(comp.bracketKind);
   const rounds = comp.matches.length ? Math.max(...comp.matches.map((m) => m.round)) : 0;
-  const currentRoundMatches = comp.matches.filter((m) => m.round === rounds);
-  const currentRoundComplete =
-    currentRoundMatches.length > 0 && currentRoundMatches.every((m) => m.completedAt);
-  const nextRoundExists = comp.matches.some((m) => m.round === rounds + 1);
+  const latestRoundMatches = comp.matches.filter((m) => m.round === rounds);
+  const latestRoundComplete = latestRoundMatches.length > 0 && latestRoundMatches.every((m) => m.completedAt);
+  const isSingleElimination = comp.bracketKind === BracketKind.SINGLE_ELIMINATION;
+  // After a correction the round in play can be earlier than the latest round generated.
+  const currentRound = isSingleElimination ? (comp.matches.find((m) => !m.completedAt)?.round ?? rounds) : rounds;
+  const currentRoundMatchCount = comp.matches.filter((m) => m.round === currentRound).length;
   const champion = comp.standings.find((s) => s.rank === 1)?.team?.name ?? null;
+
+  const teamNames = new Map<string, string>();
+  for (const m of comp.matches) {
+    if (m.homeTeam) teamNames.set(m.homeTeam.id, m.homeTeam.name);
+    if (m.awayTeam) teamNames.set(m.awayTeam.id, m.awayTeam.name);
+  }
+  const teamName = (teamId: string | null) => (teamId ? (teamNames.get(teamId) ?? "Unknown") : "TBD");
+
+  const bracketMismatchIds = isSingleElimination ? findBracketMismatches(comp) : [];
+  const bracketMismatches = comp.matches.filter((m) => bracketMismatchIds.includes(m.id));
+  const correctedHome = parseScoreParam(home);
+  const correctedAway = parseScoreParam(away);
+  const correctionPlan =
+    canEditResults && isSingleElimination && correct && correctedHome !== null && correctedAway !== null
+      ? planSingleEliminationScore({
+          status: comp.status,
+          matches: comp.matches,
+          standings: comp.standings,
+          matchId: correct,
+          homeScore: correctedHome,
+          awayScore: correctedAway,
+        })
+      : null;
+  const correction = correctionPlan?.kind === "save" && correctionPlan.requiresConfirmation ? correctionPlan : null;
 
   const spots =
     comp.participantCap != null ? Math.max(0, comp.participantCap - comp._count.registrations) : null;
@@ -151,6 +296,24 @@ export default async function CompetitionDetailPage({
           }
         >
           {notices[notice]}
+        </div>
+      ) : null}
+
+      {correction ? <BracketCorrectionPanel competitionId={comp.id} plan={correction} teamName={teamName} /> : null}
+
+      {canEditResults && bracketMismatches.length > 0 && !correction ? (
+        <div className="rounded-[10px] border border-lp-accent/35 bg-lp-accent/10 px-4 py-3 text-sm text-lp-text">
+          <p className="font-semibold">Later rounds don&apos;t match a saved result</p>
+          <ul className="mt-1 list-disc pl-5">
+            {bracketMismatches.map((m) => (
+              <li key={m.id}>
+                Round {m.round}: {teamName(m.homeTeamId)} vs {teamName(m.awayTeamId)}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-1">
+            Save the correct score for that match. You&apos;ll see what changes before anything is updated.
+          </p>
         </div>
       ) : null}
 
@@ -273,11 +436,13 @@ export default async function CompetitionDetailPage({
           {comp.status === CompetitionStatus.IN_PROGRESS ? (
             <div className="space-y-3">
               <p className="text-sm text-lp-text">
-                Current round: <span className="font-semibold">{rounds}</span> ({currentRoundMatches.length} match
-                {currentRoundMatches.length === 1 ? "" : "es"})
+                Current round: <span className="font-semibold">{currentRound}</span> ({currentRoundMatchCount} match
+                {currentRoundMatchCount === 1 ? "" : "es"})
               </p>
-              {comp.bracketKind === BracketKind.SINGLE_ELIMINATION ? (
-                currentRoundComplete && !nextRoundExists ? (
+              {isSingleElimination ? (
+                bracketMismatches.length > 0 ? (
+                  <p className="text-sm text-lp-muted">Fix the flagged result before advancing.</p>
+                ) : latestRoundComplete ? (
                   <form action={advanceRoundFormAction}>
                     <input type="hidden" name="competitionId" value={comp.id} />
                     <Button type="submit" size="lg">
@@ -371,11 +536,17 @@ export default async function CompetitionDetailPage({
             <CardTitle>Matches</CardTitle>
             <CardDescription>
               {canEditResults ? "Save scores when both sides have checked in." : "Scores as entered (read-only)."}
+              {canEditResults && isSingleElimination
+                ? " If a correction changes a winner after the bracket has moved on, you'll review what it affects before anything is saved."
+                : ""}
             </CardDescription>
           </CardHeader>
           <ul className="space-y-6">
             {comp.matches.map((m, i) => {
-              const isBye = isRunnableFormat && m.awayTeamId === null && m.homeTeamId !== null;
+              const isBye = isSingleElimination
+                ? isSingleEliminationBye(m)
+                : isRunnableFormat && m.awayTeamId === null && m.homeTeamId !== null;
+              const isWaiting = isSingleElimination && m.round > 1 && (!m.homeTeamId || !m.awayTeamId);
               const showRoundHeading = isRunnableFormat && (i === 0 || comp.matches[i - 1].round !== m.round);
               return (
               <li key={m.id}>
@@ -389,6 +560,8 @@ export default async function CompetitionDetailPage({
                   </p>
                   {isBye ? (
                     <p className="text-sm text-lp-muted">Advances automatically - no match played.</p>
+                  ) : isWaiting ? (
+                    <p className="text-sm text-lp-muted">Waiting on an earlier result.</p>
                   ) : m.label ? (
                     <p className="text-sm text-lp-muted">{m.label}</p>
                   ) : null}
@@ -396,7 +569,7 @@ export default async function CompetitionDetailPage({
                     <p className="mt-1 text-xs text-lp-muted">Last saved {formatDateTime(m.completedAt)}</p>
                   ) : null}
                 </div>
-                {isBye ? null : canEditResults ? (
+                {isBye || isWaiting ? null : canEditResults ? (
                   <form action={updateMatchScoreFormAction} className="mt-4 grid max-w-md grid-cols-2 gap-3 md:mt-0">
                     <input type="hidden" name="competitionId" value={comp.id} />
                     <input type="hidden" name="matchId" value={m.id} />

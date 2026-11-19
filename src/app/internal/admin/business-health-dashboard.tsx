@@ -138,6 +138,7 @@ function timeAgo(iso: string | null): string {
 const FAILURE_CATEGORY_LABELS: Record<string, string> = {
   "email-send": "Email failed to send",
   "tournament-start": "Tournament failed to start",
+  "tournament-results": "Bracket result failed to save",
   "lp-checkout": "Entry-fee checkout failed",
   "lp-refund": "Refund failed",
   "connect-onboarding": "Stripe Connect onboarding failed",

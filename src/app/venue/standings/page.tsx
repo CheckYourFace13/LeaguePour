@@ -70,14 +70,17 @@ export default async function StandingsPage() {
       ) : (
         <div className="space-y-10">
           {competitions.map((c) => {
+            // Past round 1 of a single-elimination bracket an empty side is waiting on an earlier
+            // result, not a bye.
+            const hasOpenSlots = (round: number) => c.bracketKind === "SINGLE_ELIMINATION" && round > 1;
             const bracketMatches = c.matches
-              .filter((m) => m.homeTeam)
+              .filter((m) => m.homeTeam || hasOpenSlots(m.round))
               .map((m) => ({
                 id: m.id,
                 round: m.round,
                 label: m.label,
-                homeName: m.homeTeam!.name,
-                awayName: m.awayTeam?.name ?? null,
+                homeName: m.homeTeam?.name ?? "TBD",
+                awayName: m.awayTeam?.name ?? (hasOpenSlots(m.round) ? "TBD" : null),
                 homeScore: m.homeScore,
                 awayScore: m.awayScore,
                 completed: Boolean(m.completedAt),
