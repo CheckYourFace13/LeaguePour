@@ -118,6 +118,27 @@ export default async function VsDashboardPage({
           <p className="mt-3 text-xs text-[var(--vs-muted)]">
             Tip: send yourself a test inquiry from the page to see exactly what a guest sees and what lands here.
           </p>
+          <ol className="mt-4 grid gap-2 text-sm text-[var(--vs-text-soft)] sm:grid-cols-4">
+            {[
+              ["Inquiry", "A guest submits your form - no account needed"],
+              ["Proposal", "Room fee, F&B minimum and deposit, sent as a link (Starter)"],
+              ["Contract + deposit", "Typed e-signature, then a Stripe deposit (Pro)"],
+              ["BEO", "Room setup, food, beverage, staffing and AV, ready to print (Pro)"],
+            ].map(([title, body], i) => (
+              <li key={title} className="rounded-lg border border-[var(--vs-border)] bg-[var(--vs-surface)] px-3 py-2">
+                <p className="font-semibold text-[var(--vs-text)]">
+                  {i + 1}. {title}
+                </p>
+                <p className="mt-0.5 text-xs">{body}</p>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-3 text-xs text-[var(--vs-muted)]">
+            Your inquiry page and lead inbox are free.{" "}
+            <a href={`https://${VS_HOST}/how-it-works`} className="font-semibold text-[var(--vs-accent)] hover:underline">
+              See how the whole workflow runs
+            </a>
+          </p>
         </div>
       ) : null}
       {notice === "vs-subscribed" ? (

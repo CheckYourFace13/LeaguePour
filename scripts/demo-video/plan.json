@@ -1,0 +1,248 @@
+{
+ "lp-main": {
+  "brand": "lp",
+  "title": "How LeaguePour works",
+  "crf": 25,
+  "maxExtra": 0.6,
+  "maxSpeed": 1.8,
+  "posterAt": 2.2,
+  "segments": [
+   {
+    "id": "intro",
+    "clip": "lp/intro.mp4",
+    "fadeIn": true,
+    "maxSpeed": 1,
+    "maxExtra": 0.8
+   },
+   {
+    "id": "tool",
+    "clip": "lp/tool.mp4"
+   },
+   {
+    "id": "tool2",
+    "clip": "lp/tool2.mp4"
+   },
+   {
+    "id": "signup",
+    "clip": "lp/signup.mp4"
+   },
+   {
+    "id": "create",
+    "clip": "lp/create.mp4"
+   },
+   {
+    "id": "create2",
+    "clip": "lp/create2.mp4"
+   },
+   {
+    "id": "public",
+    "clips": [
+     {
+      "clip": "lp/public.mp4"
+     },
+     {
+      "clip": "lp/public-m.mp4",
+      "phone": true,
+      "label": [
+       "What players see",
+       "Register from a phone. No app."
+      ]
+     }
+    ]
+   },
+   {
+    "id": "run",
+    "clip": "lp/run.mp4"
+   },
+   {
+    "id": "board",
+    "clip": "lp/board.mp4"
+   },
+   {
+    "id": "price",
+    "clip": "lp/price.mp4"
+   },
+   {
+    "id": "cta",
+    "clip": "lp/cta.mp4",
+    "fadeOut": true,
+    "maxSpeed": 1,
+    "maxExtra": 0.8
+   }
+  ]
+ },
+ "lp-intro": {
+  "brand": "lp",
+  "title": "LeaguePour in 25 seconds",
+  "crf": 25,
+  "maxExtra": 0.3,
+  "maxSpeed": 2.0,
+  "posterAt": 1.8,
+  "segments": [
+   {
+    "id": "intro",
+    "clip": "lp/intro.mp4",
+    "fadeIn": true,
+    "maxSpeed": 1,
+    "maxExtra": 0.8
+   },
+   {
+    "id": "tool",
+    "clip": "lp/tool.mp4",
+    "from": 0.8
+   },
+   {
+    "id": "public",
+    "clips": [
+     {
+      "clip": "lp/public.mp4"
+     },
+     {
+      "clip": "lp/public-m.mp4",
+      "phone": true,
+      "label": [
+       "What players see",
+       "Register from a phone. No app."
+      ]
+     }
+    ]
+   },
+   {
+    "id": "run",
+    "clip": "lp/board.mp4",
+    "fromEnd": 4.5
+   },
+   {
+    "id": "cta",
+    "clip": "lp/cta.mp4",
+    "fadeOut": true,
+    "maxSpeed": 1,
+    "maxExtra": 0.8
+   }
+  ]
+ },
+ "vs-main": {
+  "brand": "vs",
+  "title": "How VenueSprocket works",
+  "crf": 25,
+  "maxExtra": 0.6,
+  "maxSpeed": 1.8,
+  "posterAt": 2.2,
+  "segments": [
+   {
+    "id": "intro",
+    "clip": "vs/intro.mp4",
+    "fadeIn": true,
+    "maxSpeed": 1,
+    "maxExtra": 0.8
+   },
+   {
+    "id": "signup",
+    "clip": "vs/signup.mp4"
+   },
+   {
+    "id": "share",
+    "clip": "vs/share.mp4"
+   },
+   {
+    "id": "inquiry",
+    "clip": "vs/inquiry-m.mp4",
+    "phone": true,
+    "label": [
+     "The guest's view",
+     "Your inquiry page. No account needed."
+    ]
+   },
+   {
+    "id": "lead",
+    "clip": "vs/lead.mp4"
+   },
+   {
+    "id": "proposal",
+    "clip": "vs/proposal.mp4"
+   },
+   {
+    "id": "accept",
+    "clip": "vs/accept-m.mp4",
+    "phone": true,
+    "label": [
+     "The guest's view",
+     "Review and accept online."
+    ]
+   },
+   {
+    "id": "contract",
+    "clips": [
+     {
+      "clip": "vs/contract.mp4"
+     },
+     {
+      "clip": "vs/contract-m.mp4",
+      "phone": true,
+      "label": [
+       "The guest's view",
+       "Typed e-signature on a phone."
+      ]
+     }
+    ]
+   },
+   {
+    "id": "beo",
+    "clip": "vs/beo.mp4"
+   },
+   {
+    "id": "price",
+    "clip": "vs/price.mp4"
+   },
+   {
+    "id": "cta",
+    "clip": "vs/cta.mp4",
+    "fadeOut": true,
+    "maxSpeed": 1,
+    "maxExtra": 0.8
+   }
+  ]
+ },
+ "vs-intro": {
+  "brand": "vs",
+  "title": "VenueSprocket in 25 seconds",
+  "crf": 25,
+  "maxExtra": 0.3,
+  "maxSpeed": 2.0,
+  "posterAt": 1.8,
+  "segments": [
+   {
+    "id": "intro",
+    "clip": "vs/intro.mp4",
+    "fadeIn": true,
+    "maxSpeed": 1,
+    "maxExtra": 0.8
+   },
+   {
+    "id": "inquiry",
+    "clip": "vs/inquiry-m.mp4",
+    "phone": true,
+    "fromEnd": 5,
+    "label": [
+     "The guest's view",
+     "No account needed."
+    ]
+   },
+   {
+    "id": "proposal",
+    "clip": "vs/proposal.mp4"
+   },
+   {
+    "id": "beo",
+    "clip": "vs/beo.mp4"
+   },
+   {
+    "id": "cta",
+    "clip": "vs/cta.mp4",
+    "fadeOut": true,
+    "maxSpeed": 1,
+    "maxExtra": 0.8
+   }
+  ]
+ }
+}

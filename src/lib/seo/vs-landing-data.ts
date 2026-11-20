@@ -120,8 +120,8 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
         body: "Each BEO includes structured sections for food details, beverage selection, room setup, staffing notes, AV needs, allergies, and special instructions.",
       },
       {
-        title: "Timeline builder",
-        body: "Add a time-based event timeline — venue open, setup complete, guest arrival, service start, speeches, teardown — so staff know the sequence without asking.",
+        title: "Special instructions",
+        body: "A free-text special instructions section for anything that doesn't fit a category - key times, a surprise toast, a load-in window - so staff see it on the same page.",
       },
       {
         title: "Internal notes",
@@ -527,7 +527,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
       },
       {
         title: "BEO for taproom staff",
-        body: "Your taproom staff get a BEO with the full event plan — guest count, beer selections, food, setup, timeline, and special notes — on their phone or printed.",
+        body: "Your taproom staff get a BEO with the full event plan — guest count, beer selections, food, setup, staffing, and special notes — on their phone or printed.",
       },
       {
         title: "LeaguePour for leagues and trivia",
@@ -721,7 +721,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
       },
       {
         title: "BEO for every event",
-        body: "Start a Banquet Event Order from the event record, fill in food, beverage, setup, timeline, and staffing, and print it for your kitchen and event staff.",
+        body: "Start a Banquet Event Order from the event record, fill in food, beverage, setup, staffing, and AV, and print it for your kitchen and event staff.",
       },
     ],
     useCases: [

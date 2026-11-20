@@ -17,6 +17,15 @@ import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import { isPlaceholderCompetition } from "@/lib/seo/is-placeholder-competition";
 import { RegistrationPanel } from "./registration-panel";
 
+
+// Competitions saved before Nov 2026 got this placeholder when the description was left blank; it
+// read oddly on the public page itself, so treat it as "no description".
+const LEGACY_PLACEHOLDER = "See public page for format and rules.";
+function publicDescription(d: string | null | undefined): string {
+  const t = (d ?? "").trim();
+  return t === LEGACY_PLACEHOLDER ? "" : t;
+}
+
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
@@ -36,7 +45,7 @@ export async function generateMetadata({
   const city = comp.venue.city?.trim();
   const titleParts = [comp.title, city ? `${city} ${compType}` : undefined, comp.venue.name, "LeaguePour"].filter(Boolean);
   const desc = (
-    comp.description ||
+    publicDescription(comp.description) ||
     `${comp.title} at ${comp.venue.name}${city ? ` in ${city}` : ""}. Signup for this ${compType} competition.`
   ).slice(0, 160);
   return {
@@ -141,7 +150,7 @@ export default async function PublicCompetitionPage({
             "@type": "Event",
             "@id": publicUrl,
             name: comp.title,
-            description: comp.description,
+            description: publicDescription(comp.description) || `${comp.title} at ${comp.venue.name}`,
             url: publicUrl,
             startDate: comp.startAt.toISOString(),
             endDate: comp.endAt.toISOString(),
@@ -203,7 +212,9 @@ export default async function PublicCompetitionPage({
       </div>
 
       <Card className="mt-8 space-y-4 p-5 md:p-6">
-        <p className="text-base leading-relaxed text-lp-muted md:text-lg">{comp.description}</p>
+        {publicDescription(comp.description) ? (
+          <p className="text-base leading-relaxed text-lp-muted md:text-lg">{publicDescription(comp.description)}</p>
+        ) : null}
         <p className="text-sm text-lp-muted">
           Signup for this {compTypeLabel.toLowerCase()} at {comp.venue.name}
           {cityLabel ? ` in ${cityLabel}` : ""}. League, bracket, or tournament details are listed here.

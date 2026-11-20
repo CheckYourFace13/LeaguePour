@@ -458,7 +458,7 @@ export async function updateCompetitionAction(formData: FormData) {
   }
 
   const kind = parseEnum(formData.get("kind"), editableKinds, CompetitionKind.CUSTOM);
-  const description = String(formData.get("description") ?? "").trim() || "See public page for format and rules.";
+  const description = String(formData.get("description") ?? "").trim();
   const signupOpenAt = new Date(String(formData.get("signupOpenAt")));
   const signupCloseAt = new Date(String(formData.get("signupCloseAt")));
   const startAt = new Date(String(formData.get("startAt")));

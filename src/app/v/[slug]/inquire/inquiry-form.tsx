@@ -113,12 +113,12 @@ export default function InquirePageClient({
           )}
 
           <div>
-            <label className="block text-sm font-semibold text-[var(--vs-text)] mb-1.5">
+            <label htmlFor="inq-customerName" className="block text-sm font-semibold text-[var(--vs-text)] mb-1.5">
               Your name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
-              name="customerName"
+              id="inq-customerName" name="customerName"
               required
               autoComplete="name"
               className="w-full rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-4 py-3 text-[var(--vs-text)] focus:border-[var(--vs-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--vs-focus)]"
@@ -127,12 +127,12 @@ export default function InquirePageClient({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-[var(--vs-text)] mb-1.5">
+            <label htmlFor="inq-customerEmail" className="block text-sm font-semibold text-[var(--vs-text)] mb-1.5">
               Email <span className="text-red-500">*</span>
             </label>
             <input
               type="email"
-              name="customerEmail"
+              id="inq-customerEmail" name="customerEmail"
               required
               autoComplete="email"
               className="w-full rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-4 py-3 text-[var(--vs-text)] focus:border-[var(--vs-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--vs-focus)]"
@@ -141,12 +141,12 @@ export default function InquirePageClient({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-[var(--vs-text)] mb-1.5">
+            <label htmlFor="inq-customerPhone" className="block text-sm font-semibold text-[var(--vs-text)] mb-1.5">
               Phone number
             </label>
             <input
               type="tel"
-              name="customerPhone"
+              id="inq-customerPhone" name="customerPhone"
               autoComplete="tel"
               className="w-full rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-4 py-3 text-[var(--vs-text)] focus:border-[var(--vs-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--vs-focus)]"
               placeholder="(555) 000-0000"
@@ -154,11 +154,11 @@ export default function InquirePageClient({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-[var(--vs-text)] mb-1.5">
+            <label htmlFor="inq-eventType" className="block text-sm font-semibold text-[var(--vs-text)] mb-1.5">
               Type of event <span className="text-red-500">*</span>
             </label>
             <select
-              name="eventType"
+              id="inq-eventType" name="eventType"
               required
               className="w-full rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-4 py-3 text-[var(--vs-text)] focus:border-[var(--vs-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--vs-focus)]"
             >
@@ -171,23 +171,23 @@ export default function InquirePageClient({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="block text-sm font-semibold text-[var(--vs-text)] mb-1.5">
+              <label htmlFor="inq-preferredDate" className="block text-sm font-semibold text-[var(--vs-text)] mb-1.5">
                 Preferred date
               </label>
               <input
                 type="date"
-                name="preferredDate"
+                id="inq-preferredDate" name="preferredDate"
                 min={new Date().toISOString().split("T")[0]}
                 className="w-full rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-4 py-3 text-[var(--vs-text)] focus:border-[var(--vs-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--vs-focus)]"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-[var(--vs-text)] mb-1.5">
+              <label htmlFor="inq-guestCount" className="block text-sm font-semibold text-[var(--vs-text)] mb-1.5">
                 Estimated guests
               </label>
               <input
                 type="number"
-                name="guestCount"
+                id="inq-guestCount" name="guestCount"
                 min="1"
                 max="2000"
                 className="w-full rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-4 py-3 text-[var(--vs-text)] focus:border-[var(--vs-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--vs-focus)]"
@@ -197,11 +197,11 @@ export default function InquirePageClient({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-[var(--vs-text)] mb-1.5">
+            <label htmlFor="inq-budgetRange" className="block text-sm font-semibold text-[var(--vs-text)] mb-1.5">
               Approximate budget
             </label>
             <select
-              name="budgetRange"
+              id="inq-budgetRange" name="budgetRange"
               className="w-full rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-4 py-3 text-[var(--vs-text)] focus:border-[var(--vs-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--vs-focus)]"
             >
               <option value="">Prefer not to say</option>
@@ -214,11 +214,11 @@ export default function InquirePageClient({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-[var(--vs-text)] mb-1.5">
+            <label htmlFor="inq-notes" className="block text-sm font-semibold text-[var(--vs-text)] mb-1.5">
               Anything else we should know?
             </label>
             <textarea
-              name="notes"
+              id="inq-notes" name="notes"
               rows={4}
               className="w-full rounded-lg border border-[var(--vs-border)] bg-[var(--vs-bg)] px-4 py-3 text-[var(--vs-text)] focus:border-[var(--vs-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--vs-focus)]"
               placeholder="Dietary restrictions, special setup, theme, timing preferences..."

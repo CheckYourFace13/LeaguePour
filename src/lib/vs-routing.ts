@@ -21,6 +21,7 @@ const exactRules: VsPathRule[] = [
   { source: "/features", destination: "/venuesprocket/features" },
   { source: "/pricing", destination: "/venuesprocket/pricing" },
   { source: "/start", destination: "/venuesprocket/start" },
+  { source: "/how-it-works", destination: "/venuesprocket/how-it-works" },
   { source: "/leaguepour", destination: "/venuesprocket/leaguepour" },
   { source: "/private-event-booking-software", destination: "/venuesprocket/private-event-booking-software" },
   { source: "/beo-software", destination: "/venuesprocket/beo-software" },

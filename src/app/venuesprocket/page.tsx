@@ -1,6 +1,7 @@
 import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { DemoCta, DemoVideo } from "@/components/marketing/demo-video";
 
 export const metadata: Metadata = {
   title: { absolute: "VenueSprocket — Book More Private Events. Run Them Better." },
@@ -48,7 +49,7 @@ const features = [
   {
     icon: "📑",
     title: "BEOs from the same data",
-    body: "Start a BEO from your event details - name, date, time, guest count, room, and contact info carry over automatically. Add food, beverage, staffing, AV, and timeline details right in the builder.",
+    body: "Start a BEO from your event details - name, date, time, guest count, room, and contact info carry over automatically. Add room setup, food, beverage, staffing, AV, and allergy notes right in the builder.",
   },
   {
     icon: "📣",
@@ -172,22 +173,29 @@ export default function VsSprocketHome() {
             send proposals, sign contracts, collect deposits, create BEOs, and market their event space.
           </p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <Link
+            <DemoCta
+              video="vs-main"
+              cta="home_hero_signup"
               href="/signup/venue"
-              className="rounded-xl bg-vs-accent px-8 py-4 text-lg font-bold text-white hover:bg-vs-accent-hover transition-colors shadow-lg"
+              className="w-full rounded-xl bg-vs-accent px-8 py-4 text-lg font-bold text-white hover:bg-vs-accent-hover transition-colors shadow-lg sm:w-auto"
             >
               Start Free
-            </Link>
-            <Link
-              href="/demo"
-              className="rounded-xl border border-vs-border-strong bg-vs-surface px-8 py-4 text-lg font-bold text-vs-text hover:border-vs-accent transition-colors"
+            </DemoCta>
+            <DemoCta
+              video="vs-main"
+              cta="home_hero_how_it_works"
+              href="/how-it-works"
+              className="w-full rounded-xl border border-vs-border-strong bg-vs-surface px-8 py-4 text-lg font-bold text-vs-text hover:border-vs-accent transition-colors sm:w-auto"
             >
-              See a sample workflow
-            </Link>
+              How it works
+            </DemoCta>
           </div>
           <p className="mt-5 text-sm text-vs-muted">
-            Free plan available. No credit card required to start.
+            Free plan: your inquiry page and lead inbox, no card. Proposals from $29/mo; contracts, deposits and BEOs on Pro.
           </p>
+        </div>
+        <div id="demo" className="mx-auto mt-10 max-w-4xl scroll-mt-24 text-left">
+          <DemoVideo id="vs-main" accent="vs" priorityPoster />
         </div>
       </section>
 

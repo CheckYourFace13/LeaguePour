@@ -92,7 +92,6 @@ const modules = [
     features: [
       "Event name, date, time, guest count, contact info carry over automatically",
       "Room setup, food, beverage, staffing, and AV sections built into the editor",
-      "Timeline builder",
       "Allergies and special requests",
       "Internal notes (staff-only)",
       "Print-ready and printable version",

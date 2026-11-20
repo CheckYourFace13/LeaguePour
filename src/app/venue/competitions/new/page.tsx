@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { venueAppRoutes } from "@/lib/routes";
-import { cta } from "@/lib/brand";
 import { resolvePrimaryVenueAccess, venueStaffCanCreateAndPublish } from "@/lib/venue-permissions";
+import { prisma } from "@/lib/db";
+import { deriveConnectStatus } from "@/lib/stripe/connect-status";
 import { createCompetitionAction } from "./actions";
 
 function addDays(base: Date, days: number) {
@@ -82,6 +83,21 @@ export default async function NewCompetitionPage({
   const err = sp.error;
   const errMessage = err ? builderErrorMessages[err] ?? `Check your inputs (${err}).` : null;
 
+  // Cached Connect booleans (same source as the dashboard banner). Players can't pay a paid entry
+  // until Connect is ready, so a venue without it starts from a $0 event instead of a $15 default
+  // that would publish an event nobody can pay for.
+  const venue = await prisma.venue.findUnique({
+    where: { id: access.venueId },
+    select: { stripeAccountId: true, stripeChargesEnabled: true, stripePayoutsEnabled: true, stripeDetailsSubmitted: true },
+  });
+  const paymentsReady =
+    !!venue?.stripeAccountId &&
+    deriveConnectStatus({
+      charges_enabled: venue.stripeChargesEnabled,
+      payouts_enabled: venue.stripePayoutsEnabled,
+      details_submitted: venue.stripeDetailsSubmitted,
+    }) === "ready";
+
   const now = new Date();
   const endD = addDays(now, 21);
   endD.setHours(endD.getHours() + 4);
@@ -99,7 +115,7 @@ export default async function NewCompetitionPage({
           <p className="text-xs font-bold uppercase tracking-wider text-lp-muted">Competition builder</p>
           <h1 className="lp-page-title text-3xl md:text-4xl">Create competition</h1>
           <p className="mt-2 text-sm text-lp-muted">
-            Detailed helper copy lives here - your public signup page stays clean.
+            Only the title is required - everything else starts with a sensible default you can change later.
           </p>
         </div>
         <Button variant="secondary" asChild>
@@ -127,7 +143,7 @@ export default async function NewCompetitionPage({
           ))}
         </ol>
         <p className="mt-3 text-xs text-lp-muted">
-          One page, guided sections - {cta.buildCompetition.toLowerCase()} without losing context.
+          Leave &quot;Publish&quot; unchecked to save a draft - drafts are private and never count toward your plan.
         </p>
       </div>
 
@@ -221,7 +237,25 @@ export default async function NewCompetitionPage({
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <Label htmlFor="entryFee">Entry fee (USD)</Label>
-              <Input id="entryFee" name="entryFee" type="number" min={0} step={0.01} className="mt-1.5" defaultValue={15} />
+              <Input
+                id="entryFee"
+                name="entryFee"
+                type="number"
+                min={0}
+                step={0.01}
+                className="mt-1.5"
+                defaultValue={paymentsReady ? 15 : 0}
+                aria-describedby={paymentsReady ? undefined : "entryFee-connect"}
+              />
+              {paymentsReady ? null : (
+                <p id="entryFee-connect" className="mt-1.5 text-sm text-lp-muted">
+                  $0 works right away. To charge an entry fee,{" "}
+                  <Link href={venueAppRoutes.profile} className="font-semibold text-lp-accent hover:underline">
+                    connect Stripe
+                  </Link>{" "}
+                  first - players can&apos;t pay until it&apos;s set up.
+                </p>
+              )}
             </div>
             <div>
               <Label htmlFor="participantCap">Participant / team cap</Label>

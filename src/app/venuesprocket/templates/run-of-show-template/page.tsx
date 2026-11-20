@@ -120,7 +120,7 @@ export default function RunOfShowTemplatePage() {
               The run of show is the timeline section of a Banquet Event Order. If you want the rest of
               the document - menu, bar, setup, staffing, allergies - use the{" "}
               <Link href="/guides/beo-template" className="text-vs-accent hover:underline">BEO template</Link>.
-              In VenueSprocket, the BEO includes a timeline section and a print-ready view.
+              In VenueSprocket, the BEO covers setup, food, beverage, staffing, AV and allergies with a print-ready view; keep the run of show alongside it, or paste the key times into the BEO&apos;s special instructions.
             </p>
           </section>
 

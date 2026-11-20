@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, CalendarClock, Megaphone, MapPin, QrCode, Trophy, Users } from "lucide-react";
-import { LeaguePourRealVisual } from "@/components/marketing/LeaguePourRealVisual";
+import { DemoCta, DemoVideo } from "@/components/marketing/demo-video";
 import { MarketingImage } from "@/components/marketing/marketing-image";
 import { VenuePainPoints } from "@/components/marketing/VenuePainPoints";
 import { cta } from "@/lib/brand";
@@ -25,7 +25,7 @@ const homeFaqs = [
   },
   {
     q: "Can LeaguePour generate brackets and schedules automatically?",
-    a: "Yes. Single elimination and round-robin formats are generated automatically when you publish a competition.",
+    a: "Yes. For single elimination and round robin, press Start Tournament once signup closes and LeaguePour generates Round 1 or the full schedule from your registrations, with byes handled for odd fields. Planning a double elimination night? The free double elimination bracket generator builds one with no account.",
   },
   {
     q: "How do entry fees work?",
@@ -96,15 +96,20 @@ export function HomePage() {
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button size="lg" className="w-full sm:w-auto" asChild>
-                  <Link href="/signup/venue">Start hosting events</Link>
+                  <DemoCta video="lp-main" cta="home_hero_signup" href="/signup/venue">
+                    Start hosting events - free
+                  </DemoCta>
                 </Button>
                 <Button size="lg" variant="secondary" className="w-full sm:w-auto" asChild>
-                  <Link href="/demo">
-                    See the demo <ArrowRight className="size-4" />
-                  </Link>
+                  <DemoCta video="lp-main" cta="home_hero_free_tool" href="/tools">
+                    Free bracket tools <ArrowRight className="size-4" />
+                  </DemoCta>
                 </Button>
               </div>
-              <ul className="mt-8 grid grid-cols-2 gap-3 sm:max-w-md">
+              <p className="mt-3 text-sm text-lp-muted">
+                First competition free, every feature. No card, no download. Bracket tools need no account.
+              </p>
+              <ul className="mt-8 hidden grid-cols-2 gap-3 sm:grid sm:max-w-md">
                 {heroHighlights.map(({ icon: Icon, label }) => (
                   <li
                     key={label}
@@ -116,7 +121,14 @@ export function HomePage() {
                 ))}
               </ul>
             </div>
-            <LeaguePourRealVisual variant="hero" priority />
+            <div id="demo" className="scroll-mt-24">
+              <DemoVideo id="lp-main" priorityPoster />
+              <p className="mt-1 text-sm">
+                <Link href="/how-it-works" className="font-semibold text-lp-accent hover:underline">
+                  See it step by step
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </section>

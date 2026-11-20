@@ -6,6 +6,7 @@ import { resolvePrimaryVenueAccess } from "@/lib/venue-permissions";
 import { resolveSelectedPlan, signupBrandFromHost } from "@/lib/signup-plans";
 import { holdsSubscription } from "@/lib/stripe/billing";
 import { SignupVenueForm } from "@/components/auth/signup-venue-form";
+import { SignupWhatNext } from "@/components/auth/signup-what-next";
 
 // Per-request: brand comes from the Host header and the signed-in state from the session.
 export const dynamic = "force-dynamic";
@@ -51,5 +52,10 @@ export default async function SignupVenuePage({ searchParams }: { searchParams: 
     );
   }
 
-  return <SignupVenueForm brand={brand} plan={plan} signedInVenueName={null} checkoutFailed={false} />;
+  return (
+    <div className="flex w-full max-w-4xl flex-col items-center gap-10 lg:flex-row lg:items-start lg:justify-center">
+      <SignupVenueForm brand={brand} plan={plan} signedInVenueName={null} checkoutFailed={false} />
+      <SignupWhatNext brand={brand} />
+    </div>
+  );
 }

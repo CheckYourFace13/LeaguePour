@@ -274,7 +274,7 @@ export default function VsDemoPage() {
                   <p>
                     The BEO starts from the event record - name, date, times, guest count, and contact
                     details carry over. You fill in food, beverage, setup, staffing, AV, allergies, and
-                    the timeline.
+                    special instructions.
                   </p>
                   <p>
                     Open it on a phone during the event or print it for the kitchen and bar. Internal

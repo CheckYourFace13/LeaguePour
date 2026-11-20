@@ -53,7 +53,7 @@ export async function createCompetitionAction(formData: FormData) {
   if (taken) slug = `${slug}-${Math.random().toString(36).slice(2, 5)}`;
 
   const kind = parseEnum(String(formData.get("kind")), kinds, CompetitionKind.CUSTOM);
-  const description = String(formData.get("description") ?? "").trim() || "See public page for format and rules.";
+  const description = String(formData.get("description") ?? "").trim();
   const signupOpenAt = new Date(String(formData.get("signupOpenAt")));
   const signupCloseAt = new Date(String(formData.get("signupCloseAt")));
   const startAt = new Date(String(formData.get("startAt")));

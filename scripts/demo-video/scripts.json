@@ -1,0 +1,182 @@
+{
+ "lp-main": {
+  "voice": "af_heart",
+  "segments": [
+   {
+    "id": "intro",
+    "cap": "LeaguePour runs bar leagues and tournaments, from signup to standings.",
+    "tts": "League Pour runs bar leagues and tournaments, from signup to standings."
+   },
+   {
+    "id": "tool",
+    "cap": "Start with the free tools. No account needed. Type your team names into the double elimination bracket generator, and it builds the winners and losers brackets for you.",
+    "tts": "Start with the free tools. No account needed. Type your team names into the double elimination bracket generator, and it builds the winners and losers brackets for you."
+   },
+   {
+    "id": "tool2",
+    "cap": "Click a winner and they advance. The loser drops into the losers bracket. To run the night online, create a venue account.",
+    "tts": "Click a winner, and they advance. The loser drops into the losers bracket. To run the night online, create a venue account."
+   },
+   {
+    "id": "signup",
+    "cap": "Signing up takes four fields: your name, email, a password and your venue's name. No credit card.",
+    "tts": "Signing up takes four fields. Your name, email, a password, and your venue's name. No credit card."
+   },
+   {
+    "id": "create",
+    "cap": "Next, create a competition: name it, pick the game and choose a format. Single elimination brackets and round robin schedules are built for you.",
+    "tts": "Next, create a competition. Name it, pick the game, and choose a format. Single elimination brackets and round robin schedules are built for you."
+   },
+   {
+    "id": "create2",
+    "cap": "Set a $0 entry fee, or charge one through Stripe once you connect it. Then publish.",
+    "tts": "Set a zero dollar entry fee, or charge one through Stripe once you connect it. Then publish."
+   },
+   {
+    "id": "public",
+    "cap": "Your event gets a public page and a QR code. Players register from their phone with a free player account. No app to download.",
+    "tts": "Your event gets a public page and a QR code. Players register from their phone with a free player account. No app to download."
+   },
+   {
+    "id": "run",
+    "cap": "When signup closes, press Start Tournament. Round one is generated from your registrations. Enter each score, and winners move on.",
+    "tts": "When signup closes, press Start Tournament. Round one is generated from your registrations. Enter each score, and winners move on."
+   },
+   {
+    "id": "board",
+    "cap": "Players follow results on the public page, or on a live scoreboard on the bar TV.",
+    "tts": "Players follow results on the public page, or on a live scoreboard on the bar TV."
+   },
+   {
+    "id": "price",
+    "cap": "Your first active competition is free, with every feature. Paid plans start at $29 a month to run more at once. $0 events have no fees.",
+    "tts": "Your first active competition is free, with every feature. Paid plans start at twenty nine dollars a month to run more at once. Free events have no fees."
+   },
+   {
+    "id": "cta",
+    "cap": "Start free at leaguepour.com. Or try the bracket generator first.",
+    "tts": "Start free at league pour dot com. Or try the bracket generator first."
+   }
+  ]
+ },
+ "lp-intro": {
+  "voice": "af_heart",
+  "segments": [
+   {
+    "id": "intro",
+    "cap": "LeaguePour runs bar leagues and tournaments.",
+    "tts": "League Pour runs bar leagues and tournaments."
+   },
+   {
+    "id": "tool",
+    "cap": "Build a bracket with the free generator. No account needed.",
+    "tts": "Build a bracket with the free generator. No account needed."
+   },
+   {
+    "id": "public",
+    "cap": "Create a free venue account, publish your event, and share the signup page and QR code.",
+    "tts": "Create a free venue account, publish your event, and share the signup page and QR code."
+   },
+   {
+    "id": "run",
+    "cap": "Enter scores, and the bracket updates for everyone.",
+    "tts": "Enter scores, and the bracket updates for everyone."
+   },
+   {
+    "id": "cta",
+    "cap": "Your first competition is free. Start at leaguepour.com.",
+    "tts": "Your first competition is free. Start at league pour dot com."
+   }
+  ]
+ },
+ "vs-main": {
+  "voice": "af_bella",
+  "segments": [
+   {
+    "id": "intro",
+    "cap": "VenueSprocket helps restaurants, bars and breweries book private events.",
+    "tts": "Venue Sprocket helps restaurants, bars and breweries book private events."
+   },
+   {
+    "id": "signup",
+    "cap": "Create a free account with your name, email, a password and your venue's name. Your inquiry page is live as soon as you finish.",
+    "tts": "Create a free account with your name, email, a password, and your venue's name. Your inquiry page is live as soon as you finish."
+   },
+   {
+    "id": "share",
+    "cap": "Share the link, or add a booking button to your website from Settings.",
+    "tts": "Share the link, or add a booking button to your website from settings."
+   },
+   {
+    "id": "inquiry",
+    "cap": "Here's a guest planning a rehearsal dinner. She picks the event type, date and guest count on her phone, and sends it. No account needed.",
+    "tts": "Here's a guest planning a rehearsal dinner. She picks the event type, date and guest count on her phone, and sends it. No account needed."
+   },
+   {
+    "id": "lead",
+    "cap": "The inquiry lands in your dashboard as a new lead, with the date, guest count and contact details.",
+    "tts": "The inquiry lands in your dashboard as a new lead, with the date, guest count and contact details."
+   },
+   {
+    "id": "proposal",
+    "cap": "Turn the lead into an event, then build a proposal: a room fee, a food and beverage minimum, and a deposit. Send it as a secure link.",
+    "tts": "Turn the lead into an event, then build a proposal. A room fee, a food and beverage minimum, and a deposit. Send it as a secure link."
+   },
+   {
+    "id": "accept",
+    "cap": "Your customer reviews the proposal and accepts it online.",
+    "tts": "Your customer reviews the proposal, and accepts it online."
+   },
+   {
+    "id": "contract",
+    "cap": "Generate the contract. The guest signs with a typed signature, then can pay the deposit through Stripe.",
+    "tts": "Generate the contract. The guest signs with a typed signature, then can pay the deposit through Stripe."
+   },
+   {
+    "id": "beo",
+    "cap": "Then build the banquet event order for your team: room setup, food, beverage, staffing and AV, with a print view.",
+    "tts": "Then build the banquet event order for your team. Room setup, food, beverage, staffing and A V, with a print view."
+   },
+   {
+    "id": "price",
+    "cap": "Free covers your inquiry page and leads. Starter, $29 a month, adds proposals. Pro, $79, adds contracts, deposits and BEOs.",
+    "tts": "Free covers your inquiry page and leads. Starter, twenty nine dollars a month, adds proposals. Pro, seventy nine, adds contracts, deposits, and B E Os."
+   },
+   {
+    "id": "cta",
+    "cap": "Start free at venuesprocket.com.",
+    "tts": "Start free at venue sprocket dot com."
+   }
+  ]
+ },
+ "vs-intro": {
+  "voice": "af_bella",
+  "segments": [
+   {
+    "id": "intro",
+    "cap": "VenueSprocket books private events for restaurants, bars and breweries.",
+    "tts": "Venue Sprocket books private events for restaurants, bars and breweries."
+   },
+   {
+    "id": "inquiry",
+    "cap": "Guests send an inquiry from your free booking page.",
+    "tts": "Guests send an inquiry from your free booking page."
+   },
+   {
+    "id": "proposal",
+    "cap": "Turn it into a proposal, a signed contract and a deposit.",
+    "tts": "Turn it into a proposal, a signed contract, and a deposit."
+   },
+   {
+    "id": "beo",
+    "cap": "Then hand your team a printable event order.",
+    "tts": "Then hand your team a printable event order."
+   },
+   {
+    "id": "cta",
+    "cap": "Start free at venuesprocket.com.",
+    "tts": "Start free at venue sprocket dot com."
+   }
+  ]
+ }
+}

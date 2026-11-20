@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 const baseNav = [
+  { href: marketingRoutes.howItWorks, label: "How it works" },
   { href: marketingRoutes.features, label: "Features" },
   { href: marketingRoutes.forVenues, label: "For venues" },
   { href: marketingRoutes.forPlayers, label: "For players" },
@@ -37,7 +38,7 @@ export function SiteHeader() {
           <Image src="/logos/leaguepour-full-logo.png" alt="LeaguePour" width={180} height={36} priority />
         </Link>
 
-        <nav className="hidden items-center gap-0.5 md:flex">
+        <nav className="hidden items-center gap-0.5 lg:flex">
           {nav.map((item) => (
             <Link
               key={item.href}
@@ -49,7 +50,7 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="hidden items-center gap-2 lg:flex">
           {status === "authenticated" ? (
             <div className="relative">
               <button
@@ -108,7 +109,7 @@ export function SiteHeader() {
 
         <button
           type="button"
-          className="inline-flex size-[3.25rem] shrink-0 items-center justify-center rounded-[10px] border border-lp-border-strong bg-lp-surface text-lp-text md:hidden"
+          className="inline-flex size-[3.25rem] shrink-0 items-center justify-center rounded-[10px] border border-lp-border-strong bg-lp-surface text-lp-text lg:hidden"
           aria-label={open ? "Close menu" : "Open menu"}
           onClick={() => setOpen((v) => !v)}
         >
@@ -118,7 +119,7 @@ export function SiteHeader() {
 
       <div
         className={cn(
-          "border-t border-lp-border-strong/80 bg-lp-bg px-4 py-5 md:hidden",
+          "border-t border-lp-border-strong/80 bg-lp-bg px-4 py-5 lg:hidden",
           open ? "block" : "hidden",
         )}
       >

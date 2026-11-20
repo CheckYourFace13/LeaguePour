@@ -58,7 +58,7 @@ export default function VsAboutPage() {
               { title: "Proposals", body: "Build a proposal from the inquiry with line-item pricing and a deposit amount, then send the customer a link they can review and accept from their phone." },
               { title: "Contracts", body: "Once a proposal is accepted, generate a contract the customer signs online with a typed signature, timestamp, and IP recorded — no printing or scanning." },
               { title: "Stripe deposits", body: "After the contract is signed, the customer pays their deposit through Stripe. Payment status is visible in your dashboard as soon as it clears." },
-              { title: "BEO workflow", body: "Build a Banquet Event Order from the same event record — room setup, food and beverage, staffing, and timeline — with a print-ready view for event day." },
+              { title: "BEO workflow", body: "Build a Banquet Event Order from the same event record — room setup, food and beverage, staffing, and AV — with a print-ready view for event day." },
             ].map((item) => (
               <li key={item.title} className="rounded-xl border border-vs-border bg-vs-surface px-5 py-4">
                 <p className="font-semibold text-vs-text">{item.title}</p>

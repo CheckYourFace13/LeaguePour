@@ -121,9 +121,26 @@ export default async function VenueDashboardPage({
             Pick a game and format, set a date, and publish a signup page you can share or show as a QR
             code. Free entry works right away; to charge entry fees, connect Stripe whenever you&apos;re ready.
           </p>
-          <Button asChild size="lg" className="mt-4 w-full sm:w-auto">
-            <Link href={venueAppRoutes.createCompetition}>Create a competition</Link>
-          </Button>
+          <ol className="mt-4 grid gap-2 text-sm text-lp-text-soft sm:grid-cols-3">
+            {[
+              "Create and publish - your event gets a public page and QR code",
+              "Players register from their phone (free player account, no app)",
+              "Press Start Tournament, enter scores, and standings update",
+            ].map((step, i) => (
+              <li key={step} className="flex gap-2 rounded-lg border border-lp-border bg-white/70 px-3 py-2">
+                <span className="font-display font-bold text-lp-accent">{i + 1}</span>
+                <span>{step}</span>
+              </li>
+            ))}
+          </ol>
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Button asChild size="lg" className="w-full sm:w-auto">
+              <Link href={venueAppRoutes.createCompetition}>Create a competition</Link>
+            </Button>
+            <Link href="/how-it-works" className="text-sm font-semibold text-lp-accent hover:underline">
+              Watch the demo walkthrough
+            </Link>
+          </div>
         </div>
       ) : null}
       {!firstRun && !stripeConnectReady && connectDashboardStatus !== "restricted" ? (
