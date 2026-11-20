@@ -112,7 +112,7 @@ const groups: { title: string; faqs: Faq[] }[] = [
     faqs: [
       {
         q: "Is there a free plan?",
-        a: "Yes. The free plan includes the public inquiry form and lead dashboard with no credit card required. Paid plans are billed monthly - see the pricing page for current plans.",
+        a: "Yes. The free plan includes the public inquiry form and lead dashboard, with unlimited inquiries and no credit card required. Paid plans are billed monthly - see the pricing page for current plans.",
       },
       {
         q: "Does VenueSprocket take a cut of my event revenue?",

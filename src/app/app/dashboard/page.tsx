@@ -147,7 +147,7 @@ export default async function VsDashboardPage({
             ? "Thanks - we're confirming your payment with Stripe. Your plan updates here within a minute."
             : planIncludes(vsPlanNow, "contracts")
               ? `You're on ${VS_PLAN_NAME[vsPlanNow]} - proposals, deposits, contracts and BEOs are unlocked.`
-              : `You're on ${VS_PLAN_NAME[vsPlanNow]} - unlimited inquiries, the lead pipeline and proposals are unlocked.`}
+              : `You're on ${VS_PLAN_NAME[vsPlanNow]} - the lead pipeline and proposals are unlocked.`}
         </div>
       ) : null}
       <div>

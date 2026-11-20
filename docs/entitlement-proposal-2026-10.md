@@ -40,7 +40,13 @@ unchanged. Source of truth: `src/lib/entitlements/lp-capacity.ts` and `src/lib/e
 - **"Advanced proposals":** no separate feature exists in the product. The proposal builder is Starter, and a deposit on it is Pro.
 - **Plan status:** a paid plan counts while active, trialing, past_due or unpaid. An LP subscription never grants VS features.
 
-### Free-plan inquiry allowance (10/month): prepared, NOT enforced
+### Free-plan inquiry allowance: REJECTED (2026-11-19)
+
+Owner decision: VenueSprocket Free offers unlimited incoming inquiries and leads. No lead limit is
+introduced; paid plans differ only by features (Starter: pipeline + proposals; Pro: deposits,
+contracts, BEOs, reminders). The proposal below is kept for history only and must not be built.
+
+#### (Historical) Free-plan inquiry allowance (10/month)
 
 Today every inquiry is received, stored, notified and shown. The billing panel shows "N inquiries this month" for Free venues. Proposed over-limit behavior, for a separate decision:
 

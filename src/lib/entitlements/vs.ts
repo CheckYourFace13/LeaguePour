@@ -119,9 +119,7 @@ export function vsUpgradePath(feature: VsFeature, from?: string): string {
   return `/app/upgrade?${params.toString()}`;
 }
 
-export const VS_FREE_MONTHLY_INQUIRIES = 10;
-
-/** Inquiries received this calendar month (UTC). Informational only - inquiries are never capped. */
+/** Inquiries received this calendar month (UTC). Informational only - inquiries are unlimited on every plan, Free included. */
 export async function inquiriesThisMonth(venueId: string, now = new Date()): Promise<number> {
   const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
   return prisma.privateEventLead.count({ where: { venueId, createdAt: { gte: start } } });

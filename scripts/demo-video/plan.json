@@ -77,7 +77,7 @@
   "crf": 25,
   "maxExtra": 0.3,
   "maxSpeed": 2.0,
-  "posterAt": 1.8,
+  "posterAt": 3.0,
   "segments": [
    {
     "id": "intro",

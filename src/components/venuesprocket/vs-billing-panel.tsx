@@ -2,7 +2,7 @@ import Link from "next/link";
 import { VsPlan } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/db";
 import { holdsSubscription, subscriptionStatusLabel } from "@/lib/stripe/billing";
-import { VS_FEATURE_LABEL, VS_FREE_MONTHLY_INQUIRIES, getVsEntitlements, inquiriesThisMonth } from "@/lib/entitlements/vs";
+import { VS_FEATURE_LABEL, getVsEntitlements, inquiriesThisMonth } from "@/lib/entitlements/vs";
 import { VsManageBillingButton } from "@/components/venuesprocket/vs-manage-billing-button";
 
 export const VS_PLAN_NAME: Record<VsPlan, string> = {
@@ -39,8 +39,8 @@ export async function VsBillingPanel({ venueId }: { venueId: string }) {
       </div>
       {ent.plan === VsPlan.VS_FREE ? (
         <p className="text-sm text-[var(--vs-text-soft)]">
-          {monthCount} {monthCount === 1 ? "inquiry" : "inquiries"} this month. The Free plan includes{" "}
-          {VS_FREE_MONTHLY_INQUIRIES} a month; every inquiry is still received and kept.
+          {monthCount} {monthCount === 1 ? "inquiry" : "inquiries"} this month. Inquiries are unlimited on the Free plan; upgrade for the
+          pipeline and proposals (Starter) or contracts, deposits and BEOs (Pro).
         </p>
       ) : null}
       {ent.grandfathered.length > 0 ? (

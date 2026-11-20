@@ -12,7 +12,7 @@ const NOT_BUILT =
   "VenueSprocket doesn't have room-by-room calendars or capacities, seating charts or floor plans, calendar sync, POS integrations, itemized menu-package builders, or automated follow-up emails to customers.";
 
 const HOW_TO_START =
-  "Start on the free plan - it gets your public inquiry page and lead dashboard live without a credit card or a sales call. Add proposals, e-signature contracts, Stripe deposits, and BEOs when you're ready to run a booking end to end.";
+  "Start on the free plan - it gets your public inquiry page and lead dashboard live, with unlimited inquiries, without a credit card or a sales call. Add proposals, e-signature contracts, Stripe deposits, and BEOs when you're ready to run a booking end to end.";
 
 export const VS_COMPARE_FAQS: Record<string, CompareFaq[]> = {
   tripleseat: [

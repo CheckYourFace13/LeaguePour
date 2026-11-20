@@ -13,7 +13,9 @@ for (const id of ids) {
   const mp4 = fs.readFileSync(path.join(S, "final", `${id}.mp4`));
   fs.copyFileSync(path.join(S, "final", `${id}.mp4`), path.join(out, `${id}.mp4`));
   fs.copyFileSync(path.join(S, "final", `${id}-poster.webp`), path.join(out, `${id}-poster.webp`));
-  const version = crypto.createHash("sha1").update(mp4).digest("hex").slice(0, 8);
+  // Hash the poster too: the same ?v= busts caches for both files (src/lib/demo-videos.ts).
+  const poster = fs.readFileSync(path.join(S, "final", `${id}-poster.webp`));
+  const version = crypto.createHash("sha1").update(mp4).update(poster).digest("hex").slice(0, 8);
   data[id] = { version, width: j.width, height: j.height, duration: j.duration, cues: j.cues, transcript: j.transcript };
   console.log(id, (mp4.length / 1e6).toFixed(2) + "MB", j.duration + "s", version);
 }

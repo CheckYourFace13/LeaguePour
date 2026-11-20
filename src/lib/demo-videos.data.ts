@@ -6,7 +6,7 @@ type Data = { version: string; width: number; height: number; duration: number; 
 
 export const DEMO_VIDEO_DATA: Record<"lp-main" | "lp-intro" | "vs-main" | "vs-intro", Data> = {
   "lp-main": {
-    "version": "c732efe5",
+    "version": "fdbcffd1",
     "width": 1920,
     "height": 1080,
     "duration": 92.14,
@@ -139,7 +139,7 @@ export const DEMO_VIDEO_DATA: Record<"lp-main" | "lp-intro" | "vs-main" | "vs-in
       {
         "start": 83.37,
         "end": 85.378,
-        "text": "$0 events have no fees."
+        "text": "Free events have no fees."
       },
       {
         "start": 86.478,
@@ -162,12 +162,12 @@ export const DEMO_VIDEO_DATA: Record<"lp-main" | "lp-intro" | "vs-main" | "vs-in
       "Your event gets a public page and a QR code. Players register from their phone with a free player account. No app to download.",
       "When signup closes, press Start Tournament. Round one is generated from your registrations. Enter each score, and winners move on.",
       "Players follow results on the public page, or on a live scoreboard on the bar TV.",
-      "Your first active competition is free, with every feature. Paid plans start at $29 a month to run more at once. $0 events have no fees.",
+      "Your first active competition is free, with every feature. Paid plans start at $29 a month to run more at once. Free events have no fees.",
       "Start free at leaguepour.com. Or try the bracket generator first."
     ]
   },
   "lp-intro": {
-    "version": "db63e18c",
+    "version": "00413bdf",
     "width": 1920,
     "height": 1080,
     "duration": 24.5,
@@ -222,7 +222,7 @@ export const DEMO_VIDEO_DATA: Record<"lp-main" | "lp-intro" | "vs-main" | "vs-in
     ]
   },
   "vs-main": {
-    "version": "ef209483",
+    "version": "95a8497c",
     "width": 1920,
     "height": 1080,
     "duration": 84.05,
@@ -348,7 +348,7 @@ export const DEMO_VIDEO_DATA: Record<"lp-main" | "lp-intro" | "vs-main" | "vs-in
     ]
   },
   "vs-intro": {
-    "version": "ae1ae47e",
+    "version": "c6a3be49",
     "width": 1920,
     "height": 1080,
     "duration": 22.42,

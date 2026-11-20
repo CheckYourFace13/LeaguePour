@@ -98,7 +98,7 @@ const faqs = [
   },
   {
     q: "What does it cost?",
-    a: "Free covers your inquiry page and lead inbox. Starter ($29/month) adds the lead pipeline and proposals. Pro ($79/month) adds deposits, contracts with e-signature, BEOs and follow-up reminders. No card is needed for Free.",
+    a: "Free covers your inquiry page and lead inbox, with no limit on inquiries. Starter ($29/month) adds the lead pipeline and proposals. Pro ($79/month) adds deposits, contracts with e-signature, BEOs and follow-up reminders. No card is needed for Free.",
   },
   {
     q: "Do my customers need accounts?",
@@ -181,7 +181,7 @@ export default function VsHowItWorksPage() {
             <h2 className="font-display text-2xl font-bold md:text-3xl">What each plan includes</h2>
             <ul className="mt-4 space-y-3 text-vs-text-soft">
               <li>
-                <strong className="text-vs-text">Free:</strong> inquiry page, lead dashboard, customer records, lead notifications.
+                <strong className="text-vs-text">Free:</strong> inquiry page, unlimited inquiries, lead dashboard, customer records, lead notifications.
               </li>
               <li>
                 <strong className="text-vs-text">Starter, $29/mo:</strong> + lead pipeline and the proposal builder.

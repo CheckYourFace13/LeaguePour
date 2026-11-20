@@ -78,7 +78,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
       },
       {
         q: "Can I get started with a free plan?",
-        a: "Yes. The free plan gets your inquiry form live immediately with no credit card required. Upgrade to Pro for contracts, deposits, and BEOs.",
+        a: "Yes. The free plan gets your inquiry form live immediately, with unlimited inquiries and no credit card required. Upgrade to Pro for contracts, deposits, and BEOs.",
       },
       {
         q: "Does VenueSprocket replace my current booking system?",
@@ -352,7 +352,7 @@ export const VS_LANDING_DATA: Record<string, VsLandingData> = {
     heroSub:
       "VenueSprocket gives your venue a public inquiry page covering every event type you host — birthday parties, corporate events, holiday parties, private dining — so a customer can request their event in minutes, and it lands straight in your dashboard.",
     icon: "📣",
-    why: "Most event management platforms help you manage leads you already have. VenueSprocket makes it effortless to capture the leads you're already getting - one page you can share anywhere (your website, socials, Google Business Profile) instead of a phone tag or a buried contact form - with an instant confirmation email to the customer and a reminder to you if an inquiry sits unanswered.",
+    why: "Most event management platforms help you manage leads you already have. VenueSprocket makes it effortless to capture the leads you're already getting - one page you can share anywhere (your website, socials, Google Business Profile) instead of a phone tag or a buried contact form - with an instant confirmation email to the customer and, on Pro, a reminder to you if an inquiry sits unanswered. Inquiries are unlimited on every plan, including Free.",
     features: [
       {
         title: "One inquiry page, every event type",

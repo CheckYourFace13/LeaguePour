@@ -121,7 +121,7 @@ const homeFaqs = [
   },
   {
     q: "Is there a free plan?",
-    a: "Yes. The Free plan gets your inquiry form live with up to 10 leads a month, no credit card required.",
+    a: "Yes. The Free plan gets your inquiry form live with unlimited inquiries and leads, no credit card required.",
   },
 ];
 
@@ -148,7 +148,7 @@ export default function VsSprocketHome() {
       "@type": "Offer",
       price: "0",
       priceCurrency: "USD",
-      description: "Free plan available. Paid plans from $29/mo.",
+      description: "Free plan with unlimited inquiries. Paid plans from $29/mo.",
     },
   };
 
@@ -191,7 +191,7 @@ export default function VsSprocketHome() {
             </DemoCta>
           </div>
           <p className="mt-5 text-sm text-vs-muted">
-            Free plan: your inquiry page and lead inbox, no card. Proposals from $29/mo; contracts, deposits and BEOs on Pro.
+            Free plan: your inquiry page and lead inbox with unlimited inquiries, no card. Proposals from $29/mo; contracts, deposits and BEOs on Pro.
           </p>
         </div>
         <div id="demo" className="mx-auto mt-10 max-w-4xl scroll-mt-24 text-left">

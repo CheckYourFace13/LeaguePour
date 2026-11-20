@@ -7,7 +7,7 @@ import { safeJsonLd } from "@/lib/seo/json-ld-builders";
 export const metadata: Metadata = {
   title: { absolute: "Pricing | VenueSprocket" },
   description:
-    "VenueSprocket pricing: start free with an inquiry form. Starter adds proposals and the lead pipeline; Pro adds contracts, deposits and BEOs. Affordable plans for restaurants, bars, and breweries.",
+    "VenueSprocket pricing: start free with an inquiry form and unlimited inquiries. Starter adds proposals and the lead pipeline; Pro adds contracts, deposits and BEOs. Affordable plans for restaurants, bars, and breweries.",
   alternates: { canonical: "https://venuesprocket.com/pricing" },
 };
 
@@ -22,7 +22,7 @@ const plans = [
     highlight: false,
     features: [
       "Public inquiry form for your venue",
-      "Up to 10 leads/month",
+      "Unlimited inquiries and leads",
       "Basic lead dashboard",
       "Upcoming events list",
       "Simple customer records",
@@ -40,10 +40,8 @@ const plans = [
     highlight: false,
     features: [
       "Everything in Free",
-      "Unlimited inquiries",
-      "Lead pipeline",
+      "Lead pipeline (track each lead through booking)",
       "Basic proposal builder",
-      "Customer records",
     ],
     notIncluded: ["Contracts", "Stripe deposits", "BEO builder"],
   },
@@ -89,7 +87,7 @@ const plans = [
 const faqs = [
   {
     q: "Is the free plan really free?",
-    a: "Yes. The free plan gives you a working inquiry form and lead dashboard with no credit card required. You can collect up to 10 leads per month and see how the platform works before upgrading.",
+    a: "Yes. The free plan gives you a working inquiry form and lead dashboard with no credit card required. There is no cap on inquiries or leads: every inquiry is received and kept on every plan. Upgrade when you want the pipeline and proposals (Starter) or contracts, deposits and BEOs (Pro).",
   },
   {
     q: "Can I upgrade or downgrade anytime?",

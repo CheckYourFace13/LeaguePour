@@ -18,8 +18,8 @@ const steps = [
 // Same plans and prices as /pricing. Starter was missing here, so /start?plan=starter showed the
 // free-plan copy while the signup link went to a $29 checkout.
 const plans = [
-  { key: "free", name: "Free", price: "$0", highlight: false, features: ["Inquiry form", "Up to 10 leads/mo", "Lead dashboard", "Email notifications"] },
-  { key: "starter", name: "Starter", price: "$29/mo", highlight: false, features: ["Everything in Free", "Unlimited inquiries", "Lead pipeline", "Basic proposal builder", "Customer records"] },
+  { key: "free", name: "Free", price: "$0", highlight: false, features: ["Inquiry form", "Unlimited inquiries and leads", "Lead dashboard", "Email notifications"] },
+  { key: "starter", name: "Starter", price: "$29/mo", highlight: false, features: ["Everything in Free", "Lead pipeline", "Basic proposal builder"] },
   { key: "pro", name: "Pro", price: "$79/mo", highlight: true, features: ["Everything in Starter", "Contracts + e-signature", "Stripe deposits", "BEO builder"] },
 ];
 
