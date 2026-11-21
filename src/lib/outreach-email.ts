@@ -701,7 +701,7 @@ export async function getVsOutreachPreviewCore(limit = 5): Promise<{
     take,
     select: { email: true, status: true, emailSentAt: true },
   });
-  const killSwitchEnabled = await getBoolSetting("vs_outreach_enabled", true);
+  const killSwitchEnabled = await isVsOutreachEnabled();
 
   const nextBatchCount = candidates.filter(
     (c) =>
@@ -778,10 +778,25 @@ const VS_LANE: Lane = {
   }),
 };
 
+/**
+ * VenueSprocket cold-outreach on/off switch (AppSetting). PAUSED by owner decision on 2026-11-21:
+ * a fresh key that defaults to OFF, so the pause holds whatever the older "vs_outreach_enabled"
+ * row says. Turn it back on from /internal/outreach (that toggle writes this key). Checked here so
+ * the daily cron and the manual "Send batch" button are both covered; outreach history is untouched.
+ */
+export const VS_OUTREACH_ENABLED_KEY = "vs_outreach_enabled_after_2026_11_pause";
+
+export async function isVsOutreachEnabled(): Promise<boolean> {
+  return getBoolSetting(VS_OUTREACH_ENABLED_KEY, false);
+}
+
 export async function sendVsOutreachCore(
   limit: number,
   opts: LaneOpts = {},
 ): Promise<SendOutcome> {
+  if (!opts.send && !(await isVsOutreachEnabled())) {
+    return { sent: 0, failed: 0, remaining: 0, skipped: "VenueSprocket outreach is paused (turn it on in /internal/outreach)." };
+  }
   if (!opts.send && !process.env.RESEND_VS_API_KEY?.trim()) {
     return { sent: 0, failed: 0, remaining: 0, error: "RESEND_VS_API_KEY not configured" };
   }

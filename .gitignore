@@ -47,3 +47,6 @@ next-env.d.ts
 # Hostinger deploy artifacts
 leaguepour-build-package/
 leaguepour-next-build.zip
+
+# Owner-only working files (prospect lists, internal reports) - never commit: the repo is public.
+/private/

@@ -139,6 +139,15 @@ export default async function InternalAdminPage({ searchParams }: AdminPageProps
           <p className="mt-2 text-base text-lp-text-soft">
             Signed in as {session.user.email}. Owner-only operational view for pre-launch control.
           </p>
+          <p className="mt-2 text-sm">
+            <a href="/internal/acquisition" className="font-semibold text-lp-accent hover:underline">
+              30-day acquisition program: approval queue and dashboard
+            </a>{" "}
+            ·{" "}
+            <a href="/internal/outreach" className="font-semibold text-lp-accent hover:underline">
+              Older outreach lists
+            </a>
+          </p>
         </div>
         <form method="get" className="flex flex-col gap-3 md:flex-row md:items-end">
           <div className="w-full md:max-w-md">

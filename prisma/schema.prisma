@@ -153,6 +153,61 @@ model OutreachContact {
 }
 
 /**
+ * 30-day acquisition program (Nov 2026): researched prospects for both brands, each with a
+ * public source, a personalized draft, and an owner approval state. Nothing is ever sent unless
+ * the owner approves the row and then presses Send for it (src/app/internal/acquisition).
+ * Created at runtime by ensureAcquisitionTable() (src/lib/acquisition/store.ts) as well as by
+ * the matching migration, because Hostinger builds do not run migrations.
+ */
+model AcquisitionProspect {
+  id                String    @id @default(cuid())
+  /// "lp" | "vs"
+  brand             String
+  /// Dedupe key: brand + website domain (or brand + name|city when there is no website).
+  dedupeKey         String    @unique
+  name              String
+  city              String
+  state             String
+  segment           String
+  website           String?
+  sourceUrl         String
+  sourceNote        String    @db.Text
+  relevance         String
+  useCase           String    @db.Text
+  offer             String
+  /// "email" | "form" | "phone"
+  contactRoute      String
+  /// Contact-form URL or the business phone, when contactRoute is not email.
+  contactValue      String?
+  /// Only an address the business itself publishes. Never guessed.
+  email             String?
+  verifiedAt        DateTime
+  /// QUEUED | APPROVED | SENT | REPLIED | POSITIVE | NOT_INTERESTED | UNSUBSCRIBED | BOUNCED | COMPLAINED | SKIPPED | SUPPRESSED
+  status            String    @default("QUEUED")
+  suppressReason    String?
+  draftSubject      String
+  draftBody         String    @db.Text
+  /// Opaque token used in tracked links and the unsubscribe link.
+  token             String    @unique
+  outreachContactId String?
+  approvedAt        DateTime?
+  sentAt            DateTime?
+  resendId          String?
+  sendError         String?
+  repliedAt         DateTime?
+  firstVisitAt      DateTime?
+  visitCount        Int       @default(0)
+  signedUpVenueId   String?
+  notes             String?   @db.Text
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([brand, status])
+  @@index([email])
+  @@schema("leaguepour_lp")
+}
+
+/**
  * Durable run history for scheduled/background jobs (outreach sends, harvests, and any future
  * lifecycle automation), so "is this job actually healthy" is a query instead of a grep through
  * console logs, and a failed run is detectable instead of silently disappearing.

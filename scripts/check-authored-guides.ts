@@ -23,7 +23,7 @@ for (const brand of ["VS", "LP"] as const) {
   const siblingPaths = new Map<string, string>();
   for (const key of Object.keys(authored)) {
     const topic = BACKLOG[brand].find((t) => t.topicKey === key);
-    if (topic) siblingPaths.set(`${config.guidesBasePath}/${slugify(topic.title)}`, key);
+    if (topic) siblingPaths.set(`${config.guidesBasePath}/${slugify(authored[key].title ?? topic.title)}`, key);
   }
   const validPaths = new Set([...config.staticKnownPaths, ...siblingPaths.keys()]);
 
@@ -37,12 +37,12 @@ for (const brand of ["VS", "LP"] as const) {
     const words = body.bodyHtml.replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length;
     const result = runQualityChecks(
       brand,
-      { title: topic.title, description: body.description, category: topic.category, bodyHtml: body.bodyHtml, faq: body.faq ?? null },
+      { title: body.title ?? topic.title, description: body.description, category: topic.category, bodyHtml: body.bodyHtml, faq: body.faq ?? null },
       config.existingGuideTitles,
       validPaths,
     );
     const deps = [...body.bodyHtml.matchAll(/href="([^"]+)"/g)].map((m) => m[1]).filter((h) => siblingPaths.has(h) && siblingPaths.get(h) !== key);
-    console.log(`${result.passed ? "✓" : "✗"} ${brand} ${key} (${words} words, ${body.description.length}-char description) -> ${config.guidesBasePath}/${slugify(topic.title)}`);
+    console.log(`${result.passed ? "✓" : "✗"} ${brand} ${key} (${words} words, ${body.description.length}-char description) -> ${config.guidesBasePath}/${slugify(body.title ?? topic.title)}`);
     if (deps.length) console.log(`    links to sibling authored guide(s), must publish first: ${deps.join(", ")}`);
     for (const f of result.failures) console.log(`    - ${f}`);
     if (!result.passed) failed++;

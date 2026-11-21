@@ -2,7 +2,7 @@ name: VS outreach send (manual)
 
 # Manual-only admin tool: bypasses vs-outreach-send's 10am-12pm Chicago time window (via
 # manual=1) while still respecting its throttle (max one batch per 20h) and the
-# vs_outreach_enabled kill switch - see src/app/api/cron/vs-outreach-send/route.ts. Run
+# VS outreach kill switch (default OFF since 2026-11-21) - see src/app/api/cron/vs-outreach-send/route.ts. Run
 # vs-outreach-preview-manual.yml first to confirm there's an eligible batch before using this.
 on:
   workflow_dispatch:

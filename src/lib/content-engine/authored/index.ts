@@ -5,6 +5,9 @@ import { vsProposalStructure } from "./vs-proposal-structure";
 import { vsCancellationPolicyExamples } from "./vs-cancellation-policy-examples";
 import { lpEntryFeePricingStrategy } from "./lp-entry-fee-pricing-strategy";
 import { lpCheckinProcess } from "./lp-checkin-process";
+import { vsReduceResponseTime } from "./vs-reduce-response-time";
+import { vsBreweryPrivateEvents } from "./vs-brewery-private-events";
+import { lpSlowTuesdayAnchorEvent } from "./lp-slow-tuesday-anchor-event";
 
 /**
  * Article bodies written in the repo for topics the engine has queued (see topics.ts). The engine
@@ -18,9 +21,12 @@ export const AUTHORED_BODIES: Record<Brand, Record<string, AuthoredBody>> = {
     "vs-deposit-policy": vsDepositPolicy,
     "vs-proposal-structure": vsProposalStructure,
     "vs-cancellation-policy-examples": vsCancellationPolicyExamples,
+    "vs-reduce-response-time": vsReduceResponseTime,
+    "vs-brewery-private-events": vsBreweryPrivateEvents,
   },
   LP: {
     "lp-entry-fee-pricing-strategy": lpEntryFeePricingStrategy,
     "lp-checkin-process": lpCheckinProcess,
+    "lp-slow-tuesday-anchor-event": lpSlowTuesdayAnchorEvent,
   },
 };

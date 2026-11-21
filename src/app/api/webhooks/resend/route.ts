@@ -2,6 +2,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { runJob } from "@/lib/job-runs";
+import { suppressProspectsByEmail } from "@/lib/acquisition/store";
 
 export const runtime = "nodejs";
 
@@ -42,7 +43,9 @@ async function suppressContact(email: string, kind: "BOUNCED" | "COMPLAINED") {
     where: { email: { equals: normalized, mode: "insensitive" } },
     data: { status: kind, vsStatus: kind },
   });
-  return result.count;
+  // Acquisition-program prospects with the same address (src/lib/acquisition/store.ts).
+  const prospects = await suppressProspectsByEmail(normalized, kind);
+  return result.count + prospects;
 }
 
 export async function POST(request: Request) {

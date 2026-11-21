@@ -81,14 +81,22 @@ async function syncAuthoredBodies(brand: Brand): Promise<void> {
   if (keys.length === 0) return;
   const rows = await prisma.guide.findMany({
     where: { brand, status: "NEEDS_CONTENT", topicKey: { in: keys } },
-    select: { id: true, topicKey: true, bodyHtml: true },
+    select: { id: true, topicKey: true, bodyHtml: true, title: true },
   });
   for (const row of rows) {
     const a = authored[row.topicKey];
-    if (!a || row.bodyHtml === a.bodyHtml) continue;
+    const retitle = !!a?.title && a.title !== row.title;
+    if (!a || (row.bodyHtml === a.bodyHtml && !retitle)) continue;
     await prisma.guide.update({
       where: { id: row.id },
-      data: { bodyHtml: a.bodyHtml, description: a.description, faq: a.faq ?? undefined, rejectReason: null },
+      data: {
+        bodyHtml: a.bodyHtml,
+        description: a.description,
+        faq: a.faq ?? undefined,
+        rejectReason: null,
+        // Unpublished rows only (status NEEDS_CONTENT above), so changing the slug breaks no URL.
+        ...(retitle ? { title: a.title, slug: await uniqueSlug(brand, slugify(a.title!)) } : {}),
+      },
     });
   }
 }
@@ -105,7 +113,7 @@ async function authoredReadyRow(brand: Brand) {
   });
   if (!row) return null;
   const a = authored[row.topicKey];
-  return { ...row, bodyHtml: a.bodyHtml, description: a.description, faq: a.faq ?? null };
+  return { ...row, ...(a.title ? { title: a.title, slug: slugify(a.title) } : {}), bodyHtml: a.bodyHtml, description: a.description, faq: a.faq ?? null };
 }
 
 /**

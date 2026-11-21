@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
+import { ACQ_COOKIE, parseAttributionCookie, readCookie } from "@/lib/acquisition/attribution";
+import { recordSignupAttribution } from "@/lib/acquisition/store";
+import { signupBrandFromHost } from "@/lib/signup-plans";
 
 const base = z.object({
   // Trim before validating: pasted/autofilled addresses often carry whitespace.
@@ -89,8 +92,9 @@ export async function POST(req: Request) {
 
   const passwordHash = await bcrypt.hash(data.password, 12);
 
+  let venueId: string | null = null;
   try {
-    await createAccount(data, email, passwordHash);
+    venueId = await createAccount(data, email, passwordHash);
   } catch (err) {
     // Two simultaneous signups with one email both pass the check above; the unique index on
     // User.email makes the second fail here. Same answer as the pre-check, not a 500.
@@ -109,16 +113,27 @@ export async function POST(req: Request) {
     throw err;
   }
 
+  // First-touch source for the new venue (outreach link, UTM campaign or external referrer).
+  // Never blocks or fails the signup.
+  if (venueId && data.accountType === "venue") {
+    await recordSignupAttribution({
+      venueId,
+      brand: signupBrandFromHost(req.headers.get("host"), null),
+      attribution: parseAttributionCookie(readCookie(req.headers.get("cookie"), ACQ_COOKIE)),
+      googlePlaceId: data.googlePlaceId || null,
+    });
+  }
+
   return NextResponse.json({ ok: true });
 }
 
-async function createAccount(data: z.infer<typeof schema>, email: string, passwordHash: string) {
+async function createAccount(data: z.infer<typeof schema>, email: string, passwordHash: string): Promise<string | null> {
   if (data.accountType === "venue") {
     let slug = slugify(data.venueName);
     const taken = await prisma.venue.findUnique({ where: { slug } });
     if (taken) slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
 
-    await prisma.$transaction(async (tx) => {
+    return prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
         data: {
           email,
@@ -159,6 +174,7 @@ async function createAccount(data: z.infer<typeof schema>, email: string, passwo
           role: "OWNER",
         },
       });
+      return venue.id;
     });
   } else {
     await prisma.$transaction(async (tx) => {
@@ -187,5 +203,6 @@ async function createAccount(data: z.infer<typeof schema>, email: string, passwo
         },
       });
     });
+    return null;
   }
 }

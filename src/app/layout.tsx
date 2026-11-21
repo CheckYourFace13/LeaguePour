@@ -4,6 +4,7 @@ import { AppProviders } from "@/components/providers/app-providers";
 import { getPublicSiteUrl } from "@/lib/site-url";
 import { LeaguePourGoogleTags } from "@/components/leaguepour-google-tags";
 import { LeaguePourAdsenseLoader } from "@/components/leaguepour-adsense-loader";
+import { AcquisitionCapture } from "@/components/analytics/acquisition-capture";
 import "./globals.css";
 
 const inter = Inter({
@@ -98,6 +99,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col font-sans">
         <AppProviders>{children}</AppProviders>
+        <AcquisitionCapture />
       </body>
     </html>
   );

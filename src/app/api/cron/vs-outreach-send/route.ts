@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { sendVsOutreachCore, vsOutreachSentWithinHours } from "@/lib/outreach-email";
+import { isVsOutreachEnabled, sendVsOutreachCore, vsOutreachSentWithinHours } from "@/lib/outreach-email";
 import { runJob } from "@/lib/job-runs";
-import { getBoolSetting } from "@/lib/app-settings";
 import { withScheduledSlot } from "@/lib/job-claims";
 
 /**
@@ -10,8 +9,8 @@ import { withScheduledSlot } from "@/lib/job-claims";
  * one). Triggered by .github/workflows/vs-outreach-daily.yml.
  *
  * Deliberately conservative for a brand-new communication channel with zero track record:
- *  - Kill switch: reads the "vs_outreach_enabled" AppSetting (default enabled) - flip it off
- *    from /internal/outreach for an instant stop, no deploy or restart needed.
+ *  - Kill switch: VS_OUTREACH_ENABLED_KEY (src/lib/outreach-email.ts), default OFF - paused by the
+ *    owner on 2026-11-21. Flip it from /internal/outreach, no deploy or restart needed.
  *  - Small batch: 5 recipients per run (sendVsOutreachCore already caps at this from the
  *    calling side - see VS_SEND_PER_RUN below).
  *  - Throttle: refuses if a VS batch already went out in the past 20 hours, so at most one
@@ -58,8 +57,8 @@ async function handle(request: Request): Promise<Response> {
     }
   }
 
-  const enabled = await getBoolSetting("vs_outreach_enabled", true);
-  if (!enabled) {
+  if (!(await isVsOutreachEnabled())) {
+    console.log("[vs-outreach cron] skipped: VenueSprocket outreach is paused (kill switch off)");
     return NextResponse.json({ ok: true, skipped: "VS outreach is disabled (kill switch off)." });
   }
 

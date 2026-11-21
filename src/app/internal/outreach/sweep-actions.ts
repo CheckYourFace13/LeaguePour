@@ -9,6 +9,8 @@ import {
   sendOutreachCore,
   LP_OUTREACH_ENABLED_KEY,
   sendVsOutreachCore,
+  VS_OUTREACH_ENABLED_KEY,
+  isVsOutreachEnabled,
 } from "@/lib/outreach-email";
 import { runJob } from "@/lib/job-runs";
 import { getBoolSetting, setSetting } from "@/lib/app-settings";
@@ -149,7 +151,7 @@ export async function getVsOutreachStats() {
     prisma.outreachContact.count({
       where: { vsEligible: true, email: { not: null }, vsStatus: null },
     }),
-    getBoolSetting("vs_outreach_enabled", true),
+    isVsOutreachEnabled(),
   ]);
 
   const byStatus = Object.fromEntries(
@@ -184,7 +186,7 @@ export async function setVsOutreachEnabled(enabled: boolean): Promise<{ ok: bool
   } catch {
     return { ok: false };
   }
-  await setSetting("vs_outreach_enabled", enabled ? "true" : "false");
+  await setSetting(VS_OUTREACH_ENABLED_KEY, enabled ? "true" : "false");
   return { ok: true };
 }
 
@@ -200,7 +202,7 @@ export async function sendVsOutreachBatch(limit = 5): Promise<{
   } catch {
     return { sent: 0, failed: 0, remaining: 0, error: "Not authorised" };
   }
-  if (!(await getBoolSetting("vs_outreach_enabled", true))) {
+  if (!(await isVsOutreachEnabled())) {
     return { sent: 0, failed: 0, remaining: 0, error: "VS outreach is disabled (kill switch off)." };
   }
   return runJob("vs-outreach-send", async () => {

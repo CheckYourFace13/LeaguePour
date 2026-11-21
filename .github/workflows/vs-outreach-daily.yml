@@ -6,7 +6,8 @@ name: Daily VenueSprocket outreach batch
 # same reasoning as the LP workflow: two entries risk both landing in the valid window on the
 # same morning and racing each other.
 #
-# Real off switch: flip "vs_outreach_enabled" to false on /internal/outreach (an AppSetting row,
+# Real off switch: the VS outreach toggle on /internal/outreach (AppSetting
+# "vs_outreach_enabled_after_2026_11_pause", default OFF - paused 2026-11-21 by the owner; an AppSetting row,
 # no deploy needed) rather than disabling this workflow - the route checks that flag itself, so
 # a manual admin-triggered send would otherwise still be able to fire even with this workflow off.
 # Manual-only as of 2026-09: the in-process scheduler (src/lib/scheduler.ts) now fires this job
