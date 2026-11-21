@@ -25,13 +25,17 @@ export type DemoVideo = {
   durationLabel: string;
   cues: DemoCue[];
   transcript: string[];
+  /** Public copy on the iScream Studio YouTube channel, when one exists (same file, unchanged). */
+  youtubeUrl?: string;
 };
 
-const meta: Record<DemoVideoId, { product: "lp" | "vs"; title: string; caption: string }> = {
+const meta: Record<DemoVideoId, { product: "lp" | "vs"; title: string; caption: string; youtubeUrl?: string }> = {
   "lp-main": {
     product: "lp",
     title: "How LeaguePour works",
     caption: "From the free double elimination bracket tool to signup, a published event, score entry and the public scoreboard.",
+    // Published 2026-11-21 on @iScreamStudioInc; byte-identical to public/media/demo/lp-main.mp4.
+    youtubeUrl: "https://www.youtube.com/watch?v=MgynmsguBLc",
   },
   "lp-intro": {
     product: "lp",
@@ -102,5 +106,6 @@ export function videoJsonLd(id: DemoVideoId, origin: string, uploadDate: string)
     uploadDate,
     duration: `PT${Math.floor(v.durationSeconds / 60)}M${Math.round(v.durationSeconds % 60)}S`,
     transcript: v.transcript.join(" "),
+    ...(v.youtubeUrl ? { sameAs: [v.youtubeUrl] } : {}),
   };
 }

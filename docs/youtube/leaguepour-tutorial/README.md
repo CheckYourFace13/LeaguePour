@@ -1,6 +1,9 @@
 # YouTube upload package: LeaguePour tutorial (approved 1:32 main explainer)
 
-Status: **NOT uploaded.** See "Access needed" below.
+Status: **PUBLISHED 2026-11-21** - https://www.youtube.com/watch?v=MgynmsguBLc (Public, iScream Studio @iScreamStudioInc,
+Howto & Style, not made for kids, English captions uploaded, byte-identical file). Thumbnail is YouTube's frame of the
+branded title card: custom thumbnail upload and clickable description links need the channel's one-time phone
+verification. Linked from the LeaguePour player ("Watch on YouTube").
 
 ## Files
 | What | File | Notes |

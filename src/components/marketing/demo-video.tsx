@@ -119,6 +119,20 @@ export function DemoVideo({
       </div>
       <figcaption className="mt-2 text-sm text-lp-muted">
         {v.caption} Real screen recording with demo data; captions on by default.
+        {v.youtubeUrl ? (
+          <>
+            {" "}
+            <a
+              href={v.youtubeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold underline underline-offset-2 hover:no-underline"
+              onClick={() => trackEvent("demo_youtube_click", { video: id, product: v.product })}
+            >
+              Watch on YouTube<span className="sr-only"> (opens in a new tab)</span>
+            </a>
+          </>
+        ) : null}
       </figcaption>
       {showTranscript ? (
         <details className="mt-2 text-sm">
