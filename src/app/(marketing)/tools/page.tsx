@@ -105,6 +105,9 @@ export default function LpToolsPage() {
             <Link href="/signup/venue">Set up your venue</Link>
           </Button>
           <Button asChild variant="secondary">
+            <Link href="/how-it-works">Watch the walkthrough video</Link>
+          </Button>
+          <Button asChild variant="secondary">
             <Link href="/pricing">See pricing</Link>
           </Button>
         </div>

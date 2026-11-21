@@ -8,6 +8,7 @@ import { lpCheckinProcess } from "./lp-checkin-process";
 import { vsReduceResponseTime } from "./vs-reduce-response-time";
 import { vsBreweryPrivateEvents } from "./vs-brewery-private-events";
 import { lpSlowTuesdayAnchorEvent } from "./lp-slow-tuesday-anchor-event";
+import { lpQrSignupPlacement } from "./lp-qr-signup-placement";
 
 /**
  * Article bodies written in the repo for topics the engine has queued (see topics.ts). The engine
@@ -28,5 +29,6 @@ export const AUTHORED_BODIES: Record<Brand, Record<string, AuthoredBody>> = {
     "lp-entry-fee-pricing-strategy": lpEntryFeePricingStrategy,
     "lp-checkin-process": lpCheckinProcess,
     "lp-slow-tuesday-anchor-event": lpSlowTuesdayAnchorEvent,
+    "lp-qr-signup-placement": lpQrSignupPlacement,
   },
 };

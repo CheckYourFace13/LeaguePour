@@ -95,6 +95,16 @@ export function toWebVtt(cues: DemoCue[]): string {
   return `WEBVTT\n\n${cues.map((c, i) => `${i + 1}\n${ts(c.start)} --> ${ts(c.end)}\n${c.text}\n`).join("\n")}`;
 }
 
+/** https://www.youtube.com/embed/<id> for a watch URL (undefined if it isn't one). */
+export function youtubeEmbedUrl(watchUrl: string): string | undefined {
+  try {
+    const id = new URL(watchUrl).searchParams.get("v");
+    return id && /^[A-Za-z0-9_-]{6,20}$/.test(id) ? `https://www.youtube.com/embed/${id}` : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 /** schema.org VideoObject for a demo (absolute URLs built by the caller's origin). */
 export function videoJsonLd(id: DemoVideoId, origin: string, uploadDate: string) {
   const v = DEMO_VIDEOS[id];
@@ -108,6 +118,6 @@ export function videoJsonLd(id: DemoVideoId, origin: string, uploadDate: string)
     uploadDate,
     duration: `PT${Math.floor(v.durationSeconds / 60)}M${Math.round(v.durationSeconds % 60)}S`,
     transcript: v.transcript.join(" "),
-    ...(v.youtubeUrl ? { sameAs: [v.youtubeUrl] } : {}),
+    ...(v.youtubeUrl ? { sameAs: [v.youtubeUrl], embedUrl: youtubeEmbedUrl(v.youtubeUrl) } : {}),
   };
 }

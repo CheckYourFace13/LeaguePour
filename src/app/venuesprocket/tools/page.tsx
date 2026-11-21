@@ -73,6 +73,11 @@ export default function VsToolsPage() {
             <Link href="/templates" className="font-semibold text-vs-accent hover:underline">free templates and checklists</Link>{" "}
             or the <Link href="/guides" className="font-semibold text-vs-accent hover:underline">guides</Link>.
           </p>
+          <p className="mt-4 text-sm text-vs-text-soft">
+            Want to see where these numbers end up? The{" "}
+            <Link href="/how-it-works" className="font-semibold text-vs-accent hover:underline">walkthrough video</Link>{" "}
+            follows one inquiry from the free booking page to a proposal, contract, deposit and BEO.
+          </p>
         </div>
       </div>
     </>

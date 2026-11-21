@@ -32,6 +32,33 @@ function clean(s: string): string {
 export function buildDraft(p: DraftInput): Draft {
   const name = clean(p.name);
   const why = clean(p.useCase).replace(/[.\s]+$/, "");
+  // Referral/partner prospects (league organizers, trivia hosts, caterers...): ask for a
+  // conversation, not a signup. No commissions or arrangements are offered (none exist).
+  if (/organizer|partner|host company|caterer|food truck/i.test(p.segment)) {
+    if (p.brand === "lp") {
+      return {
+        subject: `${name} and bar game nights`,
+        body: [
+          `Hi ${name} team,`,
+          `I saw ${why}. I build LeaguePour, a small Chicago-area tool for bars that run their own tournaments and game nights, so I'm not trying to replace what you run.`,
+          `Two ideas, both free: your host bars could use our bracket generator (no account needed: {{link:/tools}}) or a free LeaguePour venue account for one-night tournaments between your seasons. And when a bar asks us about a full league program, I'd happily point them to you.`,
+          `Would a short call make sense? If not, no worries. Just reply and I won't follow up.`,
+          `Chris
+LeaguePour`,
+        ].join("\n\n"),
+      };
+    }
+    return {
+      subject: `Venues you work with and private events`,
+      body: [
+        `Hi ${name} team,`,
+        `I saw ${why}. I build VenueSprocket, a small Chicago-area tool that gives restaurants, bars and breweries a free private-event inquiry form, with unlimited inquiries all landing in one place.`,
+        `If any venues you work with struggle to keep track of party requests, would you be open to mentioning it to them? There is no arrangement or catch: {{link:/start}}. I'd also like to hear what slows down event bookings from your side.`,
+        `Chris
+VenueSprocket`,
+      ].join("\n\n"),
+    };
+  }
   if (p.brand === "lp") {
     return {
       subject: `Brackets and signups for game nights at ${name}`,
