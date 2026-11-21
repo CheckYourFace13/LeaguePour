@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* css-cache-reset: bump this value to give the stylesheet a new hashed file name, so browsers holding
+   a bad cached copy of the old one (immutable, 1 year) fetch a fresh file. Set 2026-11-21 after an empty
+   copy of the previous file was cached; see the compress note in next.config.ts. */
+:root {
+  --css-cache-reset: "2026-11-21";
+}
+
 /*
   LeaguePour - bright, athletic sports-league UI
   Palette: deep blue + maize + white with navy accents.

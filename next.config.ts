@@ -11,6 +11,14 @@ const vsDomainRewrites = [...vsExactRewrites, vsCompareRewrite, vsGuidesRewrite]
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  // No origin gzip. Hostinger's CDN (hcdn) already compresses at the edge (it serves br/zstd,
+  // which Next can't produce). With Next's own gzip, static files were streamed chunked with no
+  // Content-Length, so when Hostinger's process manager restarted the app mid-response the CDN
+  // couldn't tell the body was cut short and cached an EMPTY 200 for an immutable, 1-year
+  // /_next/static CSS file - venuesprocket.com (and leaguepour.com on some edges) rendered
+  // unstyled and the demo video's play overlay stopped working (2026-11-21). Uncompressed
+  // static responses carry Content-Length, so a truncated body is detectable and not cached.
+  compress: false,
   experimental: {
     // Build-time only: caps the worker processes `next build` spawns for page-data collection and
     // static generation. The default is (CPU cores - 1), which is 63 on Hostinger's build host -
