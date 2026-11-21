@@ -1,27 +1,35 @@
 import { NextResponse } from "next/server";
 import { recordVisit } from "@/lib/acquisition/store";
+import { incrementDaily, sourceLabel } from "@/lib/acquisition/daily";
+import { signupBrandFromHost } from "@/lib/signup-plans";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
 /**
- * Outreach-link visit beacon (src/components/analytics/acquisition-capture.tsx). Counts a visit
- * against the prospect whose opaque token was in the link. Unknown tokens are ignored; per-IP
- * rate limited. Stores no IP, user agent or other visitor data.
+ * Session beacon from src/components/analytics/acquisition-capture.tsx, sent once per browser
+ * session on marketing pages. Increments aggregated daily counters (sessions per brand and
+ * source) and, when the landing carried an outreach token, counts a visit against that prospect.
+ * Stores no IP, user agent or other visitor data. Per-IP rate limited plus a per-process ceiling.
  */
 export async function POST(req: Request) {
-  if (!rateLimit(`acq-visit:${clientIp(req)}`, 20, 10 * 60_000).ok) {
+  if (!rateLimit(`acq-visit:${clientIp(req)}`, 20, 10 * 60_000).ok || !rateLimit("acq-visit:all", 20_000, 24 * 60 * 60_000).ok) {
     return NextResponse.json({ ok: false }, { status: 429 });
   }
-  let ref = "";
+  let body: { ref?: unknown; source?: unknown; referrerHost?: unknown };
   try {
-    const body = (await req.json()) as { ref?: unknown };
-    ref = typeof body.ref === "string" ? body.ref : "";
+    body = (await req.json()) as typeof body;
   } catch {
     return NextResponse.json({ ok: false }, { status: 400 });
   }
+  const brand = signupBrandFromHost(req.headers.get("host"), null);
+  const str = (v: unknown) => (typeof v === "string" ? v : null);
   try {
-    await recordVisit(ref);
+    const source = sourceLabel({ source: str(body.source), referrerHost: str(body.referrerHost) });
+    await incrementDaily(brand, "sessions", "all");
+    await incrementDaily(brand, "sessions", source);
+    const ref = str(body.ref);
+    if (ref) await recordVisit(ref);
   } catch (err) {
     console.error("[acquisition visit] failed", err);
   }

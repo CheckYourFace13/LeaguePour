@@ -208,6 +208,35 @@ model AcquisitionProspect {
 }
 
 /**
+ * First-party, aggregated daily acquisition counters (no IPs, no user ids): e.g. marketing-site
+ * sessions per brand per source. One row per (day, brand, metric, dim). Created at runtime by
+ * ensureDailyTable() (src/lib/acquisition/daily.ts) and by the matching migration.
+ */
+model AcquisitionDaily {
+  /// Chicago calendar day, YYYY-MM-DD
+  day    String
+  brand  String
+  metric String
+  dim    String
+  count  Int    @default(0)
+
+  @@id([day, brand, metric, dim])
+  @@schema("leaguepour_lp")
+}
+
+/**
+ * One row per existing outreach contact whose own website the daily qualification pass has
+ * scanned (src/lib/acquisition/qualify.ts), so each site is fetched once, not daily.
+ */
+model AcquisitionScan {
+  contactId String   @id
+  checkedAt DateTime @default(now())
+  result    String
+
+  @@schema("leaguepour_lp")
+}
+
+/**
  * Durable run history for scheduled/background jobs (outreach sends, harvests, and any future
  * lifecycle automation), so "is this job actually healthy" is a query instead of a grep through
  * console logs, and a failed run is detectable instead of silently disappearing.

@@ -65,6 +65,10 @@ const JOBS: ScheduledJob[] = [
   { path: "/api/cron/content-engine-lp", utcHour: 13, utcMinute: 30, daysOfWeekUtc: [2, 4] },
   // Monthly content decay/refresh pass for both brands - see refresh.ts.
   { path: "/api/cron/content-refresh", utcHour: 5, utcMinute: 0, dayOfMonthUtc: 1 },
+  // Acquisition program (src/lib/acquisition/*): small website-qualification batch into the owner
+  // approval queue + the owner's daily report. Sends nothing to prospects. Owner kill switches on
+  // /internal/acquisition. No GitHub workflow mirrors this one.
+  { path: "/api/cron/acquisition-daily", utcHour: 14, utcMinute: 45 },
 ];
 
 const TICK_MS = 5 * 60 * 1000;
@@ -233,6 +237,12 @@ export function startInProcessScheduler(): void {
   setTimeout(() => void tick(loopbackBase, publicBase, secret), 30_000);
   setInterval(() => void tick(loopbackBase, publicBase, secret), TICK_MS);
   setTimeout(() => void publishAuthoredOnBoot(), 60_000);
+  // Production-readable proof of the cold-email lanes' state (read from the live DB) on every boot.
+  setTimeout(() => {
+    void import("./acquisition/automation")
+      .then(async ({ outreachLaneStatus, formatLaneStatus }) => console.log(formatLaneStatus(await outreachLaneStatus())))
+      .catch((err) => console.error("[outreach-status] read failed", err));
+  }, 45_000);
   setTimeout(() => {
     void import("./job-claims")
       .then(({ pruneScheduledClaims }) => pruneScheduledClaims())

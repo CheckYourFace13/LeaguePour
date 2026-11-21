@@ -212,6 +212,86 @@ async function main() {
     await prisma.appSetting.deleteMany({ where: { key: { in: [oe.VS_OUTREACH_ENABLED_KEY, "vs_outreach_enabled"] } } });
   });
 
+  // ── Daily automation: counters, qualification, report, lane status ──
+  const daily = await import("../src/lib/acquisition/daily");
+  const qualify = await import("../src/lib/acquisition/qualify");
+  const report = await import("../src/lib/acquisition/report");
+  const automation = await import("../src/lib/acquisition/automation");
+  const { getDailyTable } = await import("../src/lib/acquisition/metrics");
+  const { chicagoDay } = await import("../src/lib/acquisition/program");
+
+  await check("daily counters: missing before tracking starts, real counts after", async () => {
+    await daily.ensureDailyTable();
+    await prisma.acquisitionDaily.deleteMany({});
+    await daily.resetTrackingSince();
+    let table = await getDailyTable(3);
+    assert.ok(table.every((r) => r.sessions === null), "no data before tracking");
+    await daily.incrementDaily("lp", "sessions", "all");
+    await daily.incrementDaily("lp", "sessions", "all");
+    await daily.incrementDaily("lp", "sessions", daily.sourceLabel({ source: "outreach" }));
+    table = await getDailyTable(3);
+    const today = chicagoDay(new Date());
+    assert.equal(table.find((r) => r.day === today && r.brand === "lp")?.sessions, 2);
+    assert.equal(table.find((r) => r.day === today && r.brand === "vs")?.sessions, 0, "tracked day with no rows is a real zero");
+    assert.equal(daily.sourceLabel({ referrerHost: "Google.com" }), "ref:google.com");
+    assert.equal(daily.sourceLabel({}), "direct");
+  });
+
+  await check("qualification queues LP/VS matches from the venue's own site, once per site", async () => {
+    await prisma.acquisitionScan.deleteMany({}).catch(() => {});
+    await prisma.outreachContact.deleteMany({ where: { placeId: { startsWith: "acqq-" } } });
+    const mk = (id: string, site: string) =>
+      prisma.outreachContact.create({ data: { placeId: `acqq-${id}`, name: `Q ${id}`, address: "a", city: "Chicago", state: "IL", website: site, email: `info@${id}.test`, rating: 5 } });
+    await mk("trivia", "https://trivia.test");
+    await mk("party", "https://party.test");
+    await mk("quiet", "https://quiet.test");
+    await mk("dead", "https://dead.test");
+    const pages: Record<string, string> = {
+      "https://trivia.test/": "<p>Join our Tuesday trivia every week</p>",
+      "https://party.test/": "<p>Book your event with us</p><script>trivia night</script>",
+      "https://quiet.test/": "<p>Great burgers</p>",
+    };
+    const fetcher = async (u: string) => (u in pages ? pages[u].replace(/<script[\s\S]*?<\/script>/g, " ").replace(/<[^>]+>/g, " ") : null);
+    const r1 = await qualify.runQualificationBatch(new Date(), { fetcher });
+    assert.ok(r1.scanned >= 4);
+    const t = await prisma.acquisitionProspect.findFirst({ where: { name: "Q trivia" } });
+    assert.equal(t?.brand, "lp");
+    assert.equal(t?.status, "QUEUED");
+    assert.match(t?.useCase ?? "", /tuesday trivia/);
+    assert.match(t?.sourceNote ?? "", /Automated check/);
+    const p = await prisma.acquisitionProspect.findFirst({ where: { name: "Q party" } });
+    assert.equal(p?.brand, "vs", "script text is ignored; private-event language wins");
+    assert.equal(await prisma.acquisitionProspect.count({ where: { name: { in: ["Q quiet", "Q dead"] } } }), 0);
+    const r2 = await qualify.runQualificationBatch(new Date(), { fetcher });
+    assert.equal(await prisma.acquisitionScan.count({ where: { contactId: { in: (await prisma.outreachContact.findMany({ where: { placeId: { startsWith: "acqq-" } }, select: { id: true } })).map((c) => c.id) } } }), 4);
+    assert.ok(r2.scanned <= r1.scanned, "already-scanned sites are not fetched again");
+  });
+
+  await check("daily report sends on activity, skips an unchanged quiet day", async () => {
+    process.env.INTERNAL_OWNER_EMAILS = "owner-qa@example.test";
+    const mails: { to: string | string[]; subject: string }[] = [];
+    const send = async (o: { to: string | string[]; subject: string }) => {
+      mails.push(o);
+      return { ok: true };
+    };
+    const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const a = await report.sendDailyReport(tomorrow, { send: send as never });
+    assert.equal(a.status, "sent");
+    assert.match(mails[0].subject, /^Acquisition /);
+    const farFuture = new Date(Date.now() + 40 * 24 * 60 * 60 * 1000);
+    const b = await report.sendDailyReport(farFuture, { send: send as never });
+    assert.equal(b.status, "sent", "decisions changed vs last report, so it sends once");
+    const c = await report.sendDailyReport(farFuture, { send: send as never });
+    assert.equal(c.status, "skipped", "same quiet day, same decisions: no email");
+    assert.equal(mails.length, 2);
+  });
+
+  await check("lane status reads the live switch and last automatic sends", async () => {
+    const s = await automation.outreachLaneStatus();
+    assert.equal(s.vsAutomatic, "PAUSED");
+    assert.match(automation.formatLaneStatus(s), /VS automatic cold email: PAUSED/);
+  });
+
   console.log(`\n${n} DB checks passed`);
   await prisma.$disconnect();
 }

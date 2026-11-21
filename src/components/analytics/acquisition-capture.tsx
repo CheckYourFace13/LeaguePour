@@ -4,36 +4,35 @@ import { useEffect } from "react";
 import { ACQ_COOKIE, ACQ_COOKIE_MAX_AGE, attributionFromLanding, readCookie, serializeAttribution } from "@/lib/acquisition/attribution";
 
 const OWN_HOSTS = ["leaguepour.com", "venuesprocket.com"];
+// Signed-in apps, player/guest pages and owner tools are not acquisition traffic.
+const SKIP_PREFIXES = ["/internal", "/app", "/venue", "/player", "/admin", "/sign/", "/v/", "/c/", "/beo-print", "/api"];
 
 /**
- * First-touch attribution capture (see src/lib/acquisition/attribution.ts). Runs once per page
- * load: keeps the FIRST landing that carried UTM params, an outreach ref or an external referrer,
- * and reports an outreach-link visit (ref) once per browser session. Never reads or stores PII.
+ * First-touch attribution + one aggregated session count per browser session (see
+ * src/lib/acquisition/attribution.ts and daily.ts). Keeps the FIRST landing that carried UTM
+ * params, an outreach ref or an external referrer. Never reads or stores personal data, and
+ * never reads the URL hash (bracket share links keep names there).
  */
 export function AcquisitionCapture() {
   useEffect(() => {
     try {
       const url = new URL(window.location.href);
-      // Share links carry participant names in the hash; nothing here reads the hash, but skip
-      // those pages entirely to keep the share-link privacy rule simple.
       if (url.hash.includes("bracket=")) return;
+      if (SKIP_PREFIXES.some((p) => url.pathname === p || url.pathname.startsWith(p.endsWith("/") ? p : `${p}/`))) return;
       const a = attributionFromLanding(url, document.referrer, OWN_HOSTS);
-      if (!a) return;
-      if (!readCookie(document.cookie, ACQ_COOKIE)) {
+      if (a && !readCookie(document.cookie, ACQ_COOKIE)) {
         const secure = url.protocol === "https:" ? "; Secure" : "";
         document.cookie = `${ACQ_COOKIE}=${serializeAttribution(a)}; Max-Age=${ACQ_COOKIE_MAX_AGE}; Path=/; SameSite=Lax${secure}`;
       }
-      if (a.ref) {
-        const seenKey = `acq_visit_${a.ref}`;
-        if (sessionStorage.getItem(seenKey)) return;
-        sessionStorage.setItem(seenKey, "1");
-        void fetch("/api/acquisition/visit", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ref: a.ref, path: url.pathname }),
-          keepalive: true,
-        }).catch(() => {});
-      }
+      const seenKey = "acq_session_counted";
+      if (sessionStorage.getItem(seenKey)) return;
+      sessionStorage.setItem(seenKey, "1");
+      void fetch("/api/acquisition/visit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ref: a?.ref, source: a?.source, referrerHost: a?.referrerHost }),
+        keepalive: true,
+      }).catch(() => {});
     } catch {
       // Attribution must never break a page.
     }

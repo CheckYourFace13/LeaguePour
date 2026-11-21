@@ -9,6 +9,7 @@ import { OWNER_SETTABLE, type ProspectStatus } from "@/lib/acquisition/program";
 import { draftProblems } from "@/lib/acquisition/drafts";
 import { ensureAcquisitionTable, importProspects, sendApprovedProspect } from "@/lib/acquisition/store";
 import { parseProspectFile } from "@/lib/acquisition/prospects.data";
+import { AUTO_QUALIFY_KEY, DAILY_REPORT_KEY, setAutomationSwitch } from "@/lib/acquisition/automation";
 
 const PATH = "/internal/acquisition";
 
@@ -121,4 +122,15 @@ export async function findPublicEmailAction(fd: FormData) {
   });
   revalidatePath(PATH);
   back({ notice: `Found ${email} on their website. Check it before approving.` });
+}
+
+/** Owner kill switches for the daily qualification pass and the daily report. */
+export async function toggleAutomationAction(fd: FormData) {
+  await requireOwnerSession();
+  const key = str(fd, "key") === "qualify" ? AUTO_QUALIFY_KEY : str(fd, "key") === "report" ? DAILY_REPORT_KEY : null;
+  if (!key) back({ error: "Unknown switch." });
+  const on = str(fd, "on") === "true";
+  await setAutomationSwitch(key, on);
+  revalidatePath(PATH);
+  back({ notice: `${key === AUTO_QUALIFY_KEY ? "Daily qualification" : "Daily report"} turned ${on ? "on" : "off"}.` });
 }

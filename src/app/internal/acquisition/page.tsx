@@ -7,12 +7,15 @@ import { getBoolSetting } from "@/lib/app-settings";
 import { isVsOutreachEnabled } from "@/lib/outreach-email";
 import { formatUsdCents } from "@/lib/pricing";
 import { BRAND_INFO, DAILY_SEND_CAP, PROGRAM_DAYS, PROGRAM_END, PROGRAM_START, PROGRAM_TARGETS, PROSPECT_STATUSES, type AcqBrand } from "@/lib/acquisition/program";
-import { getAcquisitionMetrics } from "@/lib/acquisition/metrics";
+import { getAcquisitionMetrics, getDailyTable } from "@/lib/acquisition/metrics";
+import { automationSwitches, outreachLaneStatus } from "@/lib/acquisition/automation";
+import { getLatestJobRuns } from "@/lib/job-runs";
 import { renderEmail } from "@/lib/acquisition/drafts";
 import {
   approveProspectAction,
   findPublicEmailAction,
   importProspectsAction,
+  toggleAutomationAction,
   saveDraftAction,
   sendProspectAction,
   setProspectStatusAction,
@@ -84,6 +87,12 @@ export default async function AcquisitionPage({ searchParams }: Props) {
   const open = one(params.open);
 
   const metrics = await getAcquisitionMetrics();
+  const [daily, lanes, switches, jobs] = await Promise.all([
+    getDailyTable(14),
+    outreachLaneStatus(),
+    automationSwitches(),
+    getLatestJobRuns(["acquisition-qualify", "acquisition-report"]),
+  ]);
   const [rows, imported, vsLaneOn, lpLaneOn] = await Promise.all([
     prisma.acquisitionProspect.findMany({
       where: { ...(brandFilter ? { brand: brandFilter } : {}), ...(statusFilter ? { status: statusFilter } : {}) },
@@ -145,6 +154,75 @@ export default async function AcquisitionPage({ searchParams }: Props) {
           {lpLaneOn ? "ON" : "paused"} (controls on the older outreach page). Sending a prospect here marks its matching
           old-list contact so neither lane emails that business again.
         </p>
+      </Card>
+
+      <Card className="space-y-4">
+        <h2 className="font-display text-2xl font-extrabold text-lp-text">Automation status</h2>
+        <ul className="space-y-1 text-sm text-lp-text-soft">
+          <li>
+            <strong>VenueSprocket automatic cold email: {lanes.vsAutomatic}</strong> (switch: {lanes.vsSwitchRow}; last automatic send{" "}
+            {lanes.lastVsSendAt}). LeaguePour automatic cold email: {lanes.lpAutomatic} (last send {lanes.lastLpSendAt}).
+          </li>
+          <li>Acquisition cost: $0 (no paid channels or tools are connected).</li>
+        </ul>
+        <div className="grid gap-3 md:grid-cols-2">
+          {([
+            ["qualify", "Daily website qualification (12 listed businesses/day into the approval queue)", switches.qualify, jobs["acquisition-qualify"]],
+            ["report", "Daily owner report email (only when something changed)", switches.report, jobs["acquisition-report"]],
+          ] as const).map(([key, label, on, job]) => (
+            <div key={key} className="rounded-lg border border-lp-border p-3 text-sm">
+              <p className="font-semibold text-lp-text">{label}</p>
+              <p className="text-lp-muted">
+                {on ? "ON" : "OFF"} · last run:{" "}
+                {job ? `${job.status} ${job.startedAt.toISOString().slice(0, 16).replace("T", " ")} UTC${job.detail ? ` (${job.detail.slice(0, 160)})` : ""}` : "never"}
+              </p>
+              <form action={toggleAutomationAction} className="mt-2">
+                <input type="hidden" name="key" value={key} />
+                <input type="hidden" name="on" value={on ? "false" : "true"} />
+                <Button type="submit" variant="secondary" className="min-h-0 px-3 py-1.5 text-sm">
+                  Turn {on ? "off" : "on"}
+                </Button>
+              </form>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-lp-muted">Runs daily at 14:45 UTC (8:45am Chicago in winter). Neither one contacts a prospect.</p>
+      </Card>
+
+      <Card className="space-y-3">
+        <h2 className="font-display text-2xl font-extrabold text-lp-text">Daily metrics (last 14 days)</h2>
+        <p className="text-xs text-lp-muted">
+          Sessions are first-party counts (one per browser session on marketing pages); &quot;no data&quot; means the day is before counting
+          started, 0 means counted and none. Activation: LP = competitions published; VS = inquiries received.
+        </p>
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm tabular-nums">
+            <thead>
+              <tr className="text-left text-xs uppercase text-lp-muted">
+                <th className="py-1 pr-3">Day</th>
+                <th className="py-1 pr-3">Brand</th>
+                <th className="py-1 pr-3 text-right">Sessions</th>
+                <th className="py-1 pr-3 text-right">Signups</th>
+                <th className="py-1 pr-3 text-right">Activation</th>
+                <th className="py-1 pr-3 text-right">Paid</th>
+                <th className="py-1 pr-3 text-right">Emails sent</th>
+              </tr>
+            </thead>
+            <tbody>
+              {daily.map((r) => (
+                <tr key={`${r.day}-${r.brand}`} className="border-t border-lp-border">
+                  <td className="py-1 pr-3">{r.brand === "lp" ? r.day : ""}</td>
+                  <td className="py-1 pr-3">{BRAND_INFO[r.brand].name}</td>
+                  <td className="py-1 pr-3 text-right">{r.sessions === null ? "no data" : r.sessions}</td>
+                  <td className="py-1 pr-3 text-right">{r.signups}</td>
+                  <td className="py-1 pr-3 text-right">{r.activations}</td>
+                  <td className="py-1 pr-3 text-right">{r.paid}</td>
+                  <td className="py-1 pr-3 text-right">{r.emailsSent}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </Card>
 
       {(["lp", "vs"] as AcqBrand[]).map((brand) => {

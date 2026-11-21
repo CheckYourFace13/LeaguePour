@@ -183,8 +183,74 @@ export async function getAcquisitionMetrics(now = new Date()) {
     }
   }
 
-  // Whole-business registrations in the window (both brands), for the combined target.
-  for (const brand of ["lp", "vs"] as AcqBrand[]) m[brand].registrationsAnySource = m[brand].registrations;
-
   return { since, now, lp: m.lp, vs: m.vs, attributionRecords: attributionRows.length };
+}
+
+export type DailyTableRow = {
+  day: string;
+  brand: AcqBrand;
+  sessions: number | null;
+  signups: number;
+  activations: number;
+  paid: number;
+  emailsSent: number;
+};
+
+/**
+ * Per-day, per-brand series for the dashboard (last `days` Chicago days, newest first).
+ * sessions is null (no data) for days before first-party tracking started; other columns come
+ * from production records that exist for every day, so they are real zeros when empty.
+ */
+export async function getDailyTable(days = 14, now = new Date()): Promise<DailyTableRow[]> {
+  const { dailyRows, lastDays, trackingSince } = await import("./daily");
+  const { chicagoDay } = await import("./program");
+  const dayList = lastDays(days, now);
+  const oldest = dayList[dayList.length - 1];
+  const windowStart = new Date(now.getTime() - (days + 1) * 24 * 60 * 60 * 1000);
+  const [since, rows, venues, attrRows, comps, leads, conv, sent] = await Promise.all([
+    trackingSince(),
+    dailyRows(oldest),
+    prisma.venue.findMany({ where: { createdAt: { gte: windowStart } }, select: { id: true, createdAt: true, vsConfig: { select: { createdAt: true } } } }),
+    prisma.appSetting.findMany({ where: { key: { startsWith: "acq:venue:" } }, select: { key: true, value: true } }),
+    prisma.competition.findMany({ where: { publishedAt: { gte: windowStart } }, select: { publishedAt: true } }),
+    prisma.privateEventLead.findMany({ where: { createdAt: { gte: windowStart } }, select: { createdAt: true } }),
+    prisma.appSetting.findMany({ where: { key: { startsWith: "conversion:subscription_activated:" } }, select: { value: true } }),
+    prisma.acquisitionProspect.findMany({ where: { sentAt: { gte: windowStart } }, select: { brand: true, sentAt: true } }),
+  ]);
+  const brandOf = new Map<string, string>();
+  for (const r of attrRows) {
+    try {
+      brandOf.set(r.key.slice("acq:venue:".length), (JSON.parse(r.value) as { brand?: string }).brand ?? "");
+    } catch {
+      /* skip */
+    }
+  }
+  const convDays = conv.flatMap((c) => {
+    try {
+      const d = JSON.parse(c.value) as { product?: string; at?: string };
+      return d.at ? [{ brand: d.product === "vs" ? "vs" : "lp", day: chicagoDay(new Date(d.at)) }] : [];
+    } catch {
+      return [];
+    }
+  });
+  const out: DailyTableRow[] = [];
+  for (const day of dayList) {
+    for (const brand of ["lp", "vs"] as AcqBrand[]) {
+      const venuesDay = venues.filter((v) => {
+        if (chicagoDay(v.createdAt) !== day) return false;
+        const b = brandOf.get(v.id) || (v.vsConfig && Math.abs(v.vsConfig.createdAt.getTime() - v.createdAt.getTime()) < 3_600_000 ? "vs" : "lp");
+        return b === brand;
+      });
+      out.push({
+        day,
+        brand,
+        sessions: since && day >= since ? (rows.find((r) => r.day === day && r.brand === brand && r.metric === "sessions" && r.dim === "all")?.count ?? 0) : null,
+        signups: venuesDay.length,
+        activations: brand === "lp" ? comps.filter((c) => c.publishedAt && chicagoDay(c.publishedAt) === day).length : leads.filter((l) => chicagoDay(l.createdAt) === day).length,
+        paid: convDays.filter((c) => c.brand === brand && c.day === day).length,
+        emailsSent: sent.filter((s) => s.brand === brand && s.sentAt && chicagoDay(s.sentAt) === day).length,
+      });
+    }
+  }
+  return out;
 }
