@@ -46,6 +46,8 @@ const meta: Record<DemoVideoId, { product: "lp" | "vs"; title: string; caption: 
     product: "vs",
     title: "How VenueSprocket works",
     caption: "A sample brewery rehearsal dinner from inquiry to proposal, signed contract and BEO.",
+    // Published 2026-11-21 on @iScreamStudioInc; byte-identical to public/media/demo/vs-main.mp4.
+    youtubeUrl: "https://www.youtube.com/watch?v=Q_q8CLHZ6Lw",
   },
   "vs-intro": {
     product: "vs",

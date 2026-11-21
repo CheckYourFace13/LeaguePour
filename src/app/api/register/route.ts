@@ -15,13 +15,30 @@ const venueSchema = base.extend({
   venueName: z.string().trim().min(2),
   // Optional at signup (deferred to the venue profile); stored as a neutral default.
   venueType: z.string().trim().optional(),
-  city: z.string().optional(),
-  formattedAddress: z.string().optional(),
+  city: z.string().trim().max(120).optional(),
+  formattedAddress: z.string().trim().max(300).optional(),
+  // Address parts from a confirmed Google match (owner can edit them first). Optional throughout:
+  // signup never depends on Google.
+  addressLine1: z.string().trim().max(200).optional(),
+  state: z.string().trim().max(80).optional(),
+  postalCode: z.string().trim().max(20).optional(),
+  country: z
+    .string()
+    .trim()
+    .regex(/^[A-Za-z]{2}$/)
+    .optional(),
+  // Accepted for older clients but no longer stored: Google coordinates may only be cached for
+  // 30 days under the Maps Platform terms, and nothing uses them.
   latitude: z.number().optional(),
   longitude: z.number().optional(),
-  googlePlaceId: z.string().optional(),
+  googlePlaceId: z
+    .string()
+    .trim()
+    .regex(/^[A-Za-z0-9_-]{10,300}$/)
+    .optional()
+    .or(z.literal("")),
   websiteUrl: z.string().url().optional().or(z.literal("")),
-  phone: z.string().optional(),
+  phone: z.string().trim().max(40).optional(),
 });
 
 const playerSchema = base.extend({
@@ -61,6 +78,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Email already registered", code: "email_taken" }, { status: 409 });
   }
 
+  // One venue per Google place (googlePlaceId is unique). Say so plainly instead of failing the
+  // insert with a 500; the form then offers to continue without the Google link.
+  if (data.accountType === "venue" && data.googlePlaceId) {
+    const claimed = await prisma.venue.findUnique({ where: { googlePlaceId: data.googlePlaceId }, select: { id: true } });
+    if (claimed) {
+      return NextResponse.json({ error: "Venue already registered", code: "venue_claimed" }, { status: 409 });
+    }
+  }
+
   const passwordHash = await bcrypt.hash(data.password, 12);
 
   try {
@@ -74,6 +100,11 @@ export async function POST(req: Request) {
       e?.meta?.modelName === "User" || JSON.stringify(e?.meta?.target ?? "").includes("email") || /\(`email`\)/.test(e?.message ?? "");
     if (e?.code === "P2002" && onUserEmail) {
       return NextResponse.json({ error: "Email already registered", code: "email_taken" }, { status: 409 });
+    }
+    // Same race for the Google place link (two people claiming one venue at the same moment).
+    const onPlaceId = JSON.stringify(e?.meta?.target ?? "").includes("googlePlaceId") || /googlePlaceId/.test(e?.message ?? "");
+    if (e?.code === "P2002" && (onPlaceId || e?.meta?.modelName === "Venue")) {
+      return NextResponse.json({ error: "Venue already registered", code: "venue_claimed" }, { status: 409 });
     }
     throw err;
   }
@@ -103,8 +134,10 @@ async function createAccount(data: z.infer<typeof schema>, email: string, passwo
           description: `${data.venueName} on LeaguePour`,
           city: data.city || null,
           formattedAddress: data.formattedAddress || null,
-          latitude: data.latitude ?? null,
-          longitude: data.longitude ?? null,
+          addressLine1: data.addressLine1 || null,
+          state: data.state || null,
+          postalCode: data.postalCode || null,
+          ...(data.country ? { country: data.country.toUpperCase() } : {}),
           // Real production bug, caught live: googlePlaceId is @unique in schema.prisma. `??`
           // only coalesces null/undefined, not "" - a venue signup that skips the "Find your
           // venue" search (the form explicitly invites this: "Skip only if you will add it

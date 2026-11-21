@@ -12,15 +12,44 @@ import { PasswordInput } from "@/components/auth/password-input";
 import { trackEvent } from "@/lib/analytics";
 import type { SelectedPlan, SignupBrand } from "@/lib/signup-plans";
 
+type Suggestion = { placeId: string; name: string; formattedAddress: string };
+
+/** Mirrors GooglePlaceDetails in src/lib/google-places.ts. */
 type Place = {
   placeId: string;
   name: string;
   formattedAddress: string;
-  latitude: number | null;
-  longitude: number | null;
+  addressLine1: string | null;
+  city: string | null;
+  region: string | null;
+  postalCode: string | null;
+  countryCode: string | null;
   websiteUrl: string | null;
   phone: string | null;
+  googleMapsUri: string | null;
 };
+
+/** The owner-confirmed (editable) version of a Google match. */
+type VenueDetails = { formattedAddress: string; city: string; region: string; postalCode: string; phone: string; website: string };
+
+/** Google session token: one per lookup, closed by the details call (bills as one session). */
+function newSessionToken(): string {
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
+}
+
+/** "joespub.org" -> "https://joespub.org"; anything that still isn't a web URL -> "". */
+function normalizeWebsite(raw: string): string {
+  const v = raw.trim();
+  if (!v) return "";
+  try {
+    const u = new URL(/^https?:\/\//i.test(v) ? v : `https://${v}`);
+    return u.hostname.includes(".") ? u.toString() : "";
+  } catch {
+    return "";
+  }
+}
 
 type FieldName = "name" | "email" | "password" | "venueName";
 type FieldErrors = Partial<Record<FieldName, string>>;
@@ -131,13 +160,29 @@ export function SignupVenueForm({
   const [emailTaken, setEmailTaken] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
-  // Optional location lookup (Google). Never required: a failure here can't block signup.
+  // Venue lookup (Google Places via our server). Optional: any failure falls back to typing.
   const [showLocation, setShowLocation] = useState(false);
-  const [search, setSearch] = useState("");
-  const [matches, setMatches] = useState<Array<{ placeId: string; name: string; formattedAddress: string }>>([]);
+  const [venueName, setVenueName] = useState("");
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [listOpen, setListOpen] = useState(false);
+  const [activeIdx, setActiveIdx] = useState(-1);
+  const [lookupState, setLookupState] = useState<"idle" | "loading" | "empty" | "unavailable">("idle");
   const [picked, setPicked] = useState<Place | null>(null);
-  const [searching, setSearching] = useState(false);
-  const [searchMsg, setSearchMsg] = useState<string | null>(null);
+  const [alreadyRegistered, setAlreadyRegistered] = useState(false);
+  const [details, setDetails] = useState<VenueDetails | null>(null);
+  const [loadingPlace, setLoadingPlace] = useState(false);
+  const sessionToken = useRef<string | null>(null);
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lookupAbort = useRef<AbortController | null>(null);
+  const lookupDisabled = useRef(false);
+
+  useEffect(
+    () => () => {
+      if (debounceTimer.current) clearTimeout(debounceTimer.current);
+      lookupAbort.current?.abort();
+    },
+    [],
+  );
 
   const started = useRef(false);
   const interacted = useRef(false);
@@ -203,18 +248,31 @@ export function SignupVenueForm({
       accountType: "venue",
       ...values,
       venueType: String(fd.get("venueType") ?? "").trim() || undefined,
-      city: String(fd.get("city") ?? "").trim() || undefined,
-      formattedAddress: picked?.formattedAddress || undefined,
-      latitude: picked?.latitude ?? undefined,
-      longitude: picked?.longitude ?? undefined,
-      googlePlaceId: picked?.placeId || undefined,
-      websiteUrl: picked?.websiteUrl || "",
-      phone: picked?.phone || undefined,
+      ...(picked && details
+        ? {
+            city: details.city.trim() || undefined,
+            formattedAddress: details.formattedAddress.trim() || undefined,
+            // Street line only while the confirmed address still matches Google's.
+            addressLine1: details.formattedAddress.trim() === picked.formattedAddress ? picked.addressLine1 || undefined : undefined,
+            state: details.region.trim() || undefined,
+            postalCode: details.postalCode.trim() || undefined,
+            country: picked.countryCode || undefined,
+            googlePlaceId: alreadyRegistered ? undefined : picked.placeId,
+            websiteUrl: normalizeWebsite(details.website),
+            phone: details.phone.trim() || undefined,
+          }
+        : { city: String(fd.get("city") ?? "").trim() || undefined }),
     });
 
     if (!res) {
       trackEvent("signup_network_error", { product: brand });
       setFormError("We couldn't reach the server. Check your connection and try again - everything you typed is still here.");
+      release();
+      return;
+    }
+    if (res.status === 409 && res.data.code === "venue_claimed") {
+      setAlreadyRegistered(true);
+      setFormError("Another account already uses this Google listing. Your details are kept - submit again to create your account without the Google link, or log in if this is your venue.");
       release();
       return;
     }
@@ -276,48 +334,113 @@ export function SignupVenueForm({
     router.refresh();
   }
 
-  async function searchPlaces() {
-    const term = search.trim();
-    if (term.length < 3) {
-      setSearchMsg("Type at least 3 characters.");
-      setMatches([]);
+  function clearMatch() {
+    setPicked(null);
+    setDetails(null);
+    setAlreadyRegistered(false);
+  }
+
+  function onVenueNameChange(value: string) {
+    setVenueName(value);
+    if (picked) clearMatch(); // typing a different name drops the old match
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    lookupAbort.current?.abort();
+    const term = value.trim();
+    if (term.length < 3 || lookupDisabled.current) {
+      setSuggestions([]);
+      setListOpen(false);
+      setLookupState(lookupDisabled.current ? "unavailable" : "idle");
       return;
     }
-    setSearching(true);
-    setSearchMsg(null);
+    debounceTimer.current = setTimeout(() => void lookup(term), 350);
+  }
+
+  async function lookup(term: string) {
+    if (!sessionToken.current) sessionToken.current = newSessionToken();
+    const ctrl = new AbortController();
+    lookupAbort.current = ctrl;
+    setLookupState("loading");
     try {
-      const res = await fetch(`/api/google/places/search?q=${encodeURIComponent(term)}`, { signal: AbortSignal.timeout(10_000) });
-      const data = (await res.json().catch(() => ({ results: [] }))) as { results?: typeof matches; message?: string };
-      setMatches(data.results ?? []);
-      if (!res.ok) setSearchMsg("Location search is unavailable right now. You can skip it and add your address later.");
-      else if ((data.results ?? []).length === 0) setSearchMsg("No matches. Try business name + city, or skip this.");
-      else setSearchMsg("Select your location.");
+      const qs = new URLSearchParams({ q: term, session: sessionToken.current });
+      const res = await fetch(`/api/google/places/autocomplete?${qs}`, { signal: ctrl.signal });
+      const data = (await res.json().catch(() => ({}))) as { results?: Suggestion[] };
+      if (ctrl.signal.aborted) return;
+      if (!res.ok) {
+        // Google unavailable or rate limited: stop asking for this page view; typing still works.
+        if (res.status === 429 || res.status >= 500) lookupDisabled.current = true;
+        setSuggestions([]);
+        setListOpen(false);
+        setLookupState("unavailable");
+        trackEvent("venue_lookup_unavailable", { product: brand, status: res.status });
+        return;
+      }
+      const results = data.results ?? [];
+      setSuggestions(results);
+      setActiveIdx(-1);
+      setListOpen(results.length > 0);
+      setLookupState(results.length ? "idle" : "empty");
     } catch {
-      setMatches([]);
-      setSearchMsg("Location search is unavailable right now. You can skip it and add your address later.");
-    } finally {
-      setSearching(false);
+      if (ctrl.signal.aborted) return;
+      setSuggestions([]);
+      setListOpen(false);
+      setLookupState("unavailable");
     }
   }
 
-  async function pickPlace(placeId: string) {
-    setSearchMsg(null);
+  async function choose(s: Suggestion) {
+    setListOpen(false);
+    setSuggestions([]);
+    setVenueName(s.name);
+    setLoadingPlace(true);
     try {
-      const res = await fetch(`/api/google/places/details?placeId=${encodeURIComponent(placeId)}`, { signal: AbortSignal.timeout(10_000) });
-      const data = (await res.json().catch(() => ({ place: null }))) as { place: Place | null };
-      if (data.place) {
-        setPicked(data.place);
-        setMatches([]);
-        setSearchMsg(null);
-        const venueInput = document.getElementById("venueName") as HTMLInputElement | null;
-        if (venueInput && !venueInput.value.trim()) venueInput.value = data.place.name;
-      } else {
-        setSearchMsg("Couldn't load that location. Pick another result or skip this.");
+      const qs = new URLSearchParams({ placeId: s.placeId });
+      if (sessionToken.current) qs.set("session", sessionToken.current);
+      const res = await fetch(`/api/google/places/details?${qs}`, { signal: AbortSignal.timeout(10_000) });
+      const data = (await res.json().catch(() => ({}))) as { place?: Place | null; alreadyRegistered?: boolean };
+      if (!res.ok || !data.place) {
+        setLookupState("unavailable");
+        return;
       }
+      const p = data.place;
+      setPicked(p);
+      setAlreadyRegistered(Boolean(data.alreadyRegistered));
+      setVenueName(p.name);
+      setDetails({
+        formattedAddress: p.formattedAddress,
+        city: p.city ?? "",
+        region: p.region ?? "",
+        postalCode: p.postalCode ?? "",
+        phone: p.phone ?? "",
+        website: p.websiteUrl ?? "",
+      });
+      setLookupState("idle");
+      trackEvent("venue_lookup_selected", { product: brand, already_registered: Boolean(data.alreadyRegistered) });
     } catch {
-      setSearchMsg("Couldn't load that location. You can skip this and add it later.");
+      setLookupState("unavailable");
+    } finally {
+      sessionToken.current = null; // the details call ends this Google session
+      setLoadingPlace(false);
     }
   }
+
+  function onVenueKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (!listOpen || suggestions.length === 0) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIdx((i) => (i + 1) % suggestions.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIdx((i) => (i <= 0 ? suggestions.length - 1 : i - 1));
+    } else if (e.key === "Enter" && activeIdx >= 0) {
+      e.preventDefault();
+      void choose(suggestions[activeIdx]);
+    } else if (e.key === "Escape") {
+      setListOpen(false);
+    }
+  }
+
+  const setDetail = (k: keyof VenueDetails) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setDetails((d) => (d ? { ...d, [k]: e.target.value } : d));
 
   const err = (f: FieldName) =>
     fieldErrors[f] ? (
@@ -380,11 +503,131 @@ export function SignupVenueForm({
           </div>
           {fieldErrors.password ? err("password") : <p className="mt-1.5 text-sm text-lp-muted">At least 8 characters.</p>}
         </div>
-        <div>
+        <div className="relative">
           <Label htmlFor="venueName">Venue name</Label>
-          <Input id="venueName" name="venueName" className="mt-1.5 min-h-12" required autoComplete="organization" placeholder="Northside Tap & Trophy" {...a11y("venueName")} />
+          <Input
+            id="venueName"
+            name="venueName"
+            className="mt-1.5 min-h-12"
+            required
+            autoComplete="off"
+            placeholder="Start typing your venue's name"
+            value={venueName}
+            onChange={(e) => onVenueNameChange(e.target.value)}
+            onKeyDown={onVenueKeyDown}
+            onBlur={() => setTimeout(() => setListOpen(false), 150)}
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded={listOpen}
+            aria-controls="venue-suggestions"
+            aria-activedescendant={listOpen && activeIdx >= 0 ? `venue-suggestion-${activeIdx}` : undefined}
+            {...a11y("venueName")}
+            aria-describedby={[fieldErrors.venueName ? "venueName-error" : "", "venueName-hint"].filter(Boolean).join(" ")}
+          />
+          {listOpen && suggestions.length > 0 ? (
+            <ul
+              id="venue-suggestions"
+              role="listbox"
+              aria-label="Matching venues on Google Maps"
+              className="absolute left-0 right-0 z-20 mt-1 max-h-72 overflow-y-auto rounded-[10px] border border-lp-border-strong bg-lp-bg p-1 shadow-xl"
+            >
+              {suggestions.map((sg, i) => (
+                <li
+                  key={sg.placeId}
+                  id={`venue-suggestion-${i}`}
+                  role="option"
+                  aria-selected={i === activeIdx}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => void choose(sg)}
+                  className={`cursor-pointer rounded px-3 py-2.5 ${i === activeIdx ? "bg-lp-surface-2" : "hover:bg-lp-surface-2"}`}
+                >
+                  <div className="font-semibold text-lp-text">{sg.name}</div>
+                  {sg.formattedAddress ? <div className="text-sm text-lp-text-soft">{sg.formattedAddress}</div> : null}
+                </li>
+              ))}
+              <li role="presentation" className="px-3 pb-1 pt-2 text-right text-[11px] text-lp-muted">
+                Suggestions from Google Maps
+              </li>
+            </ul>
+          ) : null}
           {err("venueName")}
+          <p id="venueName-hint" className="mt-1.5 text-sm text-lp-muted" aria-live="polite">
+            {loadingPlace
+              ? "Loading venue details…"
+              : lookupState === "loading"
+                ? "Looking up matching venues…"
+                : lookupState === "unavailable"
+                  ? "Google lookup isn't available right now - just type your venue's name."
+                  : lookupState === "empty" && !picked
+                    ? "No Google match - that's fine, just type your venue's name."
+                    : picked
+                      ? null
+                      : "Pick your venue from the suggestions to fill in its address, or just type the name."}
+          </p>
         </div>
+
+        {picked && details ? (
+          <div className="rounded-[10px] border border-lp-accent/40 bg-lp-accent/5 px-4 py-4">
+            <div className="flex items-start justify-between gap-3">
+              <p className="text-sm font-semibold text-lp-text">Confirm your venue details</p>
+              <button type="button" className="shrink-0 text-sm font-semibold text-lp-accent hover:underline" onClick={clearMatch}>
+                Not my venue
+              </button>
+            </div>
+            <p className="mt-1 text-sm text-lp-text-soft">From Google Maps. Edit anything that&apos;s out of date; you can change it later too.</p>
+            {alreadyRegistered ? (
+              <p role="alert" className="mt-3 rounded-[8px] border border-lp-warning/40 bg-lp-warning/10 px-3 py-2 text-sm text-lp-text">
+                A venue account already uses this Google listing. If you work there, ask the owner to add you under Staff, or{" "}
+                <Link className="font-semibold text-lp-accent hover:underline" href="/login">
+                  log in
+                </Link>
+                . You can still create a separate account; it just won&apos;t be linked to this Google listing.
+              </p>
+            ) : null}
+            <div className="mt-3 space-y-3">
+              <div>
+                <Label htmlFor="venueAddress">Address</Label>
+                <Input id="venueAddress" value={details.formattedAddress} onChange={setDetail("formattedAddress")} className="mt-1 min-h-11" autoComplete="street-address" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="venueCity">City</Label>
+                  <Input id="venueCity" value={details.city} onChange={setDetail("city")} className="mt-1 min-h-11" autoComplete="address-level2" />
+                </div>
+                <div>
+                  <Label htmlFor="venueRegion">State / region</Label>
+                  <Input id="venueRegion" value={details.region} onChange={setDetail("region")} className="mt-1 min-h-11" autoComplete="address-level1" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="venuePostal">Postal code</Label>
+                  <Input id="venuePostal" value={details.postalCode} onChange={setDetail("postalCode")} className="mt-1 min-h-11" autoComplete="postal-code" />
+                </div>
+                <div>
+                  <Label htmlFor="venuePhone">Venue phone</Label>
+                  <Input id="venuePhone" type="tel" value={details.phone} onChange={setDetail("phone")} className="mt-1 min-h-11" autoComplete="off" />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="venueWebsite">Website</Label>
+                <Input id="venueWebsite" type="url" inputMode="url" value={details.website} onChange={setDetail("website")} className="mt-1 min-h-11" placeholder="https://" autoComplete="off" />
+              </div>
+            </div>
+            <p className="mt-3 text-[11px] text-lp-muted">
+              Venue information from Google Maps
+              {picked.googleMapsUri ? (
+                <>
+                  {" · "}
+                  <a href={picked.googleMapsUri} target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">
+                    View on Google Maps
+                  </a>
+                </>
+              ) : null}
+            </p>
+          </div>
+        ) : null}
+
 
         <div className="rounded-[10px] border border-lp-border px-4 py-3">
           <button
@@ -394,61 +637,16 @@ export function SignupVenueForm({
             aria-controls="optional-details"
             onClick={() => setShowLocation((v) => !v)}
           >
-            {showLocation ? "Hide optional details" : "Add location and venue type (optional - you can do this later)"}
+            {showLocation ? "Hide optional details" : picked ? "Add venue type (optional)" : "Add city and venue type (optional - you can do this later)"}
           </button>
           {showLocation ? (
             <div id="optional-details" className="mt-4 space-y-4">
-              <div>
-                <Label htmlFor="gm-search">Look up your venue (optional)</Label>
-                <p className="mt-1 text-sm text-lp-text-soft">Search Google for your address, or skip and type your city below.</p>
-                <div className="mt-1.5 flex gap-2">
-                  <Input
-                    id="gm-search"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        void searchPlaces();
-                      }
-                    }}
-                    className="min-h-12"
-                    placeholder="Business name and city"
-                  />
-                  <Button type="button" variant="secondary" onClick={searchPlaces} disabled={searching} className="px-5">
-                    {searching ? "Searching…" : "Search"}
-                  </Button>
+              {!picked ? (
+                <div>
+                  <Label htmlFor="city">City (optional)</Label>
+                  <Input id="city" name="city" className="mt-1.5 min-h-12" autoComplete="address-level2" placeholder="Indianapolis" />
                 </div>
-                {matches.length > 0 ? (
-                  <ul className="mt-2 max-h-40 space-y-1 overflow-y-auto rounded-[10px] border border-lp-border-strong bg-lp-bg/80 p-2">
-                    {matches.map((m) => (
-                      <li key={m.placeId}>
-                        <button type="button" className="w-full rounded px-2 py-2.5 text-left text-base hover:bg-lp-surface-2" onClick={() => pickPlace(m.placeId)}>
-                          <div className="font-semibold text-lp-text">{m.name}</div>
-                          <div className="text-sm text-lp-text-soft">{m.formattedAddress}</div>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
-                <p className="mt-1.5 text-sm text-lp-text-soft" aria-live="polite">
-                  {picked ? (
-                    <>
-                      Selected: {picked.name} - {picked.formattedAddress}{" "}
-                      <button type="button" className="font-semibold text-lp-accent hover:underline" onClick={() => setPicked(null)}>
-                        Clear
-                      </button>
-                    </>
-                  ) : (
-                    searchMsg
-                  )}
-                </p>
-                <p className="text-[11px] text-lp-muted/80">Location search powered by Google</p>
-              </div>
-              <div>
-                <Label htmlFor="city">City (optional)</Label>
-                <Input id="city" name="city" className="mt-1.5 min-h-12" autoComplete="address-level2" placeholder="Indianapolis" />
-              </div>
+              ) : null}
               <div>
                 <Label htmlFor="venueType">Venue type (optional)</Label>
                 <Input id="venueType" name="venueType" className="mt-1.5 min-h-12" placeholder={isVs ? "Restaurant, brewery, event space…" : "Brewpub, VFW, sports bar…"} />
