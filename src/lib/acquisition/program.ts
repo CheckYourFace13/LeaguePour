@@ -161,3 +161,17 @@ export function businessKeys(p: { name: string; city: string | null; website?: s
 export function chicagoDay(d: Date): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Chicago", year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
 }
+
+/** Only public web hosts: http(s), a dotted name, no IP literals, no localhost/internal suffixes. */
+export function isPublicWebUrl(raw: string): boolean {
+  try {
+    const u = new URL(raw);
+    if (u.protocol !== "https:" && u.protocol !== "http:") return false;
+    const h = u.hostname.toLowerCase();
+    if (!h.includes(".") || h.endsWith(".local") || h.endsWith(".internal") || h.endsWith(".localhost") || h === "localhost") return false;
+    if (/^\d{1,3}(\.\d{1,3}){3}$/.test(h) || h.startsWith("[") || h.includes(":")) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}

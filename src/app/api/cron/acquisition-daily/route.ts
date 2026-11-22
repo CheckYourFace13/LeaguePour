@@ -3,13 +3,16 @@ import { runJob } from "@/lib/job-runs";
 import { withScheduledSlot } from "@/lib/job-claims";
 import { automationSwitches, formatLaneStatus, outreachLaneStatus } from "@/lib/acquisition/automation";
 import { runQualificationBatch } from "@/lib/acquisition/qualify";
+import { discoveryConfig, runDiscovery } from "@/lib/acquisition/discover";
 import { sendDailyReport } from "@/lib/acquisition/report";
 
 export const runtime = "nodejs";
 
 /**
- * Daily acquisition job (in-process scheduler, 14:45 UTC). Two independent phases, each with its
+ * Daily acquisition job (in-process scheduler, 14:45 UTC). Three independent phases, each with its
  * own owner kill switch (/internal/acquisition) and its own JobRun row:
+ *  0. acquisition-discover: find NEW businesses (capped Google Places ID search + the businesses'
+ *     own websites, robots.txt respected) and queue qualified ones for approval (discover.ts).
  *  1. acquisition-qualify: scan a small batch of already-listed businesses' own websites and
  *     queue matches for owner approval (src/lib/acquisition/qualify.ts). Sends nothing.
  *  2. acquisition-report: email the owner yesterday's numbers, only when something changed.
@@ -27,6 +30,17 @@ async function handle(request: Request): Promise<Response> {
   console.log("error" in lanes ? `[outreach-status] read failed: ${lanes.error}` : formatLaneStatus(lanes));
 
   const switches = await automationSwitches();
+  const discover = await runJob("acquisition-discover", async () => {
+    const cfg = await discoveryConfig();
+    if (!cfg.enabled) return { status: "skipped" as const, detail: "Kill switch off", result: null };
+    const r = await runDiscovery();
+    return {
+      status: r.error && r.queriesRun.length === 0 ? ("failure" as const) : ("success" as const),
+      detail: `${r.queriesRun.length} queries, ${r.placesFound} places (${r.newPlaces} new), ${r.sitesChecked} sites checked, ${r.qualified} qualified, ${r.queued} queued${r.error ? ` - ${r.error}` : ""}`,
+      result: r,
+    };
+  }).catch((err) => ({ error: String(err) }));
+
   const qualify = await runJob("acquisition-qualify", async () => {
     if (!switches.qualify) return { status: "skipped" as const, detail: "Kill switch off", result: null };
     const r = await runQualificationBatch();
@@ -43,8 +57,8 @@ async function handle(request: Request): Promise<Response> {
     return { status: r.status === "sent" ? ("success" as const) : r.status, detail: r.detail, result: r };
   }).catch((err) => ({ error: String(err) }));
 
-  console.log("[acquisition-daily]", JSON.stringify({ qualify, report }).slice(0, 800));
-  return NextResponse.json({ ok: true, lanes, qualify, report });
+  console.log("[acquisition-daily]", JSON.stringify({ discover, qualify, report }).slice(0, 1200));
+  return NextResponse.json({ ok: true, lanes, discover, qualify, report });
 }
 
 export const GET = withScheduledSlot("acquisition-daily", handle);

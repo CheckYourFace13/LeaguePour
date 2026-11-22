@@ -7,7 +7,7 @@ import { getBoolSetting } from "@/lib/app-settings";
 import { isVsOutreachEnabled } from "@/lib/outreach-email";
 import { formatUsdCents } from "@/lib/pricing";
 import { BRAND_INFO, DAILY_SEND_CAP, PROGRAM_DAYS, PROGRAM_END, PROGRAM_START, PROGRAM_TARGETS, PROSPECT_STATUSES, type AcqBrand } from "@/lib/acquisition/program";
-import { getAcquisitionMetrics, getDailyTable } from "@/lib/acquisition/metrics";
+import { getAcquisitionMetrics, getDailyTable, getFunnel } from "@/lib/acquisition/metrics";
 import { automationSwitches, outreachLaneStatus } from "@/lib/acquisition/automation";
 import { getLatestJobRuns } from "@/lib/job-runs";
 import { renderEmail } from "@/lib/acquisition/drafts";
@@ -16,6 +16,7 @@ import {
   findPublicEmailAction,
   importProspectsAction,
   toggleAutomationAction,
+  saveDiscoverySettingsAction,
   saveDraftAction,
   sendProspectAction,
   setProspectStatusAction,
@@ -87,11 +88,12 @@ export default async function AcquisitionPage({ searchParams }: Props) {
   const open = one(params.open);
 
   const metrics = await getAcquisitionMetrics();
-  const [daily, lanes, switches, jobs] = await Promise.all([
+  const [daily, lanes, switches, jobs, funnel] = await Promise.all([
     getDailyTable(14),
     outreachLaneStatus(),
     automationSwitches(),
-    getLatestJobRuns(["acquisition-qualify", "acquisition-report"]),
+    getLatestJobRuns(["acquisition-discover", "acquisition-qualify", "acquisition-report"]),
+    getFunnel(),
   ]);
   const [rows, imported, vsLaneOn, lpLaneOn] = await Promise.all([
     prisma.acquisitionProspect.findMany({
@@ -154,6 +156,57 @@ export default async function AcquisitionPage({ searchParams }: Props) {
           {lpLaneOn ? "ON" : "paused"} (controls on the older outreach page). Sending a prospect here marks its matching
           old-list contact so neither lane emails that business again.
         </p>
+      </Card>
+
+      <Card className="space-y-4">
+        <h2 className="font-display text-2xl font-extrabold text-lp-text">Prospect funnel</h2>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <Stat label="Discovered (new places)" value={funnel.discovered} sub={`${funnel.checked} checked · ${funnel.pendingCheck} waiting`} />
+          <Stat label="Existing list scanned" value={funnel.existingListScanned} sub="already-listed businesses checked" />
+          <Stat label="Qualified · LeaguePour" value={funnel.brands.lp.qualified} sub={Object.entries(funnel.brands.lp.bySource).map(([k, v]) => `${v} ${k}`).join(" · ") || "-"} />
+          <Stat label="Qualified · VenueSprocket" value={funnel.brands.vs.qualified} sub={Object.entries(funnel.brands.vs.bySource).map(([k, v]) => `${v} ${k}`).join(" · ") || "-"} />
+          <Stat label="Pending approval" value={funnel.brands.lp.pendingApproval + funnel.brands.vs.pendingApproval} sub={`LP ${funnel.brands.lp.pendingApproval} · VS ${funnel.brands.vs.pendingApproval}`} />
+          <Stat label="Contacted" value={funnel.brands.lp.contacted + funnel.brands.vs.contacted} sub={`LP ${funnel.brands.lp.contacted} · VS ${funnel.brands.vs.contacted}`} />
+          <Stat label="Converted (signed up)" value={funnel.brands.lp.converted + funnel.brands.vs.converted} sub={`LP ${funnel.brands.lp.converted} · VS ${funnel.brands.vs.converted}`} />
+          <Stat label="Suppressed" value={funnel.brands.lp.suppressed + funnel.brands.vs.suppressed} sub="existing venue, opted out or already contacted" />
+        </div>
+        <p className="text-xs text-lp-muted">
+          Discovery outcomes: {funnel.discoveryByStatus.map((d) => `${d.status} ${d.count}`).join(", ") || "none yet"}. Expansion: query{" "}
+          {Math.min(funnel.config.cursor, funnel.config.totalQueries)} of {funnel.config.totalQueries}
+          {funnel.nextQuery ? ` (next: "${funnel.nextQuery}")` : " (all Chicagoland queries used)"}.
+        </p>
+        <div className="rounded-lg border border-lp-border p-3 text-sm">
+          <p className="font-semibold text-lp-text">
+            Daily discovery: {funnel.config.enabled ? "ON" : "OFF"} · last run:{" "}
+            {jobs["acquisition-discover"]
+              ? `${jobs["acquisition-discover"].status} ${jobs["acquisition-discover"].startedAt.toISOString().slice(0, 16).replace("T", " ")} UTC (${(jobs["acquisition-discover"].detail ?? "").slice(0, 200)})`
+              : "never"}
+          </p>
+          <p className="text-xs text-lp-muted">
+            Google Places (New) text search returns place IDs and website links only (nothing else from Google is stored); each business&apos;s own
+            site is then read (robots.txt respected, max 4 pages). Matches join the approval queue. Nothing is emailed automatically.
+          </p>
+          <form action={saveDiscoverySettingsAction} className="mt-2 flex flex-wrap items-end gap-3">
+            <label className="text-xs">
+              Discovery
+              <select name="enabled" defaultValue={funnel.config.enabled ? "true" : "false"} className="ml-1 rounded border border-lp-border px-1 py-0.5">
+                <option value="true">on</option>
+                <option value="false">off</option>
+              </select>
+            </label>
+            <label className="text-xs">
+              Places searches/day (max 8)
+              <input name="queries" type="number" min={0} max={8} defaultValue={funnel.config.queriesPerDay} className="ml-1 w-16 rounded border border-lp-border px-1 py-0.5" />
+            </label>
+            <label className="text-xs">
+              Websites checked/day (max 40)
+              <input name="sites" type="number" min={0} max={40} defaultValue={funnel.config.sitesPerDay} className="ml-1 w-16 rounded border border-lp-border px-1 py-0.5" />
+            </label>
+            <Button type="submit" variant="secondary" className="min-h-0 px-3 py-1.5 text-sm">
+              Save
+            </Button>
+          </form>
+        </div>
       </Card>
 
       <Card className="space-y-4">

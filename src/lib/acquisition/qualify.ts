@@ -13,6 +13,7 @@ import { prisma } from "@/lib/db";
 import { isPlausibleEmail } from "@/lib/outreach-email";
 import { importProspects, ensureAcquisitionTable } from "./store";
 import type { ProspectSeed } from "./prospects.data";
+import { isPublicWebUrl } from "./program";
 
 export const QUALIFY_BATCH = 12;
 const FETCH_TIMEOUT_MS = 4000;
@@ -55,13 +56,14 @@ export function classifyPage(text: string): { brand: "lp" | "vs"; phrase: string
 }
 
 async function fetchText(url: string): Promise<string | null> {
+  if (!isPublicWebUrl(url)) return null;
   try {
     const res = await fetch(url, {
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       redirect: "follow",
       headers: { "User-Agent": "Mozilla/5.0 (compatible; LeaguePourBot/1.0; +https://leaguepour.com)" },
     });
-    if (!res.ok) return null;
+    if (!res.ok || (res.url && !isPublicWebUrl(res.url))) return null;
     if (!(res.headers.get("content-type") ?? "").includes("text/html")) return null;
     return textOf((await res.text()).slice(0, 400_000));
   } catch {

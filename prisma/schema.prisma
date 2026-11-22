@@ -237,6 +237,29 @@ model AcquisitionScan {
 }
 
 /**
+ * Automated discovery (src/lib/acquisition/discover.ts): one row per Google place ID ever seen, so
+ * a business is checked once. Holds only the place ID, our query/city and our own verdict from the
+ * business's own website. The Google-provided website URL is cleared once the site is checked.
+ */
+model AcquisitionDiscovery {
+  placeId    String    @id
+  query      String
+  city       String
+  brandHint  String
+  organizer  Boolean   @default(false)
+  website    String?
+  /// pending | qualified | no-signal | unreachable | robots | no-name | shared-host | no-website | closed
+  status     String    @default("pending")
+  detail     String?
+  prospectId String?
+  createdAt  DateTime  @default(now())
+  checkedAt  DateTime?
+
+  @@index([status])
+  @@schema("leaguepour_lp")
+}
+
+/**
  * Durable run history for scheduled/background jobs (outreach sends, harvests, and any future
  * lifecycle automation), so "is this job actually healthy" is a query instead of a grep through
  * console logs, and a failed run is detectable instead of silently disappearing.

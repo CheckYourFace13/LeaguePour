@@ -9,6 +9,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { parseProspectFile, type ProspectSeed } from "../src/lib/acquisition/prospects.data";
 import { validateSeed } from "../src/lib/acquisition/store";
+import * as d from "../src/lib/acquisition/discover";
 import { buildDraft, draftProblems, renderEmail, unsubscribeUrl } from "../src/lib/acquisition/drafts";
 import { CAMPAIGN_ID, chicagoDay, dedupeKey, domainOf, isSharedHost, normalizeName, trackedUrl } from "../src/lib/acquisition/program";
 import {
@@ -144,6 +145,26 @@ check("upload parser rejects malformed files", () => {
   assert.ok(parseProspectFile("{}").error);
   assert.ok(parseProspectFile('[{"brand":"xx"}]').error);
   assert.equal(parseProspectFile("[]").seeds.length, 0);
+});
+
+check("discovery helpers: robots.txt, site name, role email, expansion order", () => {
+  const robots = ["User-agent: Googlebot", "Disallow: /", "", "User-agent: *", "Disallow: /private", "# comment", ""].join("\n");
+  assert.deepEqual(d.robotsDisallows(robots), ["/private"]);
+  assert.equal(d.pathAllowed("/events", ["/private"]), true);
+  assert.equal(d.pathAllowed("/private-events", ["/private"]), false);
+  assert.equal(d.pathAllowed("/", ["/"]), false);
+  assert.deepEqual(d.robotsDisallows(["User-agent: LeaguePourBot", "Disallow: /", "User-agent: *", "Disallow:"].join("\n")), ["/"]);
+  assert.equal(d.siteName('<title>The Corner Tap | Bar &amp; Grill in Evanston</title>'), "The Corner Tap");
+  assert.equal(d.siteName('<meta property="og:site_name" content="Hop Hall"><title>Home</title>'), "Hop Hall");
+  assert.equal(d.siteName("<title>Home</title>"), null);
+  assert.equal(d.roleEmail(['<a href="mailto:jane.doe@cornertap.test">x</a> events@cornertap.test'], "cornertap.test"), "events@cornertap.test");
+  assert.equal(d.roleEmail(["info@other-domain.test"], "cornertap.test"), null, "only the business's own domain");
+  assert.equal(d.roleEmail(["jane@cornertap.test"], "cornertap.test"), null, "never personal-name addresses");
+  assert.equal(d.isPublicWebUrl("https://cornertap.test/"), true);
+  for (const bad of ["http://127.0.0.1/", "http://localhost:3000/", "ftp://x.test/", "http://intranet/", "http://[::1]/", "http://db.internal/"]) assert.equal(d.isPublicWebUrl(bad), false, bad);
+  assert.equal(d.queryAt(0)?.city, "Chicago");
+  assert.equal(d.queryAt(d.DISCOVERY_TEMPLATES.length)?.city, d.DISCOVERY_CITIES[1]);
+  assert.equal(d.queryAt(d.DISCOVERY_CITIES.length * d.DISCOVERY_TEMPLATES.length), null);
 });
 
 check("Chicago day boundaries", () => {

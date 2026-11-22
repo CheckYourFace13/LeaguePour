@@ -254,3 +254,44 @@ export async function getDailyTable(days = 14, now = new Date()): Promise<DailyT
   }
   return out;
 }
+
+/** Funnel counts for the dashboard, kept separate per stage and brand. */
+export async function getFunnel() {
+  const { ensureDiscoveryTable, discoveryConfig, queryAt } = await import("./discover");
+  await ensureDiscoveryTable();
+  const [discoveryByStatus, scans, prospects, cfg] = await Promise.all([
+    prisma.acquisitionDiscovery.groupBy({ by: ["status"], _count: { placeId: true } }),
+    prisma.acquisitionScan.count().catch(() => 0),
+    prisma.acquisitionProspect.findMany({ select: { brand: true, status: true, segment: true, signedUpVenueId: true } }),
+    discoveryConfig(),
+  ]);
+  const discovered = discoveryByStatus.reduce((n, r) => n + r._count.placeId, 0);
+  const pendingCheck = discoveryByStatus.find((r) => r.status === "pending")?._count.placeId ?? 0;
+  const origin = (seg: string) => (seg.includes("auto-discovered") ? "discovered" : seg.includes("auto-qualified") ? "existing list" : "researched");
+  const brands = { lp: emptyFunnel(), vs: emptyFunnel() };
+  for (const p of prospects) {
+    const b = brands[p.brand as AcqBrand];
+    if (!b) continue;
+    b.qualified++;
+    b.bySource[origin(p.segment)] = (b.bySource[origin(p.segment)] ?? 0) + 1;
+    if (p.status === "QUEUED" || p.status === "APPROVED") b.pendingApproval++;
+    if ((CONTACTED_STATUSES as string[]).includes(p.status)) b.contacted++;
+    if (p.signedUpVenueId) b.converted++;
+    if (p.status === "SUPPRESSED") b.suppressed++;
+  }
+  const next = queryAt(cfg.cursor);
+  return {
+    discovered,
+    checked: discovered - pendingCheck,
+    pendingCheck,
+    discoveryByStatus: discoveryByStatus.map((r) => ({ status: r.status, count: r._count.placeId })),
+    existingListScanned: scans,
+    brands,
+    config: cfg,
+    nextQuery: next?.query ?? null,
+  };
+}
+
+function emptyFunnel() {
+  return { qualified: 0, pendingApproval: 0, contacted: 0, converted: 0, suppressed: 0, bySource: {} as Record<string, number> };
+}

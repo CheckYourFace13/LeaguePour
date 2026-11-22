@@ -292,6 +292,63 @@ async function main() {
     assert.match(automation.formatLaneStatus(s), /VS automatic cold email: PAUSED/);
   });
 
+  await check("discovery: new places only, robots respected, Google data not kept, qualified ones queued", async () => {
+    const disc = await import("../src/lib/acquisition/discover");
+    await disc.ensureDiscoveryTable();
+    await prisma.acquisitionDiscovery.deleteMany({});
+    await prisma.appSetting.deleteMany({ where: { key: { in: ["acq_discovery_cursor", disc.DISCOVERY_QUERIES_KEY, disc.DISCOVERY_SITES_KEY, disc.DISCOVERY_ENABLED_KEY] } } });
+    await prisma.outreachContact.upsert({ where: { placeId: "known-place" }, create: { placeId: "known-place", name: "Known", address: "a", city: "Chicago", state: "IL" }, update: {} });
+    const searches: string[] = [];
+    const search = async (q: string) => {
+      searches.push(q);
+      return [
+        { placeId: "known-place", website: "https://known.test/", open: true },
+        { placeId: "p-trivia", website: "https://cornertap.test/", open: true },
+        { placeId: "p-party", website: "https://hophall.test/", open: true },
+        { placeId: "p-robots", website: "https://blocked.test/", open: true },
+        { placeId: "p-nosite", website: null, open: true },
+        { placeId: "p-closed", website: "https://closed.test/", open: false },
+      ];
+    };
+    const site: Record<string, { status: number; html: string | null }> = {
+      "https://cornertap.test/robots.txt": { status: 404, html: null },
+      "https://cornertap.test/": { status: 200, html: "<title>The Corner Tap | Evanston</title><p>Weekly trivia night every Tuesday</p>" },
+      "https://cornertap.test/contact": { status: 200, html: '<a href="mailto:info@cornertap.test">Email</a>' },
+      "https://hophall.test/robots.txt": { status: 200, html: "User-agent: *\nDisallow: /admin" },
+      "https://hophall.test/": { status: 200, html: '<meta property="og:site_name" content="Hop Hall"><p>Host your event in our barrel room</p>' },
+      "https://blocked.test/robots.txt": { status: 200, html: "User-agent: *\nDisallow: /" },
+    };
+    const fetched: string[] = [];
+    const fetcher = async (u: string) => {
+      fetched.push(u);
+      const r = site[u];
+      return { status: r?.status ?? 404, html: r?.html ?? null, finalUrl: u };
+    };
+    const r = await disc.runDiscovery(new Date(), { search, fetcher });
+    assert.equal(r.queriesRun.length, disc.DEFAULT_QUERIES_PER_DAY);
+    assert.equal(r.newPlaces, 5, "the already-listed place is skipped");
+    assert.equal(r.qualified, 2);
+    assert.ok(!fetched.some((u) => u.startsWith("https://blocked.test/") && !u.endsWith("robots.txt")), "robots.txt disallow respected");
+    const tap = await prisma.acquisitionProspect.findFirst({ where: { name: "The Corner Tap" } });
+    assert.equal(tap?.brand, "lp");
+    assert.equal(tap?.email, "info@cornertap.test");
+    assert.match(tap?.sourceNote ?? "", /Google Places search/);
+    const hall = await prisma.acquisitionProspect.findFirst({ where: { name: "Hop Hall" } });
+    assert.equal(hall?.brand, "vs");
+    assert.equal(hall?.contactRoute, "form", "no published role email -> contact form route");
+    const rows = await prisma.acquisitionDiscovery.findMany();
+    assert.ok(rows.every((x) => x.website === null), "Google-provided website URLs are not kept after checking");
+    assert.equal(rows.find((x) => x.placeId === "p-robots")?.status, "robots");
+    assert.equal(rows.find((x) => x.placeId === "p-closed")?.status, "closed");
+    assert.equal(rows.find((x) => x.placeId === "p-nosite")?.status, "no-website");
+    const before = searches.length;
+    const r2 = await disc.runDiscovery(new Date(), { search, fetcher });
+    assert.equal(r2.newPlaces, 0, "same places are never re-queued");
+    assert.notEqual(searches[before], searches[0], "the cursor moves to new queries");
+    await prisma.appSetting.create({ data: { key: disc.DISCOVERY_ENABLED_KEY, value: "false" } });
+    assert.equal((await disc.discoveryConfig()).enabled, false);
+  });
+
   console.log(`\n${n} DB checks passed`);
   await prisma.$disconnect();
 }

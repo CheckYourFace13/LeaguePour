@@ -10,6 +10,7 @@ import { draftProblems } from "@/lib/acquisition/drafts";
 import { ensureAcquisitionTable, importProspects, sendApprovedProspect } from "@/lib/acquisition/store";
 import { parseProspectFile } from "@/lib/acquisition/prospects.data";
 import { AUTO_QUALIFY_KEY, DAILY_REPORT_KEY, setAutomationSwitch } from "@/lib/acquisition/automation";
+import { DISCOVERY_ENABLED_KEY, DISCOVERY_QUERIES_KEY, DISCOVERY_SITES_KEY, MAX_QUERIES_PER_DAY, MAX_SITES_PER_DAY, setDiscoverySetting } from "@/lib/acquisition/discover";
 
 const PATH = "/internal/acquisition";
 
@@ -133,4 +134,16 @@ export async function toggleAutomationAction(fd: FormData) {
   await setAutomationSwitch(key, on);
   revalidatePath(PATH);
   back({ notice: `${key === AUTO_QUALIFY_KEY ? "Daily qualification" : "Daily report"} turned ${on ? "on" : "off"}.` });
+}
+
+/** Owner controls for automated discovery: on/off and the daily caps. */
+export async function saveDiscoverySettingsAction(fd: FormData) {
+  await requireOwnerSession();
+  const n = (k: string, max: number) => Math.max(0, Math.min(max, Math.floor(Number(str(fd, k)) || 0)));
+  const enabled = str(fd, "enabled") === "true";
+  await setDiscoverySetting(DISCOVERY_ENABLED_KEY, enabled ? "true" : "false");
+  await setDiscoverySetting(DISCOVERY_QUERIES_KEY, String(n("queries", MAX_QUERIES_PER_DAY)));
+  await setDiscoverySetting(DISCOVERY_SITES_KEY, String(n("sites", MAX_SITES_PER_DAY)));
+  revalidatePath(PATH);
+  back({ notice: `Discovery ${enabled ? "on" : "off"}: ${n("queries", MAX_QUERIES_PER_DAY)} searches and ${n("sites", MAX_SITES_PER_DAY)} site checks per day.` });
 }
