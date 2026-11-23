@@ -307,8 +307,30 @@ export type DiscoveryResult = {
   queued: number;
   suppressedOrDuplicate: number;
   outcomes: Record<string, number>;
+  skippedWeak?: number;
   error?: string;
 };
+
+/** "bar with trivia night in Evanston, IL" -> "bar with trivia night" (the search type). */
+export function templateKey(query: string): string {
+  return query.replace(/\s+in\s+[^,]+,\s*IL$/i, "").trim();
+}
+
+export const WEAK_TEMPLATE_MIN_CHECKED = 40;
+
+/** Search types with at least WEAK_TEMPLATE_MIN_CHECKED checked businesses and none qualified. */
+export async function weakTemplates(): Promise<Set<string>> {
+  const rows = await prisma.acquisitionDiscovery.findMany({ where: { status: { not: "pending" } }, select: { query: true, status: true } });
+  const stats = new Map<string, { checked: number; qualified: number }>();
+  for (const r of rows) {
+    const k = templateKey(r.query);
+    const s = stats.get(k) ?? { checked: 0, qualified: 0 };
+    s.checked++;
+    if (r.status === "qualified") s.qualified++;
+    stats.set(k, s);
+  }
+  return new Set([...stats.entries()].filter(([, s]) => s.checked >= WEAK_TEMPLATE_MIN_CHECKED && s.qualified === 0).map(([k]) => k));
+}
 
 export async function runDiscovery(
   now = new Date(),
@@ -329,8 +351,17 @@ export async function runDiscovery(
   ]);
   const seen = new Set<string>([...knownDiscovery.map((d) => d.placeId), ...knownContacts.map((c) => c.placeId), ...knownVenues.map((v) => v.googlePlaceId!)]);
   let cursor = cfg.cursor;
+  // Adapt to measured results: a search type that has produced no qualified business after a fair
+  // sample is skipped (no Places call), so the daily budget goes to search types that work.
+  const weak = await weakTemplates();
+  let skipsLeft = DISCOVERY_CITIES.length * DISCOVERY_TEMPLATES.length;
   for (let i = 0; i < cfg.queriesPerDay; i++) {
-    const q = queryAt(cursor);
+    let q = queryAt(cursor);
+    while (q && weak.has(templateKey(q.query)) && skipsLeft-- > 0) {
+      result.skippedWeak = (result.skippedWeak ?? 0) + 1;
+      cursor++;
+      q = queryAt(cursor);
+    }
     if (!q) break;
     try {
       const hits = await search(q.query);

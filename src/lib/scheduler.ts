@@ -69,6 +69,12 @@ const JOBS: ScheduledJob[] = [
   // approval queue + the owner's daily report. Sends nothing to prospects. Owner kill switches on
   // /internal/acquisition. No GitHub workflow mirrors this one.
   { path: "/api/cron/acquisition-daily", utcHour: 14, utcMinute: 45 },
+  // Weekly growth report: Mondays. 8:00 America/Chicago is 13:00 UTC in CDT and 14:00 UTC in CST;
+  // the route only sends during 8-11am Chicago and holds a per-week claim, so the other entries
+  // are no-ops or retries, never a second send.
+  { path: "/api/cron/weekly-report?run=1", utcHour: 13, utcMinute: 0, daysOfWeekUtc: [1] },
+  { path: "/api/cron/weekly-report?run=2", utcHour: 14, utcMinute: 0, daysOfWeekUtc: [1] },
+  { path: "/api/cron/weekly-report?run=3", utcHour: 16, utcMinute: 0, daysOfWeekUtc: [1] },
 ];
 
 const TICK_MS = 5 * 60 * 1000;

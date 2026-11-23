@@ -10,6 +10,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { parseProspectFile, type ProspectSeed } from "../src/lib/acquisition/prospects.data";
 import { validateSeed } from "../src/lib/acquisition/store";
 import * as d from "../src/lib/acquisition/discover";
+import * as wk from "../src/lib/acquisition/weekly";
 import { buildDraft, draftProblems, renderEmail, unsubscribeUrl } from "../src/lib/acquisition/drafts";
 import { CAMPAIGN_ID, chicagoDay, dedupeKey, domainOf, isSharedHost, normalizeName, trackedUrl } from "../src/lib/acquisition/program";
 import {
@@ -162,9 +163,35 @@ check("discovery helpers: robots.txt, site name, role email, expansion order", (
   assert.equal(d.roleEmail(["jane@cornertap.test"], "cornertap.test"), null, "never personal-name addresses");
   assert.equal(d.isPublicWebUrl("https://cornertap.test/"), true);
   for (const bad of ["http://127.0.0.1/", "http://localhost:3000/", "ftp://x.test/", "http://intranet/", "http://[::1]/", "http://db.internal/"]) assert.equal(d.isPublicWebUrl(bad), false, bad);
+  assert.equal(d.templateKey("bar with trivia night in St. Charles, IL"), "bar with trivia night");
   assert.equal(d.queryAt(0)?.city, "Chicago");
   assert.equal(d.queryAt(d.DISCOVERY_TEMPLATES.length)?.city, d.DISCOVERY_CITIES[1]);
   assert.equal(d.queryAt(d.DISCOVERY_CITIES.length * d.DISCOVERY_TEMPLATES.length), null);
+});
+
+check("weekly report: DST-aware Chicago week, Monday 8am window, subject format", () => {
+  // Winter (CST, UTC-6): Monday 2026-12-07 14:00 UTC is 8:00 Chicago.
+  const winterMon = new Date("2026-12-07T14:00:00Z");
+  assert.equal(wk.chicagoWeekday(winterMon), 1);
+  assert.equal(wk.chicagoHour(winterMon), 8);
+  const r = wk.weekRange(winterMon);
+  assert.equal(r.startDay, "2026-11-30");
+  assert.equal(r.endDay, "2026-12-06");
+  assert.equal(r.start.toISOString(), "2026-11-30T06:00:00.000Z");
+  assert.equal(r.end.toISOString(), "2026-12-07T06:00:00.000Z");
+  // Summer (CDT, UTC-5): Monday 2027-06-07 13:00 UTC is 8:00 Chicago.
+  const summerMon = new Date("2027-06-07T13:00:00Z");
+  assert.equal(wk.chicagoHour(summerMon), 8);
+  assert.equal(wk.weekRange(summerMon).start.toISOString(), "2027-05-31T05:00:00.000Z");
+  // The week after the November DST change is exactly 7 days in UTC; the change day itself starts at 05:00Z.
+  const fall = wk.weekRange(new Date("2026-11-09T14:00:00Z"));
+  assert.equal(fall.startDay, "2026-11-02");
+  assert.equal(fall.end.getTime() - fall.start.getTime(), 7 * 864e5);
+  assert.equal(wk.chicagoMidnight("2026-11-01").toISOString(), "2026-11-01T05:00:00.000Z");
+  const partial = wk.weekRange(new Date("2026-11-22T16:00:00Z"), true);
+  assert.equal(partial.startDay, "2026-11-16");
+  assert.match(partial.label, /to date/);
+  assert.equal(wk.maskEmail("owner@example.test"), "o***@example.test");
 });
 
 check("Chicago day boundaries", () => {

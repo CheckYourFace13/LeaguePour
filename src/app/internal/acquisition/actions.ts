@@ -10,6 +10,8 @@ import { draftProblems } from "@/lib/acquisition/drafts";
 import { ensureAcquisitionTable, importProspects, sendApprovedProspect } from "@/lib/acquisition/store";
 import { parseProspectFile } from "@/lib/acquisition/prospects.data";
 import { AUTO_QUALIFY_KEY, DAILY_REPORT_KEY, setAutomationSwitch } from "@/lib/acquisition/automation";
+import { WEEKLY_REPORT_ENABLED_KEY } from "@/lib/acquisition/weekly";
+import { setSetting } from "@/lib/app-settings";
 import { DISCOVERY_ENABLED_KEY, DISCOVERY_QUERIES_KEY, DISCOVERY_SITES_KEY, MAX_QUERIES_PER_DAY, MAX_SITES_PER_DAY, setDiscoverySetting } from "@/lib/acquisition/discover";
 
 const PATH = "/internal/acquisition";
@@ -128,9 +130,15 @@ export async function findPublicEmailAction(fd: FormData) {
 /** Owner kill switches for the daily qualification pass and the daily report. */
 export async function toggleAutomationAction(fd: FormData) {
   await requireOwnerSession();
-  const key = str(fd, "key") === "qualify" ? AUTO_QUALIFY_KEY : str(fd, "key") === "report" ? DAILY_REPORT_KEY : null;
-  if (!key) back({ error: "Unknown switch." });
+  const k = str(fd, "key");
   const on = str(fd, "on") === "true";
+  if (k === "weekly") {
+    await setSetting(WEEKLY_REPORT_ENABLED_KEY, on ? "true" : "false");
+    revalidatePath(PATH);
+    back({ notice: `Weekly report turned ${on ? "on" : "off"}.` });
+  }
+  const key = k === "qualify" ? AUTO_QUALIFY_KEY : k === "report" ? DAILY_REPORT_KEY : null;
+  if (!key) back({ error: "Unknown switch." });
   await setAutomationSwitch(key, on);
   revalidatePath(PATH);
   back({ notice: `${key === AUTO_QUALIFY_KEY ? "Daily qualification" : "Daily report"} turned ${on ? "on" : "off"}.` });

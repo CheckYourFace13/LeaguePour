@@ -349,6 +349,53 @@ async function main() {
     assert.equal((await disc.discoveryConfig()).enabled, false);
   });
 
+  await check("weekly report: real counts, paying excludes canceled, one send per week, retry after failure", async () => {
+    const wk = await import("../src/lib/acquisition/weekly");
+    process.env.INTERNAL_OWNER_EMAILS = "owner-qa@example.test";
+    delete process.env.WEEKLY_REPORT_TO;
+    delete process.env.STRIPE_SECRET_KEY;
+    await prisma.appSetting.deleteMany({ where: { key: { startsWith: "weekly_report" } } });
+    await prisma.appSetting.deleteMany({ where: { key: wk.WEEKLY_REPORT_ENABLED_KEY } });
+    // A venue created during the reported week, plus a canceled one that must not count as paying.
+    const monday = new Date("2026-12-07T14:00:00Z");
+    const inWeek = new Date("2026-12-02T18:00:00Z");
+    await prisma.venue.deleteMany({ where: { slug: { startsWith: "acqwk-" } } });
+    await prisma.venue.create({ data: { name: "Wk Active", slug: "acqwk-active", venueType: "Bar", description: "x", createdAt: inWeek, subscriptionStatus: "active" } });
+    await prisma.venue.create({ data: { name: "Wk Canceled", slug: "acqwk-canceled", venueType: "Bar", description: "x", createdAt: inWeek, subscriptionStatus: "canceled" } });
+    const snap = await wk.buildWeeklySnapshot(monday);
+    assert.ok(snap.lp.newRegistrations >= 2);
+    const payingNamed = await prisma.venue.count({ where: { slug: { startsWith: "acqwk-" }, subscriptionStatus: { in: ["active", "trialing"] } } });
+    assert.equal(payingNamed, 1);
+    assert.equal(snap.lp.revenueCents, null, "Stripe not configured -> missing, not $0");
+    assert.match(wk.renderWeekly(snap), /not available/);
+    assert.match(wk.weeklySubject(snap), /^LeaguePour \+ VenueSprocket \| Weekly Growth Report \| Nov 30 – Dec 6, 2026$/);
+
+    const mails: string[] = [];
+    let fail = true;
+    const send = async (o: { subject: string }) => {
+      if (fail) return { ok: false, error: "transient" };
+      mails.push(o.subject);
+      return { ok: true, id: "re_x" };
+    };
+    assert.equal((await wk.sendWeeklyReportIfDue(new Date("2026-12-08T14:00:00Z"), { send: send as never })).status, "skipped", "not Monday");
+    assert.equal((await wk.sendWeeklyReportIfDue(new Date("2026-12-07T12:00:00Z"), { send: send as never })).status, "skipped", "6am Chicago");
+    const f = await wk.sendWeeklyReportIfDue(monday, { send: send as never });
+    assert.equal(f.status, "failure");
+    fail = false;
+    const ok = await wk.sendWeeklyReportIfDue(new Date("2026-12-07T16:00:00Z"), { send: send as never });
+    assert.equal(ok.status, "sent", "a later attempt the same morning retries after a failure");
+    const dup = await wk.sendWeeklyReportIfDue(new Date("2026-12-07T16:05:00Z"), { send: send as never });
+    assert.equal(dup.status, "skipped", "never twice for one week");
+    assert.equal(mails.length, 1);
+    assert.equal((await wk.weeklyHistory()).length, 1);
+    delete process.env.INTERNAL_OWNER_EMAILS;
+    delete process.env.OWNER_EMAIL;
+    await prisma.appSetting.deleteMany({ where: { key: { startsWith: "weekly_report_claim" } } });
+    const none = await wk.sendWeeklyReportIfDue(new Date("2026-12-14T14:00:00Z"), { send: send as never });
+    assert.match(none.detail, /INTERNAL_OWNER_EMAILS/);
+    await prisma.venue.deleteMany({ where: { slug: { startsWith: "acqwk-" } } });
+  });
+
   console.log(`\n${n} DB checks passed`);
   await prisma.$disconnect();
 }

@@ -10,6 +10,7 @@ import { BRAND_INFO, DAILY_SEND_CAP, PROGRAM_DAYS, PROGRAM_END, PROGRAM_START, P
 import { getAcquisitionMetrics, getDailyTable, getFunnel } from "@/lib/acquisition/metrics";
 import { automationSwitches, outreachLaneStatus } from "@/lib/acquisition/automation";
 import { getLatestJobRuns } from "@/lib/job-runs";
+import { buildWeeklySnapshot, weeklyHistory, weeklyRecipients, maskEmail, weeklyReportEnabled, type BrandWeek } from "@/lib/acquisition/weekly";
 import { renderEmail } from "@/lib/acquisition/drafts";
 import {
   approveProspectAction,
@@ -88,13 +89,29 @@ export default async function AcquisitionPage({ searchParams }: Props) {
   const open = one(params.open);
 
   const metrics = await getAcquisitionMetrics();
-  const [daily, lanes, switches, jobs, funnel] = await Promise.all([
+  const [daily, lanes, switches, jobs, funnel, week, history, weeklyOn] = await Promise.all([
     getDailyTable(14),
     outreachLaneStatus(),
     automationSwitches(),
-    getLatestJobRuns(["acquisition-discover", "acquisition-qualify", "acquisition-report"]),
+    getLatestJobRuns(["acquisition-discover", "acquisition-qualify", "acquisition-report", "acquisition-weekly-report"]),
     getFunnel(),
+    buildWeeklySnapshot(new Date(), { partial: true, stripe: false }),
+    weeklyHistory(12),
+    weeklyReportEnabled(),
   ]);
+  const weeklyTo = weeklyRecipients();
+  const weeklyJob = jobs["acquisition-weekly-report"];
+  const growthRows: [string, (b: BrandWeek) => string][] = [
+    ["Registered venues (week / total)", (b) => `${b.newRegistrations} / ${b.totalRegistrations}`],
+    ["Player accounts (week / total)", (b) => (b.newPlayers === null ? "n/a" : `${b.newPlayers} / ${b.totalPlayers}`)],
+    ["Activated venues (week / total)", (b) => `${b.newActivated} / ${b.totalActivated}`],
+    ["Paying customers (week / total)", (b) => `${b.newPaying} / ${b.totalPaying}`],
+    ["Free-to-paid", (b) => (b.freeToPaidPct === null ? "no registrations" : `${b.freeToPaidPct}%`)],
+    ["Current MRR", (b) => formatUsdCents(b.mrrCents)],
+    ["Visitors", (b) => (b.visitors === null ? b.visitorsNote : `${b.visitors} (${b.visitorsNote})`)],
+    ["Sources", (b) => b.topSources.join(", ") || "-"],
+    ["Prospects discovered / qualified", (b) => `${b.prospectsDiscovered} / ${b.prospectsQualified}`],
+  ];
   const [rows, imported, vsLaneOn, lpLaneOn] = await Promise.all([
     prisma.acquisitionProspect.findMany({
       where: { ...(brandFilter ? { brand: brandFilter } : {}), ...(statusFilter ? { status: statusFilter } : {}) },
@@ -155,6 +172,81 @@ export default async function AcquisitionPage({ searchParams }: Props) {
           Older automated lanes: VenueSprocket daily outreach is {vsLaneOn ? "ON" : "paused"}, LeaguePour daily outreach is{" "}
           {lpLaneOn ? "ON" : "paused"} (controls on the older outreach page). Sending a prospect here marks its matching
           old-list contact so neither lane emails that business again.
+        </p>
+      </Card>
+
+      <Card className="space-y-4">
+        <h2 className="font-display text-2xl font-extrabold text-lp-text">Growth: {week.range.label}</h2>
+        <p className="text-xs text-lp-muted">
+          Live production data. &quot;not tracked&quot; means missing, not zero. Paying excludes canceled or refunded subscriptions. GA4 and
+          Search Console: not connected.
+        </p>
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm tabular-nums">
+            <thead>
+              <tr className="text-left text-xs uppercase text-lp-muted">
+                <th className="py-1 pr-3"></th>
+                <th className="py-1 pr-3">LeaguePour</th>
+                <th className="py-1 pr-3">VenueSprocket</th>
+              </tr>
+            </thead>
+            <tbody>
+              {growthRows.map(([label, f]) => (
+                <tr key={label} className="border-t border-lp-border">
+                  <td className="py-1 pr-3 text-lp-muted">{label}</td>
+                  <td className="py-1 pr-3">{f(week.lp)}</td>
+                  <td className="py-1 pr-3">{f(week.vs)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="rounded-lg border border-lp-border p-3 text-sm">
+          <p className="font-semibold text-lp-text">
+            Weekly growth email (Mondays 8:00 America/Chicago, previous Mon-Sun): {weeklyOn ? "ON" : "OFF"} · to:{" "}
+            {weeklyTo.length ? weeklyTo.map(maskEmail).join(", ") : "not configured (set INTERNAL_OWNER_EMAILS or WEEKLY_REPORT_TO)"} · last run:{" "}
+            {weeklyJob ? `${weeklyJob.status} ${weeklyJob.startedAt.toISOString().slice(0, 16).replace("T", " ")} UTC` : "never"}
+          </p>
+          <form action={toggleAutomationAction} className="mt-2">
+            <input type="hidden" name="key" value="weekly" />
+            <input type="hidden" name="on" value={weeklyOn ? "false" : "true"} />
+            <Button type="submit" variant="secondary" className="min-h-0 px-3 py-1.5 text-sm">
+              Turn weekly email {weeklyOn ? "off" : "on"}
+            </Button>
+          </form>
+          {history.length ? (
+            <table className="mt-3 min-w-full text-xs tabular-nums">
+              <thead>
+                <tr className="text-left uppercase text-lp-muted">
+                  <th className="py-1 pr-3">Week</th>
+                  <th className="py-1 pr-3">LP new / total venues</th>
+                  <th className="py-1 pr-3">VS new / total venues</th>
+                  <th className="py-1 pr-3">Paying LP / VS</th>
+                  <th className="py-1 pr-3">Visitors LP / VS</th>
+                  <th className="py-1 pr-3">Sent</th>
+                </tr>
+              </thead>
+              <tbody>
+                {history.map((h) => (
+                  <tr key={h.week} className="border-t border-lp-border">
+                    <td className="py-1 pr-3">{h.label}</td>
+                    <td className="py-1 pr-3">{h.lp.newRegistrations} / {h.lp.totalRegistrations}</td>
+                    <td className="py-1 pr-3">{h.vs.newRegistrations} / {h.vs.totalRegistrations}</td>
+                    <td className="py-1 pr-3">{h.lp.totalPaying} / {h.vs.totalPaying}</td>
+                    <td className="py-1 pr-3">{h.lp.visitors ?? "not tracked"} / {h.vs.visitors ?? "not tracked"}</td>
+                    <td className="py-1 pr-3">{h.sentAt.slice(0, 10)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="mt-2 text-xs text-lp-muted">No weekly reports sent yet; history appears here after each Monday send.</p>
+          )}
+        </div>
+        <p className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-lp-text">
+          Prospect outreach is draft-only. Discovery and drafting run on their own; emailing prospects needs a separate, explicit owner
+          authorization of an outbound campaign (scope, sender identity, recipient criteria, sending limits). The VenueSprocket automatic
+          cold-email lane stays paused.
         </p>
       </Card>
 
