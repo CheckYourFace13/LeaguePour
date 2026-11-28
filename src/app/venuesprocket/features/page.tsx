@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: { absolute: "Features | VenueSprocket" },
+  title: { absolute: "Venue Event Management Software Features | VenueSprocket" },
   description:
-    "VenueSprocket features: public inquiry page, lead pipeline, proposals, e-signature contracts, Stripe deposits, BEO builder, and a customer directory.",
+    "Venue event management software for private events: inquiries, a lead pipeline, proposals, e-signed contracts, Stripe deposits and banquet event orders.",
   alternates: { canonical: "https://venuesprocket.com/features" },
 };
 
@@ -160,6 +160,23 @@ export default function VsFeaturesPage() {
             recurring public events.
           </p>
         </div>
+
+        {/* What VenueSprocket is (and is not) */}
+        <section className="mb-12 rounded-2xl border border-vs-border bg-vs-surface p-7">
+          <h2 className="font-display text-2xl font-bold text-vs-text mb-3">
+            Venue event management software, focused on private events
+          </h2>
+          <p className="text-vs-text-soft leading-relaxed mb-3">
+            VenueSprocket is venue event management software for the private-event side of your
+            business. It captures inquiries, tracks them in a lead pipeline, and turns them into
+            proposals, electronically signed contracts, Stripe deposits and banquet event orders
+            (BEOs), all from the same event record.
+          </p>
+          <p className="text-vs-text-soft leading-relaxed">
+            It is not a POS, a staff scheduling system or a full venue operations platform. Keep the
+            tools you already use for those; VenueSprocket handles private-event sales and bookings.
+          </p>
+        </section>
 
         {/* Feature modules */}
         <div className="space-y-6">

@@ -169,8 +169,9 @@ export default function VsSprocketHome() {
             <span className="text-vs-accent">Run them better.</span>
           </h1>
           <p className="vs-page-sub mx-auto mt-6 text-center text-lg md:text-xl">
-            VenueSprocket helps restaurants, breweries, bars, taprooms, and event spaces capture inquiries,
-            send proposals, sign contracts, collect deposits, create BEOs, and market their event space.
+            VenueSprocket is venue management software for private events. It helps restaurants, breweries,
+            bars, taprooms, and event spaces capture inquiries, send proposals, sign contracts, collect
+            deposits, create BEOs, and market their event space.
           </p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <DemoCta
@@ -269,7 +270,7 @@ export default function VsSprocketHome() {
               href="/features"
               className="font-semibold text-vs-accent hover:underline"
             >
-              See all features →
+              See all private event management features →
             </Link>
           </div>
         </div>
